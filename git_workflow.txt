@@ -1,0 +1,18 @@
+create and clone a repository:
+    create new repo on github website
+    include gitignore
+    copy repo link
+    enter shell
+        change to intended directory
+        type: git clone [insert repo link]
+        return
+
+push new commit to github:
+    save file
+    go to shell
+        enter directory of repo/file
+        type: git status (to see what has changed since last push)
+        if all changes are to be pushed, type: git add .
+        (optional git status)
+        if commit is intended, type: git commit
+        type: git push
