@@ -19,3 +19,13 @@ push new commit to github:
         (optional git status)
         if commit is intended, type: git commit
         type: git push
+
+
+
+
+Going back to past repositories:
+    optional: make new clone in safe location
+    git checkout <hash found in commits>
+        explore to heart's desire
+    optional: fix errors
+    git checkout master
