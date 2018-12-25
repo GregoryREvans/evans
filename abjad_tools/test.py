@@ -6,12 +6,13 @@ import time
 import abjadext.rmakers
 from MusicMaker import MusicMaker
 from ArticulationHandler import ArticulationHandler
-from AttachmentHandler import AttachmentHandler
 from BeamHandler import BeamHandler
+from ClefHandler import ClefHandler
 from DynamicHandler import DynamicHandler
 from GlissandoHandler import GlissandoHandler
 from NoteheadHandler import NoteheadHandler
 from PitchHandler import PitchHandler
+from TextSpanHandler import TextSpanHandler
 
 print('Interpreting file ...')
 
@@ -53,13 +54,12 @@ articulation_handler = ArticulationHandler(
     continuous=True,
     )
 
-attachment_handler = AttachmentHandler(
-    text_list=['sp', 'st', 'sp', ],
-    line_style='dashed-line-with-arrow'
-    )
-
 beam_handler = BeamHandler(
     style='rests',
+    )
+
+clef_handler = ClefHandler(
+    clef='Treble',
     )
 
 dynamic_handler = DynamicHandler(
@@ -71,7 +71,7 @@ dynamic_handler = DynamicHandler(
 
 glissando_handler = GlissandoHandler(
     # glissando_style='hide_middle_note_heads',
-    line_style='trill',
+    line_style='jete',
     )
 
 notehead_handler = NoteheadHandler(
@@ -84,17 +84,33 @@ pitch_handler = PitchHandler(
     continuous=True,
     )
 
+text_span_handler = TextSpanHandler(
+    position_list_one=['one', 'two', 'three', ],
+    position_list_two=['two', 'three', 'one', ],
+    position_list_three=['three', 'one', 'two', ],
+    start_style_one='solid-line-with-arrow',
+    start_style_two='dashed-line-with-arrow',
+    stop_style_one='solid-line-with-hook',
+    stop_style_two='dashed-line-with-hook',
+    stop_style_three='solid-line-with-hook',
+    apply_list_one_to='ties',
+    apply_list_two_to='edges',
+    list_three_left_only='True',
+    continuous=True,
+    )
+
 # Initialize two MusicMakers with the rhythm-makers.
 
 music_maker = MusicMaker(
     rmaker=rmaker,
     articulation_handler=articulation_handler,
-    attachment_handler=attachment_handler,
     beam_handler=beam_handler,
+    clef_handler=clef_handler,
     dynamic_handler=dynamic_handler,
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
+    text_span_handler=text_span_handler,
     continuous=True,
 )
 
@@ -442,7 +458,7 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
 
 score_file = abjad.LilyPondFile.new(
     score,
-    includes=['/Users/evansdsg2/evans/abjad_tools/first_stylesheet.ily', '/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily'],
+    includes=['first_stylesheet.ily', '/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily'],
     )
 
 abjad.SegmentMaker.comment_measure_numbers(score)
