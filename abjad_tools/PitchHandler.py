@@ -13,7 +13,7 @@ class PitchHandler:
             while True:
                 yield lst[self._count % len(lst)]
                 self._count += 1
-        self.pitch_list = notehead_list
+        self.pitch_list = pitch_list
         self.continuous = continuous
         self._cyc_pitches = cyc(pitch_list)
         self._count = 0

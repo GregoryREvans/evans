@@ -28,32 +28,32 @@ class NoteheadHandler:
             next_style = next(head)
             for tie in ties:
                 if next_style == 'harmonic':
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'harmonic-mixed""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
                 elif next_style == 'half-harmonic':
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'diamond""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
                 elif next_style == 'cross':
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'cross""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
                 elif next_style == 'scratch':
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'triangle""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
                 elif next_style == 'subtone':
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'slash""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
                 else:
-                    for leaf in tie:
+                    for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'default""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
