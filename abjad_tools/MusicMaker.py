@@ -1,19 +1,30 @@
 import abjad
 from AttachmentHandler import AttachmentHandler
+from GlissandoHandler import GlissandoHandler
+from NoteheadHandler import NoteheadHandler
+from BeamHandler import BeamHandler
+from PitchHandler import PitchHandler
+from ArticulationHandler import ArticulationHandler
 
 class MusicMaker:
     def __init__(
         self,
         rmaker,
         attachment_handler=None,
-        pitches=None,
-        continuous=False,
+        glissando_handler=None,
+        notehead_handler=None,
+        beam_handler=None,
+        pitch_handler=None,
+        articulation_handler=None,
         state=None,
     ):
         self.attachment_handler = attachment_handler
+        self.glissando_handler = glissando_handler
+        self.notehead_handler = notehead_handler
+        self.beam_handler = beam_handler
+        self.pitch_handler = pitch_handler
+        self.articulation_handler = articulation_handler
         self.rmaker = rmaker
-        self.pitches = pitches
-        self.continuous = continuous
         self.state = self.rmaker.state
         self._count = 0
 
@@ -28,7 +39,7 @@ class MusicMaker:
 
     def _make_music(self, durations):
         selections = self._make_basic_rhythm(durations)
-        if self.pitches == None:
+        if self.pitch_handler == None:
             start_command = abjad.LilyPondLiteral(
                 r'\stopStaff \once \override Staff.StaffSymbol.line-count = #1 \startStaff',
                 format_slot='before',
@@ -41,48 +52,17 @@ class MusicMaker:
             abjad.attach(literal, selections[0][0])
             abjad.attach(start_command, selections[0][0])
             abjad.attach(stop_command, selections[0][-1])
-        if self.pitches != None:
-            selections = self._apply_pitches(selections, self.pitches)
+        if self.pitch_handler != None:
+            selections = self.pitch_handler(selections)
         if self.attachment_handler != None:
             selections = self.attachment_handler(selections)
             self._count += 1
+        if self.glissando_handler != None:
+            selections = self.glissando_handler(selections)
+        if self.notehead_handler != None:
+            selections = self.notehead_handler(selections)
+        if self.beam_handler != None:
+            selections = self.beam_handler(selections)
+        if self.articulation_handler != None:
+            selections = self.articulation_handler(selections)
         return selections
-
-    def _collect_pitches_durations_leaves(self, logical_ties, pitches):
-        def cyc(lst):
-            if self.continuous == False:
-                self._count = 0
-            while True:
-                yield lst[self._count % len(lst)]
-                self._count += 1
-        cyc_pitches = cyc(pitches)
-        pitches, durations, leaves = [[], [], []]
-        for tie in logical_ties:
-            if isinstance(tie[0], abjad.Note):
-                pitch = next(cyc_pitches)
-                for leaf in tie:
-                    pitches.append(pitch)
-                    durations.append(leaf.written_duration)
-                    leaves.append(leaf)
-            else:
-                for leaf in tie:
-                    pitches.append(None)
-                    durations.append(leaf.written_duration)
-                    leaves.append(leaf)
-        return pitches, durations, leaves
-
-    def _apply_pitches(self, selections, pitches):
-        leaf_maker = abjad.LeafMaker()
-        container = abjad.Container(selections)
-        old_ties = [tie for tie in abjad.iterate(
-            container).logical_ties()]
-        pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
-            old_ties, pitches)
-        new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
-        for old_leaf, new_leaf in zip(old_leaves, new_leaves):
-            indicators = abjad.inspect(old_leaf).indicators()
-            for indicator in indicators:
-                abjad.attach(indicator, new_leaf)
-            parent = abjad.inspect(old_leaf).parentage().parent
-            parent[parent.index(old_leaf)] = new_leaf
-        return [container[:]]

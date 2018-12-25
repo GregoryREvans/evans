@@ -7,7 +7,6 @@ class AttachmentHandler:
         starting_dynamic=None,
         ending_dynamic=None,
         hairpin=None,
-        articulation_list=None,
         text_list=None,
         line_style=None,
         clef=None,
@@ -20,11 +19,9 @@ class AttachmentHandler:
         self.starting_dynamic = starting_dynamic
         self.ending_dynamic = ending_dynamic
         self.hairpin = hairpin
-        self.articulation_list = articulation_list
         self.text_list = text_list
         self.line_style = line_style
         self.clef = clef
-        self._cyc_articulations = cyc(articulation_list)
         self._cyc_dynamics = cyc([starting_dynamic, ending_dynamic])
         self._cyc_text = cyc(text_list)
 
@@ -96,9 +93,4 @@ class AttachmentHandler:
                 abjad.attach(abjad.StartHairpin('--'), leaves[0])
                 if self.text_list != None:
                     self._apply_text_and_span_l_only(run)
-        for tie in ties:
-            if len(tie) == 1:
-                if self.articulation_list != None:
-                    articulation = self._cyc_articulations
-                    abjad.attach(abjad.Articulation(next(articulation)), tie[0])
         return selections
