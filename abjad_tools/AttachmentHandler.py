@@ -4,26 +4,23 @@ class AttachmentHandler:
 
     def __init__(
         self,
-        starting_dynamic=None,
-        ending_dynamic=None,
-        hairpin=None,
         text_list=None,
         line_style=None,
         clef=None,
+        continuous=False,
         ):
         def cyc(lst):
-            count = 0
+            if self.continuous == False:
+                self._count = 0
             while True:
-                yield lst[count%len(lst)]
-                count += 1
-        self.starting_dynamic = starting_dynamic
-        self.ending_dynamic = ending_dynamic
-        self.hairpin = hairpin
+                yield lst[self._count % len(lst)]
+                self._count += 1
         self.text_list = text_list
         self.line_style = line_style
         self.clef = clef
-        self._cyc_dynamics = cyc([starting_dynamic, ending_dynamic])
+        self.continuous = continuous
         self._cyc_text = cyc(text_list)
+        self._count = 0
 
     def __call__(self, selections):
         return self.add_attachments(selections)
@@ -67,13 +64,6 @@ class AttachmentHandler:
                 abjad.attach(abjad.Clef(self.clef), run[0]) #doesn't seem to always work, redo entire attachment handler?
             if len(run) > 1:
                 leaves = abjad.select(run).leaves()
-                if self.starting_dynamic != None:
-                    abjad.attach(abjad.Dynamic(self.starting_dynamic), leaves[0])
-                if self.hairpin != None:
-                    abjad.attach(abjad.StartHairpin(self.hairpin), leaves[0])
-                if self.ending_dynamic != None:
-                    abjad.attach(abjad.Dynamic(self.ending_dynamic), leaves[-1])
-                    abjad.attach(abjad.StartHairpin('--'), leaves[-1]) #makes ending with a logical tie weird. If problematic: reduce indentation by 1
                 if self.text_list != None:
                     if len(self.text_list) > 1:
                         self._apply_text_and_span_lr(run)
@@ -81,16 +71,6 @@ class AttachmentHandler:
                         self._apply_text_and_span_l_only(run)
             else:
                 leaves = abjad.select(run).leaves()
-                dynamic = next(self._cyc_dynamics)
-                if self.starting_dynamic != None:
-                    if self.ending_dynamic != None:
-                        abjad.attach(abjad.Dynamic(dynamic), leaves[0])
-                    else:
-                        abjad.attach(abjad.Dynamic(self.starting_dynamic), leaves[0])
-                if self.starting_dynamic == None:
-                    if self.ending_dynamic != None:
-                        abjad.attach(abjad.Dynamic(self.ending_dynamic), leaves[0])
-                abjad.attach(abjad.StartHairpin('--'), leaves[0])
                 if self.text_list != None:
                     self._apply_text_and_span_l_only(run)
         return selections

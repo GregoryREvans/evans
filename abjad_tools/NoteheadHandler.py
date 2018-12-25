@@ -5,14 +5,18 @@ class NoteheadHandler:
     def __init__(
         self,
         notehead_list=None,
+        continuous=False,
         ):
         def cyc(lst):
-            count = 0
+            if self.continuous == False:
+                self._count = 0
             while True:
-                yield lst[count%len(lst)]
-                count += 1
+                yield lst[self._count % len(lst)]
+                self._count += 1
         self.notehead_list = notehead_list
+        self.continuous = continuous
         self._cyc_noteheads = cyc(notehead_list)
+        self._count = 0
 
     def __call__(self, selections):
         return self.add_noteheads(selections)

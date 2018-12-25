@@ -5,6 +5,7 @@ from NoteheadHandler import NoteheadHandler
 from BeamHandler import BeamHandler
 from PitchHandler import PitchHandler
 from ArticulationHandler import ArticulationHandler
+from DynamicHandler import DynamicHandler
 
 class MusicMaker:
     def __init__(
@@ -16,6 +17,8 @@ class MusicMaker:
         beam_handler=None,
         pitch_handler=None,
         articulation_handler=None,
+        dynamic_handler=None,
+        continuous=False,
         state=None,
     ):
         self.attachment_handler = attachment_handler
@@ -24,6 +27,8 @@ class MusicMaker:
         self.beam_handler = beam_handler
         self.pitch_handler = pitch_handler
         self.articulation_handler = articulation_handler
+        self.dynamic_handler = dynamic_handler
+        self.continuous = continuous
         self.rmaker = rmaker
         self.state = self.rmaker.state
         self._count = 0
@@ -65,4 +70,6 @@ class MusicMaker:
             selections = self.beam_handler(selections)
         if self.articulation_handler != None:
             selections = self.articulation_handler(selections)
+        if self.dynamic_handler != None:
+            selections = self.dynamic_handler(selections)
         return selections
