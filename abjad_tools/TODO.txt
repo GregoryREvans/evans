@@ -1,17 +1,15 @@
-MusicMaker:
-    1.) Fix rhythm staff when pitches are not declared.
 
-AttachmentHandler:
+Attachment Handlers:
 
     6.) FIX notehead application
     7.) Fix Text spanners
     8.) Add woodwind diagram interface?
-    9.) Add slur/tie interface?
+
     10.) Add optional keyword to attach dynamic to either each leaf in run OR boundaries of run
 
     12.) piano pedal?
-
     13.) add trill handler that replaces chords with trills
+    14.) FIX SlurHandler
 
 other:
     1.) Package tools to be imported

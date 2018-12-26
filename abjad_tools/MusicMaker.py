@@ -62,12 +62,16 @@ class MusicMaker:
                 r'\stopStaff \startStaff',
                 format_slot='after',
                 )
-            literal = abjad.LilyPondLiteral(r'\once \override Clef.transparent = ##t', 'before')
+            literal = abjad.LilyPondLiteral(r'\once \override Staff.Clef.transparent = ##t', 'before')
+            c_clef = abjad.LilyPondLiteral(r'\clef alto', 'before')
             abjad.attach(literal, selections[0][0])
+            abjad.attach(c_clef, selections[0][0])
             abjad.attach(start_command, selections[0][0])
             abjad.attach(stop_command, selections[0][-1])
         if self.pitch_handler != None:
             selections = self.pitch_handler(selections)
+            if self.clef_handler != None:
+                selections = self.clef_handler(selections)
         if self.glissando_handler != None:
             selections = self.glissando_handler(selections)
         if self.notehead_handler != None:
@@ -80,8 +84,6 @@ class MusicMaker:
             selections = self.dynamic_handler(selections)
         if self.text_span_handler != None:
             selections = self.text_span_handler(selections)
-        if self.clef_handler != None:
-            selections = self.clef_handler(selections)
         if self.slur_handler != None:
             selections = self.slur_handler(selections)
         return selections

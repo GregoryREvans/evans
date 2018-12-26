@@ -118,7 +118,7 @@ music_maker = MusicMaker(
     dynamic_handler=dynamic_handler,
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
-    pitch_handler=pitch_handler,
+    # pitch_handler=pitch_handler,
     # text_span_handler=text_span_handler,
     continuous=True,
 )
