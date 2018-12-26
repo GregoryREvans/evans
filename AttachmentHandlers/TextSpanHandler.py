@@ -49,7 +49,7 @@ class TextSpanHandler:
         if self.position_list_one != None:
             if self.apply_list_one_to == 'left_only':
                 pos_list_1 = self._cyc_position_list_one_text
-                for run in abjad.select(selections).components(abjad.Voice):
+                for voice in abjad.select(selections).components(abjad.Voice):
                     self._apply_position_and_span_left_only(staff=voice, poses=pos_list_1, style=self.start_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
             if self.apply_list_one_to == 'edges':
                 pos_list_1 = self._cyc_position_list_one_text
@@ -112,7 +112,7 @@ class TextSpanHandler:
             abjad.attach(abjad.StopTextSpan(command=stop_command,), run[-1])
             abjad.tweak(stop_span).staff_padding = padding
             abjad.attach(stop_span, run[-1])
-        return selections
+        return staff
 
     def _apply_position_and_span_to_ties(staff, poses, style, padding, command, stop_command, ending_hook):
         position = next(poses)
@@ -134,7 +134,7 @@ class TextSpanHandler:
                     )
                 abjad.tweak(start_span).staff_padding = padding
                 abjad.attach(start_span, tie[0])
-        return selections
+        return staff
 
     def _apply_text_and_span_l_only(staff, poses, style, padding, command, stop_command, ending_hook):
         text = next(poses)
@@ -147,4 +147,4 @@ class TextSpanHandler:
                 style=ending_hook,
                 )
             abjad.text_spanner(leaves[0], start_text_span=span)
-        return selections
+        return staff
