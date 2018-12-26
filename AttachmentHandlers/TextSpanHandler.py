@@ -16,9 +16,6 @@ class TextSpanHandler:
         apply_list_one_to=None,
         apply_list_two_to=None,
         apply_list_three_to=None,
-        list_one_left_only=False,
-        list_two_left_only=False,
-        list_three_left_only=False,
         continuous=False,
         ):
         def cyc(lst):
@@ -39,9 +36,6 @@ class TextSpanHandler:
         self.apply_list_one_to = apply_list_one_to
         self.apply_list_two_to = apply_list_two_to
         self.apply_list_three_to = apply_list_three_to
-        self.list_one_left_only = list_one_left_only
-        self.list_two_left_only = list_one_left_only
-        self.list_three_left_only = list_one_left_only
         self.continuous = continuous
         self._cyc_position_list_one_text = cyc(position_list_one)
         self._cyc_position_list_two_text = cyc(position_list_two)
@@ -53,57 +47,48 @@ class TextSpanHandler:
 
     def add_spans(self, selections):
         if self.position_list_one != None:
-            if self.list_one_left_only == True:
+            if self.apply_list_one_to == 'left_only':
                 for voice in abjad.select(selections).components(abjad.Voice):
                     pos_list_1 = self._cyc_position_list_one_text
                     _apply_position_and_span_left_only(staff=voice, poses=pos_list_1, style=self.start_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
-            elif self.list_one_left_only == False:
-                if self.apply_list_one_to == "edges":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_1 = self._cyc_position_list_one_text
-                        _apply_position_and_span_to_edges(staff=voice, poses=pos_list_1, style=self.start_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
-                elif self.apply_list_one_to == "ties":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_1 = self._cyc_position_list_one_text
-                        _apply_position_and_span_to_ties(staff=voice, poses=pos_list_1, style=sself.tart_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
-                else:
-                    pass
+            if self.apply_list_one_to == 'edges':
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_1 = self._cyc_position_list_one_text
+                    _apply_position_and_span_to_edges(staff=voice, poses=pos_list_1, style=self.start_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
+            elif self.apply_list_one_to == "ties":
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_1 = self._cyc_position_list_one_text
+                    _apply_position_and_span_to_ties(staff=voice, poses=pos_list_1, style=sself.tart_style_one, padding=8.2, command=r'\startTextSpanOne', stop_command=r'\stopTextSpanOne', ending_hook=self.stop_style_one)
             else:
                 pass
         if self.position_list_two != None:
-            if self.list_two_left_only == True:
+            if self.apply_list_two_to == 'left_only':
                 for voice in abjad.select(selections).components(abjad.Voice):
                     pos_list_2 = self._cyc_position_list_two_text
                     _apply_position_and_span_left_only(staff=voice, poses=pos_list_2, style=self.start_style_two, padding=10.7, command=r'\startTextSpanTwo', stop_command=r'\stopTextSpanTwo', ending_hook=self.stop_style_two)
-            elif self.list_two_left_only == False:
-                if self.apply_list_two_to == "edges":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_2 = self._cyc_position_list_two_text
-                        _apply_position_and_span_to_edges(staff=voice, poses=pos_list_2, style=self.start_style_two, padding=10.7, command=r'\startTextSpanTwo', stop_command=r'\stopTextSpanTwo',ending_hook=self.stop_style_two)
-                elif self.apply_list_two_to == "ties":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_2 = self._cyc_position_list_two_text
-                        _apply_position_and_span_to_ties(staff=voice, poses=pos_list_2, style=self.start_style_two, padding=10.7, command=r'\startTextSpanTwo', stop_command=r'\stopTextSpanTwo',ending_hook=self.stop_style_two)
-                else:
-                    pass
+            if self.apply_list_two_to == "edges":
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_2 = self._cyc_position_list_two_text
+                    _apply_position_and_span_to_edges(staff=voice, poses=pos_list_2, style=self.start_style_two, padding=10.7, command=r'\startTextSpanTwo', stop_command=r'\stopTextSpanTwo',ending_hook=self.stop_style_two)
+            elif self.apply_list_two_to == "ties":
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_2 = self._cyc_position_list_two_text
+                    _apply_position_and_span_to_ties(staff=voice, poses=pos_list_2, style=self.start_style_two, padding=10.7, command=r'\startTextSpanTwo', stop_command=r'\stopTextSpanTwo',ending_hook=self.stop_style_two)
             else:
                 pass
         if self.position_list_three != None:
-            if self.list_three_left_only == True:
+            if self.apply_list_three_to == 'left_only':
                 for voice in abjad.select(selections).components(abjad.Voice):
                     pos_list_3 = self._cyc_position_list_three_text
                     _apply_position_and_span_left_only(staff=voice, poses=pos_list_3, style=self.start_style_three, padding=13.2, command=r'\startTextSpanThree', stop_command=r'\stopTextSpanThree', ending_hook=self.stop_style_three)
-            elif self.list_three_left_only == False:
-                if self.apply_list_three_to == "edges":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_3 = self._cyc_position_list_three_text
-                        _apply_position_and_span_to_edges(staff=voice, poses=pos_list_3, style=self.start_style_three, padding=13.2, command=r'\startTextSpanThree', stop_command=r'\stopTextSpanThree', ending_hook=self.stop_style_three)
-                elif self.apply_list_three_to == "ties":
-                    for voice in abjad.select(selections).components(abjad.Voice):
-                        pos_list_3 = self._cyc_position_list_three_text
-                        _apply_position_and_span_to_edges(staff=voice, poses=pos_list_3, style=self.start_style_three, padding=13.2, command=r'\startTextSpanThree', stop_command=r'\stopTextSpanThree', ending_hook=self.stop_style_three)
-                else:
-                    pass
+            if self.apply_list_three_to == "edges":
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_3 = self._cyc_position_list_three_text
+                    _apply_position_and_span_to_edges(staff=voice, poses=pos_list_3, style=self.start_style_three, padding=13.2, command=r'\startTextSpanThree', stop_command=r'\stopTextSpanThree', ending_hook=self.stop_style_three)
+            elif self.apply_list_three_to == "ties":
+                for voice in abjad.select(selections).components(abjad.Voice):
+                    pos_list_3 = self._cyc_position_list_three_text
+                    _apply_position_and_span_to_edges(staff=voice, poses=pos_list_3, style=self.start_style_three, padding=13.2, command=r'\startTextSpanThree', stop_command=r'\stopTextSpanThree', ending_hook=self.stop_style_three)
             else:
                 pass
 
@@ -126,6 +111,7 @@ class TextSpanHandler:
             abjad.attach(abjad.StopTextSpan(command=stop_command,), run[-1])
             abjad.tweak(stop_span).staff_padding = padding
             abjad.attach(stop_span, run[-1])
+        return selections
 
     def _apply_position_and_span_to_ties(staff, poses, style, padding, command, stop_command, ending_hook):
         position = next(poses)
@@ -147,6 +133,7 @@ class TextSpanHandler:
                     )
                 abjad.tweak(start_span).staff_padding = padding
                 abjad.attach(start_span, tie[0])
+        return selections
 
     def _apply_text_and_span_l_only(staff, poses, style, padding, command, stop_command, ending_hook):
         text = next(poses)
@@ -159,3 +146,4 @@ class TextSpanHandler:
                 style=ending_hook,
                 )
             abjad.text_spanner(leaves[0], start_text_span=span)
+        return selections
