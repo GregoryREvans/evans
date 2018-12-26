@@ -12,6 +12,7 @@ from DynamicHandler import DynamicHandler
 from GlissandoHandler import GlissandoHandler
 from NoteheadHandler import NoteheadHandler
 from PitchHandler import PitchHandler
+from SlurHandler import SlurHandler
 from TextSpanHandler import TextSpanHandler
 
 print('Interpreting file ...')
@@ -84,6 +85,12 @@ notehead_handler = NoteheadHandler(
 pitch_handler = PitchHandler(
     pitch_list=[0, 2, 1, [3, 10], 4, 8, [7, 9], 6],
     continuous=True,
+    )
+
+slur_handler = SlurHandler(
+    slurs=True,
+    phrasing_slurs=True,
+    # tie_repeated_notes=True,
     )
 
 text_span_handler = TextSpanHandler(

@@ -31,7 +31,6 @@ class NoteheadHandler:
                     string = str(r"""\once \override Staff.NoteHead.style = #'""")
                     head_name = next_style
                     full_string = string + head_name
-                    print(full_string)
                     style = abjad.LilyPondLiteral(full_string, format_slot='before',)
                     abjad.attach(style, leaf)
         return selections

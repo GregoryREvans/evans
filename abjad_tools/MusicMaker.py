@@ -7,6 +7,7 @@ from ArticulationHandler import ArticulationHandler
 from DynamicHandler import DynamicHandler
 from TextSpanHandler import TextSpanHandler
 from ClefHandler import ClefHandler
+from SlurHandler import SlurHandler
 
 class MusicMaker:
     def __init__(
@@ -20,6 +21,7 @@ class MusicMaker:
         dynamic_handler=None,
         text_span_handler=None,
         clef_handler=None,
+        slur_handler=None,
         continuous=False,
         state=None,
     ):
@@ -31,6 +33,7 @@ class MusicMaker:
         self.dynamic_handler = dynamic_handler
         self.text_span_handler = text_span_handler
         self.clef_handler = clef_handler
+        self.slur_handler = slur_handler
         self.continuous = continuous
         self.rmaker = rmaker
         self.state = self.rmaker.state
@@ -79,4 +82,6 @@ class MusicMaker:
             selections = self.text_span_handler(selections)
         if self.clef_handler != None:
             selections = self.clef_handler(selections)
+        if self.slur_handler != None:
+            selections = self.slur_handler(selections)
         return selections
