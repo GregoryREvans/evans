@@ -71,7 +71,7 @@ dynamic_handler = DynamicHandler(
 
 glissando_handler = GlissandoHandler(
     # glissando_style='hide_middle_note_heads',
-    # line_style='trill',
+    line_style='dashed-line',
     )
 
 notehead_handler = NoteheadHandler(
