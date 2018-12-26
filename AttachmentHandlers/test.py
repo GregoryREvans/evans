@@ -100,8 +100,8 @@ text_span_handler = TextSpanHandler(
     stop_style_one='solid-line-with-hook',
     stop_style_two='dashed-line-with-hook',
     stop_style_three='solid-line-with-hook',
-    apply_list_one_to='ties',
-    apply_list_two_to='edges',
+    apply_list_one_to='edges',
+    apply_list_two_to='ties',
     apply_list_three_to='left_only',
     continuous=True,
     )
