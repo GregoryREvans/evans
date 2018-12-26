@@ -3,16 +3,11 @@ MusicMaker:
 
 AttachmentHandler:
 
-    3.) Fix Clef declaration (MAYBE a list of clefs associated with register based on shelf)
-    4.) Add optional ottava mark with shelf keyword
-
-    6.) Add notehead alterations that aren't currently present and rename
+    6.) FIX notehead application
     7.) Fix Text spanners
     8.) Add woodwind diagram interface?
     9.) Add slur/tie interface?
     10.) Add optional keyword to attach dynamic to either each leaf in run OR boundaries of run
-
-    11.) encapsulate glissando and rename
 
     12.) piano pedal?
 
