@@ -1,15 +1,17 @@
 
 Attachment Handlers:
+    FIX
 
-    6.) FIX notehead application
-    7.) Fix Text spanners
-    8.) Add woodwind diagram interface?
+        1.)FIX notehead application
+        2.)FIX Text spanners
+        3.)FIX SlurHandler
 
-    10.) Add optional keyword to attach dynamic to either each leaf in run OR boundaries of run
+    ADD
 
-    12.) piano pedal?
-    13.) add trill handler that replaces chords with trills
-    14.) FIX SlurHandler
+        1.) ADD optional keyword to attach dynamic to either each leaf in run OR boundaries of run
+        2.) ADD piano pedal
+        3.) ADD trill handler that replaces chords with trills
+        4.) ADD woodwind diagram interface?
 
 other:
     1.) Package tools to be imported

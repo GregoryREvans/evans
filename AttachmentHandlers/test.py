@@ -31,7 +31,7 @@ bounds = abjad.mathtools.cumulative_sums([_.duration for _ in time_signatures])
 
 rmaker = abjadext.rmakers.TaleaRhythmMaker(
     talea=abjadext.rmakers.Talea(
-        counts=[2, 1, 1, 1, 3, 1, 3, 3, 1, 2, ],
+        counts=[2, 1, 5, 1, 3, 3, 1, 2, ],
         denominator=16,
         ),
     beam_specifier=abjadext.rmakers.BeamSpecifier(
@@ -61,8 +61,8 @@ beam_handler = BeamHandler(
 
 clef_handler = ClefHandler(
     clef='treble',
-    add_ottavas=True,
-    ottava_shelf=5,
+    # add_ottavas=True,
+    # ottava_shelf=5,
     )
 
 dynamic_handler = DynamicHandler(
@@ -88,7 +88,8 @@ pitch_handler = PitchHandler(
     )
 
 slur_handler = SlurHandler(
-    slurs=True,
+    attach_to='selections',
+    # slurs=True,
     phrasing_slurs=True,
     # tie_repeated_notes=True,
     )
@@ -118,7 +119,7 @@ music_maker = MusicMaker(
     dynamic_handler=dynamic_handler,
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
-    # pitch_handler=pitch_handler,
+    pitch_handler=pitch_handler,
     # text_span_handler=text_span_handler,
     continuous=True,
 )
