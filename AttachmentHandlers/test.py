@@ -88,7 +88,7 @@ pitch_handler = PitchHandler(
     )
 
 slur_handler = SlurHandler(
-    attach_to='selections',
+    attach_to='',
     # slurs=True,
     phrasing_slurs=True,
     # tie_repeated_notes=True,
@@ -120,6 +120,7 @@ music_maker = MusicMaker(
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
+    slur_handler=slur_handler,
     # text_span_handler=text_span_handler,
     continuous=True,
 )
