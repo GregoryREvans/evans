@@ -71,7 +71,7 @@ dynamic_handler = DynamicHandler(
 
 glissando_handler = GlissandoHandler(
     # glissando_style='hide_middle_note_heads',
-    line_style='dashed',
+    # line_style='trill',
     )
 
 notehead_handler = NoteheadHandler(
@@ -105,7 +105,7 @@ music_maker = MusicMaker(
     rmaker=rmaker,
     articulation_handler=articulation_handler,
     beam_handler=beam_handler,
-    # clef_handler=clef_handler,
+    clef_handler=clef_handler,
     dynamic_handler=dynamic_handler,
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
@@ -439,7 +439,7 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
     abjad.attach(next(instruments), leaf1)
     abjad.attach(next(abbreviations), leaf1)
     abjad.attach(next(names), leaf1)
-    abjad.attach(next(clefs), leaf1)
+    # abjad.attach(next(clefs), leaf1)
 
 for staff in abjad.select(score['Staff Group']).components(abjad.Staff)[0]:
     leaf1 = abjad.select(staff).leaves()[0]

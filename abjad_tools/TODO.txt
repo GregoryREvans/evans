@@ -2,20 +2,21 @@ MusicMaker:
     1.) Fix rhythm staff when pitches are not declared.
 
 AttachmentHandler:
-    1.) Add Glissando functionality with straight or wavy lines with some formatting options
-    2.) Add a Jete function that uses glissando with dashed or dotted line with some formatting options
+
     3.) Fix Clef declaration (MAYBE a list of clefs associated with register based on shelf)
     4.) Add optional ottava mark with shelf keyword
-    5.) Add beaming_algorithm in order to beam runs by gesture region rather than across entire score?
-    6.) Add notehead alterations?
-    7.) For Text spanners add optional keyword to either attach markup to each leaf in run OR boundaries of run
+
+    6.) Add notehead alterations that aren't currently present and rename
+    7.) Fix Text spanners
     8.) Add woodwind diagram interface?
     9.) Add slur/tie interface?
-    10.) Add optional keyword to attach dynamic to either each leaf in run OR boundaries of run (MAYBE optional attachment points scaled by modulo of length of run)
+    10.) Add optional keyword to attach dynamic to either each leaf in run OR boundaries of run
 
-beaming_algorithm:
-    1.) Put in AttachmentHandler?
-    2.) FIX algorithm once and for all
+    11.) encapsulate glissando and rename
+
+    12.) piano pedal?
+
+    13.) add trill handler that replaces chords with trills
 
 other:
     1.) Package tools to be imported

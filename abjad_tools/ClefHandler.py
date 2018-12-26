@@ -16,3 +16,4 @@ class ClefHandler:
             leaves = abjad.select(run).leaves(pitched=True)
             if self.clef != None:
                 abjad.attach(abjad.Clef(self.clef), leaves[0]) #doesn't seem to always work
+        return selections
