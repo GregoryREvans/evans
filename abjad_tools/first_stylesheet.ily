@@ -2,19 +2,19 @@
 
 \version "2.19.82"
 \language "english"
-#(set-default-paper-size "11x17portrait")
-#(set-global-staff-size 13)
+#(set-default-paper-size "11x17landscape")
+#(set-global-staff-size 15)
 \include "ekmel.ily"
 \ekmelicStyle evans
 
 \header {
 	tagline = ##f
 	breakbefore = ##t
-	dedication = \markup \override #'(font-name . "Didot") \fontsize #3.5 \center-column {"t  o     t  h  e     F  r  o  s  t     S  a  x  o  p  h  o  n  e    E  n  s  e  m  b  l  e"}
-	title =  \markup \override #'(font-name . "Didot") \fontsize #15 \bold\center-column {"GUERRERO" }
-	subtitle = \markup \override #'(font-name . "Didot") {" "}
-	subsubtitle = \markup \override #'(font-name . "Didot") \fontsize #6 \center-column {"f o r  n i n e t e e n  s a x o p h o n e s"}
-	arranger = \markup \override #'(font-name . "Didot") \fontsize #2.3 {"Gregory Rowland Evans"}
+	dedication = \markup \override #'(font-name . "Didot") \fontsize #3.5 \center-column {"Dedication"}
+	title =  \markup \override #'(font-name . "Didot") \fontsize #15 \bold\center-column {"TITLE" }
+	subtitle = \markup \override #'(font-name . "Didot") {"subtitle"}
+	subsubtitle = \markup \override #'(font-name . "Didot") \fontsize #6 \center-column {"subsubtitle"}
+	arranger = \markup \override #'(font-name . "Didot") \fontsize #2.3 {"Composer"}
 }
 
 \layout {

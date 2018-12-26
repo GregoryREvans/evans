@@ -12,7 +12,7 @@ class ClefHandler:
         return self.add_clef(selections)
 
     def add_clef(self, selections):
-        runs = abjad.select(selections).runs()
-        ties = abjad.select(runs).logical_ties(pitched=True)
-        if self.clef != None:
-            abjad.attach(abjad.Clef(self.clef), ties[0][0]) #doesn't seem to always work
+        for run in abjad.select(selections).runs():
+            leaves = abjad.select(run).leaves(pitched=True)
+            if self.clef != None:
+                abjad.attach(abjad.Clef(self.clef), leaves[0]) #doesn't seem to always work

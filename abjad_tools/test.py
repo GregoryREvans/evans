@@ -59,7 +59,7 @@ beam_handler = BeamHandler(
     )
 
 clef_handler = ClefHandler(
-    clef='Treble',
+    clef='treble',
     )
 
 dynamic_handler = DynamicHandler(
@@ -71,7 +71,7 @@ dynamic_handler = DynamicHandler(
 
 glissando_handler = GlissandoHandler(
     # glissando_style='hide_middle_note_heads',
-    line_style='jete',
+    line_style='dashed',
     )
 
 notehead_handler = NoteheadHandler(
@@ -85,7 +85,7 @@ pitch_handler = PitchHandler(
     )
 
 text_span_handler = TextSpanHandler(
-    position_list_one=['one', 'two', 'three', ],
+    position_list_one=['0/7', '5/7', '7/7', ],
     position_list_two=['two', 'three', 'one', ],
     position_list_three=['three', 'one', 'two', ],
     start_style_one='solid-line-with-arrow',
@@ -105,12 +105,12 @@ music_maker = MusicMaker(
     rmaker=rmaker,
     articulation_handler=articulation_handler,
     beam_handler=beam_handler,
-    clef_handler=clef_handler,
+    # clef_handler=clef_handler,
     dynamic_handler=dynamic_handler,
     glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
-    text_span_handler=text_span_handler,
+    # text_span_handler=text_span_handler,
     continuous=True,
 )
 
@@ -465,3 +465,4 @@ abjad.SegmentMaker.comment_measure_numbers(score)
 ###################
 
 abjad.show(score_file)
+#http://abjad.mbrsi.org/api/abjad/spanners/TrillSpanner.html?highlight=trill#module-abjad.spanners.TrillSpanner
