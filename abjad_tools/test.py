@@ -75,7 +75,7 @@ glissando_handler = GlissandoHandler(
     )
 
 notehead_handler = NoteheadHandler(
-    notehead_list=['cross', 'harmonic', 'half-harmonic', 'scratch', 'subtone', '',  ],
+    notehead_list=['cross', 'harmonic', 'diamond', 'triangle', 'slash', '',  ],
     continuous=True,
     )
 

@@ -32,7 +32,7 @@ class NoteheadHandler:
                         string = str(r"""\once \override Staff.NoteHead.style = #'harmonic-mixed""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
-                elif next_style == 'half-harmonic':
+                elif next_style == 'diamond':
                     for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'diamond""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
@@ -42,12 +42,12 @@ class NoteheadHandler:
                         string = str(r"""\once \override Staff.NoteHead.style = #'cross""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
-                elif next_style == 'scratch':
+                elif next_style == 'triangle':
                     for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'triangle""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
                         abjad.attach(style, leaf)
-                elif next_style == 'subtone':
+                elif next_style == 'slash':
                     for leaf in abjad.select(tie).leaves():
                         string = str(r"""\once \override Staff.NoteHead.style = #'slash""")
                         style = abjad.LilyPondLiteral(string, format_slot='before',)
