@@ -60,6 +60,8 @@ beam_handler = BeamHandler(
 
 clef_handler = ClefHandler(
     clef='treble',
+    add_ottavas=True,
+    ottava_shelf=5,
     )
 
 dynamic_handler = DynamicHandler(
