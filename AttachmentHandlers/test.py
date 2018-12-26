@@ -88,10 +88,7 @@ pitch_handler = PitchHandler(
     )
 
 slur_handler = SlurHandler(
-    attach_to='',
-    # slurs=True,
-    phrasing_slurs=True,
-    # tie_repeated_notes=True,
+    slurs='runs',
     )
 
 text_span_handler = TextSpanHandler(

@@ -2,9 +2,8 @@
 Attachment Handlers:
     FIX
 
-        1.)FIX notehead application
+        1.)FIX notehead application to LOGICAL TIES
         2.)FIX Text spanners
-        3.)FIX SlurHandler
 
     ADD
 
