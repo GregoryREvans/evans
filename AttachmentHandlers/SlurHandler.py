@@ -16,7 +16,7 @@ class SlurHandler:
             abjad.slur(selections[:])
         elif self.slurs == 'runs':
             for run in abjad.select(selections).runs():
-                    abjad.slur(run[:])
+                abjad.slur(run[:])
         else:
             pass
         return selections
