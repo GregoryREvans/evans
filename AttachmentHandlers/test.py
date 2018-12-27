@@ -6,7 +6,6 @@ import time
 import abjadext.rmakers
 from MusicMaker import MusicMaker
 from ArticulationHandler import ArticulationHandler
-from BeamHandler import BeamHandler
 from ClefHandler import ClefHandler
 from DynamicHandler import DynamicHandler
 from GlissandoHandler import GlissandoHandler
@@ -54,8 +53,6 @@ articulation_handler = ArticulationHandler(
     articulation_list=['tenuto', 'staccato', 'portato', ],
     continuous=True,
     )
-
-beam_handler = BeamHandler()
 
 clef_handler = ClefHandler(
     clef='treble',
@@ -108,14 +105,13 @@ text_span_handler = TextSpanHandler(
 
 music_maker = MusicMaker(
     rmaker=rmaker,
-    articulation_handler=articulation_handler,
-    beam_handler=beam_handler,
+    # articulation_handler=articulation_handler,
     clef_handler=clef_handler,
-    dynamic_handler=dynamic_handler,
-    glissando_handler=glissando_handler,
+    # dynamic_handler=dynamic_handler,
+    # glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
-    slur_handler=slur_handler,
+    # slur_handler=slur_handler,
     text_span_handler=text_span_handler,
     continuous=True,
 )
@@ -388,6 +384,15 @@ for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
             )
         abjad.attach(start_command, selection[0])
         abjad.attach(stop_command, selection[-1])
+
+print('Beaming runs ...')
+for voice in abjad.select(score['Staff Group']).components(abjad.Voice):
+    for run in abjad.select(voice).runs():
+        specifier = abjadext.rmakers.BeamSpecifier(
+            beam_each_division=False,
+            )
+        specifier(run)
+    abjad.beam(voice[:], beam_lone_notes=False, beam_rests=False,)
 
 print('Stopping Hairpins and Text Spans...')
 

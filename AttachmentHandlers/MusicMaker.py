@@ -1,7 +1,6 @@
 import abjad
 from GlissandoHandler import GlissandoHandler
 from NoteheadHandler import NoteheadHandler
-from BeamHandler import BeamHandler
 from PitchHandler import PitchHandler
 from ArticulationHandler import ArticulationHandler
 from DynamicHandler import DynamicHandler
@@ -15,7 +14,6 @@ class MusicMaker:
         rmaker,
         glissando_handler=None,
         notehead_handler=None,
-        beam_handler=None,
         pitch_handler=None,
         articulation_handler=None,
         dynamic_handler=None,
@@ -27,7 +25,6 @@ class MusicMaker:
     ):
         self.glissando_handler = glissando_handler
         self.notehead_handler = notehead_handler
-        self.beam_handler = beam_handler
         self.pitch_handler = pitch_handler
         self.articulation_handler = articulation_handler
         self.dynamic_handler = dynamic_handler
@@ -76,8 +73,6 @@ class MusicMaker:
             selections = self.glissando_handler(selections)
         if self.notehead_handler != None:
             selections = self.notehead_handler(selections)
-        if self.beam_handler != None:
-            selections = self.beam_handler(selections)
         if self.articulation_handler != None:
             selections = self.articulation_handler(selections)
         if self.dynamic_handler != None:
