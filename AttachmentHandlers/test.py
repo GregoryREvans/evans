@@ -55,9 +55,7 @@ articulation_handler = ArticulationHandler(
     continuous=True,
     )
 
-beam_handler = BeamHandler(
-    style='rests',
-    )
+beam_handler = BeamHandler()
 
 clef_handler = ClefHandler(
     clef='treble',

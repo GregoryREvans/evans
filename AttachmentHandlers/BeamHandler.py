@@ -13,13 +13,5 @@ class BeamHandler:
         return self.add_beams(selections)
 
     def add_beams(self, selections):
-        if self.style != None:
-            runs = abjad.select(selections).runs()
-            for run in runs:
-                specifier = abjadext.rmakers.BeamSpecifier(beam_each_division=False,)
-                specifier(run)
-                if self.style == 'rests':
-                    abjad.beam(selections[:], beam_lone_notes=False, beam_rests=True,)
-                else:
-                    abjad.beam(selections[:], beam_lone_notes=False, beam_rests=False,)
+        abjad.beam(selections[:], beam_lone_notes=False, beam_rests=False,)
         return selections
