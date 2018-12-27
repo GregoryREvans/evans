@@ -2,15 +2,13 @@
 Attachment Handlers:
     FIX
 
-        1.)FIX notehead application to LOGICAL TIES
-        2.)FIX Text spanners
+        1.)FIX Text spanners
 
     ADD
 
-        1.) ADD optional keyword to attach dynamic to either each leaf in run OR boundaries of run
-        2.) ADD piano pedal
-        3.) ADD trill handler that replaces chords with trills
-        4.) ADD woodwind diagram interface?
+        1.) ADD piano pedal
+        2.) ADD trill handler that replaces chords with trills
+        3.) ADD woodwind diagram interface?
 
 other:
     1.) Package tools to be imported
