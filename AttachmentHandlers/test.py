@@ -13,6 +13,7 @@ from NoteheadHandler import NoteheadHandler
 from PitchHandler import PitchHandler
 from SlurHandler import SlurHandler
 from TextSpanHandler import TextSpanHandler
+from TrillHandler import TrillHandler
 
 print('Interpreting file ...')
 
@@ -101,6 +102,8 @@ text_span_handler = TextSpanHandler(
     continuous=True,
     )
 
+trill_handler = TrillHandler()
+
 # Initialize two MusicMakers with the rhythm-makers.
 
 music_maker = MusicMaker(
@@ -112,7 +115,8 @@ music_maker = MusicMaker(
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
     # slur_handler=slur_handler,
-    text_span_handler=text_span_handler,
+    # text_span_handler=text_span_handler,
+    trill_handler=trill_handler,
     continuous=True,
 )
 
