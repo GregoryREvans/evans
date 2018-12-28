@@ -26,6 +26,7 @@ class TrillHandler:
         for tie in logical_ties:
             if isinstance(tie[0], abjad.Chord):
                 pitch = abjad.inspect(tie).logical_tie()
+                print(pitch)
                 for leaf in tie:
                     pitches.append(pitch[0])
                     trill_notes.append(pitch[-1])
@@ -46,8 +47,7 @@ class TrillHandler:
         pitches, trill_notes, durations, old_chords = self._collect_pitches_durations_leaves(old_chords)
         new_trills = [leaf for leaf in leaf_maker(pitches, durations)]
         for new_trill, trill_note in zip(new_trills, trill_notes):
-            trill = abjad.TrillSpanner(pitch=abjad.NamedPitch(trill_note))
-            abjad.attach(trill, new_trill)
+            abjad.trill_spanner(new_trill, pitch=trill_note)
         for old_chord, new_trill in zip(old_chord, new_trill):
             indicators = abjad.inspect(old_chord).indicators()
             for indicator in indicators:
