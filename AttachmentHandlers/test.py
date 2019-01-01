@@ -115,8 +115,8 @@ music_maker = MusicMaker(
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
     # slur_handler=slur_handler,
-    # text_span_handler=text_span_handler,
-    trill_handler=trill_handler,
+    text_span_handler=text_span_handler,
+    # trill_handler=trill_handler,
     continuous=True,
 )
 
