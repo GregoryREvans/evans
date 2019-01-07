@@ -1,16 +1,6 @@
 import abjad
 import abjadext.rmakers
 
-
-"""There are a *small* handful of issues with this code.
-
-
-
-
-
-You also confuse when to use your variable "pitch" vs "pitches"""
-
-
 rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
     talea=abjadext.rmakers.Talea(
         counts=[1, 2, -1, 1, 4, 1, 1],
@@ -43,8 +33,8 @@ logical_ties = abjad.iterate(selections).logical_ties(pitched=True)
     *This is now asking your pitch for objects within itself because you misnamed your variables*
     So if we change the variable names to the correct names, we still get the same traceback error as before!
     Why is this?
-    Is this problem is not simply fixed by switching the variable names to more useable identifiers?
-    The *new* problem lies in your query for length. You are looking at each item in your list and sking its length.
+    Is this problem not simply fixed by switching the variable names to more useable identifiers?
+    The *new* problem lies in your query for length. You are looking at each item in your list and asking its length.
     What is in that list? Integers and other lists.
     A list has a length, but an integer does not. An integer is inherently a single object,
     so it does not posses a length attribute, because this would typically be redundant.
