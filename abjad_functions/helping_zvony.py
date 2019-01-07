@@ -3,7 +3,7 @@ import abjadext.rmakers
 
 '''
     Here we have defined our entire score stucture.
-    We have names everything too! We can refer to things by using a syntax like this:
+    We have named everything too! We can refer to things by using a syntax like this:
         score['name']
     We could call for Staff 1 or Voice 1 or Global Context,
     but its important to remember that you are referring to the name and *not* the lilypond_type.
