@@ -44,12 +44,10 @@ rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
     but our new list is
         [abjad.TimeSignature(3, 8), abjad.TimeSignature(4, 8), abjad.TimeSignature(3, 8), abjad.TimeSignature(4, 8), ]
 '''
-
+pairs = [(3, 8), (4, 8), (3, 8), (4, 8)]
 time_signatures = [
-    abjad.TimeSignature(pair) for pair in [
-        (3, 8), (4, 8), (3, 8), (4, 8)
-        ]
-]
+    abjad.TimeSignature(pair) for pair in pairs
+    ]
 
 '''
     Now we create the skips like I described in the last file.
@@ -57,8 +55,9 @@ time_signatures = [
     then we append them to our Global Context with the sytax we saw at the top of this file.
 '''
 
-for time_signature in time_signatures:
-    skip = abjad.Skip(1, multiplier=(time_signature))
+for time_signature, pair in zip(time_signatures, pairs):
+    skip = abjad.Skip()
+    skip.written_duration = pair
     abjad.attach(time_signature, skip)
     score['Global Context'].append(skip)
 
@@ -93,6 +92,10 @@ for voice in abjad.select(score['Staff 1']).components(abjad.Voice):
                 old_leaf.written_pitch = pitch
             elif isinstance(pitch, list):
                 new_leaf = abjad.Chord(pitch, old_leaf.written_duration)
+                indicators = abjad.inspect(old_leaf).indicators()
+                if indicators != None:
+                    for indicator in indicators:
+                        abjad.attach(indicator, new_leaf)
                 abjad.mutate(old_leaf).replace(new_leaf)
 
 '''
