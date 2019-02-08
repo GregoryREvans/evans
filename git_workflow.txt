@@ -29,3 +29,10 @@ going back to past repositories:
         explore to heart's desire
     optional: fix errors
     git checkout master
+
+merging vs rebasing branch from master:
+    git merge: preserves history but makes history more verbose
+    git rebase: bases new branch on the most recent update of master
+    source: https://www.atlassian.com/git/tutorials/merging-vs-rebasing
+    give preference to the following:
+        git checkout greg/dev -> git merge master

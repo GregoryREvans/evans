@@ -52,6 +52,7 @@ time_signatures = [
 '''
     Now we create the skips like I described in the last file.
     We change the length of the skips based on the lengths of the time signatures,
+    attach a time signture to the skip,
     then we append them to our Global Context with the sytax we saw at the top of this file.
 '''
 
@@ -119,7 +120,7 @@ for voice in abjad.select(score['Staff 1']).components(abjad.Voice):
     contains a definitions of a *basic* global context which gives us our floating time signatures.
 '''
 
-file = abjad.LilyPondFile.new(
+score_file = abjad.LilyPondFile.new(
     score,
     includes=[
         '/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily',
@@ -139,4 +140,4 @@ file = abjad.LilyPondFile.new(
     Happy composing.
 '''
 
-abjad.show(file)
+abjad.show(score_file)

@@ -1,13 +1,13 @@
 import abjad
-from GlissandoHandler import GlissandoHandler
-from NoteheadHandler import NoteheadHandler
-from PitchHandler import PitchHandler
-from ArticulationHandler import ArticulationHandler
-from DynamicHandler import DynamicHandler
-from TextSpanHandler import TextSpanHandler
-from ClefHandler import ClefHandler
-from SlurHandler import SlurHandler
-from TrillHandler import TrillHandler
+from evans.AttachmentHandlers.GlissandoHandler import GlissandoHandler
+from evans.AttachmentHandlers.NoteheadHandler import NoteheadHandler
+from evans.AttachmentHandlers.PitchHandler import PitchHandler
+from evans.AttachmentHandlers.ArticulationHandler import ArticulationHandler
+from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
+from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
+from evans.AttachmentHandlers.ClefHandler import ClefHandler
+from evans.AttachmentHandlers.SlurHandler import SlurHandler
+from evans.AttachmentHandlers.TrillHandler import TrillHandler
 
 class MusicMaker:
     def __init__(

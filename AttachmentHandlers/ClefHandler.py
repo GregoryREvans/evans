@@ -17,9 +17,9 @@ class ClefHandler:
 
     def add_clef(self, selections):
         for run in abjad.select(selections).runs():
-            leaves = abjad.select(run).leaves(pitched=True)
+            ties = abjad.select(run).logical_ties(pitched=True)
             if self.clef != None:
-                abjad.attach(abjad.Clef(self.clef), leaves[0])
+                abjad.attach(abjad.Clef(self.clef), ties[0][0])
         if self.add_ottavas == True:
             self._add_ottavas(selections)
         return selections
@@ -28,79 +28,79 @@ class ClefHandler:
         if self.clef == 'treble':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties():
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 36
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         if self.clef == 'alto':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 13
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         if self.clef == 'varC':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 13
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         if self.clef == 'tenor':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 10
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         if self.clef == 'tenorvarC':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 10
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         if self.clef == 'bass':
             if self.ottava_shelf != None:
                 shelf = self.ottava_shelf
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
             else:
                 shelf = 3
-                for note in abjad.select(selections).leaves():
-                    for pitch in abjad.inspect(note).pitches():
+                for tie in abjad.select(selections).logical_ties(pitched=True):
+                    for pitch in abjad.inspect(tie[0]).pitches():
                         if pitch > shelf:
-                            abjad.ottava(note)
+                            abjad.ottava(tie)
         return(selections)

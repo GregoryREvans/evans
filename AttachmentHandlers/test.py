@@ -13,7 +13,6 @@ from NoteheadHandler import NoteheadHandler
 from PitchHandler import PitchHandler
 from SlurHandler import SlurHandler
 from TextSpanHandler import TextSpanHandler
-from TrillHandler import TrillHandler
 
 print('Interpreting file ...')
 
@@ -56,8 +55,8 @@ articulation_handler = ArticulationHandler(
     )
 
 clef_handler = ClefHandler(
-    clef='treble',
-    # add_ottavas=True,
+    clef='bass',
+    add_ottavas=True,
     # ottava_shelf=5,
     )
 
@@ -70,7 +69,7 @@ dynamic_handler = DynamicHandler(
 
 glissando_handler = GlissandoHandler(
     # glissando_style='hide_middle_note_heads',
-    line_style='dashed-line',
+    line_style='dotted-line',
     )
 
 notehead_handler = NoteheadHandler(
@@ -102,21 +101,18 @@ text_span_handler = TextSpanHandler(
     continuous=True,
     )
 
-trill_handler = TrillHandler()
-
 # Initialize two MusicMakers with the rhythm-makers.
 
 music_maker = MusicMaker(
     rmaker=rmaker,
-    # articulation_handler=articulation_handler,
+    articulation_handler=articulation_handler,
     clef_handler=clef_handler,
-    # dynamic_handler=dynamic_handler,
-    # glissando_handler=glissando_handler,
+    dynamic_handler=dynamic_handler,
+    glissando_handler=glissando_handler,
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
-    # slur_handler=slur_handler,
-    text_span_handler=text_span_handler,
-    # trill_handler=trill_handler,
+    slur_handler=slur_handler,
+    # text_span_handler=text_span_handler,
     continuous=True,
 )
 
@@ -362,13 +358,13 @@ for voice_name, timespan_list in all_timespan_lists.items():
         voice = score[voice_name]
         voice.append(container)
 
-print('Splitting and rewriting ...')
-
-# split and rewite meters
-for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
-    for i , shard in enumerate(abjad.mutate(voice[:]).split(time_signatures)):
-        time_signature = time_signatures[i]
-        abjad.mutate(shard).rewrite_meter(time_signature)
+# print('Splitting and rewriting ...')
+#
+# # split and rewite meters
+# for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
+#     for i , shard in enumerate(abjad.mutate(voice[:]).split(time_signatures)):
+#         time_signature = time_signatures[i]
+#         abjad.mutate(shard).rewrite_meter(time_signature)
 
 print('Beautifying score ...')
 # cutaway score
@@ -406,6 +402,9 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
         next_leaf = abjad.inspect(last_leaf).leaf(1)
         # abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne',), next_leaf)
         abjad.attach(abjad.StopHairpin(), next_leaf)
+
+# for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
+#     text_span_handler(voice)
 
 #attach instruments and clefs
 
