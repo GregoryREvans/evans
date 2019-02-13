@@ -1,6 +1,7 @@
 import abjad
 from abjadext import rmakers
 import timespan_functions
+import itertools
 from evans.AttachmentHandlers.MusicMaker import MusicMaker
 from evans.AttachmentHandlers.PitchHandler import PitchHandler
 from evans.AttachmentHandlers.ArticulationHandler import ArticulationHandler
@@ -10,7 +11,7 @@ from TimespanMaker_for_greg import TimespanMaker
 
 rmaker_one = rmakers.TaleaRhythmMaker(
     talea=rmakers.Talea(
-        counts=[13 ],
+        counts=[7 ],
         denominator=8,
         ),
     beam_specifier=rmakers.BeamSpecifier(
@@ -112,56 +113,6 @@ rmodel_three = MusicMaker(
     clef_handler=ClefHandler(clef='treble', add_ottavas=True),
 )
 
-val_rmodel_one = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[0, -1, -2, -3, -4], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_one,
-    articulation_handler=articulation_handler_one,
-    clef_handler=ClefHandler(clef='varC', add_ottavas=True),
-)
-val_rmodel_two = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[-5, -4, -3, -2, -1], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_one,
-    articulation_handler=articulation_handler_one,
-    clef_handler=ClefHandler(clef='varC', add_ottavas=True),
-)
-val_rmodel_three = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[-5, -6, -7, -8, -9], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_two,
-    articulation_handler=articulation_handler_two,
-    clef_handler=ClefHandler(clef='varC', add_ottavas=True),
-)
-
-vc_rmodel_one = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[-12, -13, -14, -15, -16], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_one,
-    articulation_handler=articulation_handler_one,
-    clef_handler=ClefHandler(clef='bass', add_ottavas=True),
-)
-vc_rmodel_two = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[-1, -2, -3, -4, -5], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_one,
-    articulation_handler=articulation_handler_one,
-    clef_handler=ClefHandler(clef='bass', add_ottavas=True),
-)
-vc_rmodel_three = MusicMaker(
-    rmaker=rmaker_one,
-    pitch_handler=PitchHandler(pitch_list=[-10, -9, -8, -7, -6], continuous=True),
-    continuous=True,
-    dynamic_handler=attachment_handler_two,
-    articulation_handler=articulation_handler_two,
-    clef_handler=ClefHandler(clef='bass', add_ottavas=True),
-)
-
 silence_maker = rmakers.NoteRhythmMaker(
     division_masks=[
         rmakers.SilenceMask(
@@ -172,21 +123,15 @@ silence_maker = rmakers.NoteRhythmMaker(
 
 timespan_maker = TimespanMaker(
     denominator=8,
-    total_duration=abjad.Duration(30, 2),
+    total_duration=abjad.Duration(15, 2),
 )
-counts = [3, 5, -3, 4, 7, -1, 6, 1, -4, ]
+counts = [3, 5, 3, 4, 7, ]
 
 timespan_list = timespan_maker(counts, max_duration=7)
-timespan_list_1 = timespan_maker(counts, max_duration=5, translation=3, rotation=3)
-timespan_list_2 = timespan_maker(counts, max_duration=4)
-timespan_list_3 = timespan_maker(counts, max_duration=6, translation=5, rotation=2)
-initial_list = [timespan_list, timespan_list_1, timespan_list_2, timespan_list_3]
+initial_list = [timespan_list, ]
 
-rmakers_cycle_1 = timespan_functions.cyc([rmodel_one, rmodel_one, rmodel_one, rmodel_two, rmodel_two, rmodel_two, rmodel_three, rmodel_three, rmodel_three, ])
-rmakers_cycle_2 = timespan_functions.cyc([rmodel_one, rmodel_one, rmodel_one, rmodel_two, rmodel_two, rmodel_two, rmodel_three, rmodel_three, rmodel_three, ])
-rmakers_cycle_3 = timespan_functions.cyc([val_rmodel_one, val_rmodel_one, val_rmodel_one, val_rmodel_two, val_rmodel_two, val_rmodel_two, val_rmodel_three, val_rmodel_three, val_rmodel_three, ])
-rmakers_cycle_4 = timespan_functions.cyc([vc_rmodel_one, vc_rmodel_one, vc_rmodel_one, vc_rmodel_two, vc_rmodel_two, vc_rmodel_two, vc_rmodel_three, vc_rmodel_three, vc_rmodel_three, ])
-rhythm_models = [rmakers_cycle_1, rmakers_cycle_2, rmakers_cycle_3, rmakers_cycle_4, ]
+rmakers_cycle_1 = timespan_functions.cyc([rmodel_one, ])
+rhythm_models = [rmakers_cycle_1,]
 # Timespan list
 master_list = []
 for i, timespan_list, cycle in zip(enumerate(initial_list), initial_list, rhythm_models):
@@ -234,14 +179,33 @@ score = abjad.Score([
 
 
 # Timespan -> Rhythm
+# for voice_name, timespan_list in all_timespans.items():
+#     for timespan in timespan_list:
+#         container = abjad.Container([])
+#         durations = [timespan.duration]
+#         selections = timespan.annotation.rhythm_maker(durations)
+#         container.extend(selections)
+#         specifier = rmakers.BeamSpecifier(beam_each_division=True, beam_rests=True)
+#         specifier(abjad.select(container))
+#         voice = score[voice_name]
+#         voice.append(container)
+
+def make_container(music_maker, durations):
+    selections = music_maker(durations)
+    container = abjad.Container([])
+    container.extend(selections)
+    return container
+
+def key_function(timespan):
+    return timespan.annotation.rhythm_maker or silence_maker
+
 for voice_name, timespan_list in all_timespans.items():
-    for timespan in timespan_list:
-        container = abjad.Container([])
-        durations = [timespan.duration]
-        selections = timespan.annotation.rhythm_maker(durations)
-        container.extend(selections)
-        specifier = rmakers.BeamSpecifier(beam_each_division=True, beam_rests=True)
-        specifier(abjad.select(container))
+    for music_maker, grouper in itertools.groupby(
+        timespan_list,
+        key=key_function,
+    ):
+        durations = [timespan.duration for timespan in grouper]
+        container = make_container(music_maker, durations)
         voice = score[voice_name]
         voice.append(container)
 

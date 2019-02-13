@@ -7,7 +7,7 @@ from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
 from evans.AttachmentHandlers.ClefHandler import ClefHandler
 from evans.AttachmentHandlers.SlurHandler import SlurHandler
-from evans.AttachmentHandlers.TrillHandler import TrillHandler
+# from evans.AttachmentHandlers.TrillHandler import TrillHandler
 
 class MusicMaker:
     def __init__(
@@ -21,7 +21,7 @@ class MusicMaker:
         text_span_handler=None,
         clef_handler=None,
         slur_handler=None,
-        trill_handler=None,
+        # trill_handler=None,
         continuous=False,
         state=None,
     ):
@@ -33,7 +33,7 @@ class MusicMaker:
         self.text_span_handler = text_span_handler
         self.clef_handler = clef_handler
         self.slur_handler = slur_handler
-        self.trill_handler = trill_handler
+        # self.trill_handler = trill_handler
         self.continuous = continuous
         self.rmaker = rmaker
         self.state = self.rmaker.state
@@ -84,6 +84,6 @@ class MusicMaker:
             selections = self.text_span_handler(selections)
         if self.slur_handler != None:
             selections = self.slur_handler(selections)
-        if self.trill_handler != None:
-            selections = self.trill_handler(selections)
+        # if self.trill_handler != None:
+        #     selections = self.trill_handler(selections)
         return selections
