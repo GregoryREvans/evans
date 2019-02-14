@@ -177,7 +177,6 @@ score = abjad.Score([
     )
 ])
 
-
 # Timespan -> Rhythm
 # for voice_name, timespan_list in all_timespans.items():
 #     for timespan in timespan_list:
@@ -190,14 +189,14 @@ score = abjad.Score([
 #         voice = score[voice_name]
 #         voice.append(container)
 
+def key_function(timespan):
+    return timespan.annotation.rhythm_maker or silence_maker
+
 def make_container(music_maker, durations):
     selections = music_maker(durations)
     container = abjad.Container([])
     container.extend(selections)
     return container
-
-def key_function(timespan):
-    return timespan.annotation.rhythm_maker or silence_maker
 
 for voice_name, timespan_list in all_timespans.items():
     for music_maker, grouper in itertools.groupby(
