@@ -165,37 +165,20 @@ class RTMMaker_4(object):
         return selections
 
 
-# rtm = [
-#     '(1 (1 (4 (1 -1 1 -1 1))))',
-#     '(1 (1 (1 (1 1 1))))',
-#     '(1 (1 1 1 (2 (1 1 1)) 1 1))',
-#     '(1 (1 1 1 1 1))',
-#     '(1 (2 (1 (1 1 1)) 1 3))'
-# ]
 
-# from evans.abjad_functions.rtm.rotate_rtm import *
-#
-# nested_list = [1, [[1, [[1, [1, 1,],], 1,],], [2, [1, 1, 1,],], [1, [1, 1, 1, 1, 1,]]]]
-# rtm = nested_list_to_rtm(nested_list)
-# flat = flatten(nested_list)
-# #rtm = '(1 ((1 ((1 (1 1)) 1)) (2 (1 1 1)) (1 (1 1 1 1 1))))'
-# rtm = '(1 ((1 ((4 (2 1)) 1)) (2 (2 2 1)) (1 (1 3 1))))'
-# rotations = []
-# for x in range(len(flatten(nested_list))):
-#     new_rtm = rotate_tree(rtm, x)
-#     rotations.append(new_rtm)
-# # print (rotations)
-# maker = RTMMaker_4(rtm=rotations, continuous=True)
-# divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (2, 4, 3, 4, 5, 3, 4, 2, 3, 5, 4, 3, 4, 2, 5)]
-# # divisions = [abjad.Duration(4, 4)]
-# #divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (4, 4, 4, 4, 4, 4, 4, 4, 4, 4)]
-# # selections_1 = maker(divisions)
-# # selections_2 = maker(divisions, previous_state=maker.state)
-# # selections_2 = maker(divisions, previous_state=maker.state)
-# selections = maker(divisions)
-# lilyfile = abjad.LilyPondFile.rhythm(
-#     selections,
-#     divisions
-# )
-#
-# abjad.show(lilyfile)
+from Scores.onkos.Components.rtm_lists import final_rtm_list
+
+maker = RTMMaker_4(rtm=final_rtm_list, continuous=True)
+divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (2, 4, 3, 4, 5, 3, 4, 2, 3, 5, 4, 3, 4, 2, 5)]
+# divisions = [abjad.Duration(4, 4)]
+#divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (4, 4, 4, 4, 4, 4, 4, 4, 4, 4)]
+# selections_1 = maker(divisions)
+# selections_2 = maker(divisions, previous_state=maker.state)
+# selections_2 = maker(divisions, previous_state=maker.state)
+selections = maker(divisions)
+lilyfile = abjad.LilyPondFile.rhythm(
+    selections,
+    divisions
+)
+
+abjad.show(lilyfile)

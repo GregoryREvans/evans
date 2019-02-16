@@ -1,3 +1,5 @@
+from moscotta.mtools.rtmrewrite import funnel_tree_to_x
+
 def flatten(lst):
     out = []
     for i in lst:
@@ -33,6 +35,19 @@ def rotate_tree(rtm_string, n=1):
             continue
         new_middle += item
     return opening + new_middle + closing
+
+def funnel_inner_tree_to_x(rtm_string, x=1):
+    opening = rtm_string[:3]
+    middle = rtm_string[3:-1]
+    closing = rtm_string[-1]
+    funnel_list = []
+    for _ in funnel_tree_to_x(rtm=middle, x=x):
+        funnel_list.append(opening + _ + closing)
+    return funnel_list
+
+# rtm = '(1 (3 (2 (1 2 1 1)) 3))'
+# for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
+#     print(x)
 
 # nested_list = [1, 1, [1, [1, 1]], 1]
 # rtm = nested_list_to_rtm(nested_list)
