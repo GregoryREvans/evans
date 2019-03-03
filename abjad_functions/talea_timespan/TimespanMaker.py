@@ -93,5 +93,9 @@ class TimespanMaker(object):
 # timespan_list_3 = timespan_maker(
 #     counts, max_duration=3, translation=5, rotation=2)
 #
-# for tspan_list in [timespan_list, timespan_list_1, timespan_list_2, timespan_list_3]:
-#     abjad.show(tspan_list, scale=0.65)
+# # for tspan_list in [timespan_list, timespan_list_1, timespan_list_2, timespan_list_3]:
+# #     abjad.show(tspan_list, scale=0.65)
+# timespan_list.extend(timespan_list_1)
+# timespan_list.extend(timespan_list_2)
+# timespan_list.extend(timespan_list_3)
+# abjad.show(timespan_list, scale=0.5)

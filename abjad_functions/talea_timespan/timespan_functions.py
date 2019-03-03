@@ -74,6 +74,9 @@ class TimespanSpecifier:
         self.articulation_handler = articulation_handler
         self.dynamics_handler = dynamics_handler
 
+        def __repr__(self):
+            return f'TimespanSpecifier(voice_name={self.voice_name})'
+
 
 def make_split_list(timespan_list, offsets):
     """Splits Timespans within TimespanList by offsets

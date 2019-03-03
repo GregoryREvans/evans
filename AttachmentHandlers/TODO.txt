@@ -9,6 +9,7 @@ Attachment Handlers:
         1.) ADD piano pedal
         2.) ADD trill handler that replaces chords with trills
         3.) ADD woodwind diagram interface?
+        4.) ADD GraceHandler
 
 other:
     1.) Package tools to be imported
@@ -19,4 +20,3 @@ other:
     6.) work with 12 tone row object
     7.) Encapsulate timespan dictionary creation
     8.) Simplify score structure (base it only on timespans lists in file)
-    9.) Write tool to split timespans by measure boundaries!

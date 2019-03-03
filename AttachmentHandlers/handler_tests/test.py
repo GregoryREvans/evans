@@ -4,15 +4,15 @@ import os
 import pathlib
 import time
 import abjadext.rmakers
-from MusicMaker import MusicMaker
-from ArticulationHandler import ArticulationHandler
-from ClefHandler import ClefHandler
-from DynamicHandler import DynamicHandler
-from GlissandoHandler import GlissandoHandler
-from NoteheadHandler import NoteheadHandler
-from PitchHandler import PitchHandler
-from SlurHandler import SlurHandler
-from TextSpanHandler import TextSpanHandler
+from evans.AttachmentHandlers.MusicMaker import MusicMaker
+from evans.AttachmentHandlers.ArticulationHandler import ArticulationHandler
+from evans.AttachmentHandlers.ClefHandler import ClefHandler
+from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
+from evans.AttachmentHandlers.GlissandoHandler import GlissandoHandler
+from evans.AttachmentHandlers.NoteheadHandler import NoteheadHandler
+from evans.AttachmentHandlers.PitchHandler import PitchHandler
+from evans.AttachmentHandlers.SlurHandler import SlurHandler
+from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
 
 print('Interpreting file ...')
 
@@ -87,17 +87,18 @@ slur_handler = SlurHandler(
     )
 
 text_span_handler = TextSpanHandler(
-    position_list_one=['0/7', '5/7', '7/7', ],
-    position_list_two=['two', 'three', 'one', ],
-    position_list_three=['three', 'one', 'two', ],
-    start_style_one='solid-line-with-arrow',
-    start_style_two='dashed-line-with-arrow',
-    stop_style_one='solid-line-with-hook',
-    stop_style_two='dashed-line-with-hook',
-    stop_style_three='solid-line-with-hook',
-    apply_list_one_to='edges',
-    apply_list_two_to='ties',
-    apply_list_three_to='left_only',
+    positions=['st.', 'ord.', 'sp.', 'msp.', 'ord.',],
+    # position_list_one=['0/7', '5/7', '7/7', ],
+    # position_list_two=['two', 'three', 'one', ],
+    # position_list_three=['three', 'one', 'two', ],
+    # start_style_one='solid-line-with-arrow',
+    # start_style_two='dashed-line-with-arrow',
+    # stop_style_one='solid-line-with-hook',
+    # stop_style_two='dashed-line-with-hook',
+    # stop_style_three='solid-line-with-hook',
+    # apply_list_one_to='edges',
+    # apply_list_two_to='ties',
+    # apply_list_three_to='left_only',
     continuous=True,
     )
 
@@ -112,7 +113,7 @@ music_maker = MusicMaker(
     notehead_handler=notehead_handler,
     pitch_handler=pitch_handler,
     slur_handler=slur_handler,
-    # text_span_handler=text_span_handler,
+    text_span_handler=text_span_handler,
     continuous=True,
 )
 
