@@ -30,3 +30,4 @@ class TextSpanHandler:
                 )
             abjad.text_spanner(run[:], start_text_span=span)
             abjad.override(run[0]).text_spanner.staff_padding = 4
+        return selections
