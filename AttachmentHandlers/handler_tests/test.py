@@ -87,7 +87,7 @@ slur_handler = SlurHandler(
     )
 
 text_span_handler = TextSpanHandler(
-    span_one_positions=['st.', 'ord.', 'sp.', 'msp.', 'ord.',],
+    span_one_positions=['8/8', '7/8', '6/8', '5/8', '4/8', '3/8', '2/8', '1/8', ],      #['st.', 'ord.', 'sp.', 'msp.', 'ord.',]
     span_one_style='dashed-line',
     attach_span_one_to='leaves',
     # position_list_one=['0/7', '5/7', '7/7', ],

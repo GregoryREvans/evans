@@ -25,6 +25,9 @@ class TextSpanHandler:
         return self._add_spanners(selections)
 
     def _add_spanners(self, selections):
+        # for run in abjad.select(selections).runs():
+        #     for leaf in abjad.select(run).leaves():
+        #         abjad.attach(abjad.StopTextSpan(), run[0])
         if self.attach_span_one_to != None:
             if self.attach_span_one_to == 'bounds':
                 self._apply_position_and_span_to_bounds(selections)
@@ -50,8 +53,10 @@ class TextSpanHandler:
                 abjad.attach(start_span, run[0])
                 abjad.attach(abjad.StopTextSpan(), run[-1])
                 abjad.attach(stop_span, run[-1])
-            abjad.override(run[0]).text_spanner.staff_padding = 8
-            abjad.override(run[-1]).text_spanner.staff_padding = 8
+            abjad.tweak(start_span).staff_padding = 8
+            abjad.tweak(stop_span).staff_padding = 8
+            # abjad.override(run[0]).text_spanner.staff_padding = 8
+            # abjad.override(run[-1]).text_spanner.staff_padding = 8
         return selections
 
     def _apply_position_and_span_to_leaves(self, selections):
@@ -63,19 +68,45 @@ class TextSpanHandler:
                 continue
             else:
                 for tie in abjad.select(run).logical_ties():
+                    start_text = next(self._cyc_span_one_positions)
+                    if start_text[0].isdigit() is True:
+                        if start_text[-1].isdigit() is True:
+                            start_text = r'\center-align \vcenter \fraction ' + start_text[0] + r' ' + start_text[-1]
+                        else:
+                            start_text = start_text
+                    else:
+                        start_text = start_text
                     start_span = abjad.StartTextSpan(
-                        left_text=abjad.Markup(next(self._cyc_span_one_positions)).upright(),
+                        left_text=abjad.Markup(start_text).upright(),
                         style=self.span_one_style + '-with-arrow',
                         )
                     abjad.text_spanner(tie[:], start_text_span=start_span)
-                    for leaf in abjad.select(tie).leaves():
-                        abjad.override(leaf).text_spanner.staff_padding = 8
+                    # abjad.attach(start_span, tie[0])
+                    # abjad.attach(abjad.StopTextSpan(), tie[-1])
+                    abjad.tweak(start_span).staff_padding = 8
                     if len(tie) > 1:
                         abjad.attach(abjad.StopTextSpan(), tie[0])
                 abjad.detach(start_span, run[-1])
+                stop_text = next(self._cyc_span_one_positions)
+                if stop_text[0].isdigit() is True:
+                    if stop_text[-1].isdigit() is True:
+                        stop_text = r'\center-align \vcenter \fraction ' + stop_text[0] + r' ' + stop_text[-1]
+                    else:
+                        stop_text = stop_text
+                else:
+                    stop_text = stop_text
                 stop_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(next(self._cyc_span_one_positions)).upright(),
+                    left_text=abjad.Markup(stop_text).upright(),
                     style=self.span_one_style + '-with-hook',
                     )
                 abjad.attach(stop_span, run[-1])
+                abjad.tweak(stop_span).staff_padding = 8
         return selections
+
+# \markup {
+#         \center-align
+#             \vcenter
+#                 \fraction
+#                     1
+#                     1
+#         }
