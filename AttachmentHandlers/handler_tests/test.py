@@ -89,7 +89,7 @@ slur_handler = SlurHandler(
 text_span_handler = TextSpanHandler(
     span_one_positions=['st.', 'ord.', 'sp.', 'msp.', 'ord.',],
     span_one_style='dashed-line',
-    attach_span_one_to='bounds',
+    attach_span_one_to='leaves',
     # position_list_one=['0/7', '5/7', '7/7', ],
     # position_list_two=['two', 'three', 'one', ],
     # position_list_three=['three', 'one', 'two', ],
@@ -403,7 +403,7 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
     for run in abjad.select(staff).runs():
         last_leaf = run[-1]
         next_leaf = abjad.inspect(last_leaf).leaf(1)
-        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne',), next_leaf)
+        abjad.attach(abjad.StopTextSpan(), next_leaf)
         abjad.attach(abjad.StopHairpin(), next_leaf)
 
 # for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
