@@ -148,13 +148,20 @@ class TextSpanHandler:
     def _apply_position_and_span_to_left(self, selections, positions, style, span_command, span_padding):
         container = abjad.Container()
         container.extend(selections)
-        first_leaf = abjad.select(container).leaves()[0]
-        start_span = abjad.StartTextSpan(
-            left_text=abjad.Markup(next(positions)).upright(),
-            style=style + '-with-hook',
-            command=r'\startTextSpan'+span_command
+        runs = abjad.select(container).runs()
+        start_strings = [next(positions) for _ in runs]
+        start_indicators = [
+            abjad.StartTextSpan(
+                left_text=abjad.Markup(start_string),
+                style=f'{style}-with-hook',
+                command=r'\startTextSpan'+span_command,
             )
-        abjad.tweak(start_span).staff_padding = span_padding
-        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), first_leaf)
-        abjad.attach(start_span, first_leaf)
+            for start_string in start_strings
+        ]
+        for indicator in start_indicators:
+            abjad.tweak(indicator).staff_padding = span_padding
+        for i, pair in enumerate(zip(runs, start_indicators)):
+            run, start_indicator = pair
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), run[0])
+            abjad.attach(start_indicator, run[0])
         return selections

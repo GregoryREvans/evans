@@ -11,7 +11,7 @@ Attachment Handlers:
         2.) ADD woodwind diagram interface?
         3.) ADD GraceHandler
 
-other:
+Other:
     1.) Package tools to be imported
     2.) Encapsulate random walks
     3.) work with 12 tone row object
