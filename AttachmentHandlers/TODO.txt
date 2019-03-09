@@ -2,21 +2,16 @@
 Attachment Handlers:
     FIX
 
-        1.)FIX Text spanners
+        1.) FIX Text spanners
+        2.) FIX trill handler that replaces chords with trills
 
     ADD
 
         1.) ADD piano pedal
-        2.) ADD trill handler that replaces chords with trills
-        3.) ADD woodwind diagram interface?
-        4.) ADD GraceHandler
+        2.) ADD woodwind diagram interface?
+        3.) ADD GraceHandler
 
 other:
     1.) Package tools to be imported
     2.) Encapsulate random walks
-    3.) Random walk rmaker
-    4.) Markov rmaker
-    5.) Markov pitch tool
-    6.) work with 12 tone row object
-    7.) Encapsulate timespan dictionary creation
-    8.) Simplify score structure (base it only on timespans lists in file)
+    3.) work with 12 tone row object

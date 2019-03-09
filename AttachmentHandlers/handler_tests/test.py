@@ -87,20 +87,18 @@ slur_handler = SlurHandler(
     )
 
 text_span_handler = TextSpanHandler(
-    span_one_positions=['8/8', '7/8', '6/8', '5/8', '4/8', '3/8', '2/8', '1/8', ],      #['st.', 'ord.', 'sp.', 'msp.', 'ord.',]
-    span_one_style='dashed-line',
+    span_one_positions=['8/8', '7/8', '6/8', '5/8', '4/8', '3/8', '2/8', '1/8', ],
+    span_one_style='solid-line',
+    span_one_padding=8,
     attach_span_one_to='leaves',
-    # position_list_one=['0/7', '5/7', '7/7', ],
-    # position_list_two=['two', 'three', 'one', ],
-    # position_list_three=['three', 'one', 'two', ],
-    # start_style_one='solid-line-with-arrow',
-    # start_style_two='dashed-line-with-arrow',
-    # stop_style_one='solid-line-with-hook',
-    # stop_style_two='dashed-line-with-hook',
-    # stop_style_three='solid-line-with-hook',
-    # apply_list_one_to='edges',
-    # apply_list_two_to='ties',
-    # apply_list_three_to='left_only',
+    span_two_positions=['st.', 'ord.', 'sp.', 'msp.', 'ord.',],
+    span_two_style='dashed-line',
+    span_two_padding=10,
+    attach_span_two_to='bounds',
+    span_three_positions=['flautando', 'overpressure', 'normale',],
+    span_three_style='solid-line',
+    span_three_padding=12,
+    attach_span_three_to='left',
     continuous=True,
     )
 
@@ -403,7 +401,9 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
     for run in abjad.select(staff).runs():
         last_leaf = run[-1]
         next_leaf = abjad.inspect(last_leaf).leaf(1)
-        abjad.attach(abjad.StopTextSpan(), next_leaf)
+        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), next_leaf)
+        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), next_leaf)
+        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), next_leaf)
         abjad.attach(abjad.StopHairpin(), next_leaf)
 
 # for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):

@@ -5,7 +5,16 @@ class TextSpanHandler:
         self,
         span_one_positions=None,
         span_one_style=None,
+        span_one_padding=None,
         attach_span_one_to=None,
+        span_two_positions=None,
+        span_two_style=None,
+        span_two_padding=None,
+        attach_span_two_to=None,
+        span_three_positions=None,
+        span_three_style=None,
+        span_three_padding=None,
+        attach_span_three_to=None,
         continuous=False,
         ):
         def cyc(lst):
@@ -16,97 +25,136 @@ class TextSpanHandler:
                 self._count += 1
         self.span_one_positions = span_one_positions
         self.span_one_style = span_one_style
+        self.span_one_padding = span_one_padding
         self.attach_span_one_to = attach_span_one_to
+        self.span_two_positions = span_two_positions
+        self.span_two_style = span_two_style
+        self.span_two_padding = span_two_padding
+        self.attach_span_two_to = attach_span_two_to
+        self.span_three_positions = span_three_positions
+        self.span_three_style = span_three_style
+        self.span_three_padding = span_three_padding
+        self.attach_span_three_to = attach_span_three_to
         self.continuous = continuous
         self._cyc_span_one_positions = cyc(span_one_positions)
+        self._cyc_span_two_positions = cyc(span_two_positions)
+        self._cyc_span_three_positions = cyc(span_three_positions)
         self._count = 0
 
     def __call__(self, selections):
         return self._add_spanners(selections)
 
     def _add_spanners(self, selections):
-        # for run in abjad.select(selections).runs():
-        #     for leaf in abjad.select(run).leaves():
-        #         abjad.attach(abjad.StopTextSpan(), run[0])
-        if self.attach_span_one_to != None:
-            if self.attach_span_one_to == 'bounds':
-                self._apply_position_and_span_to_bounds(selections)
-            elif self.attach_span_one_to == 'leaves':
-                self._apply_position_and_span_to_leaves(selections)
-        else:
-            pass
+        if self.attach_span_one_to == None:
+            self._apply_empty_spanner(selections, r'One')
+        elif self.attach_span_one_to == 'bounds':
+            self._apply_position_and_span_to_bounds(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
+        elif self.attach_span_one_to == 'leaves':
+            self._apply_position_and_span_to_leaves(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
+        elif self.attach_span_one_to == 'left':
+            self._apply_position_and_span_to_left(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
+        if self.attach_span_two_to == None:
+            self._apply_empty_spanner(selections, r'Two')
+        elif self.attach_span_two_to == 'bounds':
+            self._apply_position_and_span_to_bounds(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
+        elif self.attach_span_two_to == 'leaves':
+            self._apply_position_and_span_to_leaves(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
+        elif self.attach_span_two_to == 'left':
+            self._apply_position_and_span_to_left(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
+        if self.attach_span_three_to == None:
+            self._apply_empty_spanner(selections, r'Three')
+        elif self.attach_span_three_to == 'bounds':
+            self._apply_position_and_span_to_bounds(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
+        elif self.attach_span_three_to == 'leaves':
+            self._apply_position_and_span_to_leaves(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
+        elif self.attach_span_three_to == 'left':
+            self._apply_position_and_span_to_left(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
         return selections
 
-    def _apply_position_and_span_to_bounds(self, selections):
-        for run in abjad.select(selections).runs():
-            start_span = abjad.StartTextSpan(
-                left_text=abjad.Markup(next(self._cyc_span_one_positions)).upright(),
-                style=self.span_one_style + '-with-arrow',
-                )
-            stop_span = abjad.StartTextSpan(
-                left_text=abjad.Markup(next(self._cyc_span_one_positions)).upright(),
-                style=self.span_one_style + '-with-hook',
-            )
+    def _apply_empty_spanner(self, selections, span_command):
+        container = abjad.Container()
+        container.extend(selections)
+        first_leaf = abjad.select(container).leaves()[0]
+        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), first_leaf)
+        return selections
+
+    def _apply_position_and_span_to_bounds(self, selections, positions, style, span_command, span_padding):
+        container = abjad.Container()
+        container.extend(selections)
+        for run in abjad.select(container).runs():
             if len(run) < 2:
-                abjad.attach(stop_span, run[0])
-            else:
+                start_span = abjad.StartTextSpan(
+                    left_text=abjad.Markup(next(positions)).upright(),
+                    style=style + '-with-hook',
+                    command=r'\startTextSpan'+span_command,)
+                abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), run[0])
                 abjad.attach(start_span, run[0])
-                abjad.attach(abjad.StopTextSpan(), run[-1])
-                abjad.attach(stop_span, run[-1])
-            abjad.tweak(start_span).staff_padding = 8
-            abjad.tweak(stop_span).staff_padding = 8
-            # abjad.override(run[0]).text_spanner.staff_padding = 8
-            # abjad.override(run[-1]).text_spanner.staff_padding = 8
-        return selections
-
-    def _apply_position_and_span_to_leaves(self, selections):
-        for run in abjad.select(selections).runs():
-            tie_list = []
-            for tie in abjad.select(run).logical_ties():
-                tie_list.append(tie)
-            if len(tie_list) < 2:
-                continue
+                abjad.tweak(start_span).staff_padding = span_padding
             else:
-                for tie in abjad.select(run).logical_ties():
-                    start_text = next(self._cyc_span_one_positions)
-                    if start_text[0].isdigit() is True:
-                        if start_text[-1].isdigit() is True:
-                            start_text = r'\center-align \vcenter \fraction ' + start_text[0] + r' ' + start_text[-1]
-                        else:
-                            start_text = start_text
-                    else:
-                        start_text = start_text
-                    start_span = abjad.StartTextSpan(
-                        left_text=abjad.Markup(start_text).upright(),
-                        style=self.span_one_style + '-with-arrow',
-                        )
-                    abjad.text_spanner(tie[:], start_text_span=start_span)
-                    # abjad.attach(start_span, tie[0])
-                    # abjad.attach(abjad.StopTextSpan(), tie[-1])
-                    abjad.tweak(start_span).staff_padding = 8
-                    if len(tie) > 1:
-                        abjad.attach(abjad.StopTextSpan(), tie[0])
-                abjad.detach(start_span, run[-1])
-                stop_text = next(self._cyc_span_one_positions)
-                if stop_text[0].isdigit() is True:
-                    if stop_text[-1].isdigit() is True:
-                        stop_text = r'\center-align \vcenter \fraction ' + stop_text[0] + r' ' + stop_text[-1]
-                    else:
-                        stop_text = stop_text
-                else:
-                    stop_text = stop_text
-                stop_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(stop_text).upright(),
-                    style=self.span_one_style + '-with-hook',
+                start_span = abjad.StartTextSpan(
+                    left_text=abjad.Markup(next(positions)).upright(),
+                    style=style + '-with-arrow',
+                    command=r'\startTextSpan'+span_command,
                     )
+                stop_span = abjad.StartTextSpan(
+                    left_text=abjad.Markup(next(positions)).upright(),
+                    style=style + '-with-hook',
+                    command=r'\startTextSpan'+span_command
+                    )
+                abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), run[0])
+                abjad.attach(start_span, run[0])
+                abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), run[-1])
                 abjad.attach(stop_span, run[-1])
-                abjad.tweak(stop_span).staff_padding = 8
+                abjad.tweak(start_span).staff_padding = span_padding
+                abjad.tweak(stop_span).staff_padding = span_padding
         return selections
 
-# \markup {
-#         \center-align
-#             \vcenter
-#                 \fraction
-#                     1
-#                     1
-#         }
+    def _apply_position_and_span_to_leaves(self, selections, positions, style, span_command, span_padding):
+        container = abjad.Container()
+        container.extend(selections)
+        for run in abjad.select(container).runs():
+            if len(abjad.select(run).logical_ties()) > 1:
+                ties = abjad.select(run).logical_ties()
+                start_strings = [next(positions) for _ in ties]
+                for i, start_string in enumerate(start_strings):
+                    if all(
+                        start_string[_].isdigit() for _ in (0, -1)
+                    ):
+                        start_strings[i] = \
+                            f'\\upright \\center-align \\vcenter \\fraction {start_string[0]} {start_string[-1]}'
+                start_indicators = [
+                    abjad.StartTextSpan(
+                        left_text=abjad.Markup(start_string),
+                        style=f'{style}-with-arrow',
+                        command=r'\startTextSpan'+span_command,
+                    )
+                    for start_string in start_strings[:-1]
+                ]
+                start_indicators.append(
+                    abjad.StartTextSpan(
+                        left_text=abjad.Markup(start_strings[-1]),
+                        style=f'{style}-with-hook',
+                        command=r'\startTextSpan'+span_command
+                    )
+                )
+                for indicator in start_indicators:
+                    abjad.tweak(indicator).staff_padding = span_padding
+                for i, pair in enumerate(zip(ties, start_indicators)):
+                    tie, start_indicator = pair
+                    abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), tie[0])
+                    abjad.attach(start_indicator, tie[0])
+        return selections
+
+    def _apply_position_and_span_to_left(self, selections, positions, style, span_command, span_padding):
+        container = abjad.Container()
+        container.extend(selections)
+        first_leaf = abjad.select(container).leaves()[0]
+        start_span = abjad.StartTextSpan(
+            left_text=abjad.Markup(next(positions)).upright(),
+            style=style + '-with-hook',
+            command=r'\startTextSpan'+span_command
+            )
+        abjad.tweak(start_span).staff_padding = span_padding
+        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), first_leaf)
+        abjad.attach(start_span, first_leaf)
+        return selections
