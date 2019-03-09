@@ -24,8 +24,12 @@ class ArticulationHandler:
     def add_articulations(self, selections):
         ties = abjad.select(selections).logical_ties(pitched=True)
         for tie in ties:
-            if len(tie) == 1:
-                if self.articulation_list != None:
-                    articulation = self._cyc_articulations
-                    abjad.attach(abjad.Articulation(next(articulation)), tie[0])
+            if self.articulation_list != None:
+                articulation = self._cyc_articulations
+                articulation = next(articulation)
+                if articulation == 'tremolo':
+                    for leaf in tie:
+                        abjad.attach(abjad.StemTremolo(32), leaf)
+                else:
+                    abjad.attach(abjad.Articulation(articulation), tie[0])
         return selections

@@ -50,7 +50,7 @@ rmaker = abjadext.rmakers.TaleaRhythmMaker(
     )
 
 articulation_handler = ArticulationHandler(
-    articulation_list=['tenuto', 'staccato', 'portato', ],
+    articulation_list=['tenuto', 'staccato', 'portato', 'tremolo', ],
     continuous=True,
     )
 
