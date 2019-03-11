@@ -13,6 +13,7 @@ from evans.AttachmentHandlers.NoteheadHandler import NoteheadHandler
 from evans.AttachmentHandlers.PitchHandler import PitchHandler
 from evans.AttachmentHandlers.SlurHandler import SlurHandler
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
+from evans.AttachmentHandlers.GraceHandler import GraceHandler
 
 print('Interpreting file ...')
 
@@ -102,6 +103,11 @@ text_span_handler = TextSpanHandler(
     continuous=True,
     )
 
+grace_handler = GraceHandler(
+    boolean_vector = [1, 1, 1, 1],
+    gesture_lengths = [1, 1, 3, 2]
+)
+
 # Initialize two MusicMakers with the rhythm-makers.
 
 music_maker = MusicMaker(
@@ -114,6 +120,7 @@ music_maker = MusicMaker(
     pitch_handler=pitch_handler,
     slur_handler=slur_handler,
     text_span_handler=text_span_handler,
+    grace_handler=grace_handler,
     continuous=True,
 )
 
@@ -396,20 +403,24 @@ for voice in abjad.select(score['Staff Group']).components(abjad.Voice):
     abjad.beam(voice[:], beam_lone_notes=False, beam_rests=False,)
 
 print('Stopping Hairpins and Text Spans...')
-
 for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
-    for run in abjad.select(staff).runs():
-        last_leaf = run[-1]
-        next_leaf = abjad.inspect(last_leaf).leaf(1)
-        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), next_leaf)
-        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), next_leaf)
-        abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), next_leaf)
-        abjad.attach(abjad.StopHairpin(), next_leaf)
+    for rest in abjad.iterate(staff).components(abjad.Rest):
+        previous_leaf = abjad.inspect(rest).leaf(-1)
+        if isinstance(previous_leaf, abjad.Note):
+            abjad.attach(abjad.StopHairpin(), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
+        elif isinstance(previous_leaf, abjad.Chord):
+            abjad.attach(abjad.StopHairpin(), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
+            abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
+        elif isinstance(previous_leaf, abjad.Rest):
+            pass
 
-# for voice in abjad.iterate(score['Staff Group']).components(abjad.Voice):
-#     text_span_handler(voice)
 
-#attach instruments and clefs
+# attach instruments and clefs
 
 print('Adding attachments ...')
 bar_line = abjad.BarLine('||')
