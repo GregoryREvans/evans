@@ -7,8 +7,8 @@ from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
 from evans.AttachmentHandlers.ClefHandler import ClefHandler
 from evans.AttachmentHandlers.SlurHandler import SlurHandler
-from evans.AttachmentHandlers.GraceHandler import GraceHandler
-# from evans.AttachmentHandlers.TrillHandler import TrillHandler
+# from evans.AttachmentHandlers.GraceHandler import GraceHandler
+from evans.AttachmentHandlers.TrillHandler import TrillHandler
 
 class MusicMaker:
     def __init__(
@@ -22,8 +22,8 @@ class MusicMaker:
         text_span_handler=None,
         clef_handler=None,
         slur_handler=None,
-        grace_handler=None,
-        # trill_handler=None,
+        #grace_handler=None,
+        trill_handler=None,
         continuous=False,
         state=None,
     ):
@@ -35,8 +35,8 @@ class MusicMaker:
         self.text_span_handler = text_span_handler
         self.clef_handler = clef_handler
         self.slur_handler = slur_handler
-        self.grace_handler = grace_handler
-        # self.trill_handler = trill_handler
+        #self.grace_handler = grace_handler
+        self.trill_handler = trill_handler
         self.continuous = continuous
         self.rmaker = rmaker
         self.state = self.rmaker.state
@@ -71,12 +71,16 @@ class MusicMaker:
             abjad.attach(c_clef, selections[0][0])
             abjad.attach(start_command, selections[0][0])
             abjad.attach(stop_command, selections[0][-1])
+        # if self.grace_handler != None:
+        #     selections = self.grace_handler(selections)
         if self.pitch_handler != None:
             selections = self.pitch_handler(selections)
             if self.clef_handler != None:
                 selections = self.clef_handler(selections)
-        if self.glissando_handler != None:
-            selections = self.glissando_handler(selections)
+            if self.glissando_handler != None:
+                selections = self.glissando_handler(selections)
+            if self.trill_handler != None:
+                selections = self.trill_handler(selections)
         if self.notehead_handler != None:
             selections = self.notehead_handler(selections)
         if self.articulation_handler != None:
@@ -87,8 +91,4 @@ class MusicMaker:
             selections = self.text_span_handler(selections)
         if self.slur_handler != None:
             selections = self.slur_handler(selections)
-        if self.grace_handler != None:
-            selections = self.grace_handler(selections)
-        # if self.trill_handler != None:
-        #     selections = self.trill_handler(selections)
         return selections

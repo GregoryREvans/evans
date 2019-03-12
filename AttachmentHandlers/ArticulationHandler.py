@@ -29,7 +29,10 @@ class ArticulationHandler:
                 articulation = next(articulation)
                 if articulation == 'tremolo':
                     for leaf in tie:
-                        abjad.attach(abjad.StemTremolo(32), leaf)
+                        if abjad.inspect(leaf).duration() <= abjad.Duration(1, 32):
+                            continue
+                        else:
+                            abjad.attach(abjad.StemTremolo(32), leaf)
                 else:
                     abjad.attach(abjad.Articulation(articulation), tie[0])
         return selections

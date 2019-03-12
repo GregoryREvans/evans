@@ -88,7 +88,8 @@ class RTMMaker:
         return selections
 
 
-rtm = '(1 (1 (4 (1 -1 1 -1 1))))'
+# rtm = '(1 (1 (4 (1 -1 1 -1 1))))'
+# rtm = '(1 ((1 (1 1)) 1 (1 (1 1 1)) (1 (1 1))1 ))'
 duration_one = abjad.Duration(4, 4)
 staff = abjad.Staff()
 maker = RTMMaker()

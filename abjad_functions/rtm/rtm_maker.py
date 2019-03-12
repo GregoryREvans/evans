@@ -165,12 +165,12 @@ class RTMMaker_4(object):
         return selections
 
 
-#
-# from Scores.onkos.Components.rtm_lists import final_rtm_list
-#
-# maker = RTMMaker_4(rtm=final_rtm_list, continuous=True)
-# divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (2, 4, 3, 4, 5, 3, 4, 2, 3, 5, 4, 3, 4, 2, 5)]
-# # divisions = [abjad.Duration(4, 4)]
+
+# # from Scores.onkos.Components.rtm_lists import final_rtm_list
+# rtm = '(1 ((1 (1 1)) 1 (1 (1 1 1)) (1 (1 1)) 1))'
+# maker = RTMMaker_4(rtm=rtm, continuous=True)
+# # divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (2, 4, 3, 4, 5, 3, 4, 2, 3, 5, 4, 3, 4, 2, 5)]
+# divisions = [abjad.Duration(4, 4)]
 # #divisions = [abjad.Duration(n, 8).with_denominator(8) for n in (4, 4, 4, 4, 4, 4, 4, 4, 4, 4)]
 # # selections_1 = maker(divisions)
 # # selections_2 = maker(divisions, previous_state=maker.state)

@@ -13,7 +13,8 @@ from evans.AttachmentHandlers.NoteheadHandler import NoteheadHandler
 from evans.AttachmentHandlers.PitchHandler import PitchHandler
 from evans.AttachmentHandlers.SlurHandler import SlurHandler
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
-from evans.AttachmentHandlers.GraceHandler import GraceHandler
+# from evans.AttachmentHandlers.TrillHandler import TrillHandler
+# from evans.AttachmentHandlers.GraceHandler import GraceHandler
 
 print('Interpreting file ...')
 
@@ -103,10 +104,13 @@ text_span_handler = TextSpanHandler(
     continuous=True,
     )
 
-grace_handler = GraceHandler(
-    boolean_vector = [1, 1, 1, 1],
-    gesture_lengths = [1, 1, 3, 2]
-)
+# trill_handler = TrillHandler(
+#     )
+
+# grace_handler = GraceHandler(
+#     boolean_vector = [1, 1, 1, 1],
+#     gesture_lengths = [1, 1, 3, 2]
+# )
 
 # Initialize two MusicMakers with the rhythm-makers.
 
@@ -120,7 +124,8 @@ music_maker = MusicMaker(
     pitch_handler=pitch_handler,
     slur_handler=slur_handler,
     text_span_handler=text_span_handler,
-    grace_handler=grace_handler,
+    # trill_handler=trill_handler,
+    #grace_handler=grace_handler,
     continuous=True,
 )
 
@@ -411,11 +416,13 @@ for staff in abjad.iterate(score['Staff Group']).components(abjad.Staff):
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
+            #abjad.attach(abjad.LilyPondLiteral(r'\stopTrillSpan', format_slot='after'), rest)
         elif isinstance(previous_leaf, abjad.Chord):
             abjad.attach(abjad.StopHairpin(), rest)
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
+            #abjad.attach(abjad.LilyPondLiteral(r'\stopTrillSpan', format_slot='after'), rest)
         elif isinstance(previous_leaf, abjad.Rest):
             pass
 
