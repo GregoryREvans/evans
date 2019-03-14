@@ -1,5 +1,5 @@
 def cyc(lst):
-    count = 0
+    count = -1
     while True:
-        yield lst[count%len(lst)]
         count += 1
+        yield lst[count%len(lst)]
