@@ -17,12 +17,12 @@ class TextSpanHandler:
         attach_span_three_to=None,
         continuous=False,
         ):
-        def cyc(lst):
+        def cyc(lst, count):
             if self.continuous == False:
-                self._count = 0
+                count = -1
             while True:
-                yield lst[self._count % len(lst)]
-                self._count += 1
+                count += 1
+                yield lst[count % len(lst)]
         self.span_one_positions = span_one_positions
         self.span_one_style = span_one_style
         self.span_one_padding = span_one_padding
@@ -36,10 +36,12 @@ class TextSpanHandler:
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
         self.continuous = continuous
-        self._cyc_span_one_positions = cyc(span_one_positions)
-        self._cyc_span_two_positions = cyc(span_two_positions)
-        self._cyc_span_three_positions = cyc(span_three_positions)
-        self._count = 0
+        self._count_1 = -1
+        self._count_2 = -1
+        self._count_3 = -1
+        self._cyc_span_one_positions = cyc(span_one_positions, self._count_1)
+        self._cyc_span_two_positions = cyc(span_two_positions, self._count_2)
+        self._cyc_span_three_positions = cyc(span_three_positions, self._count_3)
 
     def __call__(self, selections):
         return self._add_spanners(selections)

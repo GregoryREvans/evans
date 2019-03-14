@@ -7,27 +7,20 @@ class PitchHandler:
         pitch_list=None,
         continuous=False,
         ):
-        def cyc(lst):
-            if self.continuous == False:
-                self._count = 0
-            while True:
-                yield lst[self._count % len(lst)]
-                self._count += 1
         self.pitch_list = pitch_list
         self.continuous = continuous
-        self._cyc_pitches = cyc(pitch_list)
-        self._count = 0
+        self._count = -1
 
     def __call__(self, selections):
-        return self._apply_pitches(selections, self.pitch_list)
+        return self._apply_pitches(selections)
 
     def _collect_pitches_durations_leaves(self, logical_ties, pitches):
         def cyc(lst):
             if self.continuous == False:
-                self._count = 0
+                self._count = -1
             while True:
-                yield lst[self._count % len(lst)]
                 self._count += 1
+                yield lst[self._count % len(lst)]
         cyc_pitches = cyc(pitches)
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:
@@ -44,7 +37,8 @@ class PitchHandler:
                     leaves.append(leaf)
         return pitches, durations, leaves
 
-    def _apply_pitches(self, selections, pitches):
+    def _apply_pitches(self, selections):
+        pitches = self.pitch_list
         leaf_maker = abjad.LeafMaker()
         container = abjad.Container()
         container.extend(selections)

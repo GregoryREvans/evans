@@ -11,16 +11,16 @@ class DynamicHandler:
         ):
         def cyc(lst):
             if self.continuous == False:
-                self._count = 0
+                self._count = -1
             while True:
-                yield lst[self._count % len(lst)]
                 self._count += 1
+                yield lst[self._count % len(lst)]
         self.starting_dynamic = starting_dynamic
         self.ending_dynamic = ending_dynamic
         self.hairpin = hairpin
         self.continuous = continuous
         self._cyc_dynamics = cyc([starting_dynamic, ending_dynamic])
-        self._count = 0
+        self._count = -1
 
     def __call__(self, selections):
         return self.add_dynamics(selections)

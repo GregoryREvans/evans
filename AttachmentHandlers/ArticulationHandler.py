@@ -9,14 +9,14 @@ class ArticulationHandler:
         ):
         def cyc(lst):
             if self.continuous == False:
-                self._count = 0
+                self._count = -1
             while True:
-                yield lst[self._count % len(lst)]
                 self._count += 1
+                yield lst[self._count % len(lst)]
         self.articulation_list = articulation_list
         self.continuous = continuous
         self._cyc_articulations = cyc(articulation_list)
-        self._count = 0
+        self._count = -1
 
     def __call__(self, selections):
         return self.add_articulations(selections)
