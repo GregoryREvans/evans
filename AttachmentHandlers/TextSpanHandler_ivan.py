@@ -17,12 +17,12 @@ class TextSpanHandler:
         attach_span_three_to=None,
         continuous=False,
         ):
-        def cyc(lst, count):
-            if self.continuous == False:
-                count = -1
+        def cyc(lst, key):
+            if self.continuous is False:
+                self._counters[key] = -1
             while True:
-                count += 1
-                yield lst[count % len(lst)]
+                self._counters[key] += 1
+                yield lst[self._counters[key] % len(lst)]
         self.span_one_positions = span_one_positions
         self.span_one_style = span_one_style
         self.span_one_padding = span_one_padding
@@ -36,42 +36,39 @@ class TextSpanHandler:
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
         self.continuous = continuous
-        self._count_1 = -1
-        self._count_2 = -1
-        self._count_3 = -1
-        self._cyc_span_one_positions = cyc(span_one_positions, self._count_1)
-        self._cyc_span_two_positions = cyc(span_two_positions, self._count_2)
-        self._cyc_span_three_positions = cyc(span_three_positions, self._count_3)
+
+        self._attachment_functions = {
+            'bounds' : self._apply_position_and_span_to_bounds,
+            'leaves' : self._apply_position_and_span_to_leaves,
+            'left' : self._apply_position_and_span_to_left,
+        }
+        self._counters = {
+            'span one' : -1, 
+            'span two' : -1, 
+            'span three' : -1,
+        }
+        self._spans = {
+            r"One" : (cyc(span_one_positions, 'span one'), self.span_one_style, self.span_one_padding, self.attach_span_one_to),
+            r"Two" : (cyc(span_two_positions, 'span two'), self.span_two_style, self.span_two_padding, self.attach_span_two_to),
+            r"Three" : (cyc(span_three_positions, 'span three'), self.span_three_style, self.span_three_padding, self.attach_span_three_to),
+        }
+
 
     def __call__(self, selections):
         return self._add_spanners(selections)
 
+
     def _add_spanners(self, selections):
-        if self.attach_span_one_to == None:
-            self._apply_empty_spanner(selections, r'One')
-        elif self.attach_span_one_to == 'bounds':
-            self._apply_position_and_span_to_bounds(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
-        elif self.attach_span_one_to == 'leaves':
-            self._apply_position_and_span_to_leaves(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
-        elif self.attach_span_one_to == 'left':
-            self._apply_position_and_span_to_left(selections, self._cyc_span_one_positions, self.span_one_style, r'One', self.span_one_padding)
-        if self.attach_span_two_to == None:
-            self._apply_empty_spanner(selections, r'Two')
-        elif self.attach_span_two_to == 'bounds':
-            self._apply_position_and_span_to_bounds(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
-        elif self.attach_span_two_to == 'leaves':
-            self._apply_position_and_span_to_leaves(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
-        elif self.attach_span_two_to == 'left':
-            self._apply_position_and_span_to_left(selections, self._cyc_span_two_positions, self.span_two_style, r'Two', self.span_two_padding)
-        if self.attach_span_three_to == None:
-            self._apply_empty_spanner(selections, r'Three')
-        elif self.attach_span_three_to == 'bounds':
-            self._apply_position_and_span_to_bounds(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
-        elif self.attach_span_three_to == 'leaves':
-            self._apply_position_and_span_to_leaves(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
-        elif self.attach_span_three_to == 'left':
-            self._apply_position_and_span_to_left(selections, self._cyc_span_three_positions, self.span_three_style, r'Three', self.span_three_padding)
-        return selections
+        for literal in (r"One", r"Two", r"Three"):
+            positions, style, padding, attach_to = self._spans[literal]
+            attachment_function = self._attachment_functions[attach_to]
+            if attachment_function is not None:
+                attachment_function(selections, positions, style, literal, padding)
+                continue 
+            self._apply_empty_spanner(selections, literal)
+        
+        return selections 
+
 
     def _apply_empty_spanner(self, selections, span_command):
         container = abjad.Container()
@@ -79,6 +76,7 @@ class TextSpanHandler:
         first_leaf = abjad.select(container).leaves()[0]
         abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), first_leaf)
         return selections
+
 
     def _apply_position_and_span_to_bounds(self, selections, positions, style, span_command, span_padding):
         container = abjad.Container()
@@ -110,6 +108,7 @@ class TextSpanHandler:
                 abjad.tweak(start_span).staff_padding = span_padding
                 abjad.tweak(stop_span).staff_padding = span_padding
         return selections
+
 
     def _apply_position_and_span_to_leaves(self, selections, positions, style, span_command, span_padding):
         container = abjad.Container()
@@ -147,6 +146,7 @@ class TextSpanHandler:
                     abjad.attach(start_indicator, tie[0])
         return selections
 
+
     def _apply_position_and_span_to_left(self, selections, positions, style, span_command, span_padding):
         container = abjad.Container()
         container.extend(selections)
@@ -154,7 +154,7 @@ class TextSpanHandler:
         start_strings = [next(positions) for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
-                left_text=abjad.Markup(start_string).upright(),
+                left_text=abjad.Markup(start_string),
                 style=f'{style}-with-hook',
                 command=r'\startTextSpan'+span_command,
             )
