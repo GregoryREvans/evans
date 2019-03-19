@@ -46,7 +46,32 @@ class TextSpanHandler:
     def __call__(self, selections):
         return self._add_spanners(selections)
 
+    # def _add_after_grace(self, selections):
+    #     print('Adding After Grace to runs ...')
+    #     container = abjad.Container()
+    #     container.extend(selections)
+    #     for run in abjad.select(container).runs():
+    #         string = '#(define afterGraceFraction (cons 15 16))'
+    #         literal = abjad.LilyPondLiteral(string)
+    #         abjad.attach(literal, run[0])
+    #         grace_note = [abjad.Note("c'8")]
+    #         after_grace_container = abjad.AfterGraceContainer(grace_note)
+    #         notehead_literal = abjad.LilyPondLiteral(r'\once \override NoteHead.transparent = ##t', format_slot='before')
+    #         stem_literal = abjad.LilyPondLiteral(r'\once \override Stem.transparent = ##t', format_slot='before')
+    #         flag_literal = abjad.LilyPondLiteral(r'\once \override Flag.transparent = ##t', format_slot='before')
+    #         start_command = abjad.LilyPondLiteral(r'''\stopStaff \once \override Staff.LedgerLineSpanner #'color = #white  \startStaff''', format_slot='before',)
+    #         stop_command = abjad.LilyPondLiteral(r'\stopStaff \startStaff', format_slot='after',)
+    #         abjad.attach(notehead_literal, after_grace_container[0])
+    #         abjad.attach(stem_literal, after_grace_container[0])
+    #         abjad.attach(flag_literal, after_grace_container[0])
+    #         abjad.attach(start_command, after_grace_container[0])
+    #         abjad.attach(stop_command, after_grace_container[0])
+    #         abjad.attach(after_grace_container, run[-1])
+    #         print('Added After Grace to run ...')
+    #     return selections
+
     def _add_spanners(self, selections):
+        # print('Adding spanners ...')
         if self.attach_span_one_to == None:
             self._apply_empty_spanner(selections, r'One')
         elif self.attach_span_one_to == 'bounds':
@@ -74,6 +99,7 @@ class TextSpanHandler:
         return selections
 
     def _apply_empty_spanner(self, selections, span_command):
+        # print('Adding empty spanner ...')
         container = abjad.Container()
         container.extend(selections)
         first_leaf = abjad.select(container).leaves()[0]
@@ -81,6 +107,8 @@ class TextSpanHandler:
         return selections
 
     def _apply_position_and_span_to_bounds(self, selections, positions, style, span_command, span_padding):
+        # print('Adding bounded spanner ...')
+        # self._add_after_grace(selections)
         container = abjad.Container()
         container.extend(selections)
         for run in abjad.select(container).runs():
@@ -112,6 +140,8 @@ class TextSpanHandler:
         return selections
 
     def _apply_position_and_span_to_leaves(self, selections, positions, style, span_command, span_padding):
+        # print('Adding leaf spanner ...')
+        # self._add_after_grace(selections)
         container = abjad.Container()
         container.extend(selections)
         for run in abjad.select(container).runs():
@@ -148,6 +178,7 @@ class TextSpanHandler:
         return selections
 
     def _apply_position_and_span_to_left(self, selections, positions, style, span_command, span_padding):
+        # print('Adding left spanner ...')
         container = abjad.Container()
         container.extend(selections)
         runs = abjad.select(container).runs()

@@ -43,8 +43,8 @@ class TextSpanHandler:
             'left' : self._apply_position_and_span_to_left,
         }
         self._counters = {
-            'span one' : -1, 
-            'span two' : -1, 
+            'span one' : -1,
+            'span two' : -1,
             'span three' : -1,
         }
         self._spans = {
@@ -64,10 +64,10 @@ class TextSpanHandler:
             attachment_function = self._attachment_functions[attach_to]
             if attachment_function is not None:
                 attachment_function(selections, positions, style, literal, padding)
-                continue 
+                continue
             self._apply_empty_spanner(selections, literal)
-        
-        return selections 
+
+        return selections
 
 
     def _apply_empty_spanner(self, selections, span_command):
