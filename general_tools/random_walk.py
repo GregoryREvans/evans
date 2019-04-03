@@ -19,5 +19,6 @@ def randomWalk(random_seed, length, step_list, mapped_list):
         walk.append(value)
     input_list = mapped_list
     l = len(input_list)
-    final_list = [input_list[x] for x in reduceMod(l, walk)]
+    final_list = [input_list[0], ]
+    final_list.extend([input_list[x] for x in reduceMod(l, walk)])
     return final_list

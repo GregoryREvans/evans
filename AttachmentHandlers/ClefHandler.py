@@ -2,6 +2,12 @@ import abjad
 
 class ClefHandler:
 
+    # add option for octave Down
+    # start_ottava = abjad.Ottava(n=-1)
+    # stop_ottava = abjad.Ottava(n=0, format_slot='after')
+    # abjad.attach(start_ottava, staff[0])
+    # abjad.attach(stop_ottava, staff[-3])
+
     def __init__(
         self,
         clef=None,
