@@ -131,7 +131,7 @@ class TextSpanHandler:
                     left_text=abjad.Markup(next(positions)).upright(),
                     style=style + '-with-hook',
                     command=r'\startTextSpan'+span_command,
-                    right_padding=2.8,
+                    right_padding=3,
                     )
                 abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpan'+span_command), run[0])
                 abjad.attach(start_span, run[0])
@@ -170,7 +170,7 @@ class TextSpanHandler:
                         left_text=abjad.Markup(start_strings[-1]),
                         style=f'invisible-line',
                         command=r'\startTextSpan'+span_command,
-                        right_padding=2.8,
+                        right_padding=3,
                     )
                 )
                 for indicator in start_indicators:
@@ -192,7 +192,7 @@ class TextSpanHandler:
                 left_text=abjad.Markup(start_string).upright(),
                 style=f'{style}-with-hook',
                 command=r'\startTextSpan'+span_command,
-                right_padding=2.8,
+                right_padding=3,
             )
             for start_string in start_strings
         ]
