@@ -10,6 +10,8 @@ Attachment Handlers:
         1.) ADD piano pedal
         2.) ADD woodwind diagram interface?
         3.) ADD GraceHandler
+        4.) Allow optional middle dynamic in DynamicHandler (with optional preference left or right of center) Automatically create hairpin trajectory (optional force flared up or down)
+        5.) Allow optional "effort" key to turn dynamics into quoted dynamics with f-strings f'"{dynamic}"'
 
 Other:
     1.) Package tools to be imported

@@ -33,6 +33,8 @@ class ArticulationHandler:
                             continue
                         else:
                             abjad.attach(abjad.StemTremolo(32), leaf)
+                elif articulation == 'default':
+                    continue
                 else:
                     abjad.attach(abjad.Articulation(articulation), tie[0])
         return selections
