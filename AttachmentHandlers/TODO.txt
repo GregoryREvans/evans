@@ -9,7 +9,7 @@ Attachment Handlers:
         1.) ADD piano pedal
         2.) ADD woodwind diagram interface?
         3.) ADD GraceHandler (regular and after graces)
-        4.) Allow optional middle dynamic in DynamicHandler (with optional preference left or right of center) Automatically create hairpin trajectory (optional force flared up or down)
+        4.) Allow optional middle dynamic in DynamicHandler (with optional preference left or right of center) Automatically create hairpin trajectory (optional force flared up or down) maybe also allow cyclic dynamics?
         5.) Allow optional "effort" key to turn dynamics into quoted dynamics with f-strings f'"{dynamic}"'
         6.) ADD boolean vector generators to affect which leaves get attachments based on a pattern
 
