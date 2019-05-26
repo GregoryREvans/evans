@@ -1,15 +1,11 @@
 import re
+# import abjad
 
-def atoi(text):
+def _to_digit(text):
     return int(text) if text.isdigit() else text
 
-def natural_keys(text):
-    '''
-    alist.sort(key=natural_keys) sorts in human order
-    http://nedbatchelder.com/blog/200712/human_sorting.html
-    (See Toothy's implementation in the comments)
-    '''
-    return [ atoi(c) for c in re.split(r'(\d+)', text) ]
+def human_sorted_keys(text):
+    return [ _to_digit(_) for _ in re.split(r'(\d+)', text) ]
 
 alist=[
     "voice 1",
@@ -24,7 +20,17 @@ anotherlist=[
     "2 Violin",
     "3 Bass",]
 
-alist.sort(key=natural_keys)
-anotherlist.sort(key=natural_keys)
+# timespans = [abjad.AnnotatedTimespan(annotation=f'Voice {x + 6}',  start_offset=(0, 1), stop_offset=(1, 1)) for x in range(5)]
+# timespan_list = abjad.TimespanList()
+# for x in timespans:
+#     timespan_list.append(x)
+# timespan_list.append(abjad.AnnotatedTimespan(annotation='Voice 1',  start_offset=(0, 1), stop_offset=(1, 1)))
+#
+# abjad.f(timespan_list)
+
+# abjad.show(timespan_list, key='annotation')
+
+alist.sort(key=human_sorted_keys)
+anotherlist.sort(key=human_sorted_keys)
 print(alist)
 print(anotherlist)
