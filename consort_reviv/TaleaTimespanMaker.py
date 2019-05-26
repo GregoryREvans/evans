@@ -246,17 +246,17 @@ class TaleaTimespanMaker(TimespanMaker):
         target_timespan=None,
         timespan_inventory=None,
         ):
-        import consort
+        import evans.consort_reviv
         initial_silence_talea = self.initial_silence_talea
         if not initial_silence_talea:
             initial_silence_talea = abjadext.rmakers.Talea((0,), 1)
-        initial_silence_talea = consort.Cursor(initial_silence_talea)
-        playing_talea = consort.Cursor(self.playing_talea)
-        playing_groupings = consort.Cursor(self.playing_groupings)
+        initial_silence_talea = evans.consort_reviv.Cursor(initial_silence_talea)
+        playing_talea = evans.consort_reviv.Cursor(self.playing_talea)
+        playing_groupings = evans.consort_reviv.Cursor(self.playing_groupings)
         silence_talea = self.silence_talea
         if silence_talea is None:
             silence_talea = abjadext.rmakers.Talea((0,), 1)
-        silence_talea = consort.Cursor(silence_talea)
+        silence_talea = evans.consort_reviv.Cursor(silence_talea)
 
         if self.seed is not None and 0 < self.seed:
             for _ in range(self.seed):
@@ -298,7 +298,7 @@ class TaleaTimespanMaker(TimespanMaker):
         silence_talea=None,
         target_timespan=None,
         ):
-        import consort
+        import evans.consort_reviv
         counter = collections.Counter()
         timespan_inventory = abjad.TimespanList()
         start_offset = target_timespan.start_offset
@@ -365,7 +365,7 @@ class TaleaTimespanMaker(TimespanMaker):
                     )
                 division_mask_seed += 1
 
-                if all(isinstance(_, consort.SilentTimespan)
+                if all(isinstance(_, evans.consort_reviv.SilentTimespan)
                     for _ in new_timespans):
                     new_timespans[:] = []
                 timespan_inventory.extend(new_timespans)
@@ -388,7 +388,7 @@ class TaleaTimespanMaker(TimespanMaker):
         silence_talea=None,
         target_timespan=None,
         ):
-        import consort
+        import evans.consort_reviv
         counter = collections.Counter()
         timespan_inventory = abjad.TimespanList()
         start_offset = target_timespan.start_offset
@@ -448,7 +448,7 @@ class TaleaTimespanMaker(TimespanMaker):
                     voice_name=context_name,
                     )
 
-                if all(isinstance(_, consort.SilentTimespan)
+                if all(isinstance(_, evans.consort_reviv.SilentTimespan)
                     for _ in new_timespans):
                     new_timespans = []
                 timespan_inventory.extend(new_timespans)

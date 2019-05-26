@@ -241,14 +241,14 @@ class CascadingTimespanMaker(TimespanMaker):
         target_timespan=None,
         timespan_inventory=None,
         ):
-        import consort
+        import evans.consort_reviv
         # setup state
         context_names = abjad.CyclicTuple(music_specifiers)
         context_index = self.seed or 0
         cascade_pattern = self.cascade_pattern
-        playing_talea = consort.Cursor(self.playing_talea)
-        playing_groupings = consort.Cursor(self.playing_groupings)
-        silence_talea = consort.Cursor(self.silence_talea)
+        playing_talea = evans.consort_reviv.Cursor(self.playing_talea)
+        playing_groupings = evans.consort_reviv.Cursor(self.playing_groupings)
+        silence_talea = evans.consort_reviv.Cursor(self.silence_talea)
         if self.seed is not None and 0 < self.seed:
             for _ in range(self.seed):
                 next(playing_talea)
@@ -287,7 +287,7 @@ class CascadingTimespanMaker(TimespanMaker):
                     timespan_specifier=self.timespan_specifier,
                     voice_name=context_name,
                     )
-                if all(isinstance(_, consort.SilentTimespan)
+                if all(isinstance(_, evans.consort_reviv.SilentTimespan)
                     for _ in new_timespans):
                     new_timespans[:] = []
                 if context_name not in new_timespan_mapping:

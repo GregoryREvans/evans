@@ -1,7 +1,7 @@
 import abc
 import abjad
 import collections
-from AbjadValueObject import AbjadValueObject
+from evans.consort_reviv.AbjadValueObject import AbjadValueObject
 from abjad import lilypondfile
 from abjad.meter import OffsetCounter
 from abjad.markups import Markup
@@ -30,7 +30,7 @@ class TimespanMaker(AbjadValueObject):
         seed=None,
         timespan_specifier=None,
         ):
-        import consort
+        import evans.consort_reviv
         if division_masks is not None:
             if isinstance(division_masks, abjad.Pattern):
                 division_masks = (division_masks,)
@@ -45,7 +45,7 @@ class TimespanMaker(AbjadValueObject):
             seed = int(seed)
         self._seed = seed
         if timespan_specifier is not None:
-            assert isinstance(timespan_specifier, consort.TimespanSpecifier)
+            assert isinstance(timespan_specifier, evans.consort_reviv.TimespanSpecifier.TimespanSpecifier)
         self._timespan_specifier = timespan_specifier
 
     ### SPECIAL METHODS ###
@@ -143,17 +143,17 @@ class TimespanMaker(AbjadValueObject):
 
     @staticmethod
     def _coerce_music_specifiers(music_specifiers):
-        import consort
+        import evans.consort_reviv
         result = collections.OrderedDict()
         prototype = (
-            consort.MusicSpecifierSequence,
-            consort.CompositeMusicSpecifier,
+            evans.consort_reviv.MusicSpecifierSequence.MusicSpecifierSequence, ###WHAT IS THIS? IT DOESN"T SEEM TO WORK IN MY CLEANUP PROCESS
+            evans.consort_reviv.CompositeMusicSpecifier.CompositeMusicSpecifier,
             )
         for context_name, music_specifier in music_specifiers.items():
             if music_specifier is None:
                 music_specifier = [None]
             if not isinstance(music_specifier, prototype):
-                music_specifier = consort.MusicSpecifierSequence(
+                music_specifier = evans.consort_reviv.MusicSpecifierSequence.MusicSpecifierSequence(
                     music_specifiers=music_specifier,
                     )
             result[context_name] = music_specifier
@@ -165,7 +165,7 @@ class TimespanMaker(AbjadValueObject):
         silenced_context_names,
         timespans,
         ):
-        import consort
+        import evans.consort_reviv
         if not silenced_context_names or not timespans:
             return
 
@@ -180,7 +180,7 @@ class TimespanMaker(AbjadValueObject):
 
         for timespan in timespans:
             voice_name = timespan.voice_name
-            if isinstance(timespan, consort.PerformedTimespan):
+            if isinstance(timespan, evans.consort_reviv.PerformedTimespan.PerformedTimespan):
                 if voice_name not in sounding_timespans_by_context:
                     sounding_timespans_by_context[voice_name] = \
                         abjad.TimespanList()
@@ -198,7 +198,7 @@ class TimespanMaker(AbjadValueObject):
         # Create silences.
         for shard in sounding_timespans.partition(True):
             for context_name in silenced_context_names:
-                timespan = consort.SilentTimespan(
+                timespan = evans.consort_reviv.SilentTimespan.SilentTimespan(
                     layer=layer,
                     voice_name=context_name,
                     start_offset=shard.start_offset,

@@ -1,4 +1,4 @@
-from AbjadObject import AbjadObject
+from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class TimespanSimultaneity(AbjadObject):
@@ -25,9 +25,9 @@ class TimespanSimultaneity(AbjadObject):
         start_offset=None,
         stop_timespans=None,
         ):
-        import evans.consort_reviv as consort
+        import evans.consort_reviv
         if timespan_collection is not None:
-            prototype = consort.TimespanCollection
+            prototype = evans.consort_reviv.TimespanCollection
             assert isinstance(timespan_collection, prototype)
         self._timespan_collection = timespan_collection
         self._start_offset = start_offset

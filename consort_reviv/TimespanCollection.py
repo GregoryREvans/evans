@@ -1,4 +1,4 @@
-from AbjadObject import AbjadObject
+from evans.consort_reviv.AbjadObject import AbjadObject
 from abjad import system
 
 
@@ -608,11 +608,11 @@ class TimespanCollection(AbjadObject):
             <TimespanSimultaneity(6.5 <<1>>)>
 
         '''
-        import evans.consort_reviv as consort
+        import evans.consort_reviv
         start_timespans = self.find_timespans_starting_at(offset)
         stop_timespans = self.find_timespans_stopping_at(offset)
         overlap_timespans = self.find_timespans_overlapping_offset(offset)
-        simultaneity = consort.TimespanSimultaneity(
+        simultaneity = evans.consort_reviv.TimespanSimultaneity(
             timespan_collection=self,
             overlap_timespans=overlap_timespans,
             start_timespans=start_timespans,

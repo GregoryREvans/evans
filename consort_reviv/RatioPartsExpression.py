@@ -1,5 +1,5 @@
 import abjad
-from AbjadObject import AbjadObject
+from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class RatioPartsExpression(AbjadObject):

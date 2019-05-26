@@ -211,14 +211,14 @@ class BoundaryTimespanMaker(TimespanMaker):
         target_timespan=None,
         timespan_inventory=None,
         ):
-        import consort
+        import evans.consort_reviv
         preexisting_timespans = abjad.TimespanList()
         for timespan in timespan_inventory:
             assert isinstance(timespan, (
-                consort.PerformedTimespan,
-                consort.SilentTimespan,
+                consort_reviv.PerformedTimespan,
+                consort_reviv.SilentTimespan,
                 ))
-            if isinstance(timespan, consort.SilentTimespan):
+            if isinstance(timespan, consort_reviv.SilentTimespan):
                 continue
             if (
                 self.voice_names and
@@ -245,7 +245,7 @@ class BoundaryTimespanMaker(TimespanMaker):
         target_timespan=None,
         timespan_inventory=None,
         ):
-        import consort
+        import evans.consort_reviv
 
         new_timespans = abjad.TimespanList()
         if not self.voice_names and not self.labels:
@@ -254,22 +254,22 @@ class BoundaryTimespanMaker(TimespanMaker):
         start_talea = self.start_talea
         if start_talea is None:
             start_talea = abjadext.rmakers.Talea((0,), 1)
-        start_talea = consort.Cursor(start_talea)
+        start_talea = consort_reviv.Cursor(start_talea)
 
         start_groupings = self.start_groupings
         if start_groupings is None:
             start_groupings = (1,)
-        start_groupings = consort.Cursor(start_groupings)
+        start_groupings = consort_reviv.Cursor(start_groupings)
 
         stop_talea = self.stop_talea
         if stop_talea is None:
             stop_talea = abjadext.rmakers.Talea((0,), 1)
-        stop_talea = consort.Cursor(stop_talea)
+        stop_talea = consort_reviv.Cursor(stop_talea)
 
         stop_groupings = self.stop_groupings
         if stop_groupings is None:
             stop_groupings = (1,)
-        stop_groupings = consort.Cursor(stop_groupings)
+        stop_groupings = consort_reviv.Cursor(stop_groupings)
 
         if self.seed:
             if self.seed < 0:

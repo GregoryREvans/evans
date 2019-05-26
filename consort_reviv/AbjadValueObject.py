@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from AbjadObject import AbjadObject
+from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class AbjadValueObject(AbjadObject):
@@ -18,7 +18,7 @@ class AbjadValueObject(AbjadObject):
         r'''Copies Abjad value object.
         Returns new Abjad value object.
         '''
-        from abjad.tools.topleveltools import new
+        from abjad.top import new
         return new(self)
 
     def __eq__(self, argument):
@@ -26,15 +26,15 @@ class AbjadValueObject(AbjadObject):
         the initialization values of `argument`.
         Returns true or false.
         '''
-        from abjad.tools import systemtools
-        return systemtools.TestManager.compare_objects(self, argument)
+        from abjad import system
+        return system.TestManager.compare_objects(self, argument)
 
     def __hash__(self):
         r'''Hashes Abjad value object.
         Returns integer.
         '''
-        from abjad.tools import systemtools
-        hash_values = systemtools.StorageFormatAgent(self).get_hash_values()
+        from abjad import system
+        hash_values = system.StorageFormatManager(self).get_hash_values()
         try:
             result = hash(hash_values)
         except TypeError:
