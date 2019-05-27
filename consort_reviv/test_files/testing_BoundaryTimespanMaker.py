@@ -16,9 +16,9 @@ timespan_maker = BoundaryTimespanMaker(
     )
 print(format(timespan_maker))
 
-###### The following does not work yet
-#
-# timespan_inventory = abjad.TimespanList([
+######
+
+# timespan_inventory = abjad.TimespanList([ ###DOES NOT WORK DUE TO LINE 149 IN TIMESPANMAKER
 #     PerformedTimespan(
 #         start_offset=0,
 #         stop_offset=1,

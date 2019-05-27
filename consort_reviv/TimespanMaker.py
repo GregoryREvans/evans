@@ -146,8 +146,8 @@ class TimespanMaker(AbjadValueObject):
         import evans.consort_reviv
         result = collections.OrderedDict()
         prototype = (
-            evans.consort_reviv.MusicSpecifierSequence.MusicSpecifierSequence, ###WHAT IS THIS? IT DOESN"T SEEM TO WORK IN MY CLEANUP PROCESS
-            evans.consort_reviv.CompositeMusicSpecifier.CompositeMusicSpecifier,
+            evans.consort_reviv.MusicSpecifierSequence, ###WHAT IS THIS? IT DOESN"T SEEM TO WORK IN MY CLEANUP PROCESS BUT THE PROCESS LOOKS THE SAME
+            evans.consort_reviv.CompositeMusicSpecifier,
             )
         for context_name, music_specifier in music_specifiers.items():
             if music_specifier is None:
