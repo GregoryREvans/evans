@@ -19,6 +19,6 @@ Other:
     3.) work with 12 tone row object
     4.) timespans as selectors with interval trees (see: https://github.com/josiah-wolf-oberholtzer/consort/blob/master/consort/tools/TimespanInventoryMapping.py and https://en.wikipedia.org/wiki/Interval_tree)
 
-Sceme:
+Scheme:
     1.) Jete Spanner
     2.) Notehead markup automation in tuplet brackets.

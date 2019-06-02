@@ -1,4 +1,5 @@
 import abjad
+from evans.general_tools.reciprocal import reciprocal
 
 def reproportion_scale(base, limit):
     step = base / 10.0
@@ -7,11 +8,22 @@ def reproportion_scale(base, limit):
     new_scale = [_ * step for _ in scale]
     return new_scale
 
-def reproportion_harmonics(fund, scale):
+def _return_amplitude_reciprocals(rescaled_scale):
+    reciprocal_list = []
+    for _ in rescaled_scale:
+        reciprocal_list.append(reciprocal(_))
+    return reciprocal_list
+
+def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
     calculated_series = [_ * fund for _ in scale]
     final_series = [fund,]
     final_series.extend(calculated_series)
-    return final_series
+    if return_amp_reciprocals == 'as_tuples':
+        return [(harmonic, amp) for harmonic, amp in zip(final_series, _return_amplitude_reciprocals(scale))]
+    elif return_amp_reciprocals == 'as_lists':
+        return final_series, _return_amplitude_reciprocals(scale)
+    else:
+        return final_series
 
 def _to_nearest_eighth_tone(number):
     number = round(float(number) * 4) / 4
@@ -37,7 +49,9 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
     return collection
 
 ###DEMO###
-# insert_scale = (reproportion_scale(base=10, limit=17))
+# insert_scale = (reproportion_scale(base=15, limit=17))
 # print(insert_scale)
+# print(reproportion_harmonics(fund=20, scale=insert_scale, return_amp_reciprocals='as_tuples'))
+# print(reproportion_harmonics(fund=20, scale=insert_scale, return_amp_reciprocals='as_lists'))
 # print(reproportion_harmonics(fund=20, scale=insert_scale))
 # print(reproportion_chromatic_decimals(base=10, root_int=0, scale_range=12, round=True))
