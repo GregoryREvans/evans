@@ -9,7 +9,7 @@ def reproportion_scale(base, limit):
     return new_scale
 
 def _return_amplitude_reciprocals(rescaled_scale):
-    reciprocal_list = []
+    reciprocal_list = [1, ]
     for _ in rescaled_scale:
         reciprocal_list.append(reciprocal(_))
     return reciprocal_list
