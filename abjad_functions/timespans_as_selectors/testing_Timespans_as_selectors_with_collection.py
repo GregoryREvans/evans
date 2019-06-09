@@ -1,5 +1,5 @@
 import abjad
-from evans.consort_reviv.TimespanCollection import TimespanCollection
+from evans.consort_reviv.LogicalTieCollection import LogicalTieCollection
 
 clef = abjad.Clef('treble')
 
@@ -19,17 +19,18 @@ tie_selection_timespans = []
 for _ in tie_selection:
     tie_selection_timespans.append(abjad.inspect(_).timespan())
 
-tie_collection = TimespanCollection(leaf_selection[:])
-# tie_collection = TimespanCollection(tie_selection)
-# tie_collection = TimespanCollection(tie_selection_timespans)
+# tie_collection = LogicalTieCollection(leaf_selection[:])
+tie_collection = LogicalTieCollection(tie_selection)
+# tie_collection = LogicalTieCollection(tie_selection_timespans)
 
-for _ in tie_collection:
-    abjad.f(_)
+for selection in tie_collection.find_logical_ties_intersecting_timespan(target_timespan):
+    for tie in selection:
+        print(abjad.inspect(tie).timespan())
 
-print(' ')
-
-for _ in leaf_selection:
-    if hasattr(_, '_get_timespan'):
-        abjad.f(_)
+# print(' ')
+#
+# for _ in leaf_selection:
+#     if hasattr(_, '_get_timespan'):
+#         abjad.f(_)
 
 # abjad.f(staff)/

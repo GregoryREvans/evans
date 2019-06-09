@@ -1,20 +1,21 @@
 from evans.consort_reviv.AbjadObject import AbjadObject
 from abjad import system
+from abjad.top.inspect import inspect
 
 
-class TimespanCollection(AbjadObject):
-    r'''A mutable always-sorted collection of timespans.
+class LogicalTieCollection(AbjadObject):
+    r'''A mutable always-sorted collection of logical_ties.
 
     ::
 
-        >>> timespans = (
-        ...     abjad.Timespan(0, 3),
-        ...     abjad.Timespan(1, 3),
-        ...     abjad.Timespan(1, 2),
-        ...     abjad.Timespan(2, 5),
-        ...     abjad.Timespan(6, 9),
+        >>> logical_ties = (
+        ...     abjad.LogicalTie(0, 3),
+        ...     abjad.LogicalTie(1, 3),
+        ...     abjad.LogicalTie(1, 2),
+        ...     abjad.LogicalTie(2, 5),
+        ...     abjad.LogicalTie(6, 9),
         ...     )
-        >>> timespan_collection = consort.TimespanCollection(timespans)
+        >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
     '''
 
@@ -28,75 +29,75 @@ class TimespanCollection(AbjadObject):
 
     def __init__(
         self,
-        timespans=None,
+        logical_ties=None,
         ):
         self._root_node = None
-        if timespans is not None and timespans:
-            self.insert(timespans)
+        if logical_ties is not None and logical_ties:
+            self.insert(logical_ties)
 
     ### SPECIAL METHODS ###
 
-    def __contains__(self, timespan):
-        r'''Is true if this timespan collection contains `timespan`. Otherwise
+    def __contains__(self, logical_tie):
+        r'''Is true if this logical_tie collection contains `logical_tie`. Otherwise
         false.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespans[0] in timespan_collection
+            >>> logical_ties[0] in logical_tie_collection
             True
 
         ::
 
-            >>> abjad.Timespan(-1, 100) in timespan_collection
+            >>> abjad.LogicalTie(-1, 100) in logical_tie_collection
             False
 
         Returns boolean.
         '''
-        assert TimespanCollection._is_timespan(timespan)
-        candidates = self.find_timespans_starting_at(timespan.start_offset)
-        result = timespan in candidates
+        assert LogicalTieCollection._is_logical_tie(logical_tie)
+        candidates = self.find_logical_ties_starting_at(inspect(logical_tie).timespan().start_offset)
+        result = logical_tie in candidates
         return result
 
     def __getitem__(self, i):
-        r'''Gets timespan at index `i`.
+        r'''Gets logical_tie at index `i`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection[-1]
-            Timespan(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            >>> logical_tie_collection[-1]
+            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
 
         ::
 
-            >>> for timespan in timespan_collection[:3]:
-            ...     timespan
+            >>> for logical_tie in logical_tie_collection[:3]:
+            ...     logical_tie
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
 
-        Returns timespan or timespans.
+        Returns logical_tie or logical_ties.
         '''
         def recurse_by_index(node, index):
             if node.node_start_index <= index < node.node_stop_index:
@@ -140,29 +141,29 @@ class TimespanCollection(AbjadObject):
         raise TypeError('Indices must be integers or slices, got {}'.format(i))
 
     def __iter__(self):
-        r'''Iterates timespans in this timespan collection.
+        r'''Iterates logical_ties in this logical_tie collection.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> for timespan in timespan_collection:
-            ...     timespan
+            >>> for logical_tie in logical_tie_collection:
+            ...     logical_tie
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
-            Timespan(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
+            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
 
         Returns generator.
         '''
@@ -170,32 +171,32 @@ class TimespanCollection(AbjadObject):
         def recurse(node):
             if node is not None:
                 if node.left_child is not None:
-                    for timespan in recurse(node.left_child):
-                        yield timespan
-                for timespan in node.payload:
-                    yield timespan
+                    for logical_tie in recurse(node.left_child):
+                        yield logical_tie
+                for logical_tie in node.payload:
+                    yield logical_tie
                 if node.right_child is not None:
-                    for timespan in recurse(node.right_child):
-                        yield timespan
+                    for logical_tie in recurse(node.right_child):
+                        yield logical_tie
         return recurse(self._root_node)
 
     def __len__(self):
-        r'''Gets length of this timespan collection.
+        r'''Gets length of this logical_tie collection.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> len(timespan_collection)
+            >>> len(logical_tie_collection)
             5
 
         Returns integer.
@@ -205,22 +206,22 @@ class TimespanCollection(AbjadObject):
         return self._root_node.subtree_stop_index
 
     def __setitem__(self, i, new):
-        r'''Sets timespans at index `i` to `new`.
+        r'''Sets logical_ties at index `i` to `new`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection[:3] = [abjad.Timespan(100, 200)]
+            >>> logical_tie_collection[:3] = [abjad.LogicalTie(100, 200)]
 
         Returns none.
         '''
@@ -237,48 +238,48 @@ class TimespanCollection(AbjadObject):
 
         ::
 
-            >>> timespan_collection = consort.TimespanCollection([
-            ...     abjad.Timespan(0, 16),
-            ...     abjad.Timespan(5, 12),
-            ...     abjad.Timespan(-2, 8),
+            >>> logical_tie_collection = consort.LogicalTieCollection([
+            ...     abjad.LogicalTie(0, 16),
+            ...     abjad.LogicalTie(5, 12),
+            ...     abjad.LogicalTie(-2, 8),
             ...     ])
 
         ::
 
             >>> timespan = abjad.Timespan(5, 10)
-            >>> result = timespan_collection - timespan
+            >>> result = logical_tie_collection - timespan
 
         ::
 
-            >>> print(format(timespan_collection))
-            consort.tools.TimespanCollection(
+            >>> print(format(logical_tie_collection))
+            consort.tools.LogicalTieCollection(
                 [
-                    abjad.Timespan(
+                    abjad.LogicalTie(
                         start_offset=abjad.Offset(-2, 1),
                         stop_offset=abjad.Offset(5, 1),
                         ),
-                    abjad.Timespan(
+                    abjad.LogicalTie(
                         start_offset=abjad.Offset(0, 1),
                         stop_offset=abjad.Offset(5, 1),
                         ),
-                    abjad.Timespan(
+                    abjad.LogicalTie(
                         start_offset=abjad.Offset(10, 1),
                         stop_offset=abjad.Offset(12, 1),
                         ),
-                    abjad.Timespan(
+                    abjad.LogicalTie(
                         start_offset=abjad.Offset(10, 1),
                         stop_offset=abjad.Offset(16, 1),
                         ),
                     ]
                 )
 
-        Operates in place and returns timespan collection.
+        Operates in place and returns logical_tie collection.
         '''
-        intersecting_timespans = self.find_timespans_intersecting_timespan(
+        intersecting_logical_ties = self.find_logical_ties_intersecting_timespan(
             timespan)
-        self.remove(intersecting_timespans)
-        for intersecting_timespan in intersecting_timespans:
-            for x in (intersecting_timespan - timespan):
+        self.remove(intersecting_logical_ties)
+        for intersecting_logical_tie in intersecting_logical_ties:
+            for x in (intersecting_logical_tie - timespan):
                 self.insert(x)
         return self
 
@@ -294,18 +295,18 @@ class TimespanCollection(AbjadObject):
             node.right_child = self._insert_node(node.right_child, start_offset)
         return self._rebalance(node)
 
-    def _insert_timespan(self, timespan):
+    def _insert_logical_tie(self, logical_tie):
         self._root_node = self._insert_node(
             self._root_node,
-            timespan.start_offset,
+            inspect(logical_tie).timespan().start_offset,
             )
-        node = self._search(self._root_node, timespan.start_offset)
-        node.payload.append(timespan)
-        node.payload.sort(key=lambda x: x.stop_offset)
+        node = self._search(self._root_node, inspect(logical_tie).timespan().start_offset)
+        node.payload.append(logical_tie)
+        node.payload.sort(key=lambda x: inspect(x).timespan().stop_offset)
 
     @staticmethod
-    def _is_timespan(expr):
-        if hasattr(expr, 'start_offset') and hasattr(expr, 'stop_offset'):
+    def _is_logical_tie(expr):
+        if inspect(expr).timespan() is not None:
             return True
         return False
 
@@ -351,22 +352,22 @@ class TimespanCollection(AbjadObject):
                     )
         return self._rebalance(node)
 
-    def _remove_timespan(self, timespan, old_start_offset=None):
-        start_offset = timespan.start_offset
+    def _remove_logical_tie(self, logical_tie, old_start_offset=None):
+        start_offset = inspect(logical_tie).timespan().start_offset
         if old_start_offset is not None:
             start_offset = old_start_offset
         node = self._search(self._root_node, start_offset)
         if node is None:
             return
-        if timespan in node.payload:
-            node.payload.remove(timespan)
+        if logical_tie in node.payload:
+            node.payload.remove(logical_tie)
         if not node.payload:
             self._root_node = self._remove_node(
                 self._root_node,
                 start_offset,
                 )
-        if isinstance(timespan, TimespanCollection):
-            timespan._parents.remove(self)
+        if isinstance(logical_tie, LogicalTieCollection):
+            logical_tie._parents.remove(self)
 
     def _rotate_left_left(self, node):
         next_node = node.left_child
@@ -439,8 +440,8 @@ class TimespanCollection(AbjadObject):
         ):
         if node is None:
             return
-        stop_offset_low = min(x.stop_offset for x in node.payload)
-        stop_offset_high = max(x.stop_offset for x in node.payload)
+        stop_offset_low = min(inspect(x).timespan().stop_offset for x in node.payload)
+        stop_offset_high = max(inspect(x).timespan().stop_offset for x in node.payload)
         if node.left_child:
             left_child = self._update_offsets(
                 node.left_child,
@@ -463,9 +464,9 @@ class TimespanCollection(AbjadObject):
 
     def _get_format_specification(self):
         values = []
-        timespans = [x for x in self]
-        if timespans:
-            values.append(timespans)
+        logical_ties = [x for x in self]
+        if logical_ties:
+            values.append(logical_ties)
         names = []
         return system.FormatSpecification(
             client=self,
@@ -475,112 +476,112 @@ class TimespanCollection(AbjadObject):
 
     ### PUBLIC METHODS ###
 
-    def find_timespans_starting_at(self, offset):
+    def find_logical_ties_starting_at(self, offset):
         results = []
         node = self._search(self._root_node, offset)
         if node is not None:
             results.extend(node.payload)
         return tuple(results)
 
-    def find_timespans_stopping_at(self, offset):
+    def find_logical_ties_stopping_at(self, offset):
         def recurse(node, offset):
             result = []
             if node is not None:
                 if node.stop_offset_low <= offset <= node.stop_offset_high:
-                    for timespan in node.payload:
-                        if timespan.stop_offset == offset:
-                            result.append(timespan)
+                    for logical_tie in node.payload:
+                        if inspect(logical_tie).timespan().stop_offset == offset:
+                            result.append(logical_tie)
                     if node.left_child is not None:
                         result.extend(recurse(node.left_child, offset))
                     if node.right_child is not None:
                         result.extend(recurse(node.right_child, offset))
             return result
         results = recurse(self._root_node, offset)
-        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
+        results.sort(key=lambda x: (inspect(x).timespan().start_offset, inspect(x).timespan().stop_offset))
         return tuple(results)
 
-    def find_timespans_overlapping_offset(self, offset):
-        r'''Finds timespans overlapping `offset`.
+    def find_logical_ties_overlapping_offset(self, offset):
+        r'''Finds logical_ties overlapping `offset`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> for x in timespan_collection.find_timespans_overlapping_offset(1.5):
+            >>> for x in logical_tie_collection.find_logical_ties_overlapping_offset(1.5):
             ...     x
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
 
-        Returns tuple of 0 or more timespans.
+        Returns tuple of 0 or more logical_ties.
         '''
         def recurse(node, offset, indent=0):
             result = []
             if node is not None:
                 if node.start_offset < offset < node.stop_offset_high:
                     result.extend(recurse(node.left_child, offset, indent + 1))
-                    for timespan in node.payload:
-                        if offset < timespan.stop_offset:
-                            result.append(timespan)
+                    for logical_tie in node.payload:
+                        if offset < inspect(logical_tie).timespan().stop_offset:
+                            result.append(logical_tie)
                     result.extend(recurse(node.right_child, offset, indent + 1))
                 elif offset <= node.start_offset:
                     result.extend(recurse(node.left_child, offset, indent + 1))
             return result
         results = recurse(self._root_node, offset)
-        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
+        results.sort(key=lambda x: (inspect(x).timespan().start_offset, inspect(x).timespan().stop_offset))
         return tuple(results)
 
-    def find_timespans_intersecting_timespan(self, timespan):
-        r'''Finds timespans overlapping `timespan`.
+    def find_logical_ties_intersecting_timespan(self, timespan):
+        r'''Finds logical_ties overlapping `timespan`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
             >>> timespan = abjad.Timespan(2, 4)
-            >>> for x in timespan_collection.find_timespans_intersecting_timespan(timespan):
+            >>> for x in logical_tie_collection.find_logical_ties_intersecting_logical_tie(timespan):
             ...     x
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
 
-        Returns tuple of 0 or more timespans.
+        Returns tuple of 0 or more logical_ties.
         '''
         def recurse(node, timespan):
             result = []
             if node is not None:
                 if timespan.intersects_timespan(node):
                     result.extend(recurse(node.left_child, timespan))
-                    for candidate_timespan in node.payload:
-                        if candidate_timespan.intersects_timespan(timespan):
-                            result.append(candidate_timespan)
+                    for candidate_logical_tie in node.payload:
+                        if inspect(candidate_logical_tie).timespan().intersects_timespan(timespan):
+                            result.append(candidate_logical_tie)
                     result.extend(recurse(node.right_child, timespan))
                 elif (timespan.start_offset <= node.start_offset) or \
                     (timespan.stop_offset <= node.start_offset):
                     result.extend(recurse(node.left_child, timespan))
             return result
         results = recurse(self._root_node, timespan)
-        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
+        results.sort(key=lambda x: (inspect(x).timespan().start_offset, inspect(x).timespan().stop_offset))
         return tuple(results)
 
     def get_simultaneity_at(self, offset):
@@ -588,76 +589,76 @@ class TimespanCollection(AbjadObject):
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection.get_simultaneity_at(1)
-            <TimespanSimultaneity(1 <<3>>)>
+            >>> logical_tie_collection.get_simultaneity_at(1)
+            <logical_tiesimultaneity(1 <<3>>)>
 
         ::
 
-            >>> timespan_collection.get_simultaneity_at(6.5)
-            <TimespanSimultaneity(6.5 <<1>>)>
+            >>> logical_tie_collection.get_simultaneity_at(6.5)
+            <logical_tiesimultaneity(6.5 <<1>>)>
 
         '''
         import evans.consort_reviv
-        start_timespans = self.find_timespans_starting_at(offset)
-        stop_timespans = self.find_timespans_stopping_at(offset)
-        overlap_timespans = self.find_timespans_overlapping_offset(offset)
-        simultaneity = evans.consort_reviv.TimespanSimultaneity(
-            timespan_collection=self,
-            overlap_timespans=overlap_timespans,
-            start_timespans=start_timespans,
+        start_logical_ties = self.find_logical_ties_starting_at(offset)
+        stop_logical_ties = self.find_logical_ties_stopping_at(offset)
+        overlap_logical_ties = self.find_logical_ties_overlapping_offset(offset)
+        simultaneity = evans.consort_reviv.logical_tiesimultaneity(
+            logical_tie_collection=self,
+            overlap_logical_ties=overlap_logical_ties,
+            start_logical_ties=start_logical_ties,
             start_offset=offset,
-            stop_timespans=stop_timespans,
+            stop_logical_ties=stop_logical_ties,
             )
         return simultaneity
 
     def get_start_offset_after(self, offset):
-        r'''Gets start offst in this timespan collection after `offset`.
+        r'''Gets start offst in this logical_tie collection after `offset`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection.get_start_offset_after(-1)
+            >>> logical_tie_collection.get_start_offset_after(-1)
             Offset(0, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_after(0)
+            >>> logical_tie_collection.get_start_offset_after(0)
             Offset(1, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_after(1)
+            >>> logical_tie_collection.get_start_offset_after(1)
             Offset(2, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_after(2)
+            >>> logical_tie_collection.get_start_offset_after(2)
             Offset(6, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_after(6) is None
+            >>> logical_tie_collection.get_start_offset_after(6) is None
             True
 
         '''
@@ -676,42 +677,42 @@ class TimespanCollection(AbjadObject):
         return result.start_offset
 
     def get_start_offset_before(self, offset):
-        r'''Gets start offst in this timespan collection before `offset`.
+        r'''Gets start offst in this logical_tie collection before `offset`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection.get_start_offset_before(7)
+            >>> logical_tie_collection.get_start_offset_before(7)
             Offset(6, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_before(6)
+            >>> logical_tie_collection.get_start_offset_before(6)
             Offset(2, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_before(2)
+            >>> logical_tie_collection.get_start_offset_before(2)
             Offset(1, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_before(1)
+            >>> logical_tie_collection.get_start_offset_before(1)
             Offset(0, 1)
 
         ::
 
-            >>> timespan_collection.get_start_offset_before(0) is None
+            >>> logical_tie_collection.get_start_offset_before(0) is None
             True
 
         '''
@@ -729,45 +730,45 @@ class TimespanCollection(AbjadObject):
             return None
         return result.start_offset
 
-    def index(self, timespan):
-        assert self._is_timespan(timespan)
-        node = self._search(self._root_node, timespan.start_offset)
-        if node is None or timespan not in node.payload:
-            raise ValueError('{} not in timespan collection.'.format(timespan))
-        index = node.payload.index(timespan) + node.node_start_index
+    def index(self, logical_tie):
+        assert self._is_logical_tie(logical_tie)
+        node = self._search(self._root_node, inspect(logical_tie).timespan().start_offset)
+        if node is None or logical_tie not in node.payload:
+            raise ValueError('{} not in logical_tie collection.'.format(logical_tie))
+        index = node.payload.index(logical_tie) + node.node_start_index
         return index
 
-    def insert(self, timespans):
-        r'''Inserts `timespans` into this timespan collection.
+    def insert(self, logical_ties):
+        r'''Inserts `logical_ties` into this logical_tie collection.
 
         ::
 
-            >>> timespan_collection = consort.TimespanCollection()
-            >>> timespan_collection.insert(abjad.Timespan(1, 3))
-            >>> timespan_collection.insert((
-            ...     abjad.Timespan(0, 4),
-            ...     abjad.Timespan(2, 6),
+            >>> logical_tie_collection = consort.LogicalTieCollection()
+            >>> logical_tie_collection.insert(abjad.LogicalTie(1, 3))
+            >>> logical_tie_collection.insert((
+            ...     abjad.LogicalTie(0, 4),
+            ...     abjad.LogicalTie(2, 6),
             ...     ))
 
         ::
 
-            >>> for x in timespan_collection:
+            >>> for x in logical_tie_collection:
             ...     x
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(4, 1))
-            Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(2, 1), stop_offset=Offset(6, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(4, 1))
+            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(6, 1))
 
-        `timespans` may be a single timespan or an iterable of timespans.
+        `logical_ties` may be a single logical_tie or an iterable of logical_ties.
 
         Returns none.
         '''
-        if self._is_timespan(timespans):
-            timespans = [timespans]
-        for timespan in timespans:
-            if not self._is_timespan(timespan):
+        if self._is_logical_tie(logical_ties):
+            logical_ties = [logical_ties]
+        for logical_tie in logical_ties:
+            if not self._is_logical_tie(logical_tie):
                 continue
-            self._insert_timespan(timespan)
+            self._insert_logical_tie(logical_tie)
         self._update_indices(self._root_node)
         self._update_offsets(self._root_node)
 
@@ -775,39 +776,39 @@ class TimespanCollection(AbjadObject):
         self,
         reverse=False,
         ):
-        r'''Iterates simultaneities in this timespan collection.
+        r'''Iterates simultaneities in this logical_tie collection.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> for x in timespan_collection.iterate_simultaneities():
+            >>> for x in logical_tie_collection.iterate_simultaneities():
             ...     x
             ...
-            <TimespanSimultaneity(0 <<1>>)>
-            <TimespanSimultaneity(1 <<3>>)>
-            <TimespanSimultaneity(2 <<3>>)>
-            <TimespanSimultaneity(6 <<1>>)>
+            <logical_tiesimultaneity(0 <<1>>)>
+            <logical_tiesimultaneity(1 <<3>>)>
+            <logical_tiesimultaneity(2 <<3>>)>
+            <logical_tiesimultaneity(6 <<1>>)>
 
         ::
 
-            >>> for x in timespan_collection.iterate_simultaneities(
+            >>> for x in logical_tie_collection.iterate_simultaneities(
             ...     reverse=True):
             ...     x
             ...
-            <TimespanSimultaneity(6 <<1>>)>
-            <TimespanSimultaneity(2 <<3>>)>
-            <TimespanSimultaneity(1 <<3>>)>
-            <TimespanSimultaneity(0 <<1>>)>
+            <logical_tiesimultaneity(6 <<1>>)>
+            <logical_tiesimultaneity(2 <<3>>)>
+            <logical_tiesimultaneity(1 <<3>>)>
+            <logical_tiesimultaneity(0 <<1>>)>
 
         Returns generator.
         '''
@@ -834,38 +835,38 @@ class TimespanCollection(AbjadObject):
         n=3,
         reverse=False,
         ):
-        r'''Iterates simultaneities in this timespan collection in groups of
+        r'''Iterates simultaneities in this logical_tie collection in groups of
         `n`.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> for x in timespan_collection.iterate_simultaneities_nwise(n=2):
+            >>> for x in logical_tie_collection.iterate_simultaneities_nwise(n=2):
             ...     x
             ...
-            (<TimespanSimultaneity(0 <<1>>)>, <TimespanSimultaneity(1 <<3>>)>)
-            (<TimespanSimultaneity(1 <<3>>)>, <TimespanSimultaneity(2 <<3>>)>)
-            (<TimespanSimultaneity(2 <<3>>)>, <TimespanSimultaneity(6 <<1>>)>)
+            (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
+            (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
+            (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
 
         ::
 
-            >>> for x in timespan_collection.iterate_simultaneities_nwise(
+            >>> for x in logical_tie_collection.iterate_simultaneities_nwise(
             ...     n=2, reverse=True):
             ...     x
             ...
-            (<TimespanSimultaneity(2 <<3>>)>, <TimespanSimultaneity(6 <<1>>)>)
-            (<TimespanSimultaneity(1 <<3>>)>, <TimespanSimultaneity(2 <<3>>)>)
-            (<TimespanSimultaneity(0 <<1>>)>, <TimespanSimultaneity(1 <<3>>)>)
+            (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
+            (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
+            (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
 
         Returns generator.
         '''
@@ -892,39 +893,39 @@ class TimespanCollection(AbjadObject):
                 if len(simultaneities) == n:
                     yield tuple(reversed(simultaneities))
 
-    def remove(self, timespans):
-        r'''Removes timespans from this timespan collection.
+    def remove(self, logical_ties):
+        r'''Removes logical_ties from this logical_tie collection.
 
         ::
 
-            >>> timespans = (
-            ...     abjad.Timespan(0, 3),
-            ...     abjad.Timespan(1, 3),
-            ...     abjad.Timespan(1, 2),
-            ...     abjad.Timespan(2, 5),
-            ...     abjad.Timespan(6, 9),
+            >>> logical_ties = (
+            ...     abjad.LogicalTie(0, 3),
+            ...     abjad.LogicalTie(1, 3),
+            ...     abjad.LogicalTie(1, 2),
+            ...     abjad.LogicalTie(2, 5),
+            ...     abjad.LogicalTie(6, 9),
             ...     )
-            >>> timespan_collection = consort.TimespanCollection(timespans)
+            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
 
         ::
 
-            >>> timespan_collection.remove(timespans[1:-1])
+            >>> logical_tie_collection.remove(logical_ties[1:-1])
 
         ::
 
-            >>> for timespan in timespan_collection:
-            ...     timespan
+            >>> for logical_tie in logical_tie_collection:
+            ...     logical_tie
             ...
-            Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            Timespan(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
+            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
 
         '''
-        if self._is_timespan(timespans):
-            timespans = [timespans]
-        for timespan in timespans:
-            if not self._is_timespan(timespan):
+        if self._is_logical_tie(logical_ties):
+            logical_ties = [logical_ties]
+        for logical_tie in logical_ties:
+            if not self._is_logical_tie(logical_tie):
                 continue
-            self._remove_timespan(timespan)
+            self._remove_logical_tie(logical_tie)
         self._update_indices(self._root_node)
         self._update_offsets(self._root_node)
 
@@ -933,23 +934,23 @@ class TimespanCollection(AbjadObject):
     @property
     def all_offsets(self):
         offsets = set()
-        for timespan in self:
-            offsets.add(timespan.start_offset)
-            offsets.add(timespan.stop_offset)
+        for logical_tie in self:
+            offsets.add(inspect(logical_tie).timespan().start_offset)
+            offsets.add(inspect(logical_tie).timespan().stop_offset)
         return tuple(sorted(offsets))
 
     @property
     def all_start_offsets(self):
         start_offsets = set()
-        for timespan in self:
-            start_offsets.add(timespan.start_offset)
+        for logical_tie in self:
+            start_offsets.add(inspect(logical_tie).timespan().start_offset)
         return tuple(sorted(start_offsets))
 
     @property
     def all_stop_offsets(self):
         stop_offsets = set()
-        for timespan in self:
-            stop_offsets.add(timespan.stop_offset)
+        for logical_tie in self:
+            stop_offsets.add(inspect(logical_tie).timespan().stop_offset)
         return tuple(sorted(stop_offsets))
 
     @property
