@@ -64,7 +64,7 @@ class TimespanCollection(AbjadObject):
         Returns boolean.
         '''
         assert TimespanCollection._is_timespan(timespan)
-        candidates = self.find_timespans_starting_at(timespan._get_timespan().start_offset)
+        candidates = self.find_timespans_starting_at(timespan.start_offset)
         result = timespan in candidates
         return result
 
@@ -297,15 +297,15 @@ class TimespanCollection(AbjadObject):
     def _insert_timespan(self, timespan):
         self._root_node = self._insert_node(
             self._root_node,
-            timespan._get_timespan().start_offset,
+            timespan.start_offset,
             )
-        node = self._search(self._root_node, timespan._get_timespan().start_offset)
+        node = self._search(self._root_node, timespan.start_offset)
         node.payload.append(timespan)
-        node.payload.sort(key=lambda x: x._get_timespan().stop_offset)
+        node.payload.sort(key=lambda x: x.stop_offset)
 
     @staticmethod
     def _is_timespan(expr):
-        if hasattr(expr, '_get_timespan') and hasattr(expr, '_timespan'):
+        if hasattr(expr, 'start_offset') and hasattr(expr, 'stop_offset'):
             return True
         return False
 
@@ -352,7 +352,7 @@ class TimespanCollection(AbjadObject):
         return self._rebalance(node)
 
     def _remove_timespan(self, timespan, old_start_offset=None):
-        start_offset = timespan._get_timespan().start_offset
+        start_offset = timespan.start_offset
         if old_start_offset is not None:
             start_offset = old_start_offset
         node = self._search(self._root_node, start_offset)
@@ -439,8 +439,8 @@ class TimespanCollection(AbjadObject):
         ):
         if node is None:
             return
-        stop_offset_low = min(x._get_timespan().stop_offset for x in node.payload)
-        stop_offset_high = max(x._get_timespan().stop_offset for x in node.payload)
+        stop_offset_low = min(x.stop_offset for x in node.payload)
+        stop_offset_high = max(x.stop_offset for x in node.payload)
         if node.left_child:
             left_child = self._update_offsets(
                 node.left_child,
@@ -488,7 +488,7 @@ class TimespanCollection(AbjadObject):
             if node is not None:
                 if node.stop_offset_low <= offset <= node.stop_offset_high:
                     for timespan in node.payload:
-                        if timespan._get_timespan().stop_offset == offset:
+                        if timespan.stop_offset == offset:
                             result.append(timespan)
                     if node.left_child is not None:
                         result.extend(recurse(node.left_child, offset))
@@ -496,7 +496,7 @@ class TimespanCollection(AbjadObject):
                         result.extend(recurse(node.right_child, offset))
             return result
         results = recurse(self._root_node, offset)
-        results.sort(key=lambda x: (x._get_timespan().start_offset, x._get_timespan().stop_offset))
+        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
     def find_timespans_overlapping_offset(self, offset):
@@ -530,14 +530,14 @@ class TimespanCollection(AbjadObject):
                 if node.start_offset < offset < node.stop_offset_high:
                     result.extend(recurse(node.left_child, offset, indent + 1))
                     for timespan in node.payload:
-                        if offset < timespan._get_timespan().stop_offset:
+                        if offset < timespan.stop_offset:
                             result.append(timespan)
                     result.extend(recurse(node.right_child, offset, indent + 1))
                 elif offset <= node.start_offset:
                     result.extend(recurse(node.left_child, offset, indent + 1))
             return result
         results = recurse(self._root_node, offset)
-        results.sort(key=lambda x: (x._get_timespan().start_offset, x._get_timespan().stop_offset))
+        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
     def find_timespans_intersecting_timespan(self, timespan):
@@ -575,12 +575,12 @@ class TimespanCollection(AbjadObject):
                         if candidate_timespan.intersects_timespan(timespan):
                             result.append(candidate_timespan)
                     result.extend(recurse(node.right_child, timespan))
-                elif (timespan._get_timespan().start_offset <= node.start_offset) or \
-                    (timespan._get_timespan().stop_offset <= node.start_offset):
+                elif (timespan.start_offset <= node.start_offset) or \
+                    (timespan.stop_offset <= node.start_offset):
                     result.extend(recurse(node.left_child, timespan))
             return result
         results = recurse(self._root_node, timespan)
-        results.sort(key=lambda x: (x._get_timespan().start_offset, x._get_timespan().stop_offset))
+        results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
     def get_simultaneity_at(self, offset):
@@ -731,7 +731,7 @@ class TimespanCollection(AbjadObject):
 
     def index(self, timespan):
         assert self._is_timespan(timespan)
-        node = self._search(self._root_node, timespan._get_timespan().start_offset)
+        node = self._search(self._root_node, timespan.start_offset)
         if node is None or timespan not in node.payload:
             raise ValueError('{} not in timespan collection.'.format(timespan))
         index = node.payload.index(timespan) + node.node_start_index
@@ -934,22 +934,22 @@ class TimespanCollection(AbjadObject):
     def all_offsets(self):
         offsets = set()
         for timespan in self:
-            offsets.add(timespan._get_timespan().start_offset)
-            offsets.add(timespan._get_timespan().stop_offset)
+            offsets.add(timespan.start_offset)
+            offsets.add(timespan.stop_offset)
         return tuple(sorted(offsets))
 
     @property
     def all_start_offsets(self):
         start_offsets = set()
         for timespan in self:
-            start_offsets.add(timespan._get_timespan().start_offset)
+            start_offsets.add(timespan.start_offset)
         return tuple(sorted(start_offsets))
 
     @property
     def all_stop_offsets(self):
         stop_offsets = set()
         for timespan in self:
-            stop_offsets.add(timespan._get_timespan().stop_offset)
+            stop_offsets.add(timespan.stop_offset)
         return tuple(sorted(stop_offsets))
 
     @property

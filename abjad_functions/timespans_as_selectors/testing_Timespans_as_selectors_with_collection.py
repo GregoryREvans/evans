@@ -13,14 +13,23 @@ for note in selection:
 
 target_timespan = abjad.Timespan(start_offset=(2, 4), stop_offset=(4, 4))
 
-tie_selection = abjad.select(staff).logical_ties(pitched=True) #.goup_by(predicate=abjad.Voice)
+tie_selection = abjad.select(staff).logical_ties() #.goup_by(predicate=abjad.Voice)
+leaf_selection = abjad.select(staff).leaves()
 tie_selection_timespans = []
 for _ in tie_selection:
     tie_selection_timespans.append(abjad.inspect(_).timespan())
 
-tie_collection = TimespanCollection(tie_selection_timespans)
+tie_collection = TimespanCollection(leaf_selection[:])
+# tie_collection = TimespanCollection(tie_selection)
+# tie_collection = TimespanCollection(tie_selection_timespans)
 
 for _ in tie_collection:
     abjad.f(_)
+
+print(' ')
+
+for _ in leaf_selection:
+    if hasattr(_, '_get_timespan'):
+        abjad.f(_)
 
 # abjad.f(staff)/
