@@ -13,24 +13,14 @@ for note in selection:
 
 target_timespan = abjad.Timespan(start_offset=(2, 4), stop_offset=(4, 4))
 
-tie_selection = abjad.select(staff).logical_ties() #.goup_by(predicate=abjad.Voice)
-leaf_selection = abjad.select(staff).leaves()
-tie_selection_timespans = []
-for _ in tie_selection:
-    tie_selection_timespans.append(abjad.inspect(_).timespan())
+tie_selection = abjad.select(staff).logical_ties()
+tie_collection = LogicalTieCollection()
+for tie in tie_selection:
+    tie_collection.insert(tie)
 
-# tie_collection = LogicalTieCollection(leaf_selection[:])
-tie_collection = LogicalTieCollection(tie_selection)
-# tie_collection = LogicalTieCollection(tie_selection_timespans)
+for tie in tie_collection.find_logical_ties_intersecting_timespan(target_timespan):
+    for leaf in tie:
+        leaf.written_pitch = leaf.written_pitch + 6
+        abjad.override(leaf).note_head.color = 'blue'
 
-for selection in tie_collection.find_logical_ties_intersecting_timespan(target_timespan):
-    for tie in selection:
-        print(abjad.inspect(tie).timespan())
-
-# print(' ')
-#
-# for _ in leaf_selection:
-#     if hasattr(_, '_get_timespan'):
-#         abjad.f(_)
-
-# abjad.f(staff)/
+abjad.show(staff)
