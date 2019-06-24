@@ -8,11 +8,11 @@ def normalize_sum(integer_list, desired_sum=1):
     return normalized_list
 
 ###DEMO###
-# weights = [40, 10, 6, 17]
-# print(normalize_sum(integer_list=weights, desired_sum=8))
-#
-# print('checking')
-# checker = 0
-# for _ in normalize_sum(integer_list=weights):
-#     checker = checker + _
-# print(checker)
+weights = [15, 6, 14, 4, 16, 6, 14, 4, 16, 5]
+print(normalize_sum(integer_list=weights, desired_sum=1))
+
+print('checking')
+checker = 0
+for _ in normalize_sum(integer_list=weights):
+    checker = checker + _
+print(checker)
