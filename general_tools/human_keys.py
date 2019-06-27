@@ -6,7 +6,7 @@ def to_digit(string):
 
 
 def human_sorted_keys(text):
-    return [_to_digit(_) for _ in re.split(r"(\d+)", text)]
+    return [to_digit(_) for _ in re.split(r"(\d+)", text)]
 
 
 ###DEMO###
