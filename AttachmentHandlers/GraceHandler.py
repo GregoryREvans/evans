@@ -1,19 +1,15 @@
 import abjad
 
-class GraceHandler:
 
-    def __init__(
-        self,
-        boolean_vector=None,
-        gesture_lengths=None,
-        continuous=False,
-        ):
+class GraceHandler:
+    def __init__(self, boolean_vector=None, gesture_lengths=None, continuous=False):
         def cyc(lst):
             if self.continuous == False:
                 self._count = 0
             while True:
                 yield lst[self._count % len(lst)]
                 self._count += 1
+
         self.boolean_vector = boolean_vector
         self.gesture_lengths = gesture_lengths
         self.continuous = continuous
@@ -40,7 +36,9 @@ class GraceHandler:
                                 note = abjad.Note("c'16")
                                 grace_list.append(note)
                             grace = abjad.AfterGraceContainer(grace_list)
-                            literal = abjad.LilyPondLiteral('#(define afterGraceFraction (cons 15 16))')
+                            literal = abjad.LilyPondLiteral(
+                                "#(define afterGraceFraction (cons 15 16))"
+                            )
                             if len(tie) > 1:
                                 abjad.attach(literal, tie[-2])
                                 abjad.attach(grace, tie[-1])
@@ -49,7 +47,9 @@ class GraceHandler:
                                 abjad.attach(grace, tie[0])
                         else:
                             grace = abjad.AfterGraceContainer(abjad.Note("c'16"))
-                            literal = abjad.LilyPondLiteral('#(define afterGraceFraction (cons 15 16))')
+                            literal = abjad.LilyPondLiteral(
+                                "#(define afterGraceFraction (cons 15 16))"
+                            )
                             if len(tie) > 1:
                                 abjad.attach(literal, tie[-2])
                                 abjad.attach(grace, tie[-1])

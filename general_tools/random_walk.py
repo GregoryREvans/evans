@@ -3,6 +3,7 @@ from random import seed
 from evans.general_tools.reduce_mod import reduceMod
 from evans.general_tools.cyc import cyc
 
+
 def randomWalk(random_seed, length, step_list, mapped_list):
     seed(random_seed)
     if step_list != None:
@@ -15,10 +16,10 @@ def randomWalk(random_seed, length, step_list, mapped_list):
             movement = -next_step if random() < 0.5 else next_step
         else:
             movement = -1 if random() < 0.5 else 1
-        value = walk[i-1] + movement
+        value = walk[i - 1] + movement
         walk.append(value)
     input_list = mapped_list
     l = len(input_list)
-    final_list = [input_list[0], ]
+    final_list = [input_list[0]]
     final_list.extend([input_list[x] for x in reduceMod(l, walk)])
     return final_list

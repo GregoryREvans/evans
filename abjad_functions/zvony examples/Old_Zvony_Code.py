@@ -2,11 +2,8 @@ import abjad
 import abjadext.rmakers
 
 rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[1, 2, -1, 1, 4, 1, 1],
-        denominator=16,
-        ),
-    )
+    talea=abjadext.rmakers.Talea(counts=[1, 2, -1, 1, 4, 1, 1], denominator=16)
+)
 
 divisions = [(3, 8), (4, 8), (3, 8), (4, 8)]
 selections = rhythm_maker(divisions)
@@ -15,7 +12,7 @@ all_pitches = [0, 11, [5, 15], 6, 7, 1, -5, 26, 0] * 2
 
 logical_ties = abjad.iterate(selections).logical_ties(pitched=True)
 
-'''
+"""
     PART 1: Commentary on Old file
 
     In the following loop, your variables are all mismatched,
@@ -84,7 +81,7 @@ logical_ties = abjad.iterate(selections).logical_ties(pitched=True)
     If we name all of our staff objects and global contexts, we can refer to them by name, like a variable.
 
     Continue to PART 2 in new file.
-'''
+"""
 
 for pitches, logical_tie in zip(logical_ties, all_pitches):
     for old_leaf in logical_tie:
@@ -94,9 +91,6 @@ for pitches, logical_tie in zip(logical_ties, all_pitches):
             new_leaf = abjad.Chord(pitches, old_leaf.written_duration)
             abjad.mutate(old_leaf).replace(new_leaf)
 
-lilypond_file = abjad.LilyPondFile.rhythm(
-    selections,
-    divisions,
-    )
+lilypond_file = abjad.LilyPondFile.rhythm(selections, divisions)
 
 abjad.show(lilypond_file)

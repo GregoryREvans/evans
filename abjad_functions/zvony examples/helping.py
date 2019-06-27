@@ -2,11 +2,8 @@ import abjad
 import abjadext.rmakers
 
 rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[1, 2, -1, 1, 4, 1, 1],
-        denominator=16,
-        ),
-    )
+    talea=abjadext.rmakers.Talea(counts=[1, 2, -1, 1, 4, 1, 1], denominator=16)
+)
 
 divisions = [(3, 8), (4, 8), (3, 8), (4, 8)]
 time_signatures = [abjad.TimeSignature(pair) for pair in divisions]
@@ -36,8 +33,6 @@ abjad.attach(time_signatures[1], leaves[5])
 abjad.attach(time_signatures[2], leaves[10])
 abjad.attach(time_signatures[3], leaves[13])
 
-lilypond_file = abjad.LilyPondFile.new(
-    staff
-    )
+lilypond_file = abjad.LilyPondFile.new(staff)
 
 abjad.show(lilypond_file)

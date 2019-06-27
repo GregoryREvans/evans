@@ -5,7 +5,7 @@ import abjadext.rmakers
 
 
 class CompositeRhythmMaker(AbjadValueObject):
-    r'''A composite rhythm-maker.
+    r"""A composite rhythm-maker.
 
     ::
 
@@ -111,26 +111,15 @@ class CompositeRhythmMaker(AbjadValueObject):
                 }
             }
 
-    '''
+    """
 
     ### CLASS VARIABLES ###
 
-    __slots__ = (
-        '_default',
-        '_first',
-        '_last',
-        '_only',
-        )
+    __slots__ = ("_default", "_first", "_last", "_only")
 
     ### INITIALIZER ###
 
-    def __init__(
-        self,
-        default=None,
-        first=None,
-        last=None,
-        only=None,
-        ):
+    def __init__(self, default=None, first=None, last=None, only=None):
         if first is not None:
             assert isinstance(first, abjadext.rmakers.RhythmMaker)
         if last is not None:
@@ -204,10 +193,10 @@ class CompositeRhythmMaker(AbjadValueObject):
         return result
 
     def __illustrate__(self, divisions=None):
-        r'''Illustrates composite rhythm-maker.
+        r"""Illustrates composite rhythm-maker.
 
         Returns LilyPond file.
-        '''
+        """
         divisions = divisions or [
             (3, 8),
             (4, 8),
@@ -218,24 +207,14 @@ class CompositeRhythmMaker(AbjadValueObject):
             (5, 16),
             (2, 8),
             (7, 8),
-            ]
+        ]
         selections = self(divisions)
-        lilypond_file = abjad.LilyPondFile.rhythm(
-            selections,
-            divisions,
-            )
+        lilypond_file = abjad.LilyPondFile.rhythm(selections, divisions)
         return lilypond_file
 
     ### PUBLIC METHODS ###
 
-    def new(
-        self,
-        first=None,
-        last=None,
-        only=None,
-        default=None,
-        **kwargs
-        ):
+    def new(self, first=None, last=None, only=None, default=None, **kwargs):
         first = first or self.first
         last = last or self.last
         only = only or self.only
@@ -248,13 +227,7 @@ class CompositeRhythmMaker(AbjadValueObject):
             only = abjad.new(only, **kwargs)
         if default is not None:
             default = abjad.new(default, **kwargs)
-        result = abjad.new(
-            self,
-            first=first,
-            last=last,
-            only=only,
-            default=default,
-            )
+        result = abjad.new(self, first=first, last=last, only=only, default=default)
         return result
 
     ### PUBLIC PROPERTIES ###

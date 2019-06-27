@@ -3,12 +3,11 @@ import os
 
 
 abjad_stylesheet = os.path.join(
-    os.environ.get('HOME'),
-    'abjad/docs/source/_stylesheets/abjad.ily'
+    os.environ.get("HOME"), "abjad/docs/source/_stylesheets/abjad.ily"
 )
 
 dir_path = os.path.split(__file__)[0]
-rhythm_stylesheet = os.path.join(dir_path, '_rhythm_sketch_stylesheet.ily')
+rhythm_stylesheet = os.path.join(dir_path, "_rhythm_sketch_stylesheet.ily")
 
 
 def cyc(lst):
@@ -38,15 +37,13 @@ class SilentTimespan(abjad.Timespan):
         self.annotation = annotation
 
     def _as_postscript(
-        self,
-        postscript_x_offset,
-        postscript_y_offset,
-        postscript_scale,
+        self, postscript_x_offset, postscript_y_offset, postscript_scale
     ):
         import abjad
-        start = (float(self._start_offset) * postscript_scale)
+
+        start = float(self._start_offset) * postscript_scale
         start -= postscript_x_offset
-        stop = (float(self._stop_offset) * postscript_scale)
+        stop = float(self._stop_offset) * postscript_scale
         stop -= postscript_x_offset
         ps = abjad.Postscript()
         ps = ps.setdash([0.5])
@@ -67,15 +64,24 @@ class TimespanSpecifier:
     """Generic specifier for annotation
     """
 
-    def __init__(self, voice_name=None, rhythm_maker=None, pitch_handler=None, articulation_handler=None, dynamics_handler=None):
+    def __init__(
+        self,
+        voice_name=None,
+        rhythm_maker=None,
+        rhythm_handler=None,
+        pitch_handler=None,
+        articulation_handler=None,
+        dynamics_handler=None,
+    ):
         self.voice_name = voice_name
         self.rhythm_maker = rhythm_maker
+        self.rhythm_handler = rhythm_handler
         self.pitch_handler = pitch_handler
         self.articulation_handler = articulation_handler
         self.dynamics_handler = dynamics_handler
 
         def __repr__(self):
-            return f'TimespanSpecifier(voice_name={self.voice_name})'
+            return f"TimespanSpecifier(voice_name={self.voice_name})"
 
 
 def make_split_list(timespan_list, offsets):
@@ -86,9 +92,12 @@ def make_split_list(timespan_list, offsets):
     """
 
     return abjad.TimespanList(
-        [timespan for timespanlist in timespan_list.split_at_offsets(offsets)
-         for timespan in timespanlist
-         ])
+        [
+            timespan
+            for timespanlist in timespan_list.split_at_offsets(offsets)
+            for timespan in timespanlist
+        ]
+    )
 
 
 def collect_offsets(timespan_list):
@@ -124,13 +133,13 @@ def make_showable_list(timespan_lists):
                 new_span = SilentTimespan(
                     start_offset=timespan.start_offset,
                     stop_offset=timespan.stop_offset,
-                    annotation=str(i+1)
+                    annotation=str(i + 1),
                 )
             else:
                 new_span = abjad.AnnotatedTimespan(
                     start_offset=timespan.start_offset,
                     stop_offset=timespan.stop_offset,
-                    annotation=str(i+1)
+                    annotation=str(i + 1),
                 )
             master_list.extend([new_span])
     master_list.sort()
@@ -147,21 +156,25 @@ def add_silent_timespans(timespan_list, specifier=None):
         abjad.TimespanList -- New timespan list containing SilentTimespans
     """
 
-    silent_timespans = abjad.TimespanList([
-        abjad.Timespan(
-            start_offset=0,
-            stop_offset=max(_.stop_offset for _ in timespan_list)
-        )])
+    silent_timespans = abjad.TimespanList(
+        [
+            abjad.Timespan(
+                start_offset=0, stop_offset=max(_.stop_offset for _ in timespan_list)
+            )
+        ]
+    )
     for timespan in timespan_list:
         silent_timespans -= timespan
     for silent_timespan in silent_timespans:
-        timespan_list.extend([
-            SilentTimespan(
-                start_offset=silent_timespan.start_offset,
-                stop_offset=silent_timespan.stop_offset,
-                annotation=specifier
-            )
-        ])
+        timespan_list.extend(
+            [
+                SilentTimespan(
+                    start_offset=silent_timespan.start_offset,
+                    stop_offset=silent_timespan.stop_offset,
+                    annotation=specifier,
+                )
+            ]
+        )
     return timespan_list
 
 
@@ -190,7 +203,7 @@ def add_silences_to_timespan_dict(timespan_dict, specifier=None):
         for timespan in timespan_list:
             silences -= timespan
         for silence in silences:
-            silence.annotation=specifier
+            silence.annotation = specifier
             timespan_list.extend([silence])
         timespan_list.sort()
 
@@ -214,18 +227,14 @@ def talea_timespans(talea, advancement=0):
     total_duration = 0
     for duration in talea:
         start = total_duration
-        stop = (total_duration+abs(duration))
+        stop = total_duration + abs(duration)
         if duration < 0:
             timespan = SilentTimespan(
-                start_offset=start,
-                stop_offset=stop,
-                annotation=None,
+                start_offset=start, stop_offset=stop, annotation=None
             )
         else:
             timespan = abjad.AnnotatedTimespan(
-                start_offset=start,
-                stop_offset=stop,
-                annotation=None
+                start_offset=start, stop_offset=stop, annotation=None
             )
         timespans.append(timespan)
         total_duration += abs(duration)

@@ -1,37 +1,37 @@
 import abjad
 import abjadext.rmakers
 
-'''
+"""
     Here we have defined our entire score stucture.
     We have named everything too! We can refer to things by using a syntax like this:
         score['name']
     We could call for Staff 1 or Voice 1 or Global Context,
     but its important to remember that you are referring to the name and *not* the lilypond_type.
-'''
+"""
 
-score = abjad.Score([
-    abjad.Staff(lilypond_type='GlobalContext', name='Global Context'),
-    abjad.StaffGroup(
-        [
-            abjad.Staff([abjad.Voice(name='Voice 1')],name='Staff 1', lilypond_type='Staff',),
-        ],
-        name='Staff Group',
-    ),
-],
+score = abjad.Score(
+    [
+        abjad.Staff(lilypond_type="GlobalContext", name="Global Context"),
+        abjad.StaffGroup(
+            [
+                abjad.Staff(
+                    [abjad.Voice(name="Voice 1")], name="Staff 1", lilypond_type="Staff"
+                )
+            ],
+            name="Staff Group",
+        ),
+    ]
 )
 
-'''
+"""
     We can create the rmakers like normal.
-'''
+"""
 
 rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[1, 2, -1, 1, 4, 1, 1],
-        denominator=16,
-        ),
-    )
+    talea=abjadext.rmakers.Talea(counts=[1, 2, -1, 1, 4, 1, 1], denominator=16)
+)
 
-'''
+"""
     We need a slightly fancier structure for time signature creation.
         LilyPondFile.rhythm()
     did some of this for us in the past, but here we do it ourselves.
@@ -43,33 +43,31 @@ rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
         [(3, 8), (4, 8), (3, 8), (4, 8)]
     but our new list is
         [abjad.TimeSignature(3, 8), abjad.TimeSignature(4, 8), abjad.TimeSignature(3, 8), abjad.TimeSignature(4, 8), ]
-'''
+"""
 pairs = [(3, 8), (4, 8), (3, 8), (4, 8)]
-time_signatures = [
-    abjad.TimeSignature(pair) for pair in pairs
-    ]
+time_signatures = [abjad.TimeSignature(pair) for pair in pairs]
 
-'''
+"""
     Now we create the skips like I described in the last file.
     We change the length of the skips based on the lengths of the time signatures,
     attach a time signture to the skip,
     then we append them to our Global Context with the sytax we saw at the top of this file.
-'''
+"""
 
 for time_signature, pair in zip(time_signatures, pairs):
     skip = abjad.Skip()
     skip.written_duration = pair
     abjad.attach(time_signature, skip)
-    score['Global Context'].append(skip)
+    score["Global Context"].append(skip)
 
-'''
+"""
     We can still make our rhythm and pitch lists like normal.
-'''
+"""
 
 rhythms = rhythm_maker(time_signatures)
 pitch_list = [0, 11, [5, 15], 6, 7, 1, -5, 26, 0] * 2
 
-'''
+"""
     Here you can see a cleaned up version of what you alerady had going.
     All of the variables are organized appropriately and there is no longer any confusion between the variables
         pitch
@@ -82,9 +80,9 @@ pitch_list = [0, 11, [5, 15], 6, 7, 1, -5, 26, 0] * 2
     or
         list
     which are how we refer to the python data types of integers and lists
-'''
+"""
 
-for voice in abjad.select(score['Staff 1']).components(abjad.Voice):
+for voice in abjad.select(score["Staff 1"]).components(abjad.Voice):
     voice.extend(rhythms)
     logical_ties = abjad.iterate(voice).logical_ties(pitched=True)
     for pitch, logical_tie in zip(pitch_list, logical_ties):
@@ -99,7 +97,7 @@ for voice in abjad.select(score['Staff 1']).components(abjad.Voice):
                         abjad.attach(indicator, new_leaf)
                 abjad.mutate(old_leaf).replace(new_leaf)
 
-'''
+"""
     Now here is where all of this work pays off.
     Instead of LilyPondFile.rhythm, we use
 
@@ -118,17 +116,17 @@ for voice in abjad.select(score['Staff 1']).components(abjad.Voice):
     but specifically the
         rhythm-maker-docs.ily
     contains a definitions of a *basic* global context which gives us our floating time signatures.
-'''
+"""
 
 score_file = abjad.LilyPondFile.new(
     score,
     includes=[
-        '/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily',
-        '/Users/evansdsg2/abjad/docs/source/_stylesheets/rhythm-maker-docs.ily',
-            ],
-    )
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily",
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/rhythm-maker-docs.ily",
+    ],
+)
 
-'''
+"""
     Finally we show our file that we made.
     Just like LilyPondFile.rhythm,
         abjad.show()
@@ -138,6 +136,6 @@ score_file = abjad.LilyPondFile.new(
     I can show you some fancy things with persist later if you want, but for now this should be a good step forward.
 
     Happy composing.
-'''
+"""
 
 abjad.show(score_file)

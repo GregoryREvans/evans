@@ -1,5 +1,6 @@
 import abjad
 
+
 def make_split_list(timespan_list, offsets):
     """Splits Timespans within TimespanList by offsets
 
@@ -7,17 +8,18 @@ def make_split_list(timespan_list, offsets):
         TimespanList
     """
     return abjad.TimespanList(
-        [timespan for timespanlist in timespan_list.split_at_offsets(offsets)
-         for timespan in timespanlist
-         ])
+        [
+            timespan
+            for timespanlist in timespan_list.split_at_offsets(offsets)
+            for timespan in timespanlist
+        ]
+    )
+
 
 class TimespanMaker(object):
     """Timespan Maker"""
 
-    __slots__ = [
-        '_denominator',
-        '_total_duration',
-    ]
+    __slots__ = ["_denominator", "_total_duration"]
 
     def __init__(self, denominator, total_duration):
         self._denominator = denominator
@@ -44,7 +46,7 @@ class TimespanMaker(object):
                 abjad.AnnotatedTimespan(
                     start_offset=(start, denominator),
                     stop_offset=(stop, denominator),
-                    annotation=None
+                    annotation=None,
                 )
             )
             increment_total += count

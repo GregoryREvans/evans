@@ -7,9 +7,20 @@ import abjadext.rmakers
 
 
 time_signatures = [
-    abjad.TimeSignature(pair) for pair in [
-        (5, 4), (4, 4), (3, 4), (5, 4), (4, 4), (3, 4),
-        (3, 4), (4, 4), (5, 4), (3, 4), (4, 4), (5, 4),
+    abjad.TimeSignature(pair)
+    for pair in [
+        (5, 4),
+        (4, 4),
+        (3, 4),
+        (5, 4),
+        (4, 4),
+        (3, 4),
+        (3, 4),
+        (4, 4),
+        (5, 4),
+        (3, 4),
+        (4, 4),
+        (5, 4),
     ]
 ]
 
@@ -20,34 +31,22 @@ bounds = abjad.mathtools.cumulative_sums([_.duration for _ in time_signatures])
 
 
 rmaker_one = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[1, 2, 3, 4],
-        denominator=16,
-        ),
+    talea=abjadext.rmakers.Talea(counts=[1, 2, 3, 4], denominator=16),
     beam_specifier=abjadext.rmakers.BeamSpecifier(
-        beam_divisions_together=True,
-        beam_rests=False,
-        ),
-    )
+        beam_divisions_together=True, beam_rests=False
+    ),
+)
 
 rmaker_two = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[4, 3, -1, 2],
-        denominator=8,
-        ),
+    talea=abjadext.rmakers.Talea(counts=[4, 3, -1, 2], denominator=8),
     beam_specifier=abjadext.rmakers.BeamSpecifier(
-        beam_divisions_together=True,
-        beam_rests=False,
-        ),
-    )
+        beam_divisions_together=True, beam_rests=False
+    ),
+)
 
 silence_maker = abjadext.rmakers.NoteRhythmMaker(
-    division_masks=[
-        abjadext.rmakers.SilenceMask(
-            pattern=abjad.index([0], 1),
-            ),
-        ],
-    )
+    division_masks=[abjadext.rmakers.SilenceMask(pattern=abjad.index([0], 1))]
+)
 
 
 # Define a small class so that we can annotate timespans with additional
@@ -55,7 +54,6 @@ silence_maker = abjadext.rmakers.NoteRhythmMaker(
 
 
 class MusicSpecifier:
-
     def __init__(self, rhythm_maker, voice_name):
         self.rhythm_maker = rhythm_maker
         self.voice_name = voice_name
@@ -68,89 +66,85 @@ class MusicSpecifier:
 # space.
 
 
-voice_1_timespan_list = abjad.TimespanList([
-    abjad.AnnotatedTimespan(
-        start_offset=start_offset,
-        stop_offset=stop_offset,
-        annotation=MusicSpecifier(
-            rhythm_maker=rhythm_maker,
-            voice_name='Voice 1',
-        ),
-    )
-    for start_offset, stop_offset, rhythm_maker in [
-        [(0, 4), (3, 4), rmaker_one],
-        [(5, 4), (8, 4), rmaker_one],
-        [(12, 4), (15, 4), rmaker_two],
-        [(17, 4), (20, 4), rmaker_one],
-        [(28, 4), (31, 4), rmaker_two],
-        [(33, 4), (36, 4), rmaker_two],
-        [(40, 4), (43, 4), rmaker_one],
-        [(45, 4), (48, 4), rmaker_two],
+voice_1_timespan_list = abjad.TimespanList(
+    [
+        abjad.AnnotatedTimespan(
+            start_offset=start_offset,
+            stop_offset=stop_offset,
+            annotation=MusicSpecifier(rhythm_maker=rhythm_maker, voice_name="Voice 1"),
+        )
+        for start_offset, stop_offset, rhythm_maker in [
+            [(0, 4), (3, 4), rmaker_one],
+            [(5, 4), (8, 4), rmaker_one],
+            [(12, 4), (15, 4), rmaker_two],
+            [(17, 4), (20, 4), rmaker_one],
+            [(28, 4), (31, 4), rmaker_two],
+            [(33, 4), (36, 4), rmaker_two],
+            [(40, 4), (43, 4), rmaker_one],
+            [(45, 4), (48, 4), rmaker_two],
+        ]
     ]
-])
+)
 
-voice_2_timespan_list = abjad.TimespanList([
-    abjad.AnnotatedTimespan(
-        start_offset=start_offset,
-        stop_offset=stop_offset,
-        annotation=MusicSpecifier(
-            rhythm_maker=rhythm_maker,
-            voice_name='Voice 2',
-        ),
-    )
-    for start_offset, stop_offset, rhythm_maker in [
-        [(4, 4), (7, 4), rmaker_two],
-        [(9, 4), (12, 4), rmaker_one],
-        [(16, 4), (19, 4), rmaker_two],
-        [(21, 4), (24, 4), rmaker_one],
-        [(24, 4), (27, 4), rmaker_one],
-        [(29, 4), (32, 4), rmaker_two],
-        [(36, 4), (39, 4), rmaker_one],
-        [(41, 4), (44, 4), rmaker_two],
+voice_2_timespan_list = abjad.TimespanList(
+    [
+        abjad.AnnotatedTimespan(
+            start_offset=start_offset,
+            stop_offset=stop_offset,
+            annotation=MusicSpecifier(rhythm_maker=rhythm_maker, voice_name="Voice 2"),
+        )
+        for start_offset, stop_offset, rhythm_maker in [
+            [(4, 4), (7, 4), rmaker_two],
+            [(9, 4), (12, 4), rmaker_one],
+            [(16, 4), (19, 4), rmaker_two],
+            [(21, 4), (24, 4), rmaker_one],
+            [(24, 4), (27, 4), rmaker_one],
+            [(29, 4), (32, 4), rmaker_two],
+            [(36, 4), (39, 4), rmaker_one],
+            [(41, 4), (44, 4), rmaker_two],
+        ]
     ]
-])
+)
 
-voice_3_timespan_list = abjad.TimespanList([
-    abjad.AnnotatedTimespan(
-        start_offset=start_offset,
-        stop_offset=stop_offset,
-        annotation=MusicSpecifier(
-            rhythm_maker=rhythm_maker,
-            voice_name='Voice 3',
-        ),
-    )
-    for start_offset, stop_offset, rhythm_maker in [
-        [(2, 4), (5, 4), rmaker_one],
-        [(9, 4), (12, 4), rmaker_two],
-        [(14, 4), (17, 4), rmaker_two],
-        [(21, 4), (24, 4), rmaker_one],
-        [(24, 4), (27, 4), rmaker_two],
-        [(31, 4), (34, 4), rmaker_one],
-        [(36, 4), (39, 4), rmaker_one],
-        [(43, 4), (46, 4), rmaker_two],
+voice_3_timespan_list = abjad.TimespanList(
+    [
+        abjad.AnnotatedTimespan(
+            start_offset=start_offset,
+            stop_offset=stop_offset,
+            annotation=MusicSpecifier(rhythm_maker=rhythm_maker, voice_name="Voice 3"),
+        )
+        for start_offset, stop_offset, rhythm_maker in [
+            [(2, 4), (5, 4), rmaker_one],
+            [(9, 4), (12, 4), rmaker_two],
+            [(14, 4), (17, 4), rmaker_two],
+            [(21, 4), (24, 4), rmaker_one],
+            [(24, 4), (27, 4), rmaker_two],
+            [(31, 4), (34, 4), rmaker_one],
+            [(36, 4), (39, 4), rmaker_one],
+            [(43, 4), (46, 4), rmaker_two],
+        ]
     ]
-])
+)
 
-voice_4_timespan_list = abjad.TimespanList([
-    abjad.AnnotatedTimespan(
-        start_offset=start_offset,
-        stop_offset=stop_offset,
-        annotation=MusicSpecifier(
-            rhythm_maker=rhythm_maker,
-            voice_name='Voice 4',
-        ),
-    )
-    for start_offset, stop_offset, rhythm_maker in [
-        [(0, 4), (3, 4), rmaker_two],
-        [(6, 4), (9, 4), rmaker_two],
-        [(10, 4), (13, 4), rmaker_one],
-        [(17, 4), (21, 4), rmaker_two],
-        [(25, 4), (29, 4), rmaker_one],
-        [(33, 4), (36, 4), rmaker_one],
-        [(38, 4), (41, 4), rmaker_two],
-        [(45, 4), (48, 4), rmaker_one],
+voice_4_timespan_list = abjad.TimespanList(
+    [
+        abjad.AnnotatedTimespan(
+            start_offset=start_offset,
+            stop_offset=stop_offset,
+            annotation=MusicSpecifier(rhythm_maker=rhythm_maker, voice_name="Voice 4"),
+        )
+        for start_offset, stop_offset, rhythm_maker in [
+            [(0, 4), (3, 4), rmaker_two],
+            [(6, 4), (9, 4), rmaker_two],
+            [(10, 4), (13, 4), rmaker_one],
+            [(17, 4), (21, 4), rmaker_two],
+            [(25, 4), (29, 4), rmaker_one],
+            [(33, 4), (36, 4), rmaker_one],
+            [(38, 4), (41, 4), rmaker_two],
+            [(45, 4), (48, 4), rmaker_one],
+        ]
     ]
-])
+)
 
 
 # Create a dictionary mapping voice names to timespan lists so we can
@@ -158,10 +152,10 @@ voice_4_timespan_list = abjad.TimespanList([
 
 
 all_timespan_lists = {
-    'Voice 1': voice_1_timespan_list,
-    'Voice 2': voice_2_timespan_list,
-    'Voice 3': voice_3_timespan_list,
-    'Voice 4': voice_4_timespan_list,
+    "Voice 1": voice_1_timespan_list,
+    "Voice 2": voice_2_timespan_list,
+    "Voice 3": voice_3_timespan_list,
+    "Voice 4": voice_4_timespan_list,
 }
 
 
@@ -169,8 +163,7 @@ all_timespan_lists = {
 
 
 global_timespan = abjad.Timespan(
-    start_offset=0,
-    stop_offset=max(_.stop_offset for _ in all_timespan_lists.values())
+    start_offset=0, stop_offset=max(_.stop_offset for _ in all_timespan_lists.values())
 )
 
 
@@ -200,10 +193,7 @@ for voice_name, timespan_list in all_timespan_lists.items():
             abjad.AnnotatedTimespan(
                 start_offset=silence_timespan.start_offset,
                 stop_offset=silence_timespan.stop_offset,
-                annotation=MusicSpecifier(
-                    rhythm_maker=None,
-                    voice_name=voice_name,
-                ),
+                annotation=MusicSpecifier(rhythm_maker=None, voice_name=voice_name),
             )
         )
     timespan_list.sort()
@@ -228,37 +218,27 @@ for voice_name, timespan_list in all_timespan_lists.items():
 # Create a score structure
 
 
-score = abjad.Score([
-    abjad.Staff(name='Global Context'),
-    abjad.StaffGroup(
-        [
-            abjad.Staff(
-                [abjad.Voice(name='Voice 1')],
-                name='Staff 1',
-            ),
-            abjad.Staff(
-                [abjad.Voice(name='Voice 2')],
-                name='Staff 2',
-            ),
-            abjad.Staff(
-                [abjad.Voice(name='Voice 3')],
-                name='Staff 3',
-            ),
-            abjad.Staff(
-                [abjad.Voice(name='Voice 4')],
-                name='Staff 4',
-            ),
-        ],
-        name='Staff Group',
-    )
-])
+score = abjad.Score(
+    [
+        abjad.Staff(name="Global Context"),
+        abjad.StaffGroup(
+            [
+                abjad.Staff([abjad.Voice(name="Voice 1")], name="Staff 1"),
+                abjad.Staff([abjad.Voice(name="Voice 2")], name="Staff 2"),
+                abjad.Staff([abjad.Voice(name="Voice 3")], name="Staff 3"),
+                abjad.Staff([abjad.Voice(name="Voice 4")], name="Staff 4"),
+            ],
+            name="Staff Group",
+        ),
+    ]
+)
 
 
 # Teach each of the staves how to draw analysis brackets
 
 
-for staff in score['Staff Group']:
-    staff.consists_commands.append('Horizontal_bracket_engraver')
+for staff in score["Staff Group"]:
+    staff.consists_commands.append("Horizontal_bracket_engraver")
 
 
 # Add skips and time signatures to the global context
@@ -268,7 +248,7 @@ for time_signature in time_signatures:
     skip = abjad.Skip(1)
     abjad.attach(abjad.Multiplier(time_signature), skip)
     abjad.attach(time_signature, skip)
-    score['Global Context'].append(skip)
+    score["Global Context"].append(skip)
 
 
 # Define a helper function that takes a rhythm maker and some durations and
@@ -280,8 +260,8 @@ def make_container(rhythm_maker, durations):
     selections = rhythm_maker(durations)
     container = abjad.Container(selections)
     # Add analysis brackets so we can see the phrasing graphically
-    start_indicator = abjad.LilyPondLiteral('\startGroup', format_slot='after')
-    stop_indicator = abjad.LilyPondLiteral('\stopGroup', format_slot='after')
+    start_indicator = abjad.LilyPondLiteral("\startGroup", format_slot="after")
+    stop_indicator = abjad.LilyPondLiteral("\stopGroup", format_slot="after")
     for cell in selections:
         cell_first_leaf = abjad.select(cell).leaves()[0]
         cell_last_leaf = abjad.select(cell).leaves()[-1]
@@ -289,8 +269,8 @@ def make_container(rhythm_maker, durations):
         abjad.attach(stop_indicator, cell_last_leaf)
     # The extra space in the literals is a hack around a check for whether an
     # identical object has already been attached
-    start_indicator = abjad.LilyPondLiteral('\startGroup ', format_slot='after')
-    stop_indicator = abjad.LilyPondLiteral('\stopGroup ', format_slot='after')
+    start_indicator = abjad.LilyPondLiteral("\startGroup ", format_slot="after")
+    stop_indicator = abjad.LilyPondLiteral("\stopGroup ", format_slot="after")
     phrase_first_leaf = abjad.select(container).leaves()[0]
     phrase_last_leaf = abjad.select(container).leaves()[-1]
     abjad.attach(start_indicator, phrase_first_leaf)
@@ -315,10 +295,7 @@ def key_function(timespan):
 
 
 for voice_name, timespan_list in all_timespan_lists.items():
-    for rhythm_maker, grouper in itertools.groupby(
-        timespan_list,
-        key=key_function,
-    ):
+    for rhythm_maker, grouper in itertools.groupby(timespan_list, key=key_function):
         # We know the voice name of each timespan because a) the timespan
         # list is in a dictionary, associated with that voice name and b)
         # each timespan's annotation is a MusicSpecifier instance which

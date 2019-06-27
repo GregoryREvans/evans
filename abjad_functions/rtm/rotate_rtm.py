@@ -1,5 +1,6 @@
 from moscotta.mtools.rtmrewrite import funnel_tree_to_x
 
+
 def flatten(lst):
     out = []
     for i in lst:
@@ -9,18 +10,20 @@ def flatten(lst):
             out.extend(flatten(i))
     return out
 
+
 def nested_list_to_rtm(nested_list):
-    out_string = ''
+    out_string = ""
     for item in str(nested_list):
-        if item == '[':
-            out_string += '('
-        if item == ']':
-            out_string += ')'
+        if item == "[":
+            out_string += "("
+        if item == "]":
+            out_string += ")"
         if str.isdigit(item):
             out_string += item
-        if item == ' ':
+        if item == " ":
             out_string += item
     return out_string
+
 
 def rotate_tree(rtm_string, n=1):
     opening = rtm_string[:3]
@@ -28,13 +31,14 @@ def rotate_tree(rtm_string, n=1):
     closing = rtm_string[-1]
     digits = [_ for _ in middle if str.isdigit(_)]
     digits = (_ for _ in digits[n:] + digits[:n])
-    new_middle = ''
+    new_middle = ""
     for item in middle:
         if str.isdigit(item):
             new_middle += next(digits)
             continue
         new_middle += item
     return opening + new_middle + closing
+
 
 def funnel_inner_tree_to_x(rtm_string, x=1):
     opening = rtm_string[:3]
@@ -44,6 +48,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
     for _ in funnel_tree_to_x(rtm=middle, x=x):
         funnel_list.append(opening + _ + closing)
     return funnel_list
+
 
 # rtm = '(1 (3 (2 (1 2 1 1)) 3))'
 # for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):

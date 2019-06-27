@@ -3,55 +3,51 @@ import abc
 
 
 AbstractBase = abc.ABCMeta(
-    'AbstractBase',
+    "AbstractBase",
     (),
-    {
-        '__metaclass__': abc.ABCMeta,
-        '__module__': __name__,
-        '__slots__': (),
-        },
-    )
+    {"__metaclass__": abc.ABCMeta, "__module__": __name__, "__slots__": ()},
+)
 
 
 class AbjadObject(AbstractBase):
-    '''Abstract base class from which many custom classes inherit.
-    '''
+    """Abstract base class from which many custom classes inherit.
+    """
 
     ### CLASS VARIABLES ###
 
-    __slots__ = (
-        )
+    __slots__ = ()
 
     ### SPECIAL METHODS ###
 
     def __eq__(self, argument):
-        r'''Is true when ID of `argument` equals ID of Abjad object.
+        r"""Is true when ID of `argument` equals ID of Abjad object.
         Otherwise false.
         Returns true or false.
-        '''
+        """
         return id(self) == id(argument)
 
-    def __format__(self, format_specification=''):
-        r'''Formats Abjad object.
+    def __format__(self, format_specification=""):
+        r"""Formats Abjad object.
         Set `format_specification` to `''` or `'storage'`.
         Interprets `''` equal to `'storage'`.
         Returns string.
-        '''
+        """
         from abjad import system
-        if format_specification in ('', 'storage'):
+
+        if format_specification in ("", "storage"):
             return system.StorageFormatManager(self).get_storage_format()
         return str(self)
 
     def __getstate__(self):
-        r'''Gets state of Abjad object.
+        r"""Gets state of Abjad object.
         Returns dictionary.
-        '''
-        if hasattr(self, '__dict__') and hasattr(vars(self), 'copy'):
+        """
+        if hasattr(self, "__dict__") and hasattr(vars(self), "copy"):
             state = vars(self).copy()
         else:
             state = {}
         for class_ in type(self).__mro__:
-            for slot in getattr(class_, '__slots__', ()):
+            for slot in getattr(class_, "__slots__", ()):
                 try:
                     state[slot] = getattr(self, slot)
                 except AttributeError:
@@ -59,30 +55,31 @@ class AbjadObject(AbstractBase):
         return state
 
     def __hash__(self):
-        r'''Hashes Abjad object.
+        r"""Hashes Abjad object.
         Required to be explicitly redefined on Python 3 if __eq__ changes.
         Returns integer.
-        '''
+        """
         return super(AbjadObject, self).__hash__()
 
     def __ne__(self, argument):
-        r'''Is true when Abjad object does not equal `argument`.
+        r"""Is true when Abjad object does not equal `argument`.
         Otherwise false.
         Returns true or false.
-        '''
+        """
         return not self == argument
 
     def __repr__(self):
-        r'''Gets interpreter representation of Abjad object.
+        r"""Gets interpreter representation of Abjad object.
         Returns string.
-        '''
+        """
         from abjad import system
+
         return system.StorageFormatManager(self).get_repr_format()
 
     def __setstate__(self, state):
-        r'''Sets state of Abjad object.
+        r"""Sets state of Abjad object.
         Returns none.
-        '''
+        """
         for key, value in state.items():
             setattr(self, key, value)
 
@@ -90,9 +87,9 @@ class AbjadObject(AbstractBase):
 
     def _debug(self, value, annotation=None, blank=False):
         if annotation is None:
-            print('debug: {!r}'.format(value))
+            print("debug: {!r}".format(value))
         else:
-            print('debug ({}): {!r}'.format(annotation, value))
+            print("debug ({}): {!r}".format(annotation, value))
         if blank:
             print()
 
@@ -109,4 +106,5 @@ class AbjadObject(AbstractBase):
 
     def _get_format_specification(self):
         from abjad import system
+
         return system.FormatSpecification(client=self)

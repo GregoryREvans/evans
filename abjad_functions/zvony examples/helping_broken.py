@@ -2,11 +2,8 @@ import abjad
 import abjadext.rmakers
 
 rhythm_maker = abjadext.rmakers.TaleaRhythmMaker(
-    talea=abjadext.rmakers.Talea(
-        counts=[1, 2, -1, 1, 4, 1, 1],
-        denominator=16,
-        ),
-    )
+    talea=abjadext.rmakers.Talea(counts=[1, 2, -1, 1, 4, 1, 1], denominator=16)
+)
 
 divisions = [(3, 8), (4, 8), (3, 8), (4, 8)]
 time_signatures = [abjad.TimeSignature(pair) for pair in divisions]
@@ -14,7 +11,7 @@ print(time_signatures)
 selections = rhythm_maker(divisions)
 
 pitch_list = [0, 11, [5, 15], 6, 7, 1, -5, 26, 2] * 2
-measures = [abjad.Measure(), abjad.Measure(), abjad.Measure(), abjad.Measure(), ]
+measures = [abjad.Measure(), abjad.Measure(), abjad.Measure(), abjad.Measure()]
 staff = abjad.Staff()
 staff.extend(measures)
 staff.extend(selections)
@@ -32,11 +29,11 @@ for pitch, logical_tie in zip(pitch_list, logical_ties):
                     abjad.attach(indicator, new_leaf)
             abjad.mutate(old_leaf).replace(new_leaf)
 
-for time_signature, measure in zip(time_signatures, abjad.iterate(staff).components(abjad.Measure)):
+for time_signature, measure in zip(
+    time_signatures, abjad.iterate(staff).components(abjad.Measure)
+):
     abjad.attach(time_signature, measure[0])
 
-lilypond_file = abjad.LilyPondFile.new(
-    staff
-    )
+lilypond_file = abjad.LilyPondFile.new(staff)
 
 abjad.show(lilypond_file)

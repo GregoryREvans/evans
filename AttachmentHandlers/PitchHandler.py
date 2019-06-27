@@ -1,12 +1,8 @@
 import abjad
 
-class PitchHandler:
 
-    def __init__(
-        self,
-        pitch_list=None,
-        continuous=False,
-        ):
+class PitchHandler:
+    def __init__(self, pitch_list=None, continuous=False):
         self.pitch_list = pitch_list
         self.continuous = continuous
         self._count = -1
@@ -21,6 +17,7 @@ class PitchHandler:
             while True:
                 self._count += 1
                 yield lst[self._count % len(lst)]
+
         cyc_pitches = cyc(pitches)
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:
@@ -42,10 +39,10 @@ class PitchHandler:
         leaf_maker = abjad.LeafMaker()
         container = abjad.Container()
         container.extend(selections)
-        old_ties = [tie for tie in abjad.iterate(
-            container).logical_ties()]
+        old_ties = [tie for tie in abjad.iterate(container).logical_ties()]
         pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
-            old_ties, pitches)
+            old_ties, pitches
+        )
         new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
         for old_leaf, new_leaf in zip(old_leaves, new_leaves):
             indicators = abjad.inspect(old_leaf).indicators()

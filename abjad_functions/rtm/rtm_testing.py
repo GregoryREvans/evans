@@ -36,22 +36,23 @@ import abjad
 from abjadext import rmakers
 import evans.abjad_functions.talea_timespan.timespan_functions
 
-class RTMMaker:
 
+class RTMMaker:
     def __init__(
         self,
-        rtm='(1 1 1 1)',
+        rtm="(1 1 1 1)",
         previous_state=[],
         duration=abjad.Duration(1, 4),
         state=[],
         continuous=False,
-        ):
+    ):
         def cyc(lst):
             if self.continuous == False:
                 self._count = 0
             while True:
                 yield lst[self._count % len(lst)]
                 self._count += 1
+
         self.rtm = rtm
         self.previous_state = state
         self.duration = duration
@@ -60,7 +61,7 @@ class RTMMaker:
         self._count = 0
 
     def __call__(self, rtm_type, duration_type):
-            return self._rtm_maker(duration, self.rtm, self.previous_state)
+        return self._rtm_maker(duration, self.rtm, self.previous_state)
 
     def _rhythm_cell(self, duration, rtm):
         rtm_parser = abjad.rhythmtrees.RhythmTreeParser()

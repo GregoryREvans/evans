@@ -3,7 +3,7 @@ from abjad import system
 
 
 class TimespanCollection(AbjadObject):
-    r'''A mutable always-sorted collection of timespans.
+    r"""A mutable always-sorted collection of timespans.
 
     ::
 
@@ -16,20 +16,15 @@ class TimespanCollection(AbjadObject):
         ...     )
         >>> timespan_collection = consort.TimespanCollection(timespans)
 
-    '''
+    """
 
     ### CLASS VARIABLES ###
 
-    __slots__ = (
-        '_root_node',
-        )
+    __slots__ = ("_root_node",)
 
     ### INITIALIZER ###
 
-    def __init__(
-        self,
-        timespans=None,
-        ):
+    def __init__(self, timespans=None):
         self._root_node = None
         if timespans is not None and timespans:
             self.insert(timespans)
@@ -37,7 +32,7 @@ class TimespanCollection(AbjadObject):
     ### SPECIAL METHODS ###
 
     def __contains__(self, timespan):
-        r'''Is true if this timespan collection contains `timespan`. Otherwise
+        r"""Is true if this timespan collection contains `timespan`. Otherwise
         false.
 
         ::
@@ -62,14 +57,14 @@ class TimespanCollection(AbjadObject):
             False
 
         Returns boolean.
-        '''
+        """
         assert TimespanCollection._is_timespan(timespan)
         candidates = self.find_timespans_starting_at(timespan.start_offset)
         result = timespan in candidates
         return result
 
     def __getitem__(self, i):
-        r'''Gets timespan at index `i`.
+        r"""Gets timespan at index `i`.
 
         ::
 
@@ -97,7 +92,8 @@ class TimespanCollection(AbjadObject):
             Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
 
         Returns timespan or timespans.
-        '''
+        """
+
         def recurse_by_index(node, index):
             if node.node_start_index <= index < node.node_stop_index:
                 return node.payload[index - node.node_start_index]
@@ -137,10 +133,10 @@ class TimespanCollection(AbjadObject):
             start, stop = indices[0], indices[1]
             return recurse_by_slice(self._root_node, start, stop)
 
-        raise TypeError('Indices must be integers or slices, got {}'.format(i))
+        raise TypeError("Indices must be integers or slices, got {}".format(i))
 
     def __iter__(self):
-        r'''Iterates timespans in this timespan collection.
+        r"""Iterates timespans in this timespan collection.
 
         ::
 
@@ -165,7 +161,7 @@ class TimespanCollection(AbjadObject):
             Timespan(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
 
         Returns generator.
-        '''
+        """
 
         def recurse(node):
             if node is not None:
@@ -177,10 +173,11 @@ class TimespanCollection(AbjadObject):
                 if node.right_child is not None:
                     for timespan in recurse(node.right_child):
                         yield timespan
+
         return recurse(self._root_node)
 
     def __len__(self):
-        r'''Gets length of this timespan collection.
+        r"""Gets length of this timespan collection.
 
         ::
 
@@ -199,13 +196,13 @@ class TimespanCollection(AbjadObject):
             5
 
         Returns integer.
-        '''
+        """
         if self._root_node is None:
             return 0
         return self._root_node.subtree_stop_index
 
     def __setitem__(self, i, new):
-        r'''Sets timespans at index `i` to `new`.
+        r"""Sets timespans at index `i` to `new`.
 
         ::
 
@@ -223,17 +220,17 @@ class TimespanCollection(AbjadObject):
             >>> timespan_collection[:3] = [abjad.Timespan(100, 200)]
 
         Returns none.
-        '''
+        """
         if isinstance(i, (int, slice)):
             old = self[i]
             self.remove(old)
             self.insert(new)
         else:
-            message = 'Indices must be ints or slices, got {}'.format(i)
+            message = "Indices must be ints or slices, got {}".format(i)
             raise TypeError(message)
 
     def __sub__(self, timespan):
-        r'''Delete material that intersects `timespan`:
+        r"""Delete material that intersects `timespan`:
 
         ::
 
@@ -273,12 +270,11 @@ class TimespanCollection(AbjadObject):
                 )
 
         Operates in place and returns timespan collection.
-        '''
-        intersecting_timespans = self.find_timespans_intersecting_timespan(
-            timespan)
+        """
+        intersecting_timespans = self.find_timespans_intersecting_timespan(timespan)
         self.remove(intersecting_timespans)
         for intersecting_timespan in intersecting_timespans:
-            for x in (intersecting_timespan - timespan):
+            for x in intersecting_timespan - timespan:
                 self.insert(x)
         return self
 
@@ -286,6 +282,7 @@ class TimespanCollection(AbjadObject):
 
     def _insert_node(self, node, start_offset):
         from evans.consort_reviv.TimespanCollectionNode import TimespanCollectionNode
+
         if node is None:
             return TimespanCollectionNode(start_offset)
         if start_offset < node.start_offset:
@@ -295,17 +292,14 @@ class TimespanCollection(AbjadObject):
         return self._rebalance(node)
 
     def _insert_timespan(self, timespan):
-        self._root_node = self._insert_node(
-            self._root_node,
-            timespan.start_offset,
-            )
+        self._root_node = self._insert_node(self._root_node, timespan.start_offset)
         node = self._search(self._root_node, timespan.start_offset)
         node.payload.append(timespan)
         node.payload.sort(key=lambda x: x.stop_offset)
 
     @staticmethod
     def _is_timespan(expr):
-        if hasattr(expr, 'start_offset') and hasattr(expr, 'stop_offset'):
+        if hasattr(expr, "start_offset") and hasattr(expr, "stop_offset"):
             return True
         return False
 
@@ -334,21 +328,14 @@ class TimespanCollection(AbjadObject):
                     node._start_offset = next_node._start_offset
                     node._payload = next_node._payload
                     node.right_child = self._remove_node(
-                        node.right_child,
-                        next_node.start_offset,
-                        )
+                        node.right_child, next_node.start_offset
+                    )
                 else:
                     node = node.left_child or node.right_child
             elif start_offset < node.start_offset:
-                node.left_child = self._remove_node(
-                    node.left_child,
-                    start_offset,
-                    )
+                node.left_child = self._remove_node(node.left_child, start_offset)
             elif node.start_offset < start_offset:
-                node.right_child = self._remove_node(
-                    node.right_child,
-                    start_offset,
-                    )
+                node.right_child = self._remove_node(node.right_child, start_offset)
         return self._rebalance(node)
 
     def _remove_timespan(self, timespan, old_start_offset=None):
@@ -361,10 +348,7 @@ class TimespanCollection(AbjadObject):
         if timespan in node.payload:
             node.payload.remove(timespan)
         if not node.payload:
-            self._root_node = self._remove_node(
-                self._root_node,
-                start_offset,
-                )
+            self._root_node = self._remove_node(self._root_node, start_offset)
         if isinstance(timespan, TimespanCollection):
             timespan._parents.remove(self)
 
@@ -400,21 +384,12 @@ class TimespanCollection(AbjadObject):
                 return self._search(node.right_child, start_offset)
         return None
 
-    def _update_indices(
-        self,
-        node,
-        ):
-        def recurse(
-            node,
-            parent_stop_index=None,
-            ):
+    def _update_indices(self, node):
+        def recurse(node, parent_stop_index=None):
             if node is None:
                 return
             if node.left_child is not None:
-                recurse(
-                    node.left_child,
-                    parent_stop_index=parent_stop_index,
-                    )
+                recurse(node.left_child, parent_stop_index=parent_stop_index)
                 node._node_start_index = node.left_child.subtree_stop_index
                 node._subtree_start_index = node.left_child.subtree_start_index
             elif parent_stop_index is None:
@@ -426,33 +401,24 @@ class TimespanCollection(AbjadObject):
             node._node_stop_index = node.node_start_index + len(node.payload)
             node._subtree_stop_index = node.node_stop_index
             if node.right_child is not None:
-                recurse(
-                    node.right_child,
-                    parent_stop_index=node.node_stop_index,
-                    )
+                recurse(node.right_child, parent_stop_index=node.node_stop_index)
                 node._subtree_stop_index = node.right_child.subtree_stop_index
+
         recurse(node)
 
-    def _update_offsets(
-        self,
-        node,
-        ):
+    def _update_offsets(self, node):
         if node is None:
             return
         stop_offset_low = min(x.stop_offset for x in node.payload)
         stop_offset_high = max(x.stop_offset for x in node.payload)
         if node.left_child:
-            left_child = self._update_offsets(
-                node.left_child,
-                )
+            left_child = self._update_offsets(node.left_child)
             if left_child.stop_offset_low < stop_offset_low:
                 stop_offset_low = left_child.stop_offset_low
             if stop_offset_high < left_child.stop_offset_high:
                 stop_offset_high = left_child.stop_offset_high
         if node.right_child:
-            right_child = self._update_offsets(
-                node.right_child,
-                )
+            right_child = self._update_offsets(node.right_child)
             if right_child.stop_offset_low < stop_offset_low:
                 stop_offset_low = right_child.stop_offset_low
             if stop_offset_high < right_child.stop_offset_high:
@@ -471,7 +437,7 @@ class TimespanCollection(AbjadObject):
             client=self,
             storage_format_args_values=values,
             storage_format_kwargs_names=names,
-            )
+        )
 
     ### PUBLIC METHODS ###
 
@@ -495,12 +461,13 @@ class TimespanCollection(AbjadObject):
                     if node.right_child is not None:
                         result.extend(recurse(node.right_child, offset))
             return result
+
         results = recurse(self._root_node, offset)
         results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
     def find_timespans_overlapping_offset(self, offset):
-        r'''Finds timespans overlapping `offset`.
+        r"""Finds timespans overlapping `offset`.
 
         ::
 
@@ -523,7 +490,8 @@ class TimespanCollection(AbjadObject):
             Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
 
         Returns tuple of 0 or more timespans.
-        '''
+        """
+
         def recurse(node, offset, indent=0):
             result = []
             if node is not None:
@@ -536,12 +504,13 @@ class TimespanCollection(AbjadObject):
                 elif offset <= node.start_offset:
                     result.extend(recurse(node.left_child, offset, indent + 1))
             return result
+
         results = recurse(self._root_node, offset)
         results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
     def find_timespans_intersecting_timespan(self, timespan):
-        r'''Finds timespans overlapping `timespan`.
+        r"""Finds timespans overlapping `timespan`.
 
         ::
 
@@ -565,7 +534,8 @@ class TimespanCollection(AbjadObject):
             Timespan(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
 
         Returns tuple of 0 or more timespans.
-        '''
+        """
+
         def recurse(node, timespan):
             result = []
             if node is not None:
@@ -575,16 +545,23 @@ class TimespanCollection(AbjadObject):
                         if candidate_timespan.intersects_timespan(timespan):
                             result.append(candidate_timespan)
                     result.extend(recurse(node.right_child, timespan))
-                elif (timespan.start_offset <= node.start_offset) or \
-                    (timespan.stop_offset <= node.start_offset):
+                elif (timespan.start_offset <= node.start_offset) or (
+                    timespan.stop_offset <= node.start_offset
+                ):
                     result.extend(recurse(node.left_child, timespan))
             return result
+
         results = recurse(self._root_node, timespan)
-        results.sort(key=lambda x: (inspect(x).timespan().start_offset, inspect(x).timespan().stop_offset))
+        results.sort(
+            key=lambda x: (
+                inspect(x).timespan().start_offset,
+                inspect(x).timespan().stop_offset,
+            )
+        )
         return tuple(results)
 
     def get_simultaneity_at(self, offset):
-        r'''Gets simultaneity at `offset`.
+        r"""Gets simultaneity at `offset`.
 
         ::
 
@@ -607,8 +584,9 @@ class TimespanCollection(AbjadObject):
             >>> timespan_collection.get_simultaneity_at(6.5)
             <TimespanSimultaneity(6.5 <<1>>)>
 
-        '''
+        """
         import evans.consort_reviv
+
         start_timespans = self.find_timespans_starting_at(offset)
         stop_timespans = self.find_timespans_stopping_at(offset)
         overlap_timespans = self.find_timespans_overlapping_offset(offset)
@@ -618,11 +596,11 @@ class TimespanCollection(AbjadObject):
             start_timespans=start_timespans,
             start_offset=offset,
             stop_timespans=stop_timespans,
-            )
+        )
         return simultaneity
 
     def get_start_offset_after(self, offset):
-        r'''Gets start offst in this timespan collection after `offset`.
+        r"""Gets start offst in this timespan collection after `offset`.
 
         ::
 
@@ -660,7 +638,8 @@ class TimespanCollection(AbjadObject):
             >>> timespan_collection.get_start_offset_after(6) is None
             True
 
-        '''
+        """
+
         def recurse(node, offset):
             if node is None:
                 return None
@@ -670,13 +649,14 @@ class TimespanCollection(AbjadObject):
             elif offset < node.start_offset:
                 result = recurse(node.left_child, offset) or node
             return result
+
         result = recurse(self._root_node, offset)
         if result is None:
             return None
         return result.start_offset
 
     def get_start_offset_before(self, offset):
-        r'''Gets start offst in this timespan collection before `offset`.
+        r"""Gets start offst in this timespan collection before `offset`.
 
         ::
 
@@ -714,7 +694,8 @@ class TimespanCollection(AbjadObject):
             >>> timespan_collection.get_start_offset_before(0) is None
             True
 
-        '''
+        """
+
         def recurse(node, offset):
             if node is None:
                 return None
@@ -724,6 +705,7 @@ class TimespanCollection(AbjadObject):
             elif offset <= node.start_offset and node.left_child:
                 result = recurse(node.left_child, offset)
             return result
+
         result = recurse(self._root_node, offset)
         if result is None:
             return None
@@ -733,12 +715,12 @@ class TimespanCollection(AbjadObject):
         assert self._is_timespan(timespan)
         node = self._search(self._root_node, timespan.start_offset)
         if node is None or timespan not in node.payload:
-            raise ValueError('{} not in timespan collection.'.format(timespan))
+            raise ValueError("{} not in timespan collection.".format(timespan))
         index = node.payload.index(timespan) + node.node_start_index
         return index
 
     def insert(self, timespans):
-        r'''Inserts `timespans` into this timespan collection.
+        r"""Inserts `timespans` into this timespan collection.
 
         ::
 
@@ -761,7 +743,7 @@ class TimespanCollection(AbjadObject):
         `timespans` may be a single timespan or an iterable of timespans.
 
         Returns none.
-        '''
+        """
         if self._is_timespan(timespans):
             timespans = [timespans]
         for timespan in timespans:
@@ -771,11 +753,8 @@ class TimespanCollection(AbjadObject):
         self._update_indices(self._root_node)
         self._update_offsets(self._root_node)
 
-    def iterate_simultaneities(
-        self,
-        reverse=False,
-        ):
-        r'''Iterates simultaneities in this timespan collection.
+    def iterate_simultaneities(self, reverse=False):
+        r"""Iterates simultaneities in this timespan collection.
 
         ::
 
@@ -810,7 +789,7 @@ class TimespanCollection(AbjadObject):
             <TimespanSimultaneity(0 <<1>>)>
 
         Returns generator.
-        '''
+        """
 
         if reverse:
             start_offset = self.latest_start_offset
@@ -829,12 +808,8 @@ class TimespanCollection(AbjadObject):
                 yield simultaneity
                 simultaneity = simultaneity.next_simultaneity
 
-    def iterate_simultaneities_nwise(
-        self,
-        n=3,
-        reverse=False,
-        ):
-        r'''Iterates simultaneities in this timespan collection in groups of
+    def iterate_simultaneities_nwise(self, n=3, reverse=False):
+        r"""Iterates simultaneities in this timespan collection in groups of
         `n`.
 
         ::
@@ -868,7 +843,7 @@ class TimespanCollection(AbjadObject):
             (<TimespanSimultaneity(0 <<1>>)>, <TimespanSimultaneity(1 <<3>>)>)
 
         Returns generator.
-        '''
+        """
         n = int(n)
         assert 0 < n
         if reverse:
@@ -893,7 +868,7 @@ class TimespanCollection(AbjadObject):
                     yield tuple(reversed(simultaneities))
 
     def remove(self, timespans):
-        r'''Removes timespans from this timespan collection.
+        r"""Removes timespans from this timespan collection.
 
         ::
 
@@ -918,7 +893,7 @@ class TimespanCollection(AbjadObject):
             Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
             Timespan(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
 
-        '''
+        """
         if self._is_timespan(timespans):
             timespans = [timespans]
         for timespan in timespans:
@@ -958,15 +933,16 @@ class TimespanCollection(AbjadObject):
             if node.left_child is not None:
                 return recurse(node.left_child)
             return node.start_offset
+
         if self._root_node is not None:
             return recurse(self._root_node)
-        return float('-inf')
+        return float("-inf")
 
     @property
     def earliest_stop_offset(self):
         if self._root_node is not None:
             return self._root_node.stop_offset_low
-        return float('inf')
+        return float("inf")
 
     @property
     def latest_start_offset(self):
@@ -974,15 +950,16 @@ class TimespanCollection(AbjadObject):
             if node.right_child is not None:
                 return recurse(node._right_child)
             return node.start_offset
+
         if self._root_node is not None:
             return recurse(self._root_node)
-        return float('-inf')
+        return float("-inf")
 
     @property
     def latest_stop_offset(self):
         if self._root_node is not None:
             return self._root_node.stop_offset_high
-        return float('inf')
+        return float("inf")
 
     @property
     def start_offset(self):

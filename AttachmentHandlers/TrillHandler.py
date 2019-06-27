@@ -1,5 +1,6 @@
 import abjad
 
+
 class TrillHandler:
 
     # def __init__(
@@ -26,16 +27,26 @@ class TrillHandler:
         container.append(selections)
 
         for tie in abjad.iterate(container).logical_ties(pitched=True):
-            if all(isinstance(leaf, abjad.Chord) for leaf in abjad.iterate(tie).leaves()):
+            if all(
+                isinstance(leaf, abjad.Chord) for leaf in abjad.iterate(tie).leaves()
+            ):
                 old_chord = tie[0]
                 base_pitch = old_chord.written_pitches[0]
                 trill_pitch = old_chord.written_pitches[-1]
-                interval_ = abjad.NamedInterval().from_pitch_carriers(base_pitch, trill_pitch)
+                interval_ = abjad.NamedInterval().from_pitch_carriers(
+                    base_pitch, trill_pitch
+                )
                 new_leaf = abjad.Note(base_pitch, old_chord.written_duration)
 
-                trill_start = abjad.LilyPondLiteral(r'\pitchedTrill', format_slot='before')
-                trill_literal = abjad.LilyPondLiteral(f'\startTrillSpan {trill_pitch}', format_slot='after')
-                trill_stop = abjad.LilyPondLiteral(r'\stopTrillSpan', format_slot='after')
+                trill_start = abjad.LilyPondLiteral(
+                    r"\pitchedTrill", format_slot="before"
+                )
+                trill_literal = abjad.LilyPondLiteral(
+                    f"\startTrillSpan {trill_pitch}", format_slot="after"
+                )
+                trill_stop = abjad.LilyPondLiteral(
+                    r"\stopTrillSpan", format_slot="after"
+                )
                 abjad.attach(trill_start, new_leaf)
                 abjad.attach(trill_literal, new_leaf)
                 last_leaf = tie[-1]

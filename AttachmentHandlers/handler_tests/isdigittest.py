@@ -1,4 +1,4 @@
-frac_string_list = ['1/2', '8/8', '3/4']
+frac_string_list = ["1/2", "8/8", "3/4"]
 frac_numerators = []
 frac_denominators = []
 for frac in frac_string_list:
@@ -11,5 +11,7 @@ result_list = []
 for x in frac_tuples:
     y = x[0]
     z = x[-1]
-    result_list.append(r'\markup {\center-align \vcenter \fraction ' + y + r' ' + z + r'}')
+    result_list.append(
+        r"\markup {\center-align \vcenter \fraction " + y + r" " + z + r"}"
+    )
 print(result_list)

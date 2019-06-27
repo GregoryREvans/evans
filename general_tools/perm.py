@@ -7,7 +7,7 @@ def perm(lst):
         l = []
         for i in range(len(lst)):
             x = lst[i]
-            ba = lst[:i] + lst[i+1:]
+            ba = lst[:i] + lst[i + 1 :]
             for p in perm(ba):
-                l.append([x]+p)
+                l.append([x] + p)
         return l

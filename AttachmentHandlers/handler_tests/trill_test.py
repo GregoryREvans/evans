@@ -1,5 +1,6 @@
 import abjad
 from TrillHandler import TrillHandler
+
 #
 # staff = abjad.Staff([
 #     abjad.Note(6, (1, 8)),
@@ -28,7 +29,9 @@ trill_handler = TrillHandler()
 # # print(format(staff))
 # # abjad.show(staff)
 
-staff = abjad.Staff(r'<a b>1 ~ <a b>4 \times 2/3 { a8 a8 <a b>8 } a4 a \times 2/3 { b8 a b }')
+staff = abjad.Staff(
+    r"<a b>1 ~ <a b>4 \times 2/3 { a8 a8 <a b>8 } a4 a \times 2/3 { b8 a b }"
+)
 score = abjad.Score([staff])
 trill_handler(score)
 # print(format(score))

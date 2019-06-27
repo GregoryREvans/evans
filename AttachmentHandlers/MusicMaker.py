@@ -7,8 +7,10 @@ from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
 from evans.AttachmentHandlers.ClefHandler import ClefHandler
 from evans.AttachmentHandlers.SlurHandler import SlurHandler
+
 # from evans.AttachmentHandlers.GraceHandler import GraceHandler
 from evans.AttachmentHandlers.TrillHandler import TrillHandler
+
 
 class MusicMaker:
     def __init__(
@@ -22,7 +24,7 @@ class MusicMaker:
         text_span_handler=None,
         clef_handler=None,
         slur_handler=None,
-        #grace_handler=None,
+        # grace_handler=None,
         trill_handler=None,
         continuous=False,
         state=None,
@@ -35,7 +37,7 @@ class MusicMaker:
         self.text_span_handler = text_span_handler
         self.clef_handler = clef_handler
         self.slur_handler = slur_handler
-        #self.grace_handler = grace_handler
+        # self.grace_handler = grace_handler
         self.trill_handler = trill_handler
         self.continuous = continuous
         self.rmaker = rmaker
@@ -51,7 +53,7 @@ class MusicMaker:
             selections = self.rmaker(durations, previous_state=self.rmaker.state)
             self.state = self.rmaker.state
         else:
-            selections = self.rmaker(durations, )
+            selections = self.rmaker(durations)
         return selections
 
     def _make_music(self, durations):

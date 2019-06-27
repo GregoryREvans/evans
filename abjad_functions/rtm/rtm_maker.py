@@ -1,7 +1,7 @@
 import abjad
 
-class RTMMaker(object):
 
+class RTMMaker(object):
     def __init__(self, rtm, continuous=False):
         self.rtm = rtm
         self.continuous = continuous
@@ -40,7 +40,6 @@ class RTMMaker(object):
 
 
 class RTMMaker_2(object):
-
     def __init__(self, continuous=False):
         self.continuous = continuous
 
@@ -63,7 +62,6 @@ class RTMMaker_2(object):
         return selections
 
 
-
 # maker = RTMMaker_2()
 # rtms = [
 #     '(1 (1 (4 (1 -1 1 -1 1))))',
@@ -81,8 +79,8 @@ class RTMMaker_2(object):
 
 # abjad.show(lilyfile)
 
-class RTMMaker_3(object):
 
+class RTMMaker_3(object):
     def __init__(self, continuous=False):
         self.continuous = continuous
 
@@ -105,7 +103,6 @@ class RTMMaker_3(object):
         return selections
 
 
-
 # maker = RTMMaker_3()
 # rtms = [
 #     '(1 (1 (4 (1 -1 1 -1 1))))',
@@ -124,25 +121,23 @@ class RTMMaker_3(object):
 
 # abjad.show(lilyfile)
 
-class RTMMaker_4(object):
 
+class RTMMaker_4(object):
     def __init__(self, rtm, continuous=False):
         self.rtm = abjad.CyclicTuple(rtm)
-        self.state = {
-            'last index used' : 0
-        }
+        self.state = {"last index used": 0}
 
     def __call__(self, divisions, previous_state=None):
         starting_index = -1
 
         if previous_state is not None:
-            starting_index = previous_state['last index used'] + 1
+            starting_index = previous_state["last index used"] + 1
 
         selections = self._rtm_maker(divisions, starting_index=starting_index)
 
         if previous_state is not None:
-            self.state['last index used'] += len(selections)
-            self.state['last index used'] %= len(self.rtm)
+            self.state["last index used"] += len(selections)
+            self.state["last index used"] %= len(self.rtm)
 
         return selections
 
@@ -155,7 +150,7 @@ class RTMMaker_4(object):
         return selection
 
     def _rtm_maker(self, divisions, starting_index=0):
-        rtm = self.rtm[starting_index:starting_index + len(divisions)]
+        rtm = self.rtm[starting_index : starting_index + len(divisions)]
 
         selections = []
         for rtm_string, division in zip(rtm, divisions):
@@ -163,7 +158,6 @@ class RTMMaker_4(object):
             selections.append(selection)
 
         return selections
-
 
 
 # # from Scores.onkos.Components.rtm_lists import final_rtm_list

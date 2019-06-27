@@ -1,5 +1,6 @@
 import itertools
 
+
 def iterate_nwise(iterable, n=2):
     iterables = itertools.tee(iterable, n)
     temp = []

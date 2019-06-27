@@ -1,8 +1,10 @@
 # from random import random
 # from random import seed
 
+
 def reduceMod(x, rw):
     return [(y % x) for y in rw]
+
 
 # seed(1)
 # sopranino_random_walk = []

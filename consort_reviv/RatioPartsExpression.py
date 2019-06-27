@@ -3,7 +3,7 @@ from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class RatioPartsExpression(AbjadObject):
-    r'''Ratio parts expression.
+    r"""Ratio parts expression.
 
 
     ..  container:: example
@@ -53,24 +53,15 @@ class RatioPartsExpression(AbjadObject):
             Timespan(start_offset=Offset(1, 4), stop_offset=Offset(1, 1))
             Timespan(start_offset=Offset(3, 1), stop_offset=Offset(4, 1))
 
-    '''
+    """
 
     ### CLASS VARIABLES ###
 
-    __slots__ = (
-        '_parts',
-        '_ratio',
-        '_mask_timespan',
-        )
+    __slots__ = ("_parts", "_ratio", "_mask_timespan")
 
     ### INITIALIZER ###
 
-    def __init__(
-        self,
-        parts=0,
-        ratio=(1, 1),
-        mask_timespan=None,
-        ):
+    def __init__(self, parts=0, ratio=(1, 1), mask_timespan=None):
         if not isinstance(ratio, abjad.Ratio):
             ratio = abjad.Ratio(ratio)
         self._ratio = ratio
@@ -99,7 +90,7 @@ class RatioPartsExpression(AbjadObject):
 
     @staticmethod
     def from_sequence(sequence):
-        r'''Creates a ratio parts expression from `sequence`.
+        r"""Creates a ratio parts expression from `sequence`.
 
         ::
 
@@ -112,7 +103,7 @@ class RatioPartsExpression(AbjadObject):
                 )
 
         Returns new ratio parts expression.
-        '''
+        """
         assert all(sequence)
         assert len(sequence)
         ratio = []
@@ -121,10 +112,7 @@ class RatioPartsExpression(AbjadObject):
             if 0 < x:
                 parts.append(i)
             ratio.append(abs(x))
-        result = RatioPartsExpression(
-            parts=parts,
-            ratio=ratio,
-            )
+        result = RatioPartsExpression(parts=parts, ratio=ratio)
         return result
 
     ### PUBLIC PROPERTIES ###

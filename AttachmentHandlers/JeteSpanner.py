@@ -1,5 +1,6 @@
 import abjad
 
+
 class JeteSpanner:
 
     # def __init__(
@@ -24,9 +25,9 @@ class JeteSpanner:
     def _apply_jete(self, selections):
         container = abjad.Container()
         container.append(selections)
-        span_literal = r'''- \abjad-solid-line-with-hook
-- \tweak bound-details.left.text'''
-        jete_string = r'''scale #'(0.45 . 0.45)
+        span_literal = r"""- \abjad-solid-line-with-hook
+- \tweak bound-details.left.text"""
+        jete_string = r"""scale #'(0.45 . 0.45)
         \score
             {
                 \new Score
@@ -82,12 +83,16 @@ class JeteSpanner:
                             ragged-right = ##t
                         }
             }
-                    '''
+                    """
         mark = abjad.Markup(direction=abjad.Up)
         mark = mark.with_literal(jete_string)
-        tweak_text = r'''- \tweak bound-details.right.padding 3'''
-        final_starter = abjad.LilyPondLiteral(f'{span_literal} {mark} {tweak_text} \startTextSpan', format_slot="after")
-        stop_indicator = abjad.LilyPondLiteral(r'''\stopTextSpan''', format_slot='after')
+        tweak_text = r"""- \tweak bound-details.right.padding 3"""
+        final_starter = abjad.LilyPondLiteral(
+            f"{span_literal} {mark} {tweak_text} \startTextSpan", format_slot="after"
+        )
+        stop_indicator = abjad.LilyPondLiteral(
+            r"""\stopTextSpan""", format_slot="after"
+        )
         for run in abjad.select(container).runs():
             if len(run) > 1:
                 abjad.attach(final_starter, run[0])
@@ -96,6 +101,7 @@ class JeteSpanner:
                 abjad.attach(mark, run[0])
 
         return container[:]
+
 
 ###DEMO###
 contents = [abjad.Note(), abjad.Rest()]

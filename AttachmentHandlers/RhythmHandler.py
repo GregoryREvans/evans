@@ -1,12 +1,8 @@
 import abjad
 
+
 class RhythmHandler:
-    def __init__(
-        self,
-        rmaker,
-        continuous=False,
-        state=None,
-    ):
+    def __init__(self, rmaker, continuous=False, state=None):
         self.rmaker = rmaker
         self.continuous = continuous
         self.state = self.rmaker.state
@@ -19,7 +15,7 @@ class RhythmHandler:
             selections = self.rmaker(durations, previous_state=self.rmaker.state)
             self.state = self.rmaker.state
         else:
-            selections = self.rmaker(durations, )
+            selections = self.rmaker(durations)
         return selections
 
     def _make_music(self, durations):

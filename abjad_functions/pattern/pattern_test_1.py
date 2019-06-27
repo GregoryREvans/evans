@@ -1,4 +1,5 @@
 import abjad
+
 #
 # pattern = abjad.Pattern(
 #     indices=[0, 1, 7],
@@ -142,11 +143,7 @@ import abjad
 
 ###
 
-pattern = abjad.Pattern(
-    indices=[2, 3, 6],
-    payload='Allegro non troppo',
-    period=8,
-    )
+pattern = abjad.Pattern(indices=[2, 3, 6], payload="Allegro non troppo", period=8)
 
 total_length = 10
 for index in range(10):
@@ -154,5 +151,5 @@ for index in range(10):
     if match:
         payload = pattern.payload
     else:
-        payload = ''
+        payload = ""
     print(index, repr(payload))
