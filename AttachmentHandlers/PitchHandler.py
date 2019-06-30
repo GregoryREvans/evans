@@ -37,9 +37,7 @@ class PitchHandler:
     def _apply_pitches(self, selections):
         pitches = self.pitch_list
         leaf_maker = abjad.LeafMaker()
-        container = abjad.Container()
-        container.extend(selections)
-        old_ties = [tie for tie in abjad.iterate(container).logical_ties()]
+        old_ties = [tie for tie in abjad.iterate(selections).logical_ties()]
         pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
             old_ties, pitches
         )
@@ -48,6 +46,4 @@ class PitchHandler:
             indicators = abjad.inspect(old_leaf).indicators()
             for indicator in indicators:
                 abjad.attach(indicator, new_leaf)
-            parent = abjad.inspect(old_leaf).parentage().parent
-            parent[parent.index(old_leaf)] = new_leaf
-        return [container[:]]
+            abjad.mutate(old_leaf).replace(new_leaf)
