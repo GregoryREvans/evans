@@ -1,6 +1,3 @@
-import re
-
-
 def to_digit(string):
     return int(string) if string.isdigit() else string
 
