@@ -28,7 +28,9 @@ class DynamicHandler:
         self._cyc_flare_boolean_vector = CyclicList(
             flare_boolean_vector, self.continuous, self._count_2
         )
-        self._cyc_hold_first_boolean_vector = CyclicList(hold_first_boolean_vector, self.continuous, self._count_3)
+        self._cyc_hold_first_boolean_vector = CyclicList(
+            hold_first_boolean_vector, self.continuous, self._count_3
+        )
         self._cyc_hold_last_boolean_vector = CyclicList(
             hold_last_boolean_vector, self.continuous, self._count_4
         )
@@ -121,7 +123,9 @@ class DynamicHandler:
                     if hold_last is True:
                         if stop.name != "niente":
                             abjad.attach(abjad.StartHairpin("--"), run[-1])
-                            abjad.attach(abjad.StopHairpin(), abjad.inspect(run[-1]).leaf(1))
+                            abjad.attach(
+                                abjad.StopHairpin(), abjad.inspect(run[-1]).leaf(1)
+                            )
                         else:
                             if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
                                 stop = abjad.Dynamic(stop, command="\!", leak=True)
@@ -154,7 +158,9 @@ class DynamicHandler:
                         stop = abjad.Dynamic(items[1], leak=True)
                         hairpin = abjad.StartHairpin(
                             self._calculate_hairpin(
-                                start, stop, flared=self._cyc_flare_boolean_vector(r=1)[0]
+                                start,
+                                stop,
+                                flared=self._cyc_flare_boolean_vector(r=1)[0],
                             )
                         )
                         abjad.hairpin([start, hairpin, stop], run)
@@ -171,6 +177,7 @@ class DynamicHandler:
                     abjad.attach(stopper, next_leaf)
                 else:
                     pass
+
 
 # ###DEMO###
 # staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
