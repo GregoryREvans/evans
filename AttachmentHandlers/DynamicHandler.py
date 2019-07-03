@@ -1,5 +1,5 @@
 import abjad
-
+# DO NOT BLACK-FORMAT...CANNOT FINISH->DELETES OVER HALF OF FILE
 # add "effort BV" and "sfz BV"
 class DynamicHandler:
     def __init__(
@@ -148,14 +148,13 @@ class DynamicHandler:
                 else:
                     hold_last = next(self._cyc_hold_last_boolean_vector)
                     if hold_last is True:
-                        dynamic = next(self._cyc_dynamics)
-                        sustain = abjad.StartHairpin('--')
-                        stopper = abjad.StopHairpin()
-                        next_leaf = abjad.inspect(run[0]).leaf(1)
-                        abjad.attach(dynamic, run[0])
+                        start = abjad.Dynamic(next(self._cyc_dynamics))
+                        sustain = abjad.StartHairpin("--")
+                        next_leaf = abjad.inspect(run[-1]).leaf(1)
+                        abjad.attach(start, run[0])
                         abjad.attach(sustain, run[0])
                         if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
-                            abjad.attach(stopper, next_leaf)
+                            abjad.attach(abjad.StopHairpin(), next_leaf)
                     else:
                         start = abjad.Dynamic(next(self._cyc_dynamics))
                         stop = abjad.Dynamic(next(self._cyc_dynamics), leak=True)
@@ -169,9 +168,9 @@ class DynamicHandler:
                 hold_last = None
                 stop = None
                 start = abjad.Dynamic(next(self._cyc_dynamics))
-                if start == abjad.Dynamic('niente'):
+                if start == abjad.Dynamic("niente"):
                     start = abjad.Dynamic(next(self._cyc_dynamics))
-                hairpin = abjad.StartHairpin('--')
+                hairpin = abjad.StartHairpin("--")
                 stopper = abjad.StopHairpin()
                 next_leaf = abjad.inspect(run[-1]).leaf(1)
                 abjad.attach(start, run[0])
@@ -180,36 +179,28 @@ class DynamicHandler:
                     abjad.attach(stopper, next_leaf)
                 else:
                     pass
-            print(run[0])
-            if hold_first is not None:
-                print(hold_first)
-            if hold_last is not None:
-                print(hold_last)
-            if start is not None:
-                print(start)
-            if stop is not None:
-                print(stop)
-###DEMO###
-staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
 
-handler = DynamicHandler(
-    # dynamic_list=[3, -1, 2, 4],
-    dynamic_list=['f', 'niente', 'p', 'mf'],
-    flare_boolean_vector=[False, False, False, True],
-    hold_first_boolean_vector=[True, False, False,],
-    hold_last_boolean_vector=[False, True],
-    continuous=False,  # Does Not Work
-)
-
-# for run in abjad.select(staff).runs():
-#     handler(run)
-
-# handler(staff) # should be different but is not
-
-first_group = staff[0:3]
-second_group = staff[2:]
-
-handler(first_group)
-handler(second_group)
-
-abjad.f(staff)
+# ###DEMO###
+# staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+#
+# handler = DynamicHandler(
+#     # dynamic_list=[3, -1, 2, 4],
+#     dynamic_list=['f', 'niente', 'p', 'mf'],
+#     flare_boolean_vector=[False, False, False, True],
+#     hold_first_boolean_vector=[True, False, False,],
+#     hold_last_boolean_vector=[False, True],
+#     continuous=False,  # Does Not Work
+# )
+#
+# # for run in abjad.select(staff).runs():
+# #     handler(run)
+#
+# # handler(staff) # should be different but is not
+#
+# first_group = staff[0:3]
+# second_group = staff[2:]
+#
+# handler(first_group)
+# handler(second_group)
+#
+# abjad.show(staff)
