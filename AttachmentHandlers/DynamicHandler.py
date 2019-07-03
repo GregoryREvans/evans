@@ -1,4 +1,5 @@
 import abjad
+from CyclicList import CyclicList
 # DO NOT BLACK-FORMAT...CANNOT FINISH->DELETES OVER HALF OF FILE
 # add "effort BV" and "sfz BV"
 class DynamicHandler:
@@ -12,15 +13,6 @@ class DynamicHandler:
         sfx_boolean_vector=None,
         continuous=True,
     ):
-        def cyc(
-            lst, count, continuous
-        ):  # something is wrong here...cyc can never really be false?
-            if continuous is False:
-                count = -1
-            while True:
-                count += 1
-                yield lst[count % len(lst)]
-
         self.dynamic_list = dynamic_list
         self.flare_boolean_vector = flare_boolean_vector
         self.hold_first_boolean_vector = hold_first_boolean_vector
@@ -32,16 +24,16 @@ class DynamicHandler:
         self._count_3 = -1
         self._count_4 = -1
         self._count_5 = -1
-        self._cyc_dynamics = cyc(dynamic_list, self._count_1, self.continuous)
-        self._cyc_flare_boolean_vector = cyc(
-            flare_boolean_vector, self._count_2, self.continuous
+        self._cyc_dynamics = CyclicList(dynamic_list, self.continuous, self._count_1)
+        self._cyc_flare_boolean_vector = CyclicList(
+            flare_boolean_vector, self.continuous, self._count_2
         )
-        self._cyc_hold_first_boolean_vector = cyc(hold_first_boolean_vector, self._count_3, self.continuous)
-        self._cyc_hold_last_boolean_vector = cyc(
-            hold_last_boolean_vector, self._count_4, self.continuous
+        self._cyc_hold_first_boolean_vector = CyclicList(hold_first_boolean_vector, self.continuous, self._count_3)
+        self._cyc_hold_last_boolean_vector = CyclicList(
+            hold_last_boolean_vector, self.continuous, self._count_4
         )
-        self._cyc_effort_boolean_vector = cyc(
-            effort_boolean_vector, self._count_5, self.continuous
+        self._cyc_effort_boolean_vector = CyclicList(
+            effort_boolean_vector, self.continuous, self._count_5
         )
 
     def __call__(self, selections):
@@ -87,22 +79,23 @@ class DynamicHandler:
 
     def _apply_dynamics(self, selections):
         for run in abjad.select(selections).runs():
-            hold_first = next(self._cyc_hold_first_boolean_vector)
+            hold_first = self._cyc_hold_first_boolean_vector(r=1)[0]
             if hold_first is False:
                 if len(run) > 1:
                     if abjad.inspect(run[0]).has_indicator(abjad.Dynamic):
                         current_dynamic = abjad.inspect(run[0]).indicator(abjad.Dynamic)
                         start = abjad.Dynamic(current_dynamic, hide=True)
-                        stop = next(self._cyc_dynamics)
+                        stop = self._cyc_dynamics(r=1)[0]
                     else:
-                        start = next(self._cyc_dynamics)
-                        stop = next(self._cyc_dynamics)
+                        items = self._cyc_dynamics(r=2)
+                        start = items[0]
+                        stop = items[1]
                     hairpin = abjad.StartHairpin(
                         self._calculate_hairpin(
-                            start, stop, flared=next(self._cyc_flare_boolean_vector)
+                            start, stop, flared=self._cyc_flare_boolean_vector
                         )
                     )
-                    hold_last = next(self._cyc_hold_last_boolean_vector)
+                    hold_last = self._cyc_hold_last_boolean_vector(r=1)
                     if isinstance(start, str):
                         start = abjad.Dynamic(start)
                     elif isinstance(start, int):
@@ -146,9 +139,9 @@ class DynamicHandler:
                     else:
                         abjad.hairpin([start, hairpin, stop], run)
                 else:
-                    hold_last = next(self._cyc_hold_last_boolean_vector)
+                    hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
                     if hold_last is True:
-                        start = abjad.Dynamic(next(self._cyc_dynamics))
+                        start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
                         sustain = abjad.StartHairpin("--")
                         next_leaf = abjad.inspect(run[-1]).leaf(1)
                         abjad.attach(start, run[0])
@@ -156,20 +149,19 @@ class DynamicHandler:
                         if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
                             abjad.attach(abjad.StopHairpin(), next_leaf)
                     else:
-                        start = abjad.Dynamic(next(self._cyc_dynamics))
-                        stop = abjad.Dynamic(next(self._cyc_dynamics), leak=True)
+                        items = self._cyc_dynamics(r=2)
+                        start = abjad.Dynamic(items[0])
+                        stop = abjad.Dynamic(items[1], leak=True)
                         hairpin = abjad.StartHairpin(
                             self._calculate_hairpin(
-                                start, stop, flared=next(self._cyc_flare_boolean_vector)
+                                start, stop, flared=self._cyc_flare_boolean_vector(r=1)[0]
                             )
                         )
                         abjad.hairpin([start, hairpin, stop], run)
             else:
-                hold_last = None
-                stop = None
-                start = abjad.Dynamic(next(self._cyc_dynamics))
+                start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
                 if start == abjad.Dynamic("niente"):
-                    start = abjad.Dynamic(next(self._cyc_dynamics))
+                    start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
                 hairpin = abjad.StartHairpin("--")
                 stopper = abjad.StopHairpin()
                 next_leaf = abjad.inspect(run[-1]).leaf(1)
@@ -180,27 +172,27 @@ class DynamicHandler:
                 else:
                     pass
 
-# ###DEMO###
-# staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
-#
-# handler = DynamicHandler(
-#     # dynamic_list=[3, -1, 2, 4],
-#     dynamic_list=['f', 'niente', 'p', 'mf'],
-#     flare_boolean_vector=[False, False, False, True],
-#     hold_first_boolean_vector=[True, False, False,],
-#     hold_last_boolean_vector=[False, True],
-#     continuous=False,  # Does Not Work
-# )
-#
-# # for run in abjad.select(staff).runs():
-# #     handler(run)
-#
-# # handler(staff) # should be different but is not
-#
-# first_group = staff[0:3]
-# second_group = staff[2:]
-#
-# handler(first_group)
-# handler(second_group)
-#
-# abjad.show(staff)
+###DEMO###
+staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+
+handler = DynamicHandler(
+    # dynamic_list=[3, -1, 2, 4],
+    dynamic_list=['f', 'niente', 'p', 'mf'],
+    flare_boolean_vector=[False, False, False, True],
+    hold_first_boolean_vector=[True, False, False,],
+    hold_last_boolean_vector=[False, True],
+    continuous=True,
+)
+
+# for run in abjad.select(staff).runs():
+#     handler(run)
+
+# handler(staff) # should be different but is not
+
+first_group = staff[0:3]
+second_group = staff[2:]
+
+handler(first_group)
+handler(second_group)
+
+abjad.f(staff)
