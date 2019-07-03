@@ -1,6 +1,6 @@
 class CyclicList:
     def __init__(self, lst=None, continuous=False, count=-1):
-        self.lst=lst
+        self.lst = lst
         self.continuous = continuous
         self.count = count
 
@@ -24,6 +24,7 @@ class CyclicList:
             return self.state_cyc(self.lst, r)
         else:
             return self.non_state_cyc(self.lst, r)
+
 
 # _cyc_count = -1
 # _non_cyc_count = -1

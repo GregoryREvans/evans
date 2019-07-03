@@ -1,6 +1,6 @@
 import abjad
 from CyclicList import CyclicList
-# DO NOT BLACK-FORMAT...CANNOT FINISH->DELETES OVER HALF OF FILE
+
 # add "effort BV" and "sfz BV"
 class DynamicHandler:
     def __init__(
@@ -172,27 +172,27 @@ class DynamicHandler:
                 else:
                     pass
 
-###DEMO###
-staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
-
-handler = DynamicHandler(
-    # dynamic_list=[3, -1, 2, 4],
-    dynamic_list=['f', 'niente', 'p', 'mf'],
-    flare_boolean_vector=[False, False, False, True],
-    hold_first_boolean_vector=[True, False, False,],
-    hold_last_boolean_vector=[False, True],
-    continuous=True,
-)
-
-# for run in abjad.select(staff).runs():
-#     handler(run)
-
-# handler(staff) # should be different but is not
-
-first_group = staff[0:3]
-second_group = staff[2:]
-
-handler(first_group)
-handler(second_group)
-
-abjad.f(staff)
+# ###DEMO###
+# staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+#
+# handler = DynamicHandler(
+#     # dynamic_list=[3, -1, 2, 4],
+#     dynamic_list=['f', 'niente', 'p', 'mf'],
+#     flare_boolean_vector=[False, False, False, True],
+#     hold_first_boolean_vector=[True, False, False,],
+#     hold_last_boolean_vector=[False, True],
+#     continuous=True,
+# )
+#
+# # for run in abjad.select(staff).runs():
+# #     handler(run)
+#
+# # handler(staff) # should be different but is not
+#
+# first_group = staff[0:3]
+# second_group = staff[2:]
+#
+# handler(first_group)
+# handler(second_group)
+#
+# abjad.f(staff)
