@@ -6,11 +6,11 @@ class DynamicHandler:
     def __init__(
         self,
         dynamic_list=None,
-        flare_boolean_vector=None,
-        hold_first_boolean_vector=None,
-        hold_last_boolean_vector=None,
-        effort_boolean_vector=None,
-        sfx_boolean_vector=None,
+        flare_boolean_vector=[0],
+        hold_first_boolean_vector=[0],
+        hold_last_boolean_vector=[0],
+        effort_boolean_vector=[0],
+        sfx_boolean_vector=[0],
         continuous=True,
     ):
         self.dynamic_list = dynamic_list
@@ -79,10 +79,41 @@ class DynamicHandler:
                     hairpin = ">"
         return hairpin
 
+    def _make_effort_dynamics(self, dyn):
+        conversion = {
+            "ppppp": '"ppppp"',
+            "pppp": '"pppp"',
+            "ppp": '"ppp"',
+            "pp": '"pp"',
+            "p": '"p"',
+            "mp": '"mp"',
+            "mf": '"mf"',
+            "f": '"f"',
+            "ff": '"ff"',
+            "fff": '"fff"',
+            "ffff": '"ffff"',
+            "fffff": '"fffff"',
+            "fp": '"fp"',
+            "sf": '"sf"',
+            "sff": '"sff"',
+            "sp": '"sp"',
+            "spp": '"spp"',
+            "sfz": '"sfz"',
+            "sffz": '"sffz"',
+            "sfffz": '"sfffz"',
+            "sffp": '"sffp"',
+            "sffpp": '"sffpp"',
+            "sfp": '"sfp"',
+            "sfpp": '"sfpp"',
+            "rfz": '"rfz"',
+            "niente": "niente",
+        }
+        return conversion[dyn]
+
     def _apply_dynamics(self, selections):
         for run in abjad.select(selections).runs():
             hold_first = self._cyc_hold_first_boolean_vector(r=1)[0]
-            if hold_first is False:
+            if hold_first == 0:
                 if len(run) > 1:
                     if abjad.inspect(run[0]).has_indicator(abjad.Dynamic):
                         current_dynamic = abjad.inspect(run[0]).indicator(abjad.Dynamic)
@@ -94,33 +125,46 @@ class DynamicHandler:
                         stop = items[1]
                     hairpin = abjad.StartHairpin(
                         self._calculate_hairpin(
-                            start, stop, flared=self._cyc_flare_boolean_vector
+                            start, stop, flared=self._cyc_flare_boolean_vector(r=1)[0]
                         )
                     )
-                    hold_last = self._cyc_hold_last_boolean_vector(r=1)
+                    hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
+                    effort_bools = self._cyc_effort_boolean_vector(r=2)
                     if isinstance(start, str):
+                        if effort_bools[0] == 0:
+                            start = start
+                        else:
+                            start = self._make_effort_dynamics(start)
                         start = abjad.Dynamic(start)
                     elif isinstance(start, int):
-                        start = abjad.Dynamic(
-                            abjad.Dynamic.dynamic_ordinal_to_dynamic_name(start)
-                        )
+                        start = abjad.Dynamic.dynamic_ordinal_to_dynamic_name(start)
+                        if effort_bools[0] == 0:
+                            start = start
+                        else:
+                            start = self._make_effort_dynamics(start)
+                        start = abjad.Dynamic(start)
                     else:
                         pass
                     if isinstance(stop, str):
+                        if effort_bools[1] == 0:
+                            stop = stop
+                        else:
+                            stop = self._make_effort_dynamics(stop)
                         stop = abjad.Dynamic(stop)
                     elif isinstance(stop, int):
-                        stop = abjad.Dynamic(
-                            abjad.Dynamic.dynamic_ordinal_to_dynamic_name(stop)
-                        )
+                        stop = abjad.Dynamic.dynamic_ordinal_to_dynamic_name(stop)
+                        if effort_bools[1] == 0:
+                            stop = stop
+                        else:
+                            stop = self._make_effort_dynamics(stop)
+                        stop = abjad.Dynamic(stop)
                     else:
                         pass
                     if start.name == "niente":
                         start = abjad.Dynamic("niente", hide=True)
-                    else:
-                        pass
                     if stop.name == "niente":
                         stop = abjad.Dynamic("niente", hide=True)
-                    if hold_last is True:
+                    if hold_last == 1:
                         if stop.name != "niente":
                             abjad.attach(abjad.StartHairpin("--"), run[-1])
                             abjad.attach(
@@ -144,8 +188,17 @@ class DynamicHandler:
                         abjad.hairpin([start, hairpin, stop], run)
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
-                    if hold_last is True:
-                        start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
+                    if hold_last == 1:
+                        start = self._cyc_dynamics(r=1)[0]
+                        if start == "niente":
+                            start = self._cyc_dynamics(r=1)[0]
+                        else:
+                            pass
+                        if self._cyc_effort_boolean_vector(r=1)[0] == 0:
+                            start = abjad.Dynamic(start)
+                        else:
+                            start_string = self._make_effort_dynamics(start)
+                            start = abjad.Dynamic(start_string)
                         sustain = abjad.StartHairpin("--")
                         next_leaf = abjad.inspect(run[-1]).leaf(1)
                         abjad.attach(start, run[0])
@@ -154,8 +207,19 @@ class DynamicHandler:
                             abjad.attach(abjad.StopHairpin(), next_leaf)
                     else:
                         items = self._cyc_dynamics(r=2)
-                        start = abjad.Dynamic(items[0])
-                        stop = abjad.Dynamic(items[1], leak=True)
+                        effort_bools = self._cyc_effort_boolean_vector(r=2)
+                        start = items[0]
+                        stop = items[1]
+                        if effort_bools[0] == 0:
+                            start = abjad.Dynamic(start)
+                        else:
+                            start_string = self._make_effort_dynamics(start)
+                            start = abjad.Dynamic(start_string)
+                        if effort_bools[1] == 0:
+                            stop = abjad.Dynamic(stop, leak=True)
+                        else:
+                            stop_string = self._make_effort_dynamics(stop)
+                            stop = abjad.Dynamic(stop_string, leak=True)
                         hairpin = abjad.StartHairpin(
                             self._calculate_hairpin(
                                 start,
@@ -165,9 +229,15 @@ class DynamicHandler:
                         )
                         abjad.hairpin([start, hairpin, stop], run)
             else:
-                start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
-                if start == abjad.Dynamic("niente"):
-                    start = abjad.Dynamic(self._cyc_dynamics(r=1)[0])
+                start = self._cyc_dynamics(r=1)[0]
+                if start == "niente":
+                    start = self._cyc_dynamics(r=1)[0]
+                effort_bool = self._cyc_effort_boolean_vector(r=1)[0]
+                if effort_bool == 1:
+                    start_string = self._make_effort_dynamics(start)
+                    start = abjad.Dynamic(start_string)
+                else:
+                    start = abjad.Dynamic(start)
                 hairpin = abjad.StartHairpin("--")
                 stopper = abjad.StopHairpin()
                 next_leaf = abjad.inspect(run[-1]).leaf(1)
@@ -185,9 +255,10 @@ class DynamicHandler:
 # handler = DynamicHandler(
 #     # dynamic_list=[3, -1, 2, 4],
 #     dynamic_list=['f', 'niente', 'p', 'mf'],
-#     flare_boolean_vector=[False, False, False, True],
-#     hold_first_boolean_vector=[True, False, False,],
-#     hold_last_boolean_vector=[False, True],
+#     flare_boolean_vector=[0, 0, 0, 1],
+#     hold_first_boolean_vector=[1, 0, 0,],
+#     hold_last_boolean_vector=[0, 1],
+#     effort_boolean_vector=[1, 0],
 #     continuous=True,
 # )
 #
@@ -202,4 +273,4 @@ class DynamicHandler:
 # handler(first_group)
 # handler(second_group)
 #
-# abjad.f(staff)
+# abjad.show(staff)
