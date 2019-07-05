@@ -67,18 +67,10 @@ class TimespanSpecifier:
     def __init__(
         self,
         voice_name=None,
-        rhythm_maker=None,
-        rhythm_handler=None,
-        pitch_handler=None,
-        articulation_handler=None,
-        dynamics_handler=None,
+        handler=None,
     ):
         self.voice_name = voice_name
-        self.rhythm_maker = rhythm_maker
-        self.rhythm_handler = rhythm_handler
-        self.pitch_handler = pitch_handler
-        self.articulation_handler = articulation_handler
-        self.dynamics_handler = dynamics_handler
+        self.handler = handler
 
         def __repr__(self):
             return f"TimespanSpecifier(voice_name={self.voice_name})"

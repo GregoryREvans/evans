@@ -582,6 +582,36 @@ class LogicalTieCollection(AbjadObject):
             )
         )
         return tuple(results)
+#new from greg...spotty when to check node vs timespan? What even is in the node?
+    def find_logical_ties_starting_during_timespan(self, timespan):
+        def recurse(node, timespan):
+            result = []
+            if node is not None:
+                if timespan.intersects_timespan(node):
+                    result.extend(recurse(node.left_child, timespan))
+                    for candidate_logical_tie in node.payload:
+                        if (
+                            inspect(candidate_logical_tie)
+                            .timespan()
+                            .starts_during_timespan(timespan)
+                        ):
+                            result.append(candidate_logical_tie)
+                    result.extend(recurse(node.right_child, timespan))
+                elif (timespan.start_offset <= node.start_offset) or (
+                    timespan.stop_offset <= node.start_offset
+                ):
+                    result.extend(recurse(node.left_child, timespan))
+            return result
+
+        results = recurse(self._root_node, timespan)
+        results.sort(
+            key=lambda x: (
+                inspect(x).timespan().start_offset,
+                inspect(x).timespan().stop_offset,
+            )
+        )
+        print(tuple(results))
+        return tuple(results)
 
     def get_simultaneity_at(self, offset):
         r"""Gets simultaneity at `offset`.

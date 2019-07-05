@@ -1,23 +1,30 @@
 import abjad
-from CyclicList import CyclicList
+from evans.AttachmentHandlers.CyclicList import CyclicList
 
-# add "effort BV" and "sfz BV"
+
 class DynamicHandler:
     def __init__(
         self,
         dynamic_list=None,
         flare_boolean_vector=[0],
+        flare_continuous=True,
         hold_first_boolean_vector=[0],
+        hold_first_continuous=True,
         hold_last_boolean_vector=[0],
+        hold_last_continuous=True,
         effort_boolean_vector=[0],
-        sfx_boolean_vector=[0],
+        effort_continuous=True,
         continuous=True,
     ):
         self.dynamic_list = dynamic_list
         self.flare_boolean_vector = flare_boolean_vector
+        self.flare_continuous = flare_continuous
         self.hold_first_boolean_vector = hold_first_boolean_vector
+        self.hold_first_continuous = hold_first_continuous
         self.hold_last_boolean_vector = hold_last_boolean_vector
+        self.hold_last_continuous = hold_last_continuous
         self.effort_boolean_vector = effort_boolean_vector
+        self.effort_continuous = effort_continuous
         self.continuous = continuous
         self._count_1 = -1
         self._count_2 = -1
@@ -26,16 +33,16 @@ class DynamicHandler:
         self._count_5 = -1
         self._cyc_dynamics = CyclicList(dynamic_list, self.continuous, self._count_1)
         self._cyc_flare_boolean_vector = CyclicList(
-            flare_boolean_vector, self.continuous, self._count_2
+            flare_boolean_vector, self.flare_continuous, self._count_2
         )
         self._cyc_hold_first_boolean_vector = CyclicList(
-            hold_first_boolean_vector, self.continuous, self._count_3
+            hold_first_boolean_vector, self.hold_first_continuous, self._count_3
         )
         self._cyc_hold_last_boolean_vector = CyclicList(
-            hold_last_boolean_vector, self.continuous, self._count_4
+            hold_last_boolean_vector, self.hold_last_continuous, self._count_4
         )
         self._cyc_effort_boolean_vector = CyclicList(
-            effort_boolean_vector, self.continuous, self._count_5
+            effort_boolean_vector, self.effort_continuous, self._count_5
         )
 
     def __call__(self, selections):
@@ -256,9 +263,13 @@ class DynamicHandler:
 #     # dynamic_list=[3, -1, 2, 4],
 #     dynamic_list=['f', 'niente', 'p', 'mf'],
 #     flare_boolean_vector=[0, 0, 0, 1],
+#     flare_continuous=True,
 #     hold_first_boolean_vector=[1, 0, 0,],
+#     hold_first_continuous=True,
 #     hold_last_boolean_vector=[0, 1],
+#     hold_last_continuous=True,
 #     effort_boolean_vector=[1, 0],
+#     effort_continuous=True,
 #     continuous=True,
 # )
 #
