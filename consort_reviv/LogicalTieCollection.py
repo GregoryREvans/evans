@@ -610,7 +610,6 @@ class LogicalTieCollection(AbjadObject):
                 inspect(x).timespan().stop_offset,
             )
         )
-        print(tuple(results))
         return tuple(results)
 
     def get_simultaneity_at(self, offset):
