@@ -64,11 +64,7 @@ class TimespanSpecifier:
     """Generic specifier for annotation
     """
 
-    def __init__(
-        self,
-        voice_name=None,
-        handler=None,
-    ):
+    def __init__(self, voice_name=None, handler=None):
         self.voice_name = voice_name
         self.handler = handler
 

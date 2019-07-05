@@ -582,7 +582,8 @@ class LogicalTieCollection(AbjadObject):
             )
         )
         return tuple(results)
-#new from greg...spotty when to check node vs timespan? What even is in the node?
+
+    # new from greg...spotty when to check node vs timespan? What even is in the node?
     def find_logical_ties_starting_during_timespan(self, timespan):
         def recurse(node, timespan):
             result = []
