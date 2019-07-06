@@ -48,7 +48,7 @@ class DynamicHandler:
     def __call__(self, selections):
         return self._apply_dynamics(selections)
 
-    def _calculate_hairpin(self, start, stop, flared=False):
+    def _calculate_hairpin(self, start, stop, flared=0):
         if isinstance(start, str):
             start = abjad.Dynamic(start)
         elif isinstance(start, int):
@@ -61,7 +61,7 @@ class DynamicHandler:
             stop = abjad.Dynamic(abjad.Dynamic.dynamic_ordinal_to_dynamic_name(stop))
         else:
             pass
-        if flared is True:
+        if flared == 1:
             if start.ordinal < stop.ordinal:
                 if start.name == "niente":
                     hairpin = "o<|"
@@ -218,15 +218,27 @@ class DynamicHandler:
                         start = items[0]
                         stop = items[1]
                         if effort_bools[0] == 0:
-                            start = abjad.Dynamic(start)
+                            if start == "niente":
+                                start = abjad.Dynamic(start, hide=True)
+                            else:
+                                start = abjad.Dynamic(start)
                         else:
                             start_string = self._make_effort_dynamics(start)
-                            start = abjad.Dynamic(start_string)
+                            if start_string == "niente":
+                                start = abjad.Dynamic(start_string, hide=True)
+                            else:
+                                start = abjad.Dynamic(start_string)
                         if effort_bools[1] == 0:
-                            stop = abjad.Dynamic(stop, leak=True)
+                            if stop == "niente":
+                                stop = abjad.Dynamic(stop, command="\!", leak=True)
+                            else:
+                                stop = abjad.Dynamic(stop, leak=True)
                         else:
                             stop_string = self._make_effort_dynamics(stop)
-                            stop = abjad.Dynamic(stop_string, leak=True)
+                            if stop_string == "niente":
+                                stop = abjad.Dynamic(stop_string, command="\!", leak=True)
+                            else:
+                                stop = abjad.Dynamic(stop_string, leak=True)
                         hairpin = abjad.StartHairpin(
                             self._calculate_hairpin(
                                 start,
