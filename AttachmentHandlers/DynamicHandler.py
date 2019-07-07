@@ -236,7 +236,9 @@ class DynamicHandler:
                         else:
                             stop_string = self._make_effort_dynamics(stop)
                             if stop_string == "niente":
-                                stop = abjad.Dynamic(stop_string, command="\!", leak=True)
+                                stop = abjad.Dynamic(
+                                    stop_string, command="\!", leak=True
+                                )
                             else:
                                 stop = abjad.Dynamic(stop_string, leak=True)
                         hairpin = abjad.StartHairpin(
