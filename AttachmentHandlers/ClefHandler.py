@@ -41,8 +41,8 @@ class ClefHandler:
             return clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves_up = {"bass": 3, "tenor": 10, "tenorvarC": 10, "alto": 13, "varC": 13, "treble": 24} #in some cases treble might be 36?
-        default_clef_shelves_down = {"bass": -28, "tenor": -21, "tenorvarC": -21, "alto": -12, "varC": -12, "treble": -5}
+        default_clef_shelves_up = {"bass": 3, "tenor": 10, "tenorvarC": 10, "alto": 13, "varC": 13, "treble": 24, "treble^8": 36, "treble^15": 48} #in some cases treble might be 36?
+        default_clef_shelves_down = {"bass": -28, "tenor": -21, "tenorvarC": -21, "alto": -12, "varC": -12, "treble": -5, "treble^8": 7, "treble^15": 19}
         if self.extend_in_direction == "down":
             return default_clef_shelves_down[clef]
         else:
@@ -52,7 +52,7 @@ class ClefHandler:
         clef = self.clef
         if clef is not None:
             clef_list = [abjad.Clef(self._extended_range_clefs(clef)[0])]
-            abjad.attach(clef_list[0], voice[0])
+            abjad.attach(clef_list[0], abjad.select(voice).leaves()[0]) # was voice[0]
             if self.add_extended_clefs is True:
                 clefs = self._extended_range_clefs(clef)
                 for run in abjad.select(voice).runs():
@@ -73,7 +73,11 @@ class ClefHandler:
                         else:
                             clef = abjad.Clef(clefs[1])
                             if clef != clef_list[-1]:
-                                abjad.attach(clef, run[0])
+                                if abjad.inspect(run[0]).indicator(abjad.Clef) is not None:
+                                    abjad.detach(abjad.inspect(run[0]).indicator(abjad.Clef), run[0])
+                                    abjad.attach(clef, run[0])
+                                else:
+                                    abjad.attach(clef, run[0])
                                 clef_list.append(clef)
                             else:
                                 pass
@@ -90,7 +94,11 @@ class ClefHandler:
                 converted_clef = self._extended_range_clefs(clef)[0]
                 clef = abjad.Clef(converted_clef)
                 first_leaf = abjad.select(voice).leaves()[0]
-                abjad.attach(clef, first_leaf)
+                if abjad.inspect(first_leaf).indicator(abjad.Clef) is not None:
+                    abjad.detach(abjad.inspect(first_leaf).indicator(abjad.Clef), first_leaf)
+                    abjad.attach(clef, first_leaf)
+                else:
+                    abjad.attach(clef, first_leaf)
                 self._add_ottavas(voice, clef.name)
         else:
             clef = abjad.Clef("treble")
