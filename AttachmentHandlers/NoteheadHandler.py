@@ -45,7 +45,6 @@ class NoteheadHandler:
             for run in abjad.select(selections).runs():
                 last_tie = abjad.select(run).logical_ties(pitched=True)[-1]
                 abjad.detach(transition_arrow, last_tie[-1])
-        return selections
 
 
 # - \tweak arrow-length #2
