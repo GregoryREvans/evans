@@ -16,4 +16,3 @@ class SlurHandler:
                 abjad.slur(run[:])
         else:
             pass
-        return selections

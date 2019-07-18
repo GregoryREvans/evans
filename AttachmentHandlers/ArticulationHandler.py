@@ -34,4 +34,3 @@ class ArticulationHandler:
                     continue
                 else:
                     abjad.attach(abjad.Articulation(articulation), tie[0])
-        return selections

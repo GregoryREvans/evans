@@ -60,4 +60,3 @@ class GraceHandler:
                         continue
         else:
             pass
-        return [container[:]]

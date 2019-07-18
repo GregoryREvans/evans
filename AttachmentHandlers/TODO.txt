@@ -1,24 +1,12 @@
-
-Attachment Handlers:
-    FIX
-
-        2.) FIX trill handler that replaces chords with trills to work with musicmaker
-
-    ADD
-
-        1.) ADD piano pedal
-        2.) ADD woodwind diagram interface?
-        3.) ADD GraceHandler (regular and after graces)
-        4.) Allow optional middle dynamic in DynamicHandler (with optional preference left or right of center) Automatically create hairpin trajectory (optional force flared up or down) maybe also allow cyclic dynamics?
-        5.) Allow optional "effort" key to turn dynamics into quoted dynamics with f-strings f'"{dynamic}"'
-        6.) ADD boolean vector generators to affect which leaves get attachments based on a pattern
-
-Other:
-    1.) Package tools to be imported
-    2.) Encapsulate random walks
-    3.) work with 12 tone row object
-    4.) timespans as selectors with interval trees (see: https://github.com/josiah-wolf-oberholtzer/consort/blob/master/consort/tools/TimespanInventoryMapping.py and https://en.wikipedia.org/wiki/Interval_tree)
-
-Scheme:
-    1.) Jete Spanner
-    2.) Notehead markup automation in tuplet brackets.
+ArticulationHandler: Modernize for CyclicList and boolean vector
+ClefHandler: Fix ottava and clef changes for non-string instruments
+DynamicHandler: Fix niente
+GlissandoHandler: DONE
+GraceHandler: Finish and Expand with CyclicList and boolean vector
+JeteSpanner: Finish and Expand (singular drop vs singular throw vs spanner) with CyclicList and boolean vector
+NoteheadHandler: Modernize for CyclicList and boolean vector
+PitchHandler: Modernize for CyclicList
+RhythmHandler: Remove extraneous functions
+SlurHandler: DONE
+TextSpanHandler: Modernize for CyclicList / Remove returns
+TrillHandler: Make full class with boolean vector

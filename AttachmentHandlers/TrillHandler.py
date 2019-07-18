@@ -69,5 +69,3 @@ class TrillHandler:
                     indicators = abjad.inspect(leaf).indicators()
                     for indicator in indicators:
                         abjad.attach(indicator, new_tail)
-
-        return container[:]

@@ -54,4 +54,3 @@ class GlissandoHandler:
                 for run in runs:
                     if len(run) > 1:
                         abjad.glissando(run[:], allow_repeats=True, allow_ties=False)
-        return selections
