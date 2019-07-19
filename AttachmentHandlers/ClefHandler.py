@@ -1,12 +1,13 @@
 import abjad
 from statistics import mean
 
-
+# add shelf for ottava to ensure that no notes in the bracket are illegible
 class ClefHandler:
     def __init__(
         self,
         clef=None,
         clef_shelf=None,
+        allowable_clefs=None,
         add_extended_clefs=False,
         ottava_shelf=None,
         add_ottavas=False,
@@ -14,6 +15,7 @@ class ClefHandler:
     ):
         self.clef = clef
         self.clef_shelf = clef_shelf
+        self.allowable_clefs = allowable_clefs
         self.add_extended_clefs = add_extended_clefs
         self.ottava_shelf = ottava_shelf
         self.add_ottavas = add_ottavas
@@ -54,7 +56,10 @@ class ClefHandler:
             clef_list = [abjad.Clef(self._extended_range_clefs(clef)[0])]
             abjad.attach(clef_list[0], abjad.select(voice).leaves()[0]) # was voice[0]
             if self.add_extended_clefs is True:
-                clefs = self._extended_range_clefs(clef)
+                if self.allowable_clefs is not None:
+                    clefs = self.allowable_clefs
+                else:
+                    clefs = self._extended_range_clefs(clef)
                 for run in abjad.select(voice).runs():
                     ties = abjad.select(run).logical_ties(pitched=True)
                     pitches = []
