@@ -43,7 +43,7 @@ class ClefHandler:
             return clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves = {"bass": (-28, 3), "tenor": (-10, 10), "tenorvarC": (-10, 10), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
+        default_clef_shelves = {"bass": (-28, 6), "tenor": (-10, 10), "tenorvarC": (-10, 10), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
         return default_clef_shelves[clef]
 
     def _add_clefs(self, voice): #allow the beginning of a run to ignore active clef
@@ -115,7 +115,7 @@ class ClefHandler:
                         else:
                             continue
                     elif pitch < active_clef_in_list_shelf[0]:
-                        test_value = value - 1
+                        test_value = value - 2
                         if test_value > -1:
                             temp_clef = allowable_clefs[test_value]
                             clef = abjad.Clef(temp_clef)
@@ -132,8 +132,8 @@ class ClefHandler:
                                 clef_list.append(clef)
                                 if clef == allowable_clefs[-1]:
                                     self._add_ottavas(tie, clef)
-                            if pitch < self._extended_range_ottavas(temp_clef)[0]:
-                                test_value = value - 2
+                            if pitch > self._extended_range_ottavas(temp_clef)[1]:
+                                test_value = value - 1
                                 if test_value > -1:
                                     temp_clef = allowable_clefs[test_value]
                                     clef = abjad.Clef(temp_clef)
@@ -155,7 +155,27 @@ class ClefHandler:
                             else:
                                 continue
                         else:
-                            continue
+                            test_value = value - 1
+                            if test_value > -1:
+                                temp_clef = allowable_clefs[test_value]
+                                clef = abjad.Clef(temp_clef)
+                                if clef == clef_list[-1]:
+                                    continue
+                                elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                    abjad.attach(clef, tie[0])
+                                    clef_list.append(clef)
+                                    if clef == allowable_clefs[-1]:
+                                        self._add_ottavas(tie, clef)
+                                else:
+                                    abjad.attach(clef, tie[0])
+                                    clef_list.append(clef)
+                                    if clef == allowable_clefs[-1]:
+                                        self._add_ottavas(tie, clef)
+                                    else:
+                                        continue
+                            else:
+                                continue
                     else:
                         continue
             else:
