@@ -26,10 +26,10 @@ class ClefHandler:
 
     def _extended_range_clefs(self, clef):
         clef_groups_up = {
-            "bass": ("bass", "tenorvarC", "treble", "treble^8", "treble^15"),
-            "tenor": ("tenorvarC", "treble", "treble^8", "treble^15"),
-            "alto": ("varC", "treble", "treble^8", "treble^15"),
-            "treble": ("treble", "treble^8", "treble^15"),
+            "bass": ("bass", "tenorvarC", "treble",),# "treble^8", "treble^15"),
+            "tenor": ("tenorvarC", "treble",), # "treble^8", "treble^15"),
+            "alto": ("varC", "treble",), # "treble^8", "treble^15"),
+            "treble": ("treble",),# "treble^8", "treble^15"),
         }
         clef_groups_down = {
             "bass": ("bass", "bass_8", "bass_15"),
@@ -43,41 +43,71 @@ class ClefHandler:
             return clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves = {"bass": (-28, 3), "tenor": (-21, 10), "tenorvarC": (-21, 10), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
+        default_clef_shelves = {"bass": (-28, 3), "tenor": (-10, 10), "tenorvarC": (-10, 10), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
         return default_clef_shelves[clef]
 
-    def _add_clefs(self, voice): #make sure if clef is a string or not
+    def _add_clefs(self, voice): #allow the beginning of a run to ignore active clef
         clef = self.clef
         if clef is not None:
+            base_clef = self.clef
             first_clef_name = self._extended_range_clefs(clef)[0]
             clef_list = [abjad.Clef(first_clef_name)]
             abjad.attach(clef_list[0], abjad.select(voice).leaves()[0])
             if self.add_extended_clefs is True:
+                allowable_clefs = None
                 if self.allowable_clefs is not None:
                     allowable_clefs = self.allowable_clefs
                 else:
-                    allowable_clefs = self._extended_range_clefs(clef)
+                    allowable_clefs = self._extended_range_clefs(base_clef)
                 for tie in abjad.select(voice).logical_ties(pitched=True):
-                    if abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                        abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                     pitches = []
                     for pitch in abjad.inspect(tie[0]).pitches():
                         pitches.append(pitch.number)
                     pitch = mean(pitches)
                     value = None
-                    for count , clef in enumerate(allowable_clefs):
-                        if clef_list[-1] == abjad.Clef(clef):
+                    for count , allowed_clef in enumerate(allowable_clefs):
+                        if clef_list[-1] == abjad.Clef(allowed_clef):
                             value = count
+                        else:
+                            continue
                     active_clef_in_list = clef_list[-1]
-                    active_clef_in_list_shelf = self._extended_range_ottavas(clef_list[-1].name)
+                    active_clef_in_list_shelf = self._extended_range_ottavas(active_clef_in_list.name)
                     if pitch > active_clef_in_list_shelf[1]:
-                        if value + 1 <= len(allowable_clefs):
-                            temp_clef = allowable_clefs[value + 1]
+                        test_value = value + 1
+                        if test_value < len(allowable_clefs):
+                            temp_clef = allowable_clefs[test_value]
                             clef = abjad.Clef(temp_clef)
+                            if clef == clef_list[-1]:
+                                continue
+                            elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                abjad.attach(clef, tie[0])
+                                clef_list.append(clef)
+                                if clef == allowable_clefs[-1]:
+                                    self._add_ottavas(tie, clef)
+                            else:
+                                abjad.attach(clef, tie[0])
+                                clef_list.append(clef)
+                                if clef == allowable_clefs[-1]:
+                                    self._add_ottavas(tie, clef)
                             if pitch > self._extended_range_ottavas(temp_clef)[1]:
-                                if value + 2 <= len(allowable_clefs):
-                                    temp_clef = allowable_clefs[value + 2]
+                                test_value = value + 2
+                                if test_value < len(allowable_clefs):
+                                    temp_clef = allowable_clefs[test_value]
                                     clef = abjad.Clef(temp_clef)
+                                    if clef == clef_list[-1]:
+                                        continue
+                                    elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                        abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                        abjad.attach(clef, tie[0])
+                                        clef_list.append(clef)
+                                        if clef == allowable_clefs[-1]:
+                                            self._add_ottavas(tie, clef)
+                                    else:
+                                        abjad.attach(clef, tie[0])
+                                        clef_list.append(clef)
+                                        if clef == allowable_clefs[-1]:
+                                            self._add_ottavas(tie, clef)
                                 else:
                                     continue
                             else:
@@ -85,13 +115,41 @@ class ClefHandler:
                         else:
                             continue
                     elif pitch < active_clef_in_list_shelf[0]:
-                        if value - 1 >= len(allowable_clefs):
-                            temp_clef = allowable_clefs[value - 1]
+                        test_value = value - 1
+                        if test_value > -1:
+                            temp_clef = allowable_clefs[test_value]
                             clef = abjad.Clef(temp_clef)
+                            if clef == clef_list[-1]:
+                                continue
+                            elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                abjad.attach(clef, tie[0])
+                                clef_list.append(clef)
+                                if clef == allowable_clefs[-1]:
+                                    self._add_ottavas(tie, clef)
+                            else:
+                                abjad.attach(clef, tie[0])
+                                clef_list.append(clef)
+                                if clef == allowable_clefs[-1]:
+                                    self._add_ottavas(tie, clef)
                             if pitch < self._extended_range_ottavas(temp_clef)[0]:
-                                if value - 2 >= len(allowable_clefs):
-                                    temp_clef = allowable_clefs[value - 2]
+                                test_value = value - 2
+                                if test_value > -1:
+                                    temp_clef = allowable_clefs[test_value]
                                     clef = abjad.Clef(temp_clef)
+                                    if clef == clef_list[-1]:
+                                        continue
+                                    elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                        abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                        abjad.attach(clef, tie[0])
+                                        clef_list.append(clef)
+                                        if clef == allowable_clefs[-1]:
+                                            self._add_ottavas(tie, clef)
+                                    else:
+                                        abjad.attach(clef, tie[0])
+                                        clef_list.append(clef)
+                                        if clef == allowable_clefs[-1]:
+                                            self._add_ottavas(tie, clef)
                                 else:
                                     continue
                             else:
@@ -100,14 +158,6 @@ class ClefHandler:
                             continue
                     else:
                         continue
-                    if clef == clef_list[-1]:
-                        continue
-                    else:
-                        print(clef)
-                        abjad.attach(clef, tie[0])
-                        clef_list.append(clef)
-                        if clef == allowable_clefs[-1]:
-                            self._add_ottavas(tie, clef)
             else:
                 converted_clef = self._extended_range_clefs(clef)[0]
                 clef = abjad.Clef(converted_clef)
