@@ -23,6 +23,7 @@ class ClefHandler:
 
     def __call__(self, voice):
         self._add_clefs(voice)
+        self._add_ottavas(voice)
 
     def _extended_range_clefs(self, clef):
         clef_groups_up = {
@@ -43,7 +44,7 @@ class ClefHandler:
             return clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves = {"bass": (-28, 6), "tenor": (-10, 10), "tenorvarC": (-10, 10), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
+        default_clef_shelves = {"bass": (-28, 6), "tenor": (-10, 12), "tenorvarC": (-10, 12), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
         return default_clef_shelves[clef]
 
     def _add_clefs(self, voice): #allow the beginning of a run to ignore active clef
@@ -83,13 +84,9 @@ class ClefHandler:
                                 abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
-                                if clef == allowable_clefs[-1]:
-                                    self._add_ottavas(tie, clef)
                             else:
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
-                                if clef == allowable_clefs[-1]:
-                                    self._add_ottavas(tie, clef)
                             if pitch > self._extended_range_ottavas(temp_clef)[1]:
                                 test_value = value + 2
                                 if test_value < len(allowable_clefs):
@@ -101,13 +98,9 @@ class ClefHandler:
                                         abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
-                                        if clef == allowable_clefs[-1]:
-                                            self._add_ottavas(tie, clef)
                                     else:
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
-                                        if clef == allowable_clefs[-1]:
-                                            self._add_ottavas(tie, clef)
                                 else:
                                     continue
                             else:
@@ -125,13 +118,9 @@ class ClefHandler:
                                 abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
-                                if clef == allowable_clefs[-1]:
-                                    self._add_ottavas(tie, clef)
                             else:
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
-                                if clef == allowable_clefs[-1]:
-                                    self._add_ottavas(tie, clef)
                             if pitch > self._extended_range_ottavas(temp_clef)[1]:
                                 test_value = value - 1
                                 if test_value > -1:
@@ -143,13 +132,9 @@ class ClefHandler:
                                         abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
-                                        if clef == allowable_clefs[-1]:
-                                            self._add_ottavas(tie, clef)
                                     else:
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
-                                        if clef == allowable_clefs[-1]:
-                                            self._add_ottavas(tie, clef)
                                 else:
                                     continue
                             else:
@@ -165,15 +150,9 @@ class ClefHandler:
                                     abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
                                     abjad.attach(clef, tie[0])
                                     clef_list.append(clef)
-                                    if clef == allowable_clefs[-1]:
-                                        self._add_ottavas(tie, clef)
                                 else:
                                     abjad.attach(clef, tie[0])
                                     clef_list.append(clef)
-                                    if clef == allowable_clefs[-1]:
-                                        self._add_ottavas(tie, clef)
-                                    else:
-                                        continue
                             else:
                                 continue
                     else:
@@ -187,43 +166,66 @@ class ClefHandler:
                     abjad.attach(clef, first_leaf)
                 else:
                     abjad.attach(clef, first_leaf)
-                self._add_ottavas(voice, clef.name)
         else:
             clef = abjad.Clef("treble")
             first_leaf = abjad.select(voice).leaves()[0]
             abjad.attach(clef, first_leaf)
-            self._add_ottavas(voice, clef.name)
 
-    def _add_ottavas(self, tie, active_clef):
+    def _add_ottavas(self, voice):
         if self.add_ottavas is True:
-            current_clef = active_clef
-            if self.ottava_shelf is not None:
-                shelf = self.ottava_shelf
-                if self.extend_in_direction == "down":
-                    for pitch in abjad.inspect(tie[0]).pitches():
-                        if pitch < shelf:
-                            abjad.ottava(
-                                tie, start_ottava=abjad.Ottava(n=-1)
-                            )
-                else:
-                    for pitch in abjad.inspect(tie[0]).pitches():
-                        if pitch > shelf:
-                            abjad.ottava(
-                                tie, start_ottava=abjad.Ottava(n=1)
-                            )
+            if self.allowable_clefs is not None:
+                active_clef = self.allowable_clefs[-1]
             else:
-                shelf = self._extended_range_ottavas(current_clef)
-                if self.extend_in_direction == "down":
-                    for pitch in abjad.inspect(tie[0]).pitches():
-                        if pitch < shelf:
-                            abjad.ottava(
-                                tie, start_ottava=abjad.Ottava(n=-1)
-                            )
+                active_clef = self._extended_range_clefs(self.clef)[-1]
+            for tie in abjad.select(voice).logical_ties(pitched=True):
+                current_clef = active_clef
+                if self.ottava_shelf is not None:
+                    shelf = self.ottava_shelf
+                    if self.extend_in_direction == "down":
+                        for pitch in abjad.inspect(tie[0]).pitches():
+                            if pitch < shelf[0]:
+                                start = abjad.Ottava(n=-1)
+                                stop = abjad.Ottava(n=0)
+                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
+                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                else:
+                                    abjad.attach(start, tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                    else:
+                        for pitch in abjad.inspect(tie[0]).pitches():
+                            if pitch > shelf[1]:
+                                start = abjad.Ottava(n=1)
+                                stop = abjad.Ottava(n=0)
+                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
+                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                else:
+                                    abjad.attach(start, tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                 else:
-                    for pitch in abjad.inspect(tie[0]).pitches():
-                        if pitch > shelf:
-                            abjad.ottava(
-                                tie, start_ottava=abjad.Ottava(n=1)
-                            )
+                    shelf = self._extended_range_ottavas(current_clef)
+                    if self.extend_in_direction == "down":
+                        for pitch in abjad.inspect(tie[0]).pitches():
+                            if pitch < shelf[0]:
+                                start = abjad.Ottava(n=-1)
+                                stop = abjad.Ottava(n=0)
+                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
+                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                else:
+                                    abjad.attach(start, tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                    else:
+                        for pitch in abjad.inspect(tie[0]).pitches():
+                            if pitch > shelf[1]:
+                                start = abjad.Ottava(n=1)
+                                stop = abjad.Ottava(n=0)
+                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
+                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                else:
+                                    abjad.attach(start, tie[0])
+                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
         else:
             pass
