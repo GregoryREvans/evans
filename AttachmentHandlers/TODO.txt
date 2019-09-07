@@ -1,5 +1,4 @@
 Top Priority:
-    ArticulationHandler: Modernize for CyclicList and boolean vector
     NoteheadHandler: Modernize for CyclicList and boolean vector
     TrillHandler: Make full class with boolean vector
 Mid Priority:

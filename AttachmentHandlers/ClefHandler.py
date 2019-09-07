@@ -27,10 +27,10 @@ class ClefHandler:
 
     def _extended_range_clefs(self, clef):
         clef_groups_up = {
-            "bass": ("bass", "tenorvarC", "treble",),# "treble^8", "treble^15"),
-            "tenor": ("tenorvarC", "treble",), # "treble^8", "treble^15"),
-            "alto": ("varC", "treble",), # "treble^8", "treble^15"),
-            "treble": ("treble",),# "treble^8", "treble^15"),
+            "bass": ("bass", "tenorvarC", "treble"),  # "treble^8", "treble^15"),
+            "tenor": ("tenorvarC", "treble"),  # "treble^8", "treble^15"),
+            "alto": ("varC", "treble"),  # "treble^8", "treble^15"),
+            "treble": ("treble",),  # "treble^8", "treble^15"),
         }
         clef_groups_down = {
             "bass": ("bass", "bass_8", "bass_15"),
@@ -44,10 +44,19 @@ class ClefHandler:
             return clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves = {"bass": (-28, 6), "tenor": (-10, 12), "tenorvarC": (-10, 12), "alto": (-12, 13), "varC": (-12, 13), "treble": (-5, 24), "treble^8": (7, 36), "treble^15": (19, 48)}
+        default_clef_shelves = {
+            "bass": (-28, 6),
+            "tenor": (-10, 12),
+            "tenorvarC": (-10, 12),
+            "alto": (-12, 13),
+            "varC": (-12, 13),
+            "treble": (-5, 24),
+            "treble^8": (7, 36),
+            "treble^15": (19, 48),
+        }
         return default_clef_shelves[clef]
 
-    def _add_clefs(self, voice): #allow the beginning of a run to ignore active clef
+    def _add_clefs(self, voice):  # allow the beginning of a run to ignore active clef
         clef = self.clef
         if clef is not None:
             base_clef = self.clef
@@ -66,13 +75,15 @@ class ClefHandler:
                         pitches.append(pitch.number)
                     pitch = mean(pitches)
                     value = None
-                    for count , allowed_clef in enumerate(allowable_clefs):
+                    for count, allowed_clef in enumerate(allowable_clefs):
                         if clef_list[-1] == abjad.Clef(allowed_clef):
                             value = count
                         else:
                             continue
                     active_clef_in_list = clef_list[-1]
-                    active_clef_in_list_shelf = self._extended_range_ottavas(active_clef_in_list.name)
+                    active_clef_in_list_shelf = self._extended_range_ottavas(
+                        active_clef_in_list.name
+                    )
                     if pitch > active_clef_in_list_shelf[1]:
                         test_value = value + 1
                         if test_value < len(allowable_clefs):
@@ -80,8 +91,12 @@ class ClefHandler:
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                            elif (
+                                abjad.inspect(tie[0]).indicator(abjad.Clef) is not None
+                            ):
+                                abjad.detach(
+                                    abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0]
+                                )
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
                             else:
@@ -94,8 +109,14 @@ class ClefHandler:
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                        abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                    elif (
+                                        abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                        is not None
+                                    ):
+                                        abjad.detach(
+                                            abjad.inspect(tie[0]).indicator(abjad.Clef),
+                                            tie[0],
+                                        )
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
                                     else:
@@ -114,8 +135,12 @@ class ClefHandler:
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                            elif (
+                                abjad.inspect(tie[0]).indicator(abjad.Clef) is not None
+                            ):
+                                abjad.detach(
+                                    abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0]
+                                )
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
                             else:
@@ -128,8 +153,14 @@ class ClefHandler:
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                        abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                    elif (
+                                        abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                        is not None
+                                    ):
+                                        abjad.detach(
+                                            abjad.inspect(tie[0]).indicator(abjad.Clef),
+                                            tie[0],
+                                        )
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
                                     else:
@@ -146,8 +177,14 @@ class ClefHandler:
                                 clef = abjad.Clef(temp_clef)
                                 if clef == clef_list[-1]:
                                     continue
-                                elif abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0])
+                                elif (
+                                    abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                    is not None
+                                ):
+                                    abjad.detach(
+                                        abjad.inspect(tie[0]).indicator(abjad.Clef),
+                                        tie[0],
+                                    )
                                     abjad.attach(clef, tie[0])
                                     clef_list.append(clef)
                                 else:
@@ -162,7 +199,9 @@ class ClefHandler:
                 clef = abjad.Clef(converted_clef)
                 first_leaf = abjad.select(voice).leaves()[0]
                 if abjad.inspect(first_leaf).indicator(abjad.Clef) is not None:
-                    abjad.detach(abjad.inspect(first_leaf).indicator(abjad.Clef), first_leaf)
+                    abjad.detach(
+                        abjad.inspect(first_leaf).indicator(abjad.Clef), first_leaf
+                    )
                     abjad.attach(clef, first_leaf)
                 else:
                     abjad.attach(clef, first_leaf)
@@ -186,8 +225,14 @@ class ClefHandler:
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
-                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                if (
+                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
+                                    is not None
+                                ):
+                                    abjad.detach(
+                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
+                                        tie[0],
+                                    )
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -197,8 +242,14 @@ class ClefHandler:
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
-                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                if (
+                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
+                                    is not None
+                                ):
+                                    abjad.detach(
+                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
+                                        tie[0],
+                                    )
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -210,8 +261,14 @@ class ClefHandler:
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
-                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                if (
+                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
+                                    is not None
+                                ):
+                                    abjad.detach(
+                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
+                                        tie[0],
+                                    )
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -221,8 +278,14 @@ class ClefHandler:
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                if abjad.inspect(tie[0]).indicator(abjad.Ottava) is not None:
-                                    abjad.detach(abjad.inspect(tie[0]).indicator(abjad.Ottava), tie[0])
+                                if (
+                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
+                                    is not None
+                                ):
+                                    abjad.detach(
+                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
+                                        tie[0],
+                                    )
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])

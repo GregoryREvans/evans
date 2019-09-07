@@ -64,7 +64,9 @@ class DynamicHandler:
         if flared == 1:
             if start.ordinal < stop.ordinal:
                 if start.name == "niente":
-                    start = abjad.Dynamic("niente", hide=True)#carry these through instead?
+                    start = abjad.Dynamic(
+                        "niente", hide=True
+                    )  # carry these through instead?
                     hairpin = "o<|"
                 else:
                     hairpin = "<|"
@@ -87,7 +89,7 @@ class DynamicHandler:
                     hairpin = ">o"
                 else:
                     hairpin = ">"
-        return hairpin #, start, stop?
+        return hairpin  # , start, stop?
 
     def _make_effort_dynamics(self, dyn):
         conversion = {
@@ -274,7 +276,7 @@ class DynamicHandler:
         self._remove_niente(selections)
 
     def _remove_niente(self, selections):
-        print("removing nienti") #getting close
+        print("removing nienti")  # getting close
         for leaf in abjad.select(selections).leaves():
             for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
                 if dynamic.name is "niente":
@@ -282,10 +284,14 @@ class DynamicHandler:
                     print(dynamic)
                     if dynamic.command == "\!":
                         abjad.detach(dynamic, leaf)
-                        abjad.attach(abjad.Dynamic(dynamic, command="\!", leak=True), leaf)#maybe just continue instead of replacing?
+                        abjad.attach(
+                            abjad.Dynamic(dynamic, command="\!", leak=True), leaf
+                        )  # maybe just continue instead of replacing?
                     elif dynamic.leak is True:
                         abjad.detach(dynamic, leaf)
-                        abjad.attach(abjad.Dynamic(dynamic, command="\!", leak=True), leaf)
+                        abjad.attach(
+                            abjad.Dynamic(dynamic, command="\!", leak=True), leaf
+                        )
                     else:
                         abjad.detach(dynamic, leaf)
                         abjad.attach(abjad.Dynamic(dynamic, hide=True), leaf)

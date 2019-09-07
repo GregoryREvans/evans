@@ -6,7 +6,7 @@ def setNet(set, group_size, filter_depth):
     for i, letter in enumerate(range(filter_depth)):
         reference_set = combination_sets[i]
         for index, item in enumerate(reference_set):
-            for set_class in combination_sets[i + 1:]:
+            for set_class in combination_sets[i + 1 :]:
                 if item in set_class:
                     checkable_set = [_ for _ in reference_set]
                     checkable_set.remove(item)
@@ -21,6 +21,7 @@ def setNet(set, group_size, filter_depth):
                 else:
                     continue
     return combination_sets
+
 
 ###DEMO###
 filter_depth_ = 7
