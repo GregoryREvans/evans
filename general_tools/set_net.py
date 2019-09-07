@@ -22,20 +22,20 @@ def setNet(set, group_size, filter_depth):
                     continue
     return combination_sets
 
-# ###DEMO###
-# filter_depth_ = 7
-# set_ = "ABCDEFG"
-# group_size_ = 3
-# net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-# print(net)
-
+###DEMO###
+filter_depth_ = 7
+set_ = "ABCDEFG"
+group_size_ = 3
+net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+print(net)
+#
 # ###DEMO2###
 # filter_depth_ = 3
 # set_ = "ABCDEFGHI"
 # group_size_ = 4
 # net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
 # print(net)
-
+#
 # ###DEMO3###
 # filter_depth_ = 2
 # set_ = "ABCDE"

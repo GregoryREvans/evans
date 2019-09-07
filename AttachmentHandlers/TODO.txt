@@ -1,12 +1,11 @@
-ArticulationHandler: Modernize for CyclicList and boolean vector
-ClefHandler: Fix ottava and clef changes for non-string instruments
-DynamicHandler: Fix niente
-GlissandoHandler: DONE
-GraceHandler: Finish and Expand with CyclicList and boolean vector
-JeteSpanner: Finish and Expand (singular drop vs singular throw vs spanner) with CyclicList and boolean vector
-NoteheadHandler: Modernize for CyclicList and boolean vector
-PitchHandler: Modernize for CyclicList
-RhythmHandler: Remove extraneous functions
-SlurHandler: DONE
-TextSpanHandler: Modernize for CyclicList / Remove returns
-TrillHandler: Make full class with boolean vector
+Top Priority:
+    ArticulationHandler: Modernize for CyclicList and boolean vector
+    NoteheadHandler: Modernize for CyclicList and boolean vector
+    TrillHandler: Make full class with boolean vector
+Mid Priority:
+    GraceHandler: Finish and Expand with CyclicList and boolean vector
+    PitchHandler: Modernize for CyclicList
+    RhythmHandler: Remove extraneous functions
+    TextSpanHandler: Modernize for CyclicList / Remove returns
+Low Priority:
+    JeteSpanner: Completely rework
