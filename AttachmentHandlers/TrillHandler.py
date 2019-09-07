@@ -20,7 +20,7 @@ class TrillHandler:
     #     self._count = 0
 
     def __call__(self, selections):
-        return self._apply_trills(selections)
+        self._apply_trills(selections)
 
     def _apply_trills(self, selections):
         container = abjad.Container()

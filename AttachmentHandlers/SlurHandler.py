@@ -6,7 +6,7 @@ class SlurHandler:
         self.slurs = slurs
 
     def __call__(self, selections):
-        return self.add_slurs(selections)
+        self.add_slurs(selections)
 
     def add_slurs(self, selections):
         if self.slurs == "selections":

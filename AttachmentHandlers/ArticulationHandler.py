@@ -23,7 +23,7 @@ class ArticulationHandler:
         )
 
     def __call__(self, selections):
-        return self.add_articulations(selections)
+        self.add_articulations(selections)
 
     def add_articulations(self, selections):
         ties = abjad.select(selections).logical_ties(pitched=True)

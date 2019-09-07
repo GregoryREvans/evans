@@ -4,7 +4,6 @@ Top Priority:
 Mid Priority:
     GraceHandler: Finish and Expand with CyclicList and boolean vector
     PitchHandler: Modernize for CyclicList
-    RhythmHandler: Remove extraneous functions
     TextSpanHandler: Modernize for CyclicList / Remove returns
 Low Priority:
     JeteSpanner: Completely rework

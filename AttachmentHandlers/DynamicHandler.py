@@ -46,7 +46,7 @@ class DynamicHandler:
         )
 
     def __call__(self, selections):
-        return self._apply_dynamics(selections)
+        self._apply_dynamics(selections)
 
     def _calculate_hairpin(self, start, stop, flared=0):
         if isinstance(start, str):
@@ -276,12 +276,9 @@ class DynamicHandler:
         self._remove_niente(selections)
 
     def _remove_niente(self, selections):
-        print("removing nienti")  # getting close
         for leaf in abjad.select(selections).leaves():
             for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
                 if dynamic.name is "niente":
-                    abjad.f(leaf)
-                    print(dynamic)
                     if dynamic.command == "\!":
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
@@ -295,7 +292,6 @@ class DynamicHandler:
                     else:
                         abjad.detach(dynamic, leaf)
                         abjad.attach(abjad.Dynamic(dynamic, hide=True), leaf)
-                        abjad.f(leaf)
                 else:
                     continue
 

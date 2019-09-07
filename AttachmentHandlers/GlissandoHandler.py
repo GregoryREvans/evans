@@ -7,7 +7,7 @@ class GlissandoHandler:
         self.line_style = line_style
 
     def __call__(self, selections):
-        return self.add_glissando(selections)
+        self.add_glissando(selections)
 
     def add_glissando(self, selections):
         runs = abjad.select(selections).runs()
