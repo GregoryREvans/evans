@@ -1,9 +1,8 @@
 Top Priority:
-    NoteheadHandler: Modernize for CyclicList and boolean vector
-    TrillHandler: Make full class with boolean vector
+    DONE
 Mid Priority:
-    GraceHandler: Finish and Expand with CyclicList and boolean vector
     PitchHandler: Modernize for CyclicList
     TextSpanHandler: Modernize for CyclicList / Remove returns
 Low Priority:
     JeteSpanner: Completely rework
+    GraceHandler: Finish and Expand with CyclicList and boolean vector, optimize for different grace types
