@@ -1,6 +1,6 @@
 from random import random
 from random import seed
-from evans.general_tools.reduce_mod import reduceMod
+from evans.general_tools.reduce_mod import reduce_mod
 from evans.general_tools.cyc import cyc
 
 
