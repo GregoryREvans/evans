@@ -1,4 +1,4 @@
-from moscotta.mtools.rtmrewrite import funnel_tree_to_x
+from mtools.rtmrewrite import funnel_tree_to_x
 
 
 def flatten(lst):
