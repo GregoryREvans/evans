@@ -1,4 +1,5 @@
 import abjad
+from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class PitchHandler:
@@ -11,18 +12,12 @@ class PitchHandler:
         return self._apply_pitches(selections)
 
     def _collect_pitches_durations_leaves(self, logical_ties, pitches):
-        def cyc(lst):
-            if self.continuous == False:
-                self._count = -1
-            while True:
-                self._count += 1
-                yield lst[self._count % len(lst)]
 
-        cyc_pitches = cyc(pitches)
+        cyc_pitches = CyclicList(pitches, self.continuous, self._count)
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:
             if isinstance(tie[0], abjad.Note):
-                pitch = next(cyc_pitches)
+                pitch = cyc_pitches(r=1)
                 for leaf in tie:
                     pitches.append(pitch)
                     durations.append(leaf.written_duration)
