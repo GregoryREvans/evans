@@ -44,7 +44,7 @@ class NoteheadHandler:
                 string = str(r"""\once \override Staff.NoteHead.style = #'""")
                 full_string = string + head
                 style = abjad.LilyPondLiteral(full_string, format_slot="before")
-                if bool1 is 0:
+                if bool is 0:
                     for leaf in abjad.select(tie).leaves(pitched=True):
                         abjad.attach(style, leaf)
                 else:
