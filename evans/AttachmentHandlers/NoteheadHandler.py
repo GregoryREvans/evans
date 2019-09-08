@@ -15,7 +15,7 @@ class NoteheadHandler:
     ):
         self.notehead_list = notehead_list
         self.transition = transition
-        self._head_vector_continuous = head_vector_continuous
+        self.head_vector_continuous = head_vector_continuous
         self._head_vector_count = -1
         self.head_boolean_vector = CyclicList(
             head_boolean_vector, self.head_vector_continuous, self._head_vector_count
