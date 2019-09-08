@@ -1,7 +1,7 @@
 import itertools
 
 
-def setNet(set, group_size, filter_depth):
+def set_net(set, group_size, filter_depth):
     combination_sets = [_ for _ in itertools.combinations(set, group_size)]
     for i, letter in enumerate(range(filter_depth)):
         reference_set = combination_sets[i]
@@ -24,11 +24,11 @@ def setNet(set, group_size, filter_depth):
 
 
 ###DEMO###
-filter_depth_ = 7
-set_ = "ABCDEFG"
-group_size_ = 3
-net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-print(net)
+# filter_depth_ = 7
+# set_ = "ABCDEFG"
+# group_size_ = 3
+# net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+# print(net)
 #
 # ###DEMO2###
 # filter_depth_ = 3

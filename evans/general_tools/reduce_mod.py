@@ -2,7 +2,7 @@
 # from random import seed
 
 
-def reduceMod(x, rw):
+def reduce_mod(x, rw):
     return [(y % x) for y in rw]
 
 

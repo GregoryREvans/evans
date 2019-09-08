@@ -4,7 +4,7 @@ from evans.general_tools.reduce_mod import reduceMod
 from evans.general_tools.cyc import cyc
 
 
-def randomWalk(random_seed, length, step_list, mapped_list):
+def random_walk(random_seed, length, step_list, mapped_list):
     seed(random_seed)
     if step_list != None:
         step = cyc(step_list)
