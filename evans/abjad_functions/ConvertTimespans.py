@@ -16,17 +16,16 @@ silence_maker = abjadext.rmakers.NoteRhythmMaker(
 
 
 class ConvertTimespans:
-    def __init__(self, materials, target, ts_list, bounds, persist=False):
+    def __init__(self, materials, ts_list, bounds, persist=False):
         self.materials = materials
-        self.target = target
         self.ts_list = ts_list
         self.bounds = bounds
         self.persist = persist
 
     def __call__(self):
-        self.convert_timespans(self.materials, self.target, self.ts_list, self.bounds)
+        self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
-    def convert_timespans(materials, target, ts_list, bounds):
+    def convert_timespans(materials, ts_list, bounds):
 
         cyclic_materials = CyclicList(materials, continuous=True)
 
@@ -54,7 +53,7 @@ class ConvertTimespans:
             for timespan in timespan_dict["items"]:
                 if isinstance(timespan, abjad.AnnotatedTimespan):
                     timespan.annotation = timespan_functions.TimespanSpecifier(
-                        voice_name=f"Voice {i}", handler=cyclic_materials(r=1)
+                        voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
                     )
                     ts_list.append(timespan)
                 elif isinstance(timespan, PerformedTimespan):
@@ -62,7 +61,7 @@ class ConvertTimespans:
                         start_offset=timespan.start_offset,
                         stop_offset=timespan.stop_offset,
                         annotation=timespan_functions.TimespanSpecifier(
-                            voice_name=f"Voice {i}", handler=cyclic_materials(r=1)
+                            voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
                         ),
                     )
                     ts_list.append(timespan)

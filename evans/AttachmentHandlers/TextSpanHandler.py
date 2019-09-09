@@ -149,7 +149,7 @@ class TextSpanHandler:
         for run in abjad.select(selections).runs():
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)).upright(),
+                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
                 )
@@ -161,13 +161,13 @@ class TextSpanHandler:
                 abjad.tweak(start_span).staff_padding = span_padding
             else:
                 start_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)).upright(),
+                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
                     style=style + "-with-arrow",
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
                 )
                 stop_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)).upright(),
+                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
                     right_padding=3,
@@ -191,7 +191,7 @@ class TextSpanHandler:
         for run in abjad.select(selections).runs():
             if len(abjad.select(run).logical_ties()) > 1:
                 ties = abjad.select(run).logical_ties()
-                start_strings = [positions(r=1) for _ in ties]
+                start_strings = [positions(r=1)[0] for _ in ties]
                 for i, start_string in enumerate(start_strings):
                     if all(start_string[_].isdigit() for _ in (0, -1)):
                         start_strings[
@@ -238,7 +238,7 @@ class TextSpanHandler:
     ):
         # print('Adding left spanner ...')
         runs = abjad.select(selections).runs()
-        start_strings = [positions(r=1) for _ in runs]
+        start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
                 left_text=abjad.Markup(start_string).upright(),

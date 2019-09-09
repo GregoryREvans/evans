@@ -17,7 +17,7 @@ class PitchHandler:
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:
             if isinstance(tie[0], abjad.Note):
-                pitch = cyc_pitches(r=1)
+                pitch = cyc_pitches(r=1)[0]
                 for leaf in tie:
                     pitches.append(pitch)
                     durations.append(leaf.written_duration)
