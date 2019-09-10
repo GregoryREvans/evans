@@ -1,3 +1,4 @@
+From Ivan
 Partitions (1957) - Milton Babbit
 
 CYCLIC SET: set derived from interwoven cycles of 
@@ -117,7 +118,7 @@ IC 3 (P1 + P6) (T5)
 
 
 ##################################
-##### GENERAL FUCKING AROUND #####
+##### GENERAL MESSING AROUND #####
 
 CYCLIC SETS ON CYCLE 1/11
 
