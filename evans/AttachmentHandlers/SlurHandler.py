@@ -17,7 +17,7 @@ class SlurHandler:
             if self.boolean_vector(r=1)[0] is 0:
                 abjad.slur(selections[:])
             else:
-                continue
+                pass
         elif self.slurs == "runs":
             for run in abjad.select(selections).runs():
                 if self.boolean_vector(r=1)[0] is 0:
