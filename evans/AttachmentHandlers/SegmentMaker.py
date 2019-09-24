@@ -12,6 +12,8 @@ class SegmentMaker:
     def __init__(
         self,
         instruments=None,
+        names=None,
+        abbreviations=None,
         rhythm_timespans=None,
         handler_timespans=None,
         score_template=None,
@@ -26,6 +28,8 @@ class SegmentMaker:
         # instrument abbrev.
     ):
         self.instruments = instruments
+        self.names = names
+        self.abbreviations = abbreviations
         self.rhythm_timespans = rhythm_timespans
         self.handler_timespans = handler_timespans
         self.score_template = score_template
@@ -304,34 +308,14 @@ class SegmentMaker:
         instruments = evans.cyc(self.instruments)
 
         abbreviations = []
-        abb = [
-            "vln. I-1",
-            "vln. I-2",
-            "vln. II-1",
-            "vln. II-2",
-            "vla.-1",
-            "vla.-2",
-            "vc.-1",
-            "vc.-2",
-            "cb.",
-        ]
+        abb = self.abbreviations
         mark_abbreviations = [abjad.Markup(_) for _ in abb]
         for x in mark_abbreviations:
             x.hcenter_in(12)
             abbreviations.append(abjad.MarginMarkup(markup=x))
 
         names = []
-        nm = [
-            "Violin I-1",
-            "Violin I-2",
-            "Violin II-1",
-            "Violin II-2",
-            "Viola-1",
-            "Viola-2",
-            "Violoncello-1",
-            "Violoncello-2",
-            "Contrabass",
-        ]
+        nm = self.names
         mark_names = [abjad.Markup(_) for _ in nm]
         for x in mark_names:
             x.hcenter_in(14)
