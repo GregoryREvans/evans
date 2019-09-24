@@ -16,6 +16,9 @@ class SegmentMaker:
         score_template=None,
         time_signatures=None,
         clef_handlers=None,
+        score_includes=None,
+        parts_includes=None,
+        segment_name=None,
         # build_path=f"""{pathlib.Path(__file__).parent}""",
     ):
         self.instruments = instruments
@@ -24,6 +27,9 @@ class SegmentMaker:
         self.score_template = score_template
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
+        self.score_includes = score_includes
+        self.parts_includes = parts_includes
+        self.segment_name = segment_name
         # self.build_path = build_path
         self.time_1 = None
         self.time_2 = None
@@ -366,10 +372,7 @@ class SegmentMaker:
     def _render_file(self):
         score_file = abjad.LilyPondFile.new(
             self.score_template,
-            includes=[
-                "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
-                "/Users/evansdsg2/Scores/passagenwerk/passagenwerk/Build/first_stylesheet.ily",
-            ],
+            includes=self.score_includes,
         )
 
         abjad.SegmentMaker.comment_measure_numbers(self.score_template)
@@ -414,7 +417,7 @@ class SegmentMaker:
             os.system(f"open {pdf_path}")
         score_lines = open(f"{directory}/illustration.ly").readlines()
         build_path = (directory / ".." / ".." / "Build/score").resolve()
-        open(f"{build_path}/Segment_I.ly", "w").writelines(score_lines[15:-1])
+        open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
 
         segment_time = self.time_2 - self.time_1
 
@@ -435,10 +438,7 @@ class SegmentMaker:
             part.insert(0, signature_copy)
             part_file = abjad.LilyPondFile.new(
                 part,
-                includes=[
-                    "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
-                    "/Users/evansdsg2/Scores/passagenwerk/passagenwerk/Build/parts_stylesheet.ily",
-                ],
+                includes=self.parts_includes,
             )
             pdf_path = f"{directory}/part_illustration{count + 1}.pdf"
             path = pathlib.Path(f"part_illustration{count + 1}.pdf")
@@ -462,7 +462,7 @@ class SegmentMaker:
             part_lines = open(
                 f"{directory}/part_illustration{count + 1}.ly"
             ).readlines()
-            open(f"{build_path}/Segment_I.ly", "w").writelines(part_lines[15:-1])
+            open(f"{build_path}/{self.segment_name}.ly", "w").writelines(part_lines[15:-1])
         self.time_6 = time.time()
         parts_time = self.time_6 - self.time_5
 
@@ -496,6 +496,15 @@ class SegmentMaker:
 #         score_template=score,
 #         time_signatures=time_signatures,
 #         clef_handlers=clef_handlers,
+#         score_includes=[
+#             "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+#             "/Users/evansdsg2/Scores/passagenwerk/passagenwerk/Build/first_stylesheet.ily",
+#         ],
+#         parts_includes=[
+#             "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+#             "/Users/evansdsg2/Scores/passagenwerk/passagenwerk/Build/parts_stylesheet.ily",
+#         ],
+#         segment_name="Segment_I"
 #         # build_path=f"""{pathlib.Path(__file__).parent}""",
 # )
 #
