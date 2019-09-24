@@ -67,11 +67,12 @@ class SegmentMaker:
                     abjad.AnnotatedTimespan(
                         start_offset=silence_timespan.start_offset,
                         stop_offset=silence_timespan.stop_offset,
-                        annotation=TimespanSpecifier(handler=None, voice_name=voice_name),
+                        annotation=TimespanSpecifier(
+                            handler=None, voice_name=voice_name
+                        ),
                     )
                 )
             timespan_list.sort()
-
 
         for time_signature in self.time_signatures:
             skip = abjad.Skip(1, multiplier=(time_signature))
@@ -82,17 +83,14 @@ class SegmentMaker:
 
         print("Making containers ...")
 
-
         def key_function(timespan):
             return timespan.annotation.handler or silence_maker
-
 
         def make_container(handler, durations):
             selections = handler(durations)
             container = abjad.Container([])
             container.extend(selections)
             return container
-
 
         for voice_name, timespan_list in self.rhythm_timespans.items():
             for handler, grouper in itertools.groupby(timespan_list, key=key_function):
@@ -104,8 +102,12 @@ class SegmentMaker:
     def _splitting_and_rewriting(self):
 
         print("Splitting and rewriting ...")
-        for voice in abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice):
-            for i, shard in enumerate(abjad.mutate(voice[:]).split(self.time_signatures)):
+        for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+            abjad.Voice
+        ):
+            for i, shard in enumerate(
+                abjad.mutate(voice[:]).split(self.time_signatures)
+            ):
                 time_signature = self.time_signatures[i]
                 abjad.mutate(shard).rewrite_meter(time_signature)  # , boundary_depth=1)
 
@@ -114,7 +116,9 @@ class SegmentMaker:
         print("Handlers ...")
         for list in self.handler_timespans:
             for voice_name, sub_timespan_list in list.items():
-                voice_tie_selection = abjad.select(self.score_template[voice_name]).logical_ties()
+                voice_tie_selection = abjad.select(
+                    self.score_template[voice_name]
+                ).logical_ties()
                 voice_tie_collection = evans.LogicalTieCollection()
                 for tie in voice_tie_selection:
                     voice_tie_collection.insert(tie)
@@ -136,7 +140,9 @@ class SegmentMaker:
 
         print("Adding Multimeasure Rests and cutaway...")
 
-        for voice in abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+            abjad.Voice
+        ):
             leaves = abjad.select(voice).leaves()
             for shard in abjad.mutate(leaves).split(self.time_signatures):
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
@@ -173,7 +179,9 @@ class SegmentMaker:
         )
         abjad.attach(override_command, last_skip, tag="applying ending skips")
 
-        for voice in abjad.select(self.score_template["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.select(self.score_template["Staff Group"]).components(
+            abjad.Voice
+        ):
             last_run = abjad.select(voice).runs()[-1]
             container = abjad.Container()
             sig = self.time_signatures[-1]
@@ -182,13 +190,17 @@ class SegmentMaker:
             mult_rest_leaf = abjad.MultimeasureRest(1, multiplier=(leaf_duration))
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
-            markup = abjad.Markup.musicglyph("scripts.ushortfermata", direction=abjad.Up)
+            markup = abjad.Markup.musicglyph(
+                "scripts.ushortfermata", direction=abjad.Up
+            )
             markup.center_align()
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
                 format_slot="before",
             )
-            stop_command = abjad.LilyPondLiteral(r"\stopStaff \startStaff", format_slot="after")
+            stop_command = abjad.LilyPondLiteral(
+                r"\stopStaff \startStaff", format_slot="after"
+            )
             rest_literal = abjad.LilyPondLiteral(
                 r"\once \override Rest.color = #white", "before"
             )
@@ -203,7 +215,9 @@ class SegmentMaker:
             abjad.attach(rest_literal, penultimate_rest, tag="applying ending skips")
             abjad.attach(mult_rest_literal, final_rest, tag="applying ending skips")
             if abjad.inspect(last_run[0]).has_indicator(abjad.Dynamic):
-                abjad.attach(abjad.StopHairpin(), penultimate_rest, tag="applying ending skips")
+                abjad.attach(
+                    abjad.StopHairpin(), penultimate_rest, tag="applying ending skips"
+                )
             else:
                 continue
             voice.append(container[:])
@@ -252,7 +266,10 @@ class SegmentMaker:
         #     abjad.attach(stop, first_leaf)
 
         staffs = [
-            staff for staff in abjad.iterate(self.score_template["Staff Group"]).components(abjad.Staff)
+            staff
+            for staff in abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.Staff
+            )
         ]
 
     def _adding_attachments(self):
@@ -325,7 +342,7 @@ class SegmentMaker:
         # abjad.attach(mark4, leaf4)
         # abjad.attach(mark5, leaf5)
 
-    # def _transposing_and_adding_clefs(self):
+        # def _transposing_and_adding_clefs(self):
 
         print("transposing and adding clefs ...")
         for abbrev, name, inst, handler, voice in zip(
@@ -405,8 +422,12 @@ class SegmentMaker:
 
     def _extracting_parts(self):
         ###make parts###
-        for count, staff in enumerate(abjad.iterate(self.score_template).components(abjad.Voice)):
-            signatures = abjad.select(self.score_template["Global Context"]).components(abjad.Staff)
+        for count, staff in enumerate(
+            abjad.iterate(self.score_template).components(abjad.Voice)
+        ):
+            signatures = abjad.select(self.score_template["Global Context"]).components(
+                abjad.Staff
+            )
             signature_copy = abjad.mutate(signatures).copy()
             copied_staff = abjad.mutate(staff).copy()
             part = abjad.Score()
@@ -435,8 +456,12 @@ class SegmentMaker:
             if path.exists():
                 print(f"Opening {pdf_path} ...")
                 os.system(f"open {pdf_path}")
-            build_path = (directory / ".." / ".." / f"Build/parts/part_{count + 1}").resolve()
-            part_lines = open(f"{directory}/part_illustration{count + 1}.ly").readlines()
+            build_path = (
+                directory / ".." / ".." / f"Build/parts/part_{count + 1}"
+            ).resolve()
+            part_lines = open(
+                f"{directory}/part_illustration{count + 1}.ly"
+            ).readlines()
             open(f"{build_path}/Segment_I.ly", "w").writelines(part_lines[15:-1])
         self.time_6 = time.time()
         parts_time = self.time_6 - self.time_5
@@ -445,6 +470,7 @@ class SegmentMaker:
         open(f"{directory}/.optimization", "a").writelines(
             f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
         )
+
 
 # ###DEMO###
 # from passagenwerk.Materials.score_structure.instruments import instruments as insts

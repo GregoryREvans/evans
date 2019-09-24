@@ -7,6 +7,7 @@ from .GlissandoHandler import GlissandoHandler
 from .NoteheadHandler import NoteheadHandler
 from .PitchHandler import PitchHandler
 from .RhythmHandler import RhythmHandler
+from .SegmentMaker import SegmentMaker
 from .SlurHandler import SlurHandler
 from .TextSpanHandler import TextSpanHandler
 from .TrillHandler import TrillHandler
