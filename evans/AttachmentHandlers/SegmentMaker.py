@@ -24,6 +24,7 @@ class SegmentMaker:
         segment_name=None,
         current_directory=None,
         build_path=None,
+        cutaway=True,
         #instrument names
         # instrument abbrev.
     ):
@@ -40,6 +41,7 @@ class SegmentMaker:
         self.segment_name = segment_name
         self.current_directory = current_directory
         self.build_path = build_path
+        self.cutaway = cutaway
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -179,8 +181,11 @@ class SegmentMaker:
                 stop_command = abjad.LilyPondLiteral(
                     r"\stopStaff \startStaff", format_slot="after"
                 )
-                abjad.attach(start_command, invisible_rest, tag="applying cutaway")
-                abjad.attach(stop_command, multimeasure_rest, tag="applying cutaway")
+                if self.cutaway is True:
+                    abjad.attach(start_command, invisible_rest, tag="applying cutaway")
+                    abjad.attach(stop_command, multimeasure_rest, tag="applying cutaway")
+                else:
+                    continue
                 both_rests = [invisible_rest, multimeasure_rest]
                 abjad.mutate(shard).replace(both_rests[:])
 
