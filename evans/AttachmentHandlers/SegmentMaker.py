@@ -1,4 +1,5 @@
 import abjad
+import abjadext.rmakers
 import evans
 import itertools
 import os
@@ -19,7 +20,8 @@ class SegmentMaker:
         score_includes=None,
         parts_includes=None,
         segment_name=None,
-        # build_path=f"""{pathlib.Path(__file__).parent}""",
+        current_directory=None,
+        build_path=None,
     ):
         self.instruments = instruments
         self.rhythm_timespans = rhythm_timespans
@@ -30,7 +32,8 @@ class SegmentMaker:
         self.score_includes = score_includes
         self.parts_includes = parts_includes
         self.segment_name = segment_name
-        # self.build_path = build_path
+        self.current_directory = current_directory
+        self.build_path = build_path
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -390,7 +393,7 @@ class SegmentMaker:
             abjad.attach(literal, container, tag=None)
         self.time_2 = time.time()
         ###################
-        directory = pathlib.Path(__file__).parent
+        directory = self.current_directory
         print("directory")
         print(directory)
         pdf_path = f"{directory}/illustration.pdf"
@@ -416,15 +419,14 @@ class SegmentMaker:
             print(f"Opening {pdf_path} ...")
             os.system(f"open {pdf_path}")
         score_lines = open(f"{directory}/illustration.ly").readlines()
-        build_path = (directory / ".." / ".." / "Build/score").resolve()
+        build_path = (self.build_path / "score").resolve()
         open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
-
-        segment_time = self.time_2 - self.time_1
 
         self.time_5 = time.time()
 
     def _extracting_parts(self):
         ###make parts###
+        directory = self.current_directory
         for count, staff in enumerate(
             abjad.iterate(self.score_template).components(abjad.Voice)
         ):
@@ -456,18 +458,18 @@ class SegmentMaker:
             if path.exists():
                 print(f"Opening {pdf_path} ...")
                 os.system(f"open {pdf_path}")
-            build_path = (
-                directory / ".." / ".." / f"Build/parts/part_{count + 1}"
-            ).resolve()
+            build_path = (self.build_path / f"parts/part_{count + 1}").resolve()
             part_lines = open(
                 f"{directory}/part_illustration{count + 1}.ly"
             ).readlines()
             open(f"{build_path}/{self.segment_name}.ly", "w").writelines(part_lines[15:-1])
         self.time_6 = time.time()
-        parts_time = self.time_6 - self.time_5
 
     def _write_optimization_log(self):
-        open(f"{directory}/.optimization", "a").writelines(
+        abjad_time = self.time_4 - self.time_3
+        segment_time = self.time_2 - self.time_1
+        parts_time = self.time_6 - self.time_5
+        open(f"{self.current_directory}/.optimization", "a").writelines(
             f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
         )
 
