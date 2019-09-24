@@ -22,6 +22,8 @@ class SegmentMaker:
         segment_name=None,
         current_directory=None,
         build_path=None,
+        #instrument names
+        # instrument abbrev.
     ):
         self.instruments = instruments
         self.rhythm_timespans = rhythm_timespans
