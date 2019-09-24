@@ -184,10 +184,11 @@ class SegmentMaker:
                 if self.cutaway is True:
                     abjad.attach(start_command, invisible_rest, tag="applying cutaway")
                     abjad.attach(stop_command, multimeasure_rest, tag="applying cutaway")
+                    both_rests = [invisible_rest, multimeasure_rest]
+                    abjad.mutate(shard).replace(both_rests[:])
                 else:
-                    continue
-                both_rests = [invisible_rest, multimeasure_rest]
-                abjad.mutate(shard).replace(both_rests[:])
+                    both_rests = [invisible_rest, multimeasure_rest]
+                    abjad.mutate(shard).replace(both_rests[:])
 
     def _adding_ending_skips(self):
 
