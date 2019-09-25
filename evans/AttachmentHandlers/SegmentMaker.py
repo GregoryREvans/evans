@@ -264,6 +264,12 @@ class SegmentMaker:
                 for i, shard in enumerate(
                     abjad.mutate(voice[:]).split(self.time_signatures)
                 ):
+                    durations = [(1, 4),]
+                    leaves = abjad.select(shard).leaves()
+                    abjad.mutate(leaves).split( # not the correct solution
+                        durations,
+                        cyclic=True,
+                        )
                     selector = abjad.select().leaves().partition_by_durations(
                         [abjad.Duration(1, 4)],
                         cyclic=True,
@@ -273,7 +279,7 @@ class SegmentMaker:
                         in_seconds=False,
                         overhang=True,
                     )
-                    result = selector(shard) # also split leaves by quarters to help beaming be exact?
+                    result = selector(shard)
                     for quarter in result:
                         abjad.beam(
                             quarter[:],
