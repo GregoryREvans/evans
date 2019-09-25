@@ -25,6 +25,7 @@ class SegmentMaker:
         current_directory=None,
         build_path=None,
         cutaway=True,
+        beam_pattern="runs",
         #instrument names
         # instrument abbrev.
     ):
@@ -42,6 +43,7 @@ class SegmentMaker:
         self.current_directory = current_directory
         self.build_path = build_path
         self.cutaway = cutaway
+        self.beam_pattern = beam_pattern
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -244,19 +246,43 @@ class SegmentMaker:
             voice.append(container[:])
 
     def _beaming_runs(self):
-
-        print("Beaming runs ...")
-        for voice in abjad.select(self.score_template).components(abjad.Voice):
-            for run in abjad.select(voice).runs():
-                specifier = abjadext.rmakers.BeamSpecifier(beam_each_division=False)
-                specifier(run)
-            abjad.beam(
-                voice[:],
-                beam_lone_notes=False,
-                beam_rests=False,
-                # durations=[(1, 4) for _ in range(run_quarters)],
-                # span_beam_count=1,
-            )
+        if self.beam_pattern == "runs":
+            print("Beaming runs ...")
+            for voice in abjad.select(self.score_template).components(abjad.Voice):
+                for run in abjad.select(voice).runs():
+                    specifier = abjadext.rmakers.BeamSpecifier(beam_each_division=False)
+                    specifier(run)
+                abjad.beam(
+                    voice[:],
+                    beam_lone_notes=False,
+                    beam_rests=False,
+                )
+        elif self.beam_pattern == "quarters":
+            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.Voice
+            ):
+                for i, shard in enumerate(
+                    abjad.mutate(voice[:]).split(self.time_signatures)
+                ):
+                    selector = abjad.select().leaves().partition_by_durations(
+                        [abjad.Duration(1, 4)],
+                        cyclic=True,
+                        # fill=abjad.Exact,
+                        fill=abjad.More,
+                        # fill=abjad.Less,
+                        in_seconds=False,
+                        overhang=True,
+                    )
+                    result = selector(shard)
+                    for quarter in result:
+                        abjad.beam(
+                            quarter[:],
+                            beam_lone_notes=False,
+                            beam_rests=False,
+                            # stemlet_length=2,
+                        )
+        else:
+            pass
 
         # print('Stopping Hairpins and Text Spans...')
         # for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
