@@ -273,7 +273,7 @@ class SegmentMaker:
                         in_seconds=False,
                         overhang=True,
                     )
-                    result = selector(shard)
+                    result = selector(shard) # also split leaves by quarters to help beaming be exact?
                     for quarter in result:
                         abjad.beam(
                             quarter[:],
