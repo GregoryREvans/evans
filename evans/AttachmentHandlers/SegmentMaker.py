@@ -58,6 +58,7 @@ class SegmentMaker:
         self._handlers()
         self._multimeasure_rests_and_cutaway()
         self._adding_ending_skips()
+        self._transform_brackets()
         self._beaming_runs()
         self._adding_attachments()
         # self._transposing_and_adding_clefs()
@@ -244,6 +245,28 @@ class SegmentMaker:
             else:
                 continue
             voice.append(container[:])
+
+    def _transform_brackets(self):
+        print("transforming brackets")
+        for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
+            if tuplet.augmentation() is True: # is this necessary?
+                tuplet.toggle_prolation()
+            time_duration = tuplet.multiplied_duration
+            imp_num, imp_den = tuplet.implied_prolation.pair
+            notehead_wrapper = (
+                time_duration / imp_num
+            )
+            wrapper_pair = notehead_wrapper.pair
+            if wrapper_pair[0] == 3:
+                notehead_wrapper = wrapper_pair[1] // 2
+                dots = "."
+            else:
+                notehead_wrapper = wrapper_pair[1]
+                dots = ""
+            multiplier = 1
+            abjad.tweak(
+                tuplet
+            ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
