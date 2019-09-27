@@ -129,7 +129,7 @@ class SegmentMaker:
                 abjad.mutate(voice[:]).split(self.time_signatures)
             ):
                 time_signature = self.time_signatures[i]
-                abjad.mutate(shard).rewrite_meter(time_signature)  # , boundary_depth=1)
+                abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=1, rewrite_tuplets=False,)
 
     def _handlers(self):
 
@@ -249,24 +249,28 @@ class SegmentMaker:
             voice.append(container[:])
 
     def _transform_brackets(self):
-        print("transforming brackets")
+        print("Transforming brackets ...")
         for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
-            if tuplet.augmentation() is True:  # is this necessary?
-                tuplet.toggle_prolation()
-            time_duration = tuplet.multiplied_duration
-            imp_num, imp_den = tuplet.implied_prolation.pair
-            notehead_wrapper = time_duration / imp_num
-            wrapper_pair = notehead_wrapper.pair
-            if wrapper_pair[0] == 3:
-                notehead_wrapper = wrapper_pair[1] // 2
-                dots = "."
+            tuplet.rewrite_dots()
+            if tuplet.trivial() is True:
+                tuplet.hide = True
             else:
-                notehead_wrapper = wrapper_pair[1]
-                dots = ""
-            multiplier = 1
-            abjad.tweak(
-                tuplet
-            ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
+                if tuplet.augmentation() is True:  # is this necessary? diminution?
+                    tuplet.toggle_prolation()
+                time_duration = tuplet.multiplied_duration
+                imp_num, imp_den = tuplet.implied_prolation.pair
+                notehead_wrapper = time_duration / imp_num
+                wrapper_pair = notehead_wrapper.pair
+                if wrapper_pair[0] == 3:
+                    notehead_wrapper = wrapper_pair[1] // 2
+                    dots = "."
+                else:
+                    notehead_wrapper = wrapper_pair[1]
+                    dots = ""
+                multiplier = 1
+                abjad.tweak(
+                    tuplet
+                ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
@@ -399,7 +403,7 @@ class SegmentMaker:
 
         # def _transposing_and_adding_clefs(self):
 
-        print("transposing and adding clefs ...")
+        print("Transposing and adding clefs ...")
         for abbrev, name, inst, handler, voice in zip(
             abbreviations,
             names,
@@ -419,6 +423,7 @@ class SegmentMaker:
         # transformer(self.score_template)
 
     def _render_file(self):
+        print("Rendering file ...")
         score_file = abjad.LilyPondFile.new(
             self.score_template, includes=self.score_includes
         )
@@ -470,6 +475,7 @@ class SegmentMaker:
         self.time_5 = time.time()
 
     def _extracting_parts(self):
+        print("Extracting parts ...")
         ###make parts###
         directory = self.current_directory
         for count, staff in enumerate(
@@ -510,6 +516,7 @@ class SegmentMaker:
         self.time_6 = time.time()
 
     def _write_optimization_log(self):
+        print("Writing optimization log ...")
         abjad_time = self.time_4 - self.time_3
         segment_time = self.time_2 - self.time_1
         parts_time = self.time_6 - self.time_5
