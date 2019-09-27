@@ -26,7 +26,7 @@ class SegmentMaker:
         build_path=None,
         cutaway=True,
         beam_pattern="runs",
-        #instrument names
+        # instrument names
         # instrument abbrev.
     ):
         self.instruments = instruments
@@ -186,7 +186,9 @@ class SegmentMaker:
                 )
                 if self.cutaway is True:
                     abjad.attach(start_command, invisible_rest, tag="applying cutaway")
-                    abjad.attach(stop_command, multimeasure_rest, tag="applying cutaway")
+                    abjad.attach(
+                        stop_command, multimeasure_rest, tag="applying cutaway"
+                    )
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
                 else:
@@ -249,13 +251,11 @@ class SegmentMaker:
     def _transform_brackets(self):
         print("transforming brackets")
         for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
-            if tuplet.augmentation() is True: # is this necessary?
+            if tuplet.augmentation() is True:  # is this necessary?
                 tuplet.toggle_prolation()
             time_duration = tuplet.multiplied_duration
             imp_num, imp_den = tuplet.implied_prolation.pair
-            notehead_wrapper = (
-                time_duration / imp_num
-            )
+            notehead_wrapper = time_duration / imp_num
             wrapper_pair = notehead_wrapper.pair
             if wrapper_pair[0] == 3:
                 notehead_wrapper = wrapper_pair[1] // 2
@@ -275,11 +275,7 @@ class SegmentMaker:
                 for run in abjad.select(voice).runs():
                     specifier = abjadext.rmakers.BeamSpecifier(beam_each_division=False)
                     specifier(run)
-                abjad.beam(
-                    voice[:],
-                    beam_lone_notes=False,
-                    beam_rests=False,
-                )
+                abjad.beam(voice[:], beam_lone_notes=False, beam_rests=False)
         elif self.beam_pattern == "quarters":
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Voice
@@ -287,20 +283,23 @@ class SegmentMaker:
                 for i, shard in enumerate(
                     abjad.mutate(voice[:]).split(self.time_signatures)
                 ):
-                    durations = [(1, 4),]
+                    durations = [(1, 4)]
                     leaves = abjad.select(shard).leaves()
-                    abjad.mutate(leaves).split( # not the correct solution
-                        durations,
-                        cyclic=True,
+                    abjad.mutate(leaves).split(  # not the correct solution
+                        durations, cyclic=True
+                    )
+                    selector = (
+                        abjad.select()
+                        .leaves()
+                        .partition_by_durations(
+                            [abjad.Duration(1, 4)],
+                            cyclic=True,
+                            # fill=abjad.Exact,
+                            fill=abjad.More,
+                            # fill=abjad.Less,
+                            in_seconds=False,
+                            overhang=True,
                         )
-                    selector = abjad.select().leaves().partition_by_durations(
-                        [abjad.Duration(1, 4)],
-                        cyclic=True,
-                        # fill=abjad.Exact,
-                        fill=abjad.More,
-                        # fill=abjad.Less,
-                        in_seconds=False,
-                        overhang=True,
                     )
                     result = selector(shard)
                     for quarter in result:
@@ -421,8 +420,7 @@ class SegmentMaker:
 
     def _render_file(self):
         score_file = abjad.LilyPondFile.new(
-            self.score_template,
-            includes=self.score_includes,
+            self.score_template, includes=self.score_includes
         )
 
         abjad.SegmentMaker.comment_measure_numbers(self.score_template)
@@ -485,10 +483,7 @@ class SegmentMaker:
             part = abjad.Score()
             part.insert(0, copied_staff)
             part.insert(0, signature_copy)
-            part_file = abjad.LilyPondFile.new(
-                part,
-                includes=self.parts_includes,
-            )
+            part_file = abjad.LilyPondFile.new(part, includes=self.parts_includes)
             pdf_path = f"{directory}/part_illustration{count + 1}.pdf"
             path = pathlib.Path(f"part_illustration{count + 1}.pdf")
             if path.exists():
@@ -509,7 +504,9 @@ class SegmentMaker:
             part_lines = open(
                 f"{directory}/part_illustration{count + 1}.ly"
             ).readlines()
-            open(f"{build_path}/{self.segment_name}.ly", "w").writelines(part_lines[15:-1])
+            open(f"{build_path}/{self.segment_name}.ly", "w").writelines(
+                part_lines[15:-1]
+            )
         self.time_6 = time.time()
 
     def _write_optimization_log(self):
