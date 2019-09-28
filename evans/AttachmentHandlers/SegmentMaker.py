@@ -129,7 +129,11 @@ class SegmentMaker:
                 abjad.mutate(voice[:]).split(self.time_signatures)
             ):
                 time_signature = self.time_signatures[i]
-                abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=1, rewrite_tuplets=False,)
+                inventories = [x for x in enumerate(abjad.Meter(time_signature.pair).depthwise_offset_inventory)]
+                if time_signature.denominator == 4:
+                    abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=inventories[-1][0], rewrite_tuplets=True,)
+                else:
+                    abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=inventories[-2][0], rewrite_tuplets=True,)
 
     def _handlers(self):
 
