@@ -10,10 +10,11 @@ from collections import defaultdict
 from evans.general_tools.sorted_keys import sorted_keys
 from evans.abjad_functions.timespan_human_keys import human_sorted_keys
 
-silence_maker = abjadext.rmakers.NoteRhythmMaker(
-    division_masks=[abjadext.rmakers.SilenceMask(pattern=abjad.index([0], 1))]
-)
 
+silence_maker = abjadext.rmakers.stack(
+    abjadext.rmakers.NoteRhythmMaker(),
+    abjadext.rmakers.force_rest(abjad.select().leaves(pitched=True)),
+)
 
 class ConvertTimespans:
     def __init__(self, materials, ts_list, bounds, persist=False):

@@ -96,7 +96,7 @@ class SegmentMaker:
 
         for time_signature in self.time_signatures:
             skip = abjad.Skip(1, multiplier=(time_signature))
-            abjad.attach(time_signature, skip, tag="scaling time signatures")
+            abjad.attach(time_signature, skip, tag=abjad.Tag("scaling time signatures"))
             self.score_template["Global Context"].append(skip)
 
     def _making_containers(self):
@@ -104,7 +104,7 @@ class SegmentMaker:
         print("Making containers ...")
 
         def key_function(timespan):
-            return timespan.annotation.handler or silence_maker
+            return timespan.annotation.handler# or silence_maker
 
         def make_container(handler, durations):
             selections = handler(durations)
@@ -177,9 +177,9 @@ class SegmentMaker:
                 rest_literal = abjad.LilyPondLiteral(
                     r"\once \override Rest.transparent = ##t", "before"
                 )
-                abjad.attach(rest_literal, invisible_rest, tag="applying invisibility")
+                abjad.attach(rest_literal, invisible_rest, tag=abjad.Tag("applying invisibility"))
                 for indicator in indicators:
-                    abjad.attach(indicator, invisible_rest, tag="applying indicators")
+                    abjad.attach(indicator, invisible_rest, tag=abjad.Tag("applying indicators"))
                 multimeasure_rest = abjad.MultimeasureRest(1, multiplier=(multiplier))
                 start_command = abjad.LilyPondLiteral(
                     r"\stopStaff \once \override Staff.StaffSymbol.line-count = #1 \startStaff",
@@ -189,9 +189,9 @@ class SegmentMaker:
                     r"\stopStaff \startStaff", format_slot="after"
                 )
                 if self.cutaway is True:
-                    abjad.attach(start_command, invisible_rest, tag="applying cutaway")
+                    abjad.attach(start_command, invisible_rest, tag=abjad.Tag("applying cutaway"))
                     abjad.attach(
-                        stop_command, multimeasure_rest, tag="applying cutaway"
+                        stop_command, multimeasure_rest, tag=abjad.Tag("applying cutaway")
                     )
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
@@ -207,7 +207,7 @@ class SegmentMaker:
         override_command = abjad.LilyPondLiteral(
             r"\once \override TimeSignature.color = #white", format_slot="before"
         )
-        abjad.attach(override_command, last_skip, tag="applying ending skips")
+        abjad.attach(override_command, last_skip, tag=abjad.Tag("applying ending skips"))
 
         for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
@@ -239,14 +239,14 @@ class SegmentMaker:
             )
             penultimate_rest = container[0]
             final_rest = container[-1]
-            abjad.attach(markup, final_rest, tag="applying ending skips")
-            abjad.attach(start_command, penultimate_rest, tag="applying ending skips")
-            abjad.attach(stop_command, final_rest, tag="applying ending skips")
-            abjad.attach(rest_literal, penultimate_rest, tag="applying ending skips")
-            abjad.attach(mult_rest_literal, final_rest, tag="applying ending skips")
+            abjad.attach(markup, final_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(start_command, penultimate_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(stop_command, final_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(rest_literal, penultimate_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(mult_rest_literal, final_rest, tag=abjad.Tag("applying ending skips"))
             if abjad.inspect(last_run[0]).has_indicator(abjad.Dynamic):
                 abjad.attach(
-                    abjad.StopHairpin(), penultimate_rest, tag="applying ending skips"
+                    abjad.StopHairpin(), penultimate_rest, tag=abjad.Tag("applying ending skips")
                 )
             else:
                 continue
@@ -280,9 +280,6 @@ class SegmentMaker:
         if self.beam_pattern == "runs":
             print("Beaming runs ...")
             for voice in abjad.select(self.score_template).components(abjad.Voice):
-                for run in abjad.select(voice).runs():
-                    specifier = abjadext.rmakers.BeamSpecifier(beam_each_division=False)
-                    specifier(run)
                 abjad.beam(voice[:], beam_lone_notes=False, beam_rests=False)
         elif self.beam_pattern == "quarters":
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
@@ -416,9 +413,9 @@ class SegmentMaker:
             abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
         ):
             first_leaf = abjad.select(voice).leaves()[0]
-            abjad.attach(abbrev, first_leaf, tag="applying staff names and clefs")
-            abjad.attach(name, first_leaf, tag="applying staff names and clefs")
-            abjad.attach(inst, first_leaf, tag="applying staff names and clefs")
+            abjad.attach(abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
+            abjad.attach(name, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
+            abjad.attach(inst, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
             abjad.Instrument.transpose_from_sounding_pitch(voice)
             handler(voice)
 
@@ -432,7 +429,7 @@ class SegmentMaker:
             self.score_template, includes=self.score_includes
         )
 
-        abjad.SegmentMaker.comment_measure_numbers(self.score_template)
+        # abjad.SegmentMaker.comment_measure_numbers(self.score_template)
         for leaf in abjad.iterate(self.score_template).leaves():
             literal = abjad.LilyPondLiteral("", "absolute_before")
             abjad.attach(literal, leaf, tag=None)
