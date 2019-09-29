@@ -2,7 +2,8 @@ import abjad
 
 
 meters = [
-    abjad.Meter(pair) for pair in [
+    abjad.Meter(pair)
+    for pair in [
         (5, 4),
         (9, 8),
         (4, 4),
@@ -15,8 +16,8 @@ meters = [
         (1, 4),
         (3, 16),
         (1, 8),
-        ]
     ]
+]
 
 for meter in meters:
     print(meter)

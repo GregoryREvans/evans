@@ -16,6 +16,7 @@ silence_maker = abjadext.rmakers.stack(
     abjadext.rmakers.force_rest(abjad.select().leaves(pitched=True)),
 )
 
+
 class ConvertTimespans:
     def __init__(self, materials, ts_list, bounds, persist=False):
         self.materials = materials

@@ -104,7 +104,7 @@ class SegmentMaker:
         print("Making containers ...")
 
         def key_function(timespan):
-            return timespan.annotation.handler# or silence_maker
+            return timespan.annotation.handler  # or silence_maker
 
         def make_container(handler, durations):
             selections = handler(durations)
@@ -129,11 +129,24 @@ class SegmentMaker:
                 abjad.mutate(voice[:]).split(self.time_signatures)
             ):
                 time_signature = self.time_signatures[i]
-                inventories = [x for x in enumerate(abjad.Meter(time_signature.pair).depthwise_offset_inventory)]
+                inventories = [
+                    x
+                    for x in enumerate(
+                        abjad.Meter(time_signature.pair).depthwise_offset_inventory
+                    )
+                ]
                 if time_signature.denominator == 4:
-                    abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=inventories[-1][0], rewrite_tuplets=True,)
+                    abjad.mutate(shard).rewrite_meter(
+                        time_signature,
+                        boundary_depth=inventories[-1][0],
+                        rewrite_tuplets=True,
+                    )
                 else:
-                    abjad.mutate(shard).rewrite_meter(time_signature, boundary_depth=inventories[-2][0], rewrite_tuplets=True,)
+                    abjad.mutate(shard).rewrite_meter(
+                        time_signature,
+                        boundary_depth=inventories[-2][0],
+                        rewrite_tuplets=True,
+                    )
 
     def _handlers(self):
 
@@ -177,9 +190,13 @@ class SegmentMaker:
                 rest_literal = abjad.LilyPondLiteral(
                     r"\once \override Rest.transparent = ##t", "before"
                 )
-                abjad.attach(rest_literal, invisible_rest, tag=abjad.Tag("applying invisibility"))
+                abjad.attach(
+                    rest_literal, invisible_rest, tag=abjad.Tag("applying invisibility")
+                )
                 for indicator in indicators:
-                    abjad.attach(indicator, invisible_rest, tag=abjad.Tag("applying indicators"))
+                    abjad.attach(
+                        indicator, invisible_rest, tag=abjad.Tag("applying indicators")
+                    )
                 multimeasure_rest = abjad.MultimeasureRest(1, multiplier=(multiplier))
                 start_command = abjad.LilyPondLiteral(
                     r"\stopStaff \once \override Staff.StaffSymbol.line-count = #1 \startStaff",
@@ -189,9 +206,13 @@ class SegmentMaker:
                     r"\stopStaff \startStaff", format_slot="after"
                 )
                 if self.cutaway is True:
-                    abjad.attach(start_command, invisible_rest, tag=abjad.Tag("applying cutaway"))
                     abjad.attach(
-                        stop_command, multimeasure_rest, tag=abjad.Tag("applying cutaway")
+                        start_command, invisible_rest, tag=abjad.Tag("applying cutaway")
+                    )
+                    abjad.attach(
+                        stop_command,
+                        multimeasure_rest,
+                        tag=abjad.Tag("applying cutaway"),
                     )
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
@@ -207,7 +228,9 @@ class SegmentMaker:
         override_command = abjad.LilyPondLiteral(
             r"\once \override TimeSignature.color = #white", format_slot="before"
         )
-        abjad.attach(override_command, last_skip, tag=abjad.Tag("applying ending skips"))
+        abjad.attach(
+            override_command, last_skip, tag=abjad.Tag("applying ending skips")
+        )
 
         for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
@@ -240,13 +263,23 @@ class SegmentMaker:
             penultimate_rest = container[0]
             final_rest = container[-1]
             abjad.attach(markup, final_rest, tag=abjad.Tag("applying ending skips"))
-            abjad.attach(start_command, penultimate_rest, tag=abjad.Tag("applying ending skips"))
-            abjad.attach(stop_command, final_rest, tag=abjad.Tag("applying ending skips"))
-            abjad.attach(rest_literal, penultimate_rest, tag=abjad.Tag("applying ending skips"))
-            abjad.attach(mult_rest_literal, final_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(
+                start_command, penultimate_rest, tag=abjad.Tag("applying ending skips")
+            )
+            abjad.attach(
+                stop_command, final_rest, tag=abjad.Tag("applying ending skips")
+            )
+            abjad.attach(
+                rest_literal, penultimate_rest, tag=abjad.Tag("applying ending skips")
+            )
+            abjad.attach(
+                mult_rest_literal, final_rest, tag=abjad.Tag("applying ending skips")
+            )
             if abjad.inspect(last_run[0]).has_indicator(abjad.Dynamic):
                 abjad.attach(
-                    abjad.StopHairpin(), penultimate_rest, tag=abjad.Tag("applying ending skips")
+                    abjad.StopHairpin(),
+                    penultimate_rest,
+                    tag=abjad.Tag("applying ending skips"),
                 )
             else:
                 continue
@@ -413,9 +446,15 @@ class SegmentMaker:
             abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
         ):
             first_leaf = abjad.select(voice).leaves()[0]
-            abjad.attach(abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
-            abjad.attach(name, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
-            abjad.attach(inst, first_leaf, tag=abjad.Tag("applying staff names and clefs"))
+            abjad.attach(
+                abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+            )
+            abjad.attach(
+                name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+            )
+            abjad.attach(
+                inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+            )
             abjad.Instrument.transpose_from_sounding_pitch(voice)
             handler(voice)
 
