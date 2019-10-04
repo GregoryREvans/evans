@@ -292,8 +292,8 @@ class SegmentMaker:
             if tuplet.trivial() is True:
                 tuplet.hide = True
             else:
-                if tuplet.augmentation() is True:  # is this necessary? diminution?
-                    tuplet.toggle_prolation()
+                # if tuplet.augmentation() is True:  # is this necessary? diminution?
+                #     tuplet.toggle_prolation()
                 time_duration = tuplet.multiplied_duration
                 imp_num, imp_den = tuplet.implied_prolation.pair
                 notehead_wrapper = time_duration / imp_num
@@ -388,6 +388,20 @@ class SegmentMaker:
     def _adding_attachments(self):
 
         print("Adding attachments ...")
+        colophon = abjad.LilyPondLiteral(
+            r"""
+                _ \markup {
+                    \override #'(font-name . "Didot")
+                    \with-color #black
+                    \right-column {
+                        \line { Miami, Fl. \hspace #0.75 - \hspace #0.75 Iowa City, Ia. }
+                        \line { August 2018 \hspace #0.75 - \hspace #0.75 October 2019 }
+                    }
+                }
+            """,
+            format_slot="absolute_after",
+        )
+
         bar_line = abjad.BarLine("||")
         metro = abjad.MetronomeMark((1, 4), (63, 72))
 
