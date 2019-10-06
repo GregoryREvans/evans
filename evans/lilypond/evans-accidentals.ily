@@ -1,5 +1,5 @@
 %%% one eighth tone up %%%
-one-eighth-up =
+one-eighth-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
@@ -8,20 +8,20 @@ one-eighth-up =
         $note #})
 
 %%% three eighth tones up %%%
-three-eighths-up =
+three-eighths-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\musicglyph #"accidentals.sharp.slashslash.stem"
-       \postscript #"gsave 0.17 setlinewidth -0.85 0.5 moveto -0.95 2 lineto
+       \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
        stroke grestore
        gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
        stroke grestore"}
         $note #})
 
 %%% five eighth tones up %%%
-five-eighths-up =
+five-eighths-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
@@ -30,20 +30,20 @@ five-eighths-up =
         $note #})
 
 %%% seven eighth tones up %%%
-seven-eighths-up =
+seven-eighths-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.sharp.slashslash.stem.stem.stem"
-          \postscript #"gsave 0.17 setlinewidth -0.85 0.5 moveto -0.95 2 lineto
+          \markup {\musicglyph #"accidentals.sharp.slashslash.stemstemstem"
+          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
           stroke grestore
           gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
           stroke grestore"}
         $note #})
 
 %%% one eighth tone down %%%
-one-eighth-down =
+one-eighth-flat =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
@@ -54,7 +54,7 @@ one-eighth-down =
 %%% three eighth tones down %%%
 
 %%% five eighth tones down %%%
-five-eighths-down =
+five-eighths-flat =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
@@ -65,28 +65,28 @@ five-eighths-down =
 %%% seven eighth tones down %%%
 
 %%% one third up %%%
-onethird =
+one-third-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\fontsize #-4
               \translate #'(0 . -0.5) \fraction 1 3
-              \postscript #"gsave 0.17 setlinewidth -0.95 0.5 moveto -0.95 2 lineto
+              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
               stroke grestore
               gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
               stroke grestore"}
         $note #})
 
 %%% two thirds up %%%
-onethird =
+two-thirds-sharp =
 #(define-music-function (parser location note)   (ly:music?)
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\fontsize #-4
               \translate #'(0 . -0.5) \fraction 2 3
-              \postscript #"gsave 0.17 setlinewidth -0.95 0.5 moveto -0.95 2 lineto
+              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
               stroke grestore
               gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
               stroke grestore"}
@@ -95,3 +95,31 @@ onethird =
 %%% one third down %%%
 
 %%% two thirds down %%%
+
+%%% one sixth up %%%
+one-sixth-sharp =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+          #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+          \markup {\fontsize #-4
+              \translate #'(0 . -0.5) \fraction 1 6
+              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+              stroke grestore
+              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+              stroke grestore"}
+        $note #})
+
+%%% five sixths up %%%
+five-sixths-sharp =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+          #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+          \markup {\fontsize #-4
+              \translate #'(0 . -0.5) \fraction 5 6
+              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+              stroke grestore
+              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+              stroke grestore"}
+        $note #})
