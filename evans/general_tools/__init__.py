@@ -1,6 +1,7 @@
 from .scale_reproportioning import *
 from .cyc import cyc
 from .flatten import flatten
+from .fibonacci_cycle import fibonacci_cycle
 from .grouper import grouper
 from .Markov_Chain import MarkovChain
 from .mirror import mirror
