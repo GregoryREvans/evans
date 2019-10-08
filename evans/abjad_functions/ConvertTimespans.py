@@ -18,16 +18,33 @@ silence_maker = abjadext.rmakers.stack(
 
 
 class ConvertTimespans:
-    def __init__(self, materials, ts_list, bounds, persist=False):
+    def __init__(
+        self,
+        materials,
+        ts_list,
+        bounds,
+        persist=False,
+        segment_name=None,
+        current_directory=None
+        ):
         self.materials = materials
         self.ts_list = ts_list
         self.bounds = bounds
         self.persist = persist
+        self.segment_name = segment_name
+        self.current_directory = current_directory
 
     def __call__(self):
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
-    def convert_timespans(materials, ts_list, bounds):
+    def convert_timespans(
+        materials,
+        ts_list,
+        bounds,
+        # persist,
+        segment_name,
+        current_directory,
+        ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
 
@@ -100,35 +117,31 @@ class ConvertTimespans:
         timespan_functions.add_silences_to_timespan_dict(
             rhythm_timespans, silence_specifier
         )
-        return rhythm_timespans
 
-        # persist timespan_list
-        if self.persist is True:
-            current_directory = pathlib.Path(__file__).parent
-            directory = (
-                current_directory / ".." / ".." / ".." / "Segments/Segment_I"
-            ).resolve()
-            pdf_path = f"{directory}/Segment_I_rhythm_timespans.pdf"
-            path = pathlib.Path("Segment_I_rhythm_timespans.pdf")
-            if path.exists():
-                print(f"Removing {pdf_path} ...")
-                path.unlink()
-            time_1 = time.time()
-            print(f"Persisting {pdf_path} ...")
-            result = abjad.persist(showable_list).as_pdf(
-                pdf_path, scale=0.5, key="annotation", sort_callable=human_sorted_keys
-            )
-            print(result[0])
-            print(result[1])
-            print(result[2])
-            success = result[3]
-            if success is False:
-                print("LilyPond failed!")
-            time_2 = time.time()
-            total_time = time_2 - time_1
-            print(f"Total time: {total_time} seconds")
-            if path.exists():
-                print(f"Opening {pdf_path} ...")
-                os.system(f"open {pdf_path}")
-        else:
-            pass
+        directory = (
+            current_directory
+        ).resolve()
+        pdf_path = f"""{directory}/{segment_name}.pdf"""
+        path = pathlib.Path(f"""{segment_name}.pdf""")
+        if path.exists():
+            print(f"Removing {pdf_path} ...")
+            path.unlink()
+        time_1 = time.time()
+        print(f"Persisting {pdf_path} ...")
+        result = abjad.persist(showable_list).as_pdf(
+            pdf_path, scale=0.5, key="annotation", sort_callable=human_sorted_keys
+        )
+        print(result[0])
+        print(result[1])
+        print(result[2])
+        success = result[3]
+        if success is False:
+            print("LilyPond failed!")
+        time_2 = time.time()
+        total_time = time_2 - time_1
+        print(f"Total time: {total_time} seconds")
+        if path.exists():
+            print(f"Opening {pdf_path} ...")
+            os.system(f"open {pdf_path}")
+
+        return rhythm_timespans
