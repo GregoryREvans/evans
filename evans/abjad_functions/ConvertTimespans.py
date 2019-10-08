@@ -25,8 +25,8 @@ class ConvertTimespans:
         bounds,
         persist=False,
         segment_name=None,
-        current_directory=None
-        ):
+        current_directory=None,
+    ):
         self.materials = materials
         self.ts_list = ts_list
         self.bounds = bounds
@@ -44,7 +44,7 @@ class ConvertTimespans:
         # persist,
         segment_name,
         current_directory,
-        ):
+    ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
 
@@ -118,9 +118,7 @@ class ConvertTimespans:
             rhythm_timespans, silence_specifier
         )
 
-        directory = (
-            current_directory
-        ).resolve()
+        directory = (current_directory).resolve()
         pdf_path = f"""{directory}/{segment_name}.pdf"""
         path = pathlib.Path(f"""{segment_name}.pdf""")
         if path.exists():

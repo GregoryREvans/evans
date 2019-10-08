@@ -196,9 +196,17 @@ class TextSpanHandler:
                 bowings = []
                 for i, start_string in enumerate(start_strings[:-1]):
                     if all(start_string[_].isdigit() for _ in (0, -1)):
-                        if Fraction(int(start_strings[i][0]), int(start_strings[i][-1])) > Fraction(int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])):
+                        if Fraction(
+                            int(start_strings[i][0]), int(start_strings[i][-1])
+                        ) > Fraction(
+                            int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
+                        ):
                             bowings.append(abjad.Markup.musicglyph("scripts.upbow"))
-                        elif Fraction(int(start_strings[i][0]), int(start_strings[i][-1])) < Fraction(int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])):
+                        elif Fraction(
+                            int(start_strings[i][0]), int(start_strings[i][-1])
+                        ) < Fraction(
+                            int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
+                        ):
                             bowings.append(abjad.Markup.musicglyph("scripts.downbow"))
                         else:
                             bowings.append(abjad.Markup(""))

@@ -12,6 +12,7 @@ def prime_sequence(start, end):
                         continue
     return seq
 
+
 def mod(sequence, modulus, indices=False):
     new_seq = [(_ % modulus) for _ in sequence]
     for i, _ in enumerate(new_seq):
@@ -23,6 +24,7 @@ def mod(sequence, modulus, indices=False):
         else:
             continue
     return new_seq
+
 
 primes = prime_sequence(start=11, end=25)
 print(primes)

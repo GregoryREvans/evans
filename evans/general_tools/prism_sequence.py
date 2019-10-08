@@ -1,9 +1,10 @@
-def prism_sequence(n_list=[1, ]):
+def prism_sequence(n_list=[1]):
     seq = []
     for n in n_list:
         x = (n + 1) * (3 * n ** 2 + 3 * n + 1)
         seq.append(x)
     return seq
+
 
 def mod(sequence, modulus, indices=False):
     new_seq = [(_ % modulus) for _ in sequence]
@@ -16,6 +17,7 @@ def mod(sequence, modulus, indices=False):
         else:
             continue
     return new_seq
+
 
 seq = prism_sequence(n_list=[_ for _ in range(8)])
 print(seq)

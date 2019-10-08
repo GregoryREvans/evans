@@ -76,6 +76,8 @@ name_converter = {
 
 for i, x in enumerate(dia):
     for i_, y in enumerate(acc):
-        all_notes.append("(" + x + y + f" . ,(ly:make-pitch -1 {i} {name_converter[i_]}))")
+        all_notes.append(
+            "(" + x + y + f" . ,(ly:make-pitch -1 {i} {name_converter[i_]}))"
+        )
 
 print(all_notes)

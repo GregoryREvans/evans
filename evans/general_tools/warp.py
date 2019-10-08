@@ -1,4 +1,4 @@
-from random import (random, randint, seed, uniform)
+from random import random, randint, seed, uniform
 
 
 def warp(min, max, random_seed, warped_list, by_integers=False):
@@ -11,6 +11,7 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
     for x, y in zip(warped_list, perturbation_list):
         final_list.append(x + y)
     return final_list
+
 
 # ###DEMO###
 # warp(-0.9, 0.9, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])

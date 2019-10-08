@@ -4,7 +4,7 @@ def recaman_sequence(number):
         temp_list.append(number)
         return number
     else:
-        a = recaman_sequence(number-1)
+        a = recaman_sequence(number - 1)
         am = a - number
         ap = a + number
         if am > 0 and am not in temp_list:
@@ -13,6 +13,7 @@ def recaman_sequence(number):
         else:
             temp_list.append(ap)
             return ap
+
 
 def mod(sequence, modulus, indices=False):
     new_seq = [(_ % modulus) for _ in sequence]
@@ -25,6 +26,7 @@ def mod(sequence, modulus, indices=False):
         else:
             continue
     return new_seq
+
 
 seq = [recaman_sequence(number=_ + 1) for _ in range(80)]
 print(seq)

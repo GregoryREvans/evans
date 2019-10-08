@@ -1,11 +1,7 @@
 import abjad
 
 
-def beam_meter(
-    components,
-    meter,
-    offset_depth,
-    ):
+def beam_meter(components, meter, offset_depth):
     offsets = meter.depthwise_offset_inventory[offset_depth]
     offset_pairs = []
     for i, _ in enumerate(offsets[:-1]):
@@ -15,7 +11,10 @@ def beam_meter(
     for i, pair in enumerate(offset_pairs):
         for i_, item in enumerate(pair):
             offset_pairs[i][i_] = item + initial_offset
-    offset_timespans = [abjad.timespan(start_offset=pair[0], stop_offset=pair[1]) for pair in offset_pairs]
+    offset_timespans = [
+        abjad.timespan(start_offset=pair[0], stop_offset=pair[1])
+        for pair in offset_pairs
+    ]
 
     beamed_groups = []
     for i in enumerate(offset_timespans):
@@ -31,9 +30,7 @@ def beam_meter(
                 .happens_during_timespan(span)
             )
         ):
-            if (
-                abjad.inspect(group).timespan().happens_during_timespan(span) is True
-            ):
+            if abjad.inspect(group).timespan().happens_during_timespan(span) is True:
                 beamed_groups[i].append(group[:])
 
     for group in beamed_groups:
@@ -54,6 +51,7 @@ def beam_meter(
             #     abjad.beam(subgroup[:])
             # else:
             #     beam_meter(subgroup[:])
+
 
 ###DEMO###
 pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
