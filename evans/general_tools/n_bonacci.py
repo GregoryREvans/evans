@@ -1,23 +1,14 @@
-def n_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
-    final = [0] * iters
-    final[n - 1] = first
-    final[n] = second
-    for i, slot in enumerate(final[n + 1:]):
-        i = i + n + 1
-        dist = n + 1
-        bound = i - dist
-        sum = 0
-        for x in final[i - 1: bound: -1]:
-            sum = sum + x
-        final[i] = sum
-    for _ in range(n - 1):
-        final.remove(0)
-    sequence = [(_ % modulus) for _ in final]
+def n_bonacci_cycle(n, first_number, second_number, length, modulus, wrap_to_zero=False):
+    sequence = [first_number, second_number]
+    for _ in range(length):
+        sequence.append(sequence[-2] + (sequence[-1] * n))
+    sequence = [(_ % modulus) for _ in sequence]
     if wrap_to_zero is False:
         for index, item in enumerate(sequence):
             if item == 0:
                 sequence[index] = item + modulus
     return sequence
 
+
 # ###DEMO###
-# print(n_bonacci_cycle(n=3, iters=15, first=1, second=1, modulus=7))
+# print(n_bonacci_cycle(n=3, first_number=1, second_number=3, length=30, modulus=7))

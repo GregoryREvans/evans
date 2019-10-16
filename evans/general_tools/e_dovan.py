@@ -1,4 +1,4 @@
-def n_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
+def e_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
     iters = iters + 1
     final = [0] * iters
     final[n] = first
@@ -21,4 +21,4 @@ def n_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
     return sequence
 
 # ###DEMO###
-# print(n_dovan_cycle(n=3, iters=15, first=1, second=1, modulus=7))
+# print(e_dovan_cycle(n=3, iters=15, first=1, second=1, modulus=7))
