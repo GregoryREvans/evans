@@ -19,6 +19,7 @@ class SegmentMaker:
         score_template=None,
         time_signatures=None,
         clef_handlers=None,
+        voicewise_persistent_indicators=None,
         score_includes=None,
         parts_includes=None,
         segment_name=None,
@@ -35,6 +36,7 @@ class SegmentMaker:
         self.score_template = score_template
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
+        self.voicewise_persistent_indicators = voicewise_persistent_indicators
         self.score_includes = score_includes
         self.parts_includes = parts_includes
         self.segment_name = segment_name
@@ -59,6 +61,8 @@ class SegmentMaker:
         self._transform_brackets()
         self._beaming_runs()
         self._adding_attachments()
+        if self.voicewise_persistent_indicators is not None:
+            self._attach_previous_indicators()
         # self._transposing_and_adding_clefs()
         self._cache_persistent_info()
         self._render_file()
@@ -482,6 +486,12 @@ class SegmentMaker:
         # print('Transforming Tuplet Brackets ...')
         # transformer = NoteheadBracketMaker()
         # transformer(self.score_template)
+
+    def _attach_previous_indicators(self):
+        for voice, indicator_list in zip(abjad.select(self.score_template["Staff Group"]).components(abjad.Voice), self.voicewise_persistent_indicators):
+            first_leaf = abjad.select(voice).leaves()[0]
+            for ind in indicator_list:
+                abjad.attach(ind, first_leaf, tag=abjad.Tag("attaching persistent indicators"))
 
     def _cache_persistent_info(self):
         print("Caching persistent info ...")
