@@ -26,8 +26,6 @@ class SegmentMaker:
         build_path=None,
         cutaway=True,
         beam_pattern="runs",
-        # instrument names
-        # instrument abbrev.
     ):
         self.instruments = instruments
         self.names = names
@@ -220,7 +218,7 @@ class SegmentMaker:
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
 
-    def _adding_ending_skips(self):
+    def _adding_ending_skips(self): #maybe do this before handlers?
 
         print("Adding ending skips ...")
 
@@ -279,10 +277,10 @@ class SegmentMaker:
                 abjad.attach(
                     abjad.StopHairpin(),
                     penultimate_rest,
-                    tag=abjad.Tag("applying ending skips"),
+                    tag=abjad.Tag("applying ending skips"), #reconsider
                 )
-            else:
-                continue
+            # else:
+            #     continue
             voice.append(container[:])
 
     def _transform_brackets(self):

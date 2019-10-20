@@ -56,6 +56,15 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
         collection = [_to_nearest_eighth_tone(_) for _ in collection]
     return collection
 
+def reproportion_chord(base, chord, round=False):
+    base_converter = base / 10.0
+    collection = []
+    for _ in chord:
+        collection.append(_ * base_converter)
+    if round is True:
+        collection = [_to_nearest_eighth_tone(_) for _ in collection]
+    return collection
+
 
 ###DEMO###
 # insert_scale = (reproportion_scale(base=15, limit=17))
@@ -64,3 +73,4 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
 # print(reproportion_harmonics(fund=20, scale=insert_scale, return_amp_reciprocals='as_lists'))
 # print(reproportion_harmonics(fund=20, scale=insert_scale))
 # print(reproportion_chromatic_decimals(base=10, root_int=0, scale_range=12, round=True))
+# print(reproportion_chord(base=2, chord=[-24, -20, -15, -14, -4, 5, 11, 19, 26, 37, 39, 42], round=True))

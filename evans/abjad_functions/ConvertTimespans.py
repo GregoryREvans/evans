@@ -127,7 +127,7 @@ class ConvertTimespans:
         time_1 = time.time()
         print(f"Persisting {pdf_path} ...")
         result = abjad.persist(showable_list).as_pdf(
-            pdf_path, scale=0.5, key="annotation", sort_callable=human_sorted_keys
+            pdf_path, scale=0.70, key="annotation", sort_callable=human_sorted_keys
         )
         print(result[0])
         print(result[1])
