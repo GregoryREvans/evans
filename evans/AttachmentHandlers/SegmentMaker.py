@@ -60,6 +60,7 @@ class SegmentMaker:
         self._beaming_runs()
         self._adding_attachments()
         # self._transposing_and_adding_clefs()
+        self._cache_persistent_info()
         self._render_file()
         self._extracting_parts()
         self._write_optimization_log()
@@ -481,6 +482,17 @@ class SegmentMaker:
         # print('Transforming Tuplet Brackets ...')
         # transformer = NoteheadBracketMaker()
         # transformer(self.score_template)
+
+    def _cache_persistent_info(self):
+        print("Caching persistent info ...")
+        for i, voice in enumerate(
+            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice)
+        ):
+            penultimate_rest = abjad.select(voice).leaves()[-2]
+            persistent_attachments = abjad.inspect(penultimate_rest).indicators()
+            open(f"{self.current_directory}/.persistent_info_cache", "a").writelines(
+                f"{datetime.datetime.now()}\nvoice_{i}\n{persistent_attachments}\n\n"
+            )
 
     def _render_file(self):
         print("Rendering file ...")
