@@ -19,6 +19,10 @@ class TextSpanHandler:
         span_three_padding=None,
         attach_span_three_to=None,
         continuous=False,
+        count_1=-1,
+        count_2=-1,
+        count_3=-1,
+        name="TextSpan Handler",
     ):
         self.span_one_positions = span_one_positions
         self.span_one_style = span_one_style
@@ -33,9 +37,9 @@ class TextSpanHandler:
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
         self.continuous = continuous
-        self._count_1 = -1
-        self._count_2 = -1
-        self._count_3 = -1
+        self._count_1 = count_1
+        self._count_2 = count_2
+        self._count_3 = count_3
         self._cyc_span_one_positions = CyclicList(
             span_one_positions, self.continuous, self._count_1
         )
@@ -45,6 +49,7 @@ class TextSpanHandler:
         self._cyc_span_three_positions = CyclicList(
             span_three_positions, self.continuous, self._count_3
         )
+        self.name = name
 
     def __call__(self, selections):
         self._add_spanners(selections)
@@ -276,3 +281,9 @@ class TextSpanHandler:
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
                 abjad.inspect(run[-1]).leaf(1),
             )
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return f"""count 1\n{self._count_1}\ncount 2\n{self._count_2}\ncount 3\n{self._count_3}"""

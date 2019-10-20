@@ -3,10 +3,13 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class TrillHandler:
-    def __init__(self, boolean_vector=[0], continuous=True):
+    def __init__(
+        self, boolean_vector=[0], continuous=True, count=-1, name="Trill Handler"
+    ):
         self.continuous = continuous
-        self._count = -1
+        self._count = count
         self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.name = name
 
     def __call__(self, selections):
         self._apply_trills(selections)
@@ -64,6 +67,12 @@ class TrillHandler:
                     continue
             else:
                 continue
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return self._count
 
 
 # ###DEMO###

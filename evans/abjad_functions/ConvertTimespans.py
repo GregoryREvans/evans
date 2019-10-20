@@ -5,6 +5,7 @@ import pathlib
 import time
 from tsmakers.PerformedTimespan import PerformedTimespan
 from evans.AttachmentHandlers.CyclicList import CyclicList
+from evans.AttachmentHandlers.RhythmHandler import RhythmHandler
 from evans.abjad_functions.talea_timespan import timespan_functions
 from collections import defaultdict
 from evans.general_tools.sorted_keys import sorted_keys
@@ -15,6 +16,8 @@ silence_maker = abjadext.rmakers.stack(
     abjadext.rmakers.NoteRhythmMaker(),
     abjadext.rmakers.force_rest(abjad.select().leaves(pitched=True)),
 )
+
+silence_maker = RhythmHandler(rmaker=silence_maker, name="silence maker")
 
 
 class ConvertTimespans:

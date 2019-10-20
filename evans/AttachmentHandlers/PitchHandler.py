@@ -3,10 +3,13 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class PitchHandler:
-    def __init__(self, pitch_list=None, continuous=False):
+    def __init__(
+        self, pitch_list=None, continuous=False, count=-1, name="Pitch Handler"
+    ):
         self.pitch_list = pitch_list
         self.continuous = continuous
-        self._count = -1
+        self.name = name
+        self._count = count
 
     def __call__(self, selections):
         return self._apply_pitches(selections)
@@ -42,3 +45,9 @@ class PitchHandler:
             for indicator in indicators:
                 abjad.attach(indicator, new_leaf)
             abjad.mutate(old_leaf).replace(new_leaf)
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return self._count

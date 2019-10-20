@@ -1,4 +1,6 @@
-def n_bonacci_cycle(n, first_number, second_number, length, modulus, wrap_to_zero=False):
+def n_bonacci_cycle(
+    n, first_number, second_number, length, modulus, wrap_to_zero=False
+):
     sequence = [first_number, second_number]
     for _ in range(length):
         sequence.append(sequence[-2] + (sequence[-1] * n))

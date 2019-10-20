@@ -116,6 +116,9 @@ class SegmentMaker:
                 container = make_container(handler, durations)
                 voice = self.score_template[voice_name]
                 voice.append(container[:])
+                open(f"{self.current_directory}/.rhythm_state_cache", "a").writelines(
+                    f"{datetime.datetime.now()}\n{handler.name}\n{handler.state}\n\n"
+                )
 
     def _splitting_and_rewriting(self):
 
@@ -170,6 +173,11 @@ class SegmentMaker:
                         continue
                     else:
                         target_timespan.annotation.handler(selection)
+                        open(
+                            f"{self.current_directory}/.handler_state_cache", "a"
+                        ).writelines(
+                            f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state}\n\n"
+                        )
 
     def _multimeasure_rests_and_cutaway(self):
 
@@ -218,7 +226,7 @@ class SegmentMaker:
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
 
-    def _adding_ending_skips(self): #maybe do this before handlers?
+    def _adding_ending_skips(self):  # maybe do this before handlers?
 
         print("Adding ending skips ...")
 
@@ -277,7 +285,7 @@ class SegmentMaker:
                 abjad.attach(
                     abjad.StopHairpin(),
                     penultimate_rest,
-                    tag=abjad.Tag("applying ending skips"), #reconsider
+                    tag=abjad.Tag("applying ending skips"),  # reconsider
                 )
             # else:
             #     continue

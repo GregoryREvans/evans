@@ -15,6 +15,12 @@ class DynamicHandler:
         effort_boolean_vector=[0],
         effort_continuous=True,
         continuous=True,
+        count_1=-1,
+        count_2=-1,
+        count_3=-1,
+        count_4=-1,
+        count_5=-1,
+        name="Dynamic Handler",
     ):
         self.dynamic_list = dynamic_list
         self.flare_boolean_vector = flare_boolean_vector
@@ -26,11 +32,11 @@ class DynamicHandler:
         self.effort_boolean_vector = effort_boolean_vector
         self.effort_continuous = effort_continuous
         self.continuous = continuous
-        self._count_1 = -1
-        self._count_2 = -1
-        self._count_3 = -1
-        self._count_4 = -1
-        self._count_5 = -1
+        self._count_1 = count_1
+        self._count_2 = count_2
+        self._count_3 = count_3
+        self._count_4 = count_4
+        self._count_5 = count_5
         self._cyc_dynamics = CyclicList(dynamic_list, self.continuous, self._count_1)
         self._cyc_flare_boolean_vector = CyclicList(
             flare_boolean_vector, self.flare_continuous, self._count_2
@@ -44,6 +50,7 @@ class DynamicHandler:
         self._cyc_effort_boolean_vector = CyclicList(
             effort_boolean_vector, self.effort_continuous, self._count_5
         )
+        self.name = name
 
     def __call__(self, selections):
         self._apply_dynamics(selections)
@@ -294,6 +301,12 @@ class DynamicHandler:
                         abjad.attach(abjad.Dynamic(dynamic, hide=True), leaf)
                 else:
                     continue
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return f"""count 1\n{self._count_1}\ncount 2\n{self._count_2}\ncount 3\n{self._count_3}\ncount 4\n{self._count_4}\ncount 5\n{self._count_5}"""
 
 
 # ###DEMO###

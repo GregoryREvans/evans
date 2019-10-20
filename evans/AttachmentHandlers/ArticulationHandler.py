@@ -9,18 +9,22 @@ class ArticulationHandler:
         articulation_boolean_vector=[0],
         vector_continuous=True,
         continuous=False,
+        count=-1,
+        vector_count=-1,
+        name="Articulation Handler",
     ):
         self.articulation_list = articulation_list
         self.vector_continuous = vector_continuous
         self.continuous = continuous
-        self._count = -1
-        self._vector_count = -1
+        self._count = count
+        self._vector_count = vector_count
         self.articulation_boolean_vector = CyclicList(
             articulation_boolean_vector, self.vector_continuous, self._vector_count
         )
         self._cyc_articulations = CyclicList(
             lst=articulation_list, continuous=self.continuous, count=self._count
         )
+        self.name = name
 
     def __call__(self, selections):
         self.add_articulations(selections)
@@ -44,6 +48,15 @@ class ArticulationHandler:
                         abjad.attach(abjad.Articulation(articulation), tie[0])
             else:
                 continue
+
+    def identifiers(self):
+        return f"""articulation list:\n{self.articulation_list}\narticulation boolean vector\n{self.articulation_boolean_vector}\nvector continuous\n{self.vector_continuous}\ncontinuous\n{self.continuous},"""
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return f"""count\n{self._count}\nvector count\n{self._vector_count}"""
 
 
 # ###DEMO###

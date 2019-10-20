@@ -4,13 +4,20 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 class GlissandoHandler:
     def __init__(
-        self, glissando_style=None, line_style=None, boolean_vector=[0], continuous=True
+        self,
+        glissando_style=None,
+        line_style=None,
+        boolean_vector=[0],
+        continuous=True,
+        count=-1,
+        name="Glissando Handler",
     ):
         self.glissando_style = glissando_style
         self.line_style = line_style
-        self._count = -1
+        self._count = count
         self.continuous = continuous
         self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.name = name
 
     def __call__(self, selections):
         self.add_glissando(selections)
@@ -94,3 +101,9 @@ class GlissandoHandler:
                             continue
                     else:
                         continue
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return self._count

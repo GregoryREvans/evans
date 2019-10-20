@@ -56,6 +56,7 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
         collection = [_to_nearest_eighth_tone(_) for _ in collection]
     return collection
 
+
 def reproportion_chord(base, chord, round=False):
     base_converter = base / 10.0
     collection = []

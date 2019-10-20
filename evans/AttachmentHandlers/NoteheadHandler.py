@@ -12,6 +12,8 @@ class NoteheadHandler:
         transition_boolean_vector=[0],
         transition_vector_continuous=True,
         continuous=False,
+        count=-1,
+        name="Notehead Handler",
     ):
         self.notehead_list = notehead_list
         self.transition = transition
@@ -28,8 +30,9 @@ class NoteheadHandler:
             self._transition_vector_count,
         )
         self.continuous = continuous
-        self._count = -1
+        self._count = count
         self._cyc_noteheads = CyclicList(notehead_list, self.continuous, self._count)
+        self.name = name
 
     def __call__(self, selections):
         self.add_noteheads(selections)
@@ -71,6 +74,12 @@ class NoteheadHandler:
             for run in abjad.select(selections).runs():
                 last_tie = abjad.select(run).logical_ties(pitched=True)[-1]
                 abjad.detach(transition_arrow, last_tie[-1])
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return f"""count\n{self._count}\nhead vector count\n{self._head_vector_count}\ntransition vector count\n{self._transition_vector_count}"""
 
 
 # - \tweak arrow-length #2

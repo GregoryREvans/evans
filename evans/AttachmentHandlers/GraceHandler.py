@@ -2,7 +2,14 @@ import abjad
 
 
 class GraceHandler:
-    def __init__(self, boolean_vector=None, gesture_lengths=None, continuous=False):
+    def __init__(
+        self,
+        boolean_vector=None,
+        gesture_lengths=None,
+        continuous=False,
+        count=0,
+        name="Grace Handler",
+    ):
         def cyc(lst):
             if self.continuous == False:
                 self._count = 0
@@ -15,7 +22,8 @@ class GraceHandler:
         self.continuous = continuous
         self._cyc_boolean_vector = cyc(boolean_vector)
         self._cyc_gesture_lengths = cyc(gesture_lengths)
-        self._count = 0
+        self._count = count
+        self.name = name
 
     def __call__(self, selections):
         return self._add_grace_notes(selections)
@@ -60,3 +68,9 @@ class GraceHandler:
                         continue
         else:
             pass
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return self._count

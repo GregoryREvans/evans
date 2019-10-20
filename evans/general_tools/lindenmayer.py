@@ -1,6 +1,6 @@
 def lindenmayer(seed, rules, iters):
     for _ in range(iters):
-        result = ''
+        result = ""
         for axiom in seed:
             if axiom in rules:
                 result += rules[axiom]
@@ -8,6 +8,7 @@ def lindenmayer(seed, rules, iters):
                 result += axiom
         seed = result
     return seed
+
 
 # ###DEMO###
 # rule_dict = { "A": "ABA" , "B": "BC", "C": "BAC"}

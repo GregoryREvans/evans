@@ -3,11 +3,19 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class SlurHandler:
-    def __init__(self, apply_slur_to="runs", boolean_vector=[0], continuous=True):
+    def __init__(
+        self,
+        apply_slur_to="runs",
+        boolean_vector=[0],
+        continuous=True,
+        count=-1,
+        name="Slur Handler",
+    ):
         self.apply_slur_to = apply_slur_to
-        self._count = -1
+        self._count = count
         self.continuous = continuous
         self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.name = name
 
     def __call__(self, selections):
         self.add_slurs(selections)
@@ -26,3 +34,9 @@ class SlurHandler:
                     continue
         else:
             pass
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return self._count
