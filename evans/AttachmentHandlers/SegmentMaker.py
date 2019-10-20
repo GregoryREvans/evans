@@ -57,9 +57,9 @@ class SegmentMaker:
         self._interpret_file()
         self._making_containers()
         self._splitting_and_rewriting()
-        self._multimeasure_rests_and_cutaway()
         self._adding_ending_skips()
         self._handlers()
+        self._multimeasure_rests_and_cutaway()
         self._transform_brackets()
         self._beaming_runs()
         self._adding_attachments()
@@ -161,8 +161,8 @@ class SegmentMaker:
     def _handlers(self):
 
         print("Handlers ...")
-        for list in self.handler_timespans:
-            for voice_name, sub_timespan_list in list.items():
+        for t_list in self.handler_timespans:
+            for voice_name, sub_timespan_list in t_list.items():
                 voice_tie_selection = abjad.select(
                     self.score_template[voice_name]
                 ).logical_ties()
@@ -196,7 +196,8 @@ class SegmentMaker:
             abjad.Voice
         ):
             leaves = abjad.select(voice).leaves()
-            for shard in abjad.mutate(leaves).split(self.time_signatures):
+            shards = abjad.mutate(leaves).split(self.time_signatures)
+            for shard in shards[:-1]:
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
                     continue
                 indicators = abjad.inspect(shard[0]).indicators()
@@ -235,7 +236,7 @@ class SegmentMaker:
                     both_rests = [invisible_rest, multimeasure_rest]
                     abjad.mutate(shard).replace(both_rests[:])
 
-    def _adding_ending_skips(self):  # maybe do this before handlers?
+    def _adding_ending_skips(self):
 
         print("Adding ending skips ...")
 
@@ -290,14 +291,6 @@ class SegmentMaker:
             abjad.attach(
                 mult_rest_literal, final_rest, tag=abjad.Tag("applying ending skips")
             )
-            if abjad.inspect(last_run[0]).has_indicator(abjad.Dynamic):
-                abjad.attach(
-                    abjad.StopHairpin(),
-                    penultimate_rest,
-                    tag=abjad.Tag("applying ending skips"),  # reconsider
-                )
-            # else:
-            #     continue
             voice.append(container[:])
 
     def _transform_brackets(self):
@@ -492,20 +485,32 @@ class SegmentMaker:
         # transformer(self.score_template)
 
     def _attach_previous_indicators(self):
-        for voice, indicator_list in zip(abjad.select(self.score_template["Staff Group"]).components(abjad.Voice), self.voicewise_persistent_indicators):
+        for voice, indicator_list in zip(
+            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
+            self.voicewise_persistent_indicators,
+        ):
             first_leaf = abjad.select(voice).leaves()[0]
             if len(indicator_list) < 1:
                 continue
             else:
                 for ind in indicator_list:
-                    abjad.attach(ind, first_leaf, tag=abjad.Tag("attaching persistent indicators"))
+                    abjad.attach(
+                        ind,
+                        first_leaf,
+                        tag=abjad.Tag("attaching persistent indicators"),
+                    )
 
     def _remove_final_grand_pause(self):
-        for staff in abjad.select(self.score_template["Global Context"]).components(abjad.Staff):
+        for staff in abjad.select(self.score_template["Global Context"]).components(
+            abjad.Staff
+        ):
+            print()
             grand_pause = abjad.mutate(staff[:]).split(self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
-        for voice in abjad.select(self.score_template["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.select(self.score_template["Staff Group"]).components(
+            abjad.Voice
+        ):
             grand_pause = abjad.mutate(voice[:]).split(self.time_signatures)[-1]
             for _ in grand_pause:
                 voice.remove(_)

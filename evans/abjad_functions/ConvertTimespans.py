@@ -47,6 +47,7 @@ class ConvertTimespans:
         # persist,
         segment_name,
         current_directory,
+        add_silence,
     ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
@@ -88,10 +89,16 @@ class ConvertTimespans:
                     )
                     ts_list.append(timespan)
                 else:
-                    timespan.annotation = timespan_functions.TimespanSpecifier(
-                        voice_name=f"Voice {i}", handler=silence_maker
-                    )
-                    ts_list.append(timespan)
+                    if add_silence is True:
+                        timespan.annotation = timespan_functions.TimespanSpecifier(
+                            voice_name=f"Voice {i}", handler=silence_maker
+                        )
+                        ts_list.append(timespan)
+                    else:
+                        timespan.annotation = timespan_functions.TimespanSpecifier(
+                            voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
+                        )
+                        ts_list.append(timespan)
             ts_list.sort()
             master_list.append(ts_list)
 
@@ -116,7 +123,14 @@ class ConvertTimespans:
         rhythm_timespans = {
             voice: timespan_list for voice, timespan_list in zip(voices, master_list)
         }
-        silence_specifier = timespan_functions.TimespanSpecifier(handler=silence_maker)
+        if add_silence is True:
+            silence_specifier = timespan_functions.TimespanSpecifier(
+                handler=silence_maker
+            )
+        else:
+            silence_specifier = timespan_functions.TimespanSpecifier(
+                handler=cyclic_materials(r=1)[0]
+            )
         timespan_functions.add_silences_to_timespan_dict(
             rhythm_timespans, silence_specifier
         )
