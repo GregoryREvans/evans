@@ -20,6 +20,7 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         voicewise_persistent_indicators=None,
+        add_final_grand_pause=True,
         score_includes=None,
         parts_includes=None,
         segment_name=None,
@@ -37,6 +38,7 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
+        self.add_final_grand_pause = add_final_grand_pause
         self.score_includes = score_includes
         self.parts_includes = parts_includes
         self.segment_name = segment_name
@@ -65,6 +67,8 @@ class SegmentMaker:
             self._attach_previous_indicators()
         # self._transposing_and_adding_clefs()
         self._cache_persistent_info()
+        if self.add_final_grand_pause is False:
+            self._remove_final_grand_pause()
         self._render_file()
         self._extracting_parts()
         self._write_optimization_log()
@@ -490,8 +494,21 @@ class SegmentMaker:
     def _attach_previous_indicators(self):
         for voice, indicator_list in zip(abjad.select(self.score_template["Staff Group"]).components(abjad.Voice), self.voicewise_persistent_indicators):
             first_leaf = abjad.select(voice).leaves()[0]
-            for ind in indicator_list:
-                abjad.attach(ind, first_leaf, tag=abjad.Tag("attaching persistent indicators"))
+            if len(indicator_list) < 1:
+                continue
+            else:
+                for ind in indicator_list:
+                    abjad.attach(ind, first_leaf, tag=abjad.Tag("attaching persistent indicators"))
+
+    def _remove_final_grand_pause(self):
+        for staff in abjad.select(self.score_template["Global Context"]).components(abjad.Staff):
+            grand_pause = abjad.mutate(staff[:]).split(self.time_signatures)[-1]
+            for _ in grand_pause:
+                staff.remove(_)
+        for voice in abjad.select(self.score_template["Staff Group"]).components(abjad.Voice):
+            grand_pause = abjad.mutate(voice[:]).split(self.time_signatures)[-1]
+            for _ in grand_pause:
+                voice.remove(_)
 
     def _cache_persistent_info(self):
         print("Caching persistent info ...")
