@@ -306,7 +306,7 @@ class DynamicHandler:
         return self.name
 
     def state(self):
-        return f"""count 1\n{self._count_1}\ncount 2\n{self._count_2}\ncount 3\n{self._count_3}\ncount 4\n{self._count_4}\ncount 5\n{self._count_5}"""
+        return f"""count 1\n{self._cyc_dynamics.state()}\ncount 2\n{self._cyc_flare_boolean_vector.state()}\ncount 3\n{self._cyc_hold_first_boolean_vector.state()}\ncount 4\n{self._cyc_hold_last_boolean_vector.state()}\ncount 5\n{self._cyc_effort_boolean_vector.state()}"""
 
 
 # ###DEMO###

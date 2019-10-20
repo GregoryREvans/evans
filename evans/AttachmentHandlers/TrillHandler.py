@@ -72,7 +72,7 @@ class TrillHandler:
         return self.name
 
     def state(self):
-        return self._count
+        return f"""count\n{self.boolean_vector.state()}"""
 
 
 # ###DEMO###

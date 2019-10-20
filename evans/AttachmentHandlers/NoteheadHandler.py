@@ -79,7 +79,7 @@ class NoteheadHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self._count}\nhead vector count\n{self._head_vector_count}\ntransition vector count\n{self._transition_vector_count}"""
+        return f"""count\n{self._cyc_noteheads.state()}\nhead vector count\n{self.head_boolean_vector.state()}\ntransition vector count\n{self.transition_boolean_vector.state()}"""
 
 
 # - \tweak arrow-length #2

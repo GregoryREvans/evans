@@ -286,4 +286,4 @@ class TextSpanHandler:
         return self.name
 
     def state(self):
-        return f"""count 1\n{self._count_1}\ncount 2\n{self._count_2}\ncount 3\n{self._count_3}"""
+        return f"""count 1\n{self._cyc_span_one_positions.state()}\ncount 2\n{self._cyc_span_two_positions.state()}\ncount 3\n{self._cyc_span_three_positions.state()}"""

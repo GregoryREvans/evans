@@ -56,7 +56,7 @@ class ArticulationHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self._count}\nvector count\n{self._vector_count}"""
+        return f"""count\n{self._cyc_articulations.state()}\nvector count\n{self.articulation_boolean_vector.state()}"""
 
 
 # ###DEMO###

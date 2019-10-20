@@ -10,17 +10,16 @@ class PitchHandler:
         self.continuous = continuous
         self.name = name
         self._count = count
+        self._cyc_pitches = CyclicList(self.pitch_list, self.continuous, self._count)
 
     def __call__(self, selections):
         return self._apply_pitches(selections)
 
-    def _collect_pitches_durations_leaves(self, logical_ties, pitches):
-
-        cyc_pitches = CyclicList(pitches, self.continuous, self._count)
+    def _collect_pitches_durations_leaves(self, logical_ties):
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:
             if isinstance(tie[0], abjad.Note):
-                pitch = cyc_pitches(r=1)[0]
+                pitch = self._cyc_pitches(r=1)[0]
                 for leaf in tie:
                     pitches.append(pitch)
                     durations.append(leaf.written_duration)
@@ -33,11 +32,10 @@ class PitchHandler:
         return pitches, durations, leaves
 
     def _apply_pitches(self, selections):
-        pitches = self.pitch_list
         leaf_maker = abjad.LeafMaker()
         old_ties = [tie for tie in abjad.iterate(selections).logical_ties()]
         pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
-            old_ties, pitches
+            old_ties
         )
         new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
         for old_leaf, new_leaf in zip(old_leaves, new_leaves):
@@ -50,4 +48,4 @@ class PitchHandler:
         return self.name
 
     def state(self):
-        return self._count
+        return f"""count\n{self._cyc_pitches.state()}"""

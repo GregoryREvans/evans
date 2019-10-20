@@ -25,6 +25,9 @@ class CyclicList:
         else:
             return self.non_state_cyc(self.lst, r)
 
+    def state(self):
+        return self.count
+
 
 # _cyc_count = -1
 # _non_cyc_count = -1
@@ -36,4 +39,10 @@ class CyclicList:
 # for _ in cyc_generator(r=8):
 #     print(_)
 # for _ in non_cyc_generator(r=7):
+#     print(_)
+#
+# print(cyc_generator.state())
+#
+# new_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=7)
+# for _ in new_cyc_generator(r=8):
 #     print(_)

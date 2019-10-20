@@ -176,7 +176,7 @@ class SegmentMaker:
                         open(
                             f"{self.current_directory}/.handler_state_cache", "a"
                         ).writelines(
-                            f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state}\n\n"
+                            f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state()}\n\n"
                         )
 
     def _multimeasure_rests_and_cutaway(self):

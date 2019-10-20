@@ -42,4 +42,4 @@ class BendHandler:
         return self.name
 
     def state(self):
-        return f"""bend count\n{self._bend_count}\nvector count\n{self._vector_count}"""
+        return f"""bend count\n{self.bend_amounts.state()}\nvector count\n{self.boolean_vector.state()}"""
