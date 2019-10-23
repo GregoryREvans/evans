@@ -28,6 +28,8 @@ class SegmentMaker:
         build_path=None,
         cutaway=True,
         beam_pattern="runs",
+        tempo=((1, 4), 90),
+        barline="||",
     ):
         self.instruments = instruments
         self.names = names
@@ -46,6 +48,8 @@ class SegmentMaker:
         self.build_path = build_path
         self.cutaway = cutaway
         self.beam_pattern = beam_pattern
+        self.tempo = tempo
+        self.barline = barline
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -410,20 +414,10 @@ class SegmentMaker:
             format_slot="absolute_after",
         )
 
-        bar_line = abjad.BarLine("||")
-        metro = abjad.MetronomeMark((1, 4), (63, 72))
+        bar_line = abjad.BarLine(self.barline)
+        metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
 
         markup2 = abjad.Markup(r"\bold { A }")
-        mark2 = abjad.RehearsalMark(markup=markup2)
-
-        markup3 = abjad.Markup(r"\bold { B }")
-        mark3 = abjad.RehearsalMark(markup=markup3)
-
-        markup4 = abjad.Markup(r"\bold { C }")
-        mark4 = abjad.RehearsalMark(markup=markup4)
-
-        markup5 = abjad.Markup(r"\bold { D }")
-        mark5 = abjad.RehearsalMark(markup=markup5)
 
         instruments = evans.cyc(self.instruments)
 
@@ -441,25 +435,17 @@ class SegmentMaker:
             x.hcenter_in(14)
             names.append(abjad.StartMarkup(markup=x))
 
-        # for staff in abjad.select(self.score_template['Staff Group']).components(abjad.Staff):
-        #     last_leaf = abjad.select(staff).leaves()[-3]
-        #     abjad.attach(bar_line, last_leaf)
+        if self.tempo is not None:
+            for staff in abjad.iterate(self.score_template['Global Context']).components(abjad.Staff):
+                leaf1 = abjad.select(staff).leaves()[0]
+                last_leaf = abjad.select(staff).leaves()[-3]
+                abjad.attach(metro, leaf1)
 
-        # for staff in abjad.iterate(self.score_template['Global Context']).components(abjad.Staff):
-        #     leaf1 = abjad.select(staff).leaves()[0]
-        # leaf2 = abjad.select(staff).leaves()[21]
-        # leaf3 = abjad.select(staff).leaves()[27]
-        # leaf4 = abjad.select(staff).leaves()[41]
-        # leaf5 = abjad.select(staff).leaves()[56]
-        # abjad.attach(metro, leaf1)
-        # abjad.attach(mark2, leaf2)
-        # abjad.attach(mark3, leaf3)
-        # abjad.attach(mark4, leaf4)
-        # abjad.attach(mark5, leaf5)
+        if self.barline is not None:
+            for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
+                last_leaf = abjad.select(staff).leaves()[-3]
+                abjad.attach(bar_line, last_leaf)
 
-        # def _transposing_and_adding_clefs(self):
-
-        print("Transposing and adding clefs ...")
         for abbrev, name, inst, handler, voice in zip(
             abbreviations,
             names,
@@ -479,10 +465,6 @@ class SegmentMaker:
             )
             abjad.Instrument.transpose_from_sounding_pitch(voice)
             handler(voice)
-
-        # print('Transforming Tuplet Brackets ...')
-        # transformer = NoteheadBracketMaker()
-        # transformer(self.score_template)
 
     def _attach_previous_indicators(self):
         for voice, indicator_list in zip(
