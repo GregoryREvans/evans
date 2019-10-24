@@ -29,6 +29,7 @@ class ConvertTimespans:
         persist=False,
         segment_name=None,
         current_directory=None,
+        fill_gaps=True,
     ):
         self.materials = materials
         self.ts_list = ts_list
@@ -36,6 +37,7 @@ class ConvertTimespans:
         self.persist = persist
         self.segment_name = segment_name
         self.current_directory = current_directory
+        self.fill_gaps = fill_gaps
 
     def __call__(self):
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
@@ -44,7 +46,6 @@ class ConvertTimespans:
         materials,
         ts_list,
         bounds,
-        # persist,
         segment_name,
         current_directory,
         add_silence,
@@ -89,16 +90,19 @@ class ConvertTimespans:
                     )
                     ts_list.append(timespan)
                 else:
-                    if add_silence is True:
-                        timespan.annotation = timespan_functions.TimespanSpecifier(
-                            voice_name=f"Voice {i}", handler=silence_maker
-                        )
-                        ts_list.append(timespan)
+                    if self.fill_gaps is True:
+                        if add_silence is True:
+                            timespan.annotation = timespan_functions.TimespanSpecifier(
+                                voice_name=f"Voice {i}", handler=silence_maker
+                            )
+                            ts_list.append(timespan)
+                        else:
+                            timespan.annotation = timespan_functions.TimespanSpecifier(
+                                voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
+                            )
+                            ts_list.append(timespan)
                     else:
-                        timespan.annotation = timespan_functions.TimespanSpecifier(
-                            voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
-                        )
-                        ts_list.append(timespan)
+                        continue
             ts_list.sort()
             master_list.append(ts_list)
 
