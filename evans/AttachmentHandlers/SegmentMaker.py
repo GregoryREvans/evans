@@ -30,6 +30,7 @@ class SegmentMaker:
         beam_pattern="runs",
         tempo=((1, 4), 90),
         barline="||",
+        midi=False,
     ):
         self.instruments = instruments
         self.names = names
@@ -50,6 +51,7 @@ class SegmentMaker:
         self.beam_pattern = beam_pattern
         self.tempo = tempo
         self.barline = barline
+        self.midi = midi
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -325,7 +327,8 @@ class SegmentMaker:
         if self.beam_pattern == "runs":
             print("Beaming runs ...")
             for voice in abjad.select(self.score_template).components(abjad.Voice):
-                abjad.beam(voice[:], beam_lone_notes=False, beam_rests=False)
+                for shard in abjad.mutate(voice[:]).split(self.time_signatures):
+                    abjad.beam(shard[:], beam_lone_notes=False, beam_rests=False)
         elif self.beam_pattern == "quarters":
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Voice
@@ -542,6 +545,8 @@ class SegmentMaker:
         self.time_3 = time.time()
         print(f"Persisting {pdf_path} ...")
         result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)  # or ly
+        if self.midi is True:
+            abjad.persist(score_file).as_midi(pdf_path) #?
         print(result[0])
         print(result[1])
         print(result[2])

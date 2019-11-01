@@ -48,7 +48,8 @@ class ConvertTimespans:
         bounds,
         segment_name,
         current_directory,
-        add_silence,
+        add_silence=True,
+        fill_gaps=True,
     ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
@@ -90,7 +91,7 @@ class ConvertTimespans:
                     )
                     ts_list.append(timespan)
                 else:
-                    if self.fill_gaps is True:
+                    if fill_gaps is True:
                         if add_silence is True:
                             timespan.annotation = timespan_functions.TimespanSpecifier(
                                 voice_name=f"Voice {i}", handler=silence_maker

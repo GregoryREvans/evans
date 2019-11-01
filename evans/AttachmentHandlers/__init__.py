@@ -1,4 +1,5 @@
 from .ArticulationHandler import ArticulationHandler
+from .BCPHandler import BCPHandler
 from .BendHandler import BendHandler
 from .ClefHandler import ClefHandler
 from .CyclicList import CyclicList

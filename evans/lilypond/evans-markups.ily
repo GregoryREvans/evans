@@ -94,3 +94,7 @@ piston-jete-markup =
                 }
             }
         }
+
+evans-upbow = #"scripts.upbow"
+
+evans-downbow = #"scripts.downbow"
