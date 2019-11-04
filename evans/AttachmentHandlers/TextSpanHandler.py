@@ -55,10 +55,7 @@ class TextSpanHandler:
         self._add_spanners(selections)
 
     def _add_spanners(self, selections):
-        # print('Adding spanners ...')
-        if self.attach_span_one_to == None:
-            self._apply_empty_spanner(selections, r"One")
-        elif self.attach_span_one_to == "bounds":
+        if self.attach_span_one_to == "bounds":
             self._apply_position_and_span_to_bounds(
                 selections,
                 self._cyc_span_one_positions,
@@ -84,9 +81,7 @@ class TextSpanHandler:
             )
         else:
             pass
-        if self.attach_span_two_to == None:
-            self._apply_empty_spanner(selections, r"Two")
-        elif self.attach_span_two_to == "bounds":
+        if self.attach_span_two_to == "bounds":
             self._apply_position_and_span_to_bounds(
                 selections,
                 self._cyc_span_two_positions,
@@ -112,9 +107,7 @@ class TextSpanHandler:
             )
         else:
             pass
-        if self.attach_span_three_to == None:
-            self._apply_empty_spanner(selections, r"Three")
-        elif self.attach_span_three_to == "bounds":
+        if self.attach_span_three_to == "bounds":
             self._apply_position_and_span_to_bounds(
                 selections,
                 self._cyc_span_three_positions,
@@ -142,7 +135,6 @@ class TextSpanHandler:
             pass
 
     def _apply_empty_spanner(self, selections, span_command):
-        # print('Adding empty spanner ...')
         first_leaf = abjad.select(selections).leaves()[0]
         abjad.attach(
             abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), first_leaf
@@ -151,7 +143,6 @@ class TextSpanHandler:
     def _apply_position_and_span_to_bounds(
         self, selections, positions, style, span_command, span_padding
     ):
-        # print('Adding bounded spanner ...')
         for run in abjad.select(selections).runs():
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
@@ -267,7 +258,6 @@ class TextSpanHandler:
     def _apply_position_and_span_to_left(
         self, selections, positions, style, span_command, span_padding
     ):
-        # print('Adding left spanner ...')
         runs = abjad.select(selections).runs()
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [

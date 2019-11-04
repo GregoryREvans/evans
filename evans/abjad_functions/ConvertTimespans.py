@@ -50,6 +50,7 @@ class ConvertTimespans:
         current_directory,
         add_silence=True,
         fill_gaps=True,
+        split=False,
     ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
@@ -117,28 +118,40 @@ class ConvertTimespans:
                 )
                 showable_list.append(new_span)
 
-        split_timespans = [
-            timespan_functions.make_split_list(x, bounds) for x in master_list
-        ]
+        if split is True:
+            split_timespans = [
+                timespan_functions.make_split_list(x, bounds) for x in master_list
+            ]
+        else:
+            split_timespans = [
+                x for x in master_list
+            ]
 
         master_list = split_timespans
 
         master_length = len(master_list)
         voices = [f"Voice {i + 1}" for i in range(master_length)]
-        rhythm_timespans = {
+        final_timespan_dict = {
             voice: timespan_list for voice, timespan_list in zip(voices, master_list)
         }
+        # if add_silence is True:
+        #     silence_specifier = timespan_functions.TimespanSpecifier(
+        #         handler=silence_maker
+        #     )
+        # else:
+        #     silence_specifier = timespan_functions.TimespanSpecifier(
+        #         handler=cyclic_materials(r=1)[0]
+        #     )
+        # timespan_functions.add_silences_to_timespan_dict(
+        #     final_timespan_dict, silence_specifier
+        # )
         if add_silence is True:
             silence_specifier = timespan_functions.TimespanSpecifier(
                 handler=silence_maker
             )
-        else:
-            silence_specifier = timespan_functions.TimespanSpecifier(
-                handler=cyclic_materials(r=1)[0]
+            timespan_functions.add_silences_to_timespan_dict(
+                final_timespan_dict, silence_specifier
             )
-        timespan_functions.add_silences_to_timespan_dict(
-            rhythm_timespans, silence_specifier
-        )
 
         directory = (current_directory).resolve()
         pdf_path = f"""{directory}/{segment_name}.pdf"""
@@ -164,4 +177,4 @@ class ConvertTimespans:
             print(f"Opening {pdf_path} ...")
             os.system(f"open {pdf_path}")
 
-        return rhythm_timespans
+        return final_timespan_dict

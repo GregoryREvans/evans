@@ -20,7 +20,7 @@ def beam_meter(components, meter, offset_depth):
     for i in enumerate(offset_timespans):
         beamed_groups.append([])
 
-    for i, span in enumerate(offset_timespans):
+    for i, span in enumerate(offset_timespans): #this is the offending sections?
         for group in (
             abjad.select(components)
             .logical_ties()
@@ -34,18 +34,25 @@ def beam_meter(components, meter, offset_depth):
                 beamed_groups[i].append(group[:])
 
     for group in beamed_groups:
+        print("group")
+        print(group)
         subgroups = []
         non_tuplets = []
-        subgrouper = abjad.select(group).map(abjad.select())
+        subgrouper = abjad.select(group).map(abjad.select()) #?
+        # print("subgrouper")
+        # print(subgrouper)
         for item in subgrouper:
             if len(item) > 0:
+                # if any(abjad.inspect(item[l][0]).parentage().parent for l in item) is abjad.Tuplet:
                 if abjad.inspect(item[0][0]).parentage().parent is abjad.Tuplet:
-                    subgroups.append([item[:]])
+                    continue
+                    # subgroups.append([item[:]])
                 else:
                     non_tuplets.append(item[:])
         for subgroup in abjad.select(non_tuplets).group_by_contiguity():
             subgroups.append([subgroup[:]])
         for subgroup in subgroups:
+            # print(subgroup)
             abjad.beam(subgroup[:])
             # if abjad.inspect(subgroup[0][0]).parentage().parent is not abjad.Tuplet:
             #     abjad.beam(subgroup[:])

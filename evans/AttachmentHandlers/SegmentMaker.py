@@ -165,8 +165,33 @@ class SegmentMaker:
                     )
 
     def _handlers(self):
-
         print("Handlers ...")
+        # for t_list in self.handler_timespans:
+        #     for voice_name, sub_timespan_list in t_list.items():
+        #         print(voice_name)
+        #         print(sub_timespan_list)
+        #         for target_timespan in sub_timespan_list:
+        #             for selection in (
+        #                 abjad.select(self.score_template[voice_name])
+        #                 .logical_ties()
+        #                 .group_by(
+        #                     predicate=lambda x: abjad.inspect(x)
+        #                     .timespan()
+        #                     .starts_during_timespan(target_timespan)
+        #                 )
+        #             ):
+        #                 if (
+        #                     abjad.inspect(selection).timespan().starts_during_timespan(target_timespan) is True
+        #                 ):
+        #                     if len(selection) < 1:
+        #                         continue
+        #                     else:
+        #                         target_timespan.annotation.handler(selection)
+        #                         open(
+        #                             f"{self.current_directory}/.handler_state_cache", "a"
+        #                         ).writelines(
+        #                             f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state()}\n\n"
+        #                         )
         for t_list in self.handler_timespans:
             for voice_name, sub_timespan_list in t_list.items():
                 voice_tie_selection = abjad.select(
