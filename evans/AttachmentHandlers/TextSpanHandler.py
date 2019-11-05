@@ -181,7 +181,9 @@ class TextSpanHandler:
                 abjad.tweak(start_span).staff_padding = span_padding
                 abjad.tweak(stop_span).staff_padding = span_padding
 
-    def _apply_position_and_span_to_leaves(self, selections, positions, style, span_command, span_padding):
+    def _apply_position_and_span_to_leaves(
+        self, selections, positions, style, span_command, span_padding
+    ):
         for run in abjad.select(selections).runs():
             ties = abjad.select(run).logical_ties(pitched=True)
             following_leaf = abjad.inspect(ties[-1][-1]).leaf(1)
@@ -225,14 +227,20 @@ class TextSpanHandler:
             final_indicator = abjad.StartTextSpan()
             if all(start_string[-1].isdigit() for _ in (0, -1)):
                 final_indicator = abjad.StartTextSpan(
-                    left_text=abjad.Markup(f"""\\center-column {{ \\center-align \\vcenter \\upright \\fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""", literal=True),
+                    left_text=abjad.Markup(
+                        f"""\\center-column {{ \\center-align \\vcenter \\upright \\fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
+                        literal=True,
+                    ),
                     style=f"invisible-line",
                     command=r"\startTextSpan" + span_command,
                     right_padding=3,
                 )
             else:
                 final_indicator = abjad.StartTextSpan(
-                    left_text=abjad.Markup(f"""\\center-column {{ \\center-align \\upright \\vcenter {start_strings[-1]} }}""", literal=True),
+                    left_text=abjad.Markup(
+                        f"""\\center-column {{ \\center-align \\upright \\vcenter {start_strings[-1]} }}""",
+                        literal=True,
+                    ),
                     style=f"invisible-line",
                     command=r"\startTextSpan" + span_command,
                     right_padding=3,
@@ -244,11 +252,13 @@ class TextSpanHandler:
             for pair in zip(ties[1:], start_indicators[1:]):
                 tie, start_indicator = pair
                 abjad.attach(
-                    abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                    tie[0],
+                    abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), tie[0]
                 )
                 abjad.attach(start_indicator, tie[0])
-            abjad.attach(abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), following_leaf)
+            abjad.attach(
+                abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
+                following_leaf,
+            )
             abjad.attach(final_indicator, following_leaf)
             abjad.attach(
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),

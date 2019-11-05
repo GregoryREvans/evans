@@ -16,14 +16,31 @@ def beam_meter(components, meter, offset_depth):
         for pair in offset_pairs
     ]
 
+    tup_list = [tup for tup in abjad.select(components).components(abjad.Tuplet)]
+    for t in tup_list:
+        abjad.beam(
+            t[:],
+            beam_rests=False,
+            # stemlet_length=1,
+            beam_lone_notes=False,
+        )
+
+    non_tup_list = []
+    for leaf in abjad.select(components).leaves():
+        if (
+            isinstance(abjad.inspect(leaf).parentage().components[1], abjad.Tuplet)
+            is False
+        ):
+            non_tup_list.append(leaf)
+
     beamed_groups = []
     for i in enumerate(offset_timespans):
         beamed_groups.append([])
 
-    for i, span in enumerate(offset_timespans): #this is the offending sections?
+    for i, span in enumerate(offset_timespans):
         for group in (
-            abjad.select(components)
-            .logical_ties()
+            abjad.select(non_tup_list[:])
+            .leaves()
             .group_by(
                 predicate=lambda x: abjad.inspect(x)
                 .timespan()
@@ -33,39 +50,23 @@ def beam_meter(components, meter, offset_depth):
             if abjad.inspect(group).timespan().happens_during_timespan(span) is True:
                 beamed_groups[i].append(group[:])
 
-    for group in beamed_groups:
-        print("group")
-        print(group)
-        subgroups = []
-        non_tuplets = []
-        subgrouper = abjad.select(group).map(abjad.select()) #?
-        # print("subgrouper")
-        # print(subgrouper)
-        for item in subgrouper:
-            if len(item) > 0:
-                # if any(abjad.inspect(item[l][0]).parentage().parent for l in item) is abjad.Tuplet:
-                if abjad.inspect(item[0][0]).parentage().parent is abjad.Tuplet:
-                    continue
-                    # subgroups.append([item[:]])
-                else:
-                    non_tuplets.append(item[:])
-        for subgroup in abjad.select(non_tuplets).group_by_contiguity():
-            subgroups.append([subgroup[:]])
-        for subgroup in subgroups:
-            # print(subgroup)
-            abjad.beam(subgroup[:])
-            # if abjad.inspect(subgroup[0][0]).parentage().parent is not abjad.Tuplet:
-            #     abjad.beam(subgroup[:])
-            # else:
-            #     beam_meter(subgroup[:])
+    for subgroup in beamed_groups:
+        subgrouper = abjad.select(subgroup).group_by_contiguity()
+        for beam_group in subgrouper:
+            abjad.beam(
+                beam_group[:],
+                beam_rests=False,
+                # stemlet_length=1,
+                beam_lone_notes=False,
+            )
 
 
-###DEMO###
-pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-tuplet = abjad.Tuplet((2, 3), "c'8 c'8 c'8")
-post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-staff = abjad.Staff()
-for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
-    staff.append(_)
-beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
-abjad.f(staff)
+# ###DEMO###
+# pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+# tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
+# post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+# staff = abjad.Staff()
+# for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
+#     staff.append(_)
+# beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
+# abjad.show(staff)

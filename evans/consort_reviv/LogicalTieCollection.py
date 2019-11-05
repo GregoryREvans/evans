@@ -584,9 +584,11 @@ class LogicalTieCollection(AbjadObject):
         return tuple(results)
 
     # new from greg...spotty when to check node vs timespan? What even is in the node?
-    def find_logical_ties_starting_during_timespan(self, timespan): # still wrong...
+    def find_logical_ties_starting_during_timespan(self, timespan):  # still wrong...
         r = self.find_logical_ties_intersecting_timespan(timespan)
-        return tuple(_ for _ in r if inspect(_).timespan().starts_during_timespan(timespan))
+        return tuple(
+            _ for _ in r if inspect(_).timespan().starts_during_timespan(timespan)
+        )
 
     def get_simultaneity_at(self, offset):
         r"""Gets simultaneity at `offset`.

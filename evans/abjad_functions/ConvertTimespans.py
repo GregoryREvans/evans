@@ -100,7 +100,8 @@ class ConvertTimespans:
                             ts_list.append(timespan)
                         else:
                             timespan.annotation = timespan_functions.TimespanSpecifier(
-                                voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
+                                voice_name=f"Voice {i}",
+                                handler=cyclic_materials(r=1)[0],
                             )
                             ts_list.append(timespan)
                     else:
@@ -123,9 +124,7 @@ class ConvertTimespans:
                 timespan_functions.make_split_list(x, bounds) for x in master_list
             ]
         else:
-            split_timespans = [
-                x for x in master_list
-            ]
+            split_timespans = [x for x in master_list]
 
         master_list = split_timespans
 

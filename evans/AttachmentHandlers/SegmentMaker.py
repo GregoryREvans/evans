@@ -155,13 +155,13 @@ class SegmentMaker:
                     abjad.mutate(shard).rewrite_meter(
                         time_signature,
                         boundary_depth=inventories[-1][0],
-                        rewrite_tuplets=True,
+                        rewrite_tuplets=False,
                     )
                 else:
                     abjad.mutate(shard).rewrite_meter(
                         time_signature,
                         boundary_depth=inventories[-2][0],
-                        rewrite_tuplets=True,
+                        rewrite_tuplets=False,
                     )
 
     def _handlers(self):
@@ -350,42 +350,37 @@ class SegmentMaker:
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
-            print("Beaming runs ...")
+            print("Beaming ...")
             for voice in abjad.select(self.score_template).components(abjad.Voice):
                 for shard in abjad.mutate(voice[:]).split(self.time_signatures):
                     abjad.beam(shard[:], beam_lone_notes=False, beam_rests=False)
-        elif self.beam_pattern == "quarters":
+        elif self.beam_pattern == "meter":
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Voice
             ):
                 for i, shard in enumerate(
                     abjad.mutate(voice[:]).split(self.time_signatures)
                 ):
-                    durations = [(1, 4)]
-                    leaves = abjad.select(shard).leaves()
-                    abjad.mutate(leaves).split(  # not the correct solution
-                        durations, cyclic=True
-                    )
-                    selector = (
-                        abjad.select()
-                        .leaves()
-                        .partition_by_durations(
-                            [abjad.Duration(1, 4)],
-                            cyclic=True,
-                            # fill=abjad.Exact,
-                            fill=abjad.More,
-                            # fill=abjad.Less,
-                            in_seconds=False,
-                            overhang=True,
+                    met = abjad.Meter(self.time_signatures[i].pair)
+                    inventories = [
+                        x
+                        for x in enumerate(
+                            abjad.Meter(
+                                self.time_signatures[i].pair
+                            ).depthwise_offset_inventory
                         )
-                    )
-                    result = selector(shard)
-                    for quarter in result:
-                        abjad.beam(
-                            quarter[:],
-                            beam_lone_notes=False,
-                            beam_rests=False,
-                            # stemlet_length=2,
+                    ]
+                    if self.time_signatures[i].denominator == 4:
+                        evans.beam_meter(
+                            components=shard[:],
+                            meter=met,
+                            offset_depth=inventories[-1][0],
+                        )
+                    else:
+                        evans.beam_meter(
+                            components=shard[:],
+                            meter=met,
+                            offset_depth=inventories[-2][0],
                         )
         else:
             pass
@@ -464,13 +459,17 @@ class SegmentMaker:
             names.append(abjad.StartMarkup(markup=x))
 
         if self.tempo is not None:
-            for staff in abjad.iterate(self.score_template['Global Context']).components(abjad.Staff):
+            for staff in abjad.iterate(
+                self.score_template["Global Context"]
+            ).components(abjad.Staff):
                 leaf1 = abjad.select(staff).leaves()[0]
                 last_leaf = abjad.select(staff).leaves()[-3]
                 abjad.attach(metro, leaf1)
 
         if self.barline is not None:
-            for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
+            for staff in abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.Staff
+            ):
                 last_leaf = abjad.select(staff).leaves()[-3]
                 abjad.attach(bar_line, last_leaf)
 
@@ -571,7 +570,7 @@ class SegmentMaker:
         print(f"Persisting {pdf_path} ...")
         result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)  # or ly
         if self.midi is True:
-            abjad.persist(score_file).as_midi(pdf_path) #?
+            abjad.persist(score_file).as_midi(pdf_path)  # ?
         print(result[0])
         print(result[1])
         print(result[2])
