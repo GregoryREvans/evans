@@ -63,7 +63,7 @@ class NoteheadHandler:
             """,
                 "absolute_after",
             )
-            for tie, bool1, bool2 in zip(ties, heads, head_vector, trans_vector):
+            for tie, bool1, bool2 in zip(ties, head_vector, trans_vector): #verify that heads are different?
                 if bool1 is 0:
                     if bool2 is 0:
                         abjad.attach(transition_arrow, tie[-1])
