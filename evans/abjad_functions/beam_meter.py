@@ -18,12 +18,18 @@ def beam_meter(components, meter, offset_depth):
 
     tup_list = [tup for tup in abjad.select(components).components(abjad.Tuplet)]
     for t in tup_list:
-        abjad.beam(
-            t[:],
-            beam_rests=False,
-            # stemlet_length=1,
-            beam_lone_notes=False,
-        )
+        if (
+            isinstance(abjad.inspect(t).parentage().components[1], abjad.Tuplet)
+            is False
+        ):
+            abjad.beam(
+                t[:],
+                beam_rests=False,
+                # stemlet_length=1,
+                beam_lone_notes=False,
+            )
+        else:
+            continue
 
     non_tup_list = []
     for leaf in abjad.select(components).leaves():
