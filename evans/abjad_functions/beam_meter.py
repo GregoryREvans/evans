@@ -24,8 +24,8 @@ def beam_meter(components, meter, offset_depth):
         ):
             abjad.beam(
                 t[:],
-                beam_rests=False,
-                # stemlet_length=1,
+                beam_rests=True,
+                stemlet_length=0.75,
                 beam_lone_notes=False,
             )
         else:
@@ -61,8 +61,8 @@ def beam_meter(components, meter, offset_depth):
         for beam_group in subgrouper:
             abjad.beam(
                 beam_group[:],
-                beam_rests=False,
-                # stemlet_length=1,
+                beam_rests=True,
+                stemlet_length=0.75,
                 beam_lone_notes=False,
             )
 

@@ -329,25 +329,38 @@ accidentalGlyphs = #`(
 
 \score {
     <<
-        \new staff {
-            \new voice {
+        \new Staff {
+            \new Voice {
                 cff'4
+				\eleven-twelfs-flat
                 cetf'4
+				\seven-eighths-flat
                 csef'4
+				\five-sixths-flat
                 cfxf'4
                 ctqf'4
+				\two-thirds-flat
                 ctrf'4
+				\five-eighths-flat
                 cfef'4
+				\seven-twelfs-flat
                 cstf'4
                 cf'4
+				\five-twelfs-flat
                 cftf'4
+                \three-eighths-flat
                 ctef'4
+				\one-third-flat
                 crf'4
                 cqf'4
+				\one-sixth-flat
                 cxf'4
+                \one-eighth-flat
                 cef'4
+				\one-twelf-flat
                 ctf'4
                 c'4
+				\one-twelf-sharp
                 cts'4
                 \one-eighth-sharp
                 ces'4
@@ -358,8 +371,10 @@ accidentalGlyphs = #`(
                 crs'4
                 \three-eighths-sharp
                 ctes'4
+				\five-twelfs-sharp
                 cfts'4
                 cs'4
+				\seven-twelfs-sharp
                 csts'4
                 \five-eighths-sharp
                 cfes'4
@@ -370,6 +385,7 @@ accidentalGlyphs = #`(
                 cfxs'4
                 \seven-eighths-sharp
                 cses'4
+				\eleven-twelfs-sharp
                 cets'4
                 css'4
             }

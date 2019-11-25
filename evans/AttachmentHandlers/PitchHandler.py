@@ -25,24 +25,22 @@ class PitchHandler:
                     durations.append(leaf.written_duration)
                     leaves.append(leaf)
             else:
-                for leaf in tie:
-                    pitches.append(None)
-                    durations.append(leaf.written_duration)
-                    leaves.append(leaf)
+                continue
         return pitches, durations, leaves
 
     def _apply_pitches(self, selections):
         leaf_maker = abjad.LeafMaker()
-        old_ties = [tie for tie in abjad.iterate(selections).logical_ties()]
-        pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
-            old_ties
-        )
-        new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
-        for old_leaf, new_leaf in zip(old_leaves, new_leaves):
-            indicators = abjad.inspect(old_leaf).indicators()
-            for indicator in indicators:
-                abjad.attach(indicator, new_leaf)
-            abjad.mutate(old_leaf).replace(new_leaf)
+        old_ties = [tie for tie in abjad.iterate(selections).logical_ties() if isinstance(tie[0], abjad.Note)]
+        if len(old_ties) > 0:
+            pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
+                old_ties
+            )
+            new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+            for old_leaf, new_leaf in zip(old_leaves, new_leaves):
+                indicators = abjad.inspect(old_leaf).indicators()
+                for indicator in indicators:
+                    abjad.attach(indicator, new_leaf)
+                abjad.mutate(old_leaf).replace(new_leaf)
 
     def name(self):
         return self.name

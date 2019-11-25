@@ -282,7 +282,6 @@ class SegmentMaker:
         for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            last_run = abjad.select(voice).runs()[-1]
             container = abjad.Container()
             sig = self.time_signatures[-1]
             leaf_duration = sig.duration / 2
