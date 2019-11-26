@@ -29,6 +29,7 @@ class SegmentMaker:
         cutaway=True,
         beam_pattern="runs",
         tempo=((1, 4), 90),
+        rehearsal_mark="A",
         barline="||",
         midi=False,
     ):
@@ -50,6 +51,7 @@ class SegmentMaker:
         self.cutaway = cutaway
         self.beam_pattern = beam_pattern
         self.tempo = tempo
+        self.rehearsal_mark = rehearsal_mark
         self.barline = barline
         self.midi = midi
         self.time_1 = None
@@ -436,11 +438,6 @@ class SegmentMaker:
             format_slot="absolute_after",
         )
 
-        bar_line = abjad.BarLine(self.barline)
-        metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
-
-        markup2 = abjad.Markup(r"\bold { A }")
-
         instruments = evans.cyc(self.instruments)
 
         abbreviations = []
@@ -457,14 +454,23 @@ class SegmentMaker:
             x.hcenter_in(14)
             names.append(abjad.StartMarkup(markup=x))
 
+        metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
         if self.tempo is not None:
             for staff in abjad.iterate(
                 self.score_template["Global Context"]
             ).components(abjad.Staff):
                 leaf1 = abjad.select(staff).leaves()[0]
-                last_leaf = abjad.select(staff).leaves()[-3]
                 abjad.attach(metro, leaf1)
 
+        markup2 = abjad.RehearsalMark(markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}"))
+        if self.rehearsal_mark is not None:
+            for staff in abjad.iterate(
+                self.score_template["Global Context"]
+            ).components(abjad.Staff):
+                leaf1 = abjad.select(staff).leaves()[0]
+                abjad.attach(markup2, leaf1)
+
+        bar_line = abjad.BarLine(self.barline)
         if self.barline is not None:
             for staff in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Staff
@@ -633,10 +639,13 @@ class SegmentMaker:
         print("Writing optimization log ...")
         abjad_time = self.time_4 - self.time_3
         segment_time = self.time_2 - self.time_1
-        parts_time = self.time_6 - self.time_5
+        # parts_time = self.time_6 - self.time_5
         open(f"{self.current_directory}/.optimization", "a").writelines(
-            f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
+            f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \n\n"
         )
+        # open(f"{self.current_directory}/.optimization", "a").writelines(
+        #     f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
+        # ) old version
 
 
 # ###DEMO###
