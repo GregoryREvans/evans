@@ -76,7 +76,7 @@ class SegmentMaker:
         if self.add_final_grand_pause is False:
             self._remove_final_grand_pause()
         self._render_file()
-        self._extracting_parts()
+        # self._extracting_parts()
         self._write_optimization_log()
 
     def _interpret_file(self):
