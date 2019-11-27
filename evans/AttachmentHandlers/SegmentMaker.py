@@ -436,19 +436,6 @@ class SegmentMaker:
     def _adding_attachments(self):
 
         print("Adding attachments ...")
-        colophon = abjad.LilyPondLiteral(
-            r"""
-                _ \markup {
-                    \override #'(font-name . "Didot")
-                    \with-color #black
-                    \right-column {
-                        \line { Miami, Fl. \hspace #0.75 - \hspace #0.75 Iowa City, Ia. }
-                        \line { August 2018 \hspace #0.75 - \hspace #0.75 October 2019 }
-                    }
-                }
-            """,
-            format_slot="after",
-        )
         last_voice = abjad.select(self.score_template).components(abjad.Voice)[-1]
         colophon_leaf = abjad.select(last_voice).leaves()[-2]
         if self.colophon is not None:
