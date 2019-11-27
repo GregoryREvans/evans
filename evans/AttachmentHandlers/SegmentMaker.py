@@ -31,6 +31,7 @@ class SegmentMaker:
         beam_pattern="runs",
         tempo=((1, 4), 90),
         rehearsal_mark=None,
+        colophon=None,
         barline="||",
         midi=False,
     ):
@@ -54,6 +55,7 @@ class SegmentMaker:
         self.beam_pattern = beam_pattern
         self.tempo = tempo
         self.rehearsal_mark = rehearsal_mark
+        self.colophon = colophon
         self.barline = barline
         self.midi = midi
         self.time_1 = None
@@ -79,8 +81,8 @@ class SegmentMaker:
         self._cache_persistent_info()
         if self.add_final_grand_pause is False:
             self._remove_final_grand_pause()
+        self._extracting_parts()
         self._render_file()
-        # self._extracting_parts()
         self._write_optimization_log()
 
     def _interpret_file(self):
@@ -316,9 +318,17 @@ class SegmentMaker:
             abjad.attach(
                 start_command, penultimate_rest, tag=abjad.Tag("applying ending skips")
             )
-            abjad.attach(
-                stop_command, final_rest, tag=abjad.Tag("applying ending skips")
-            )
+            if self.barline == "|.":
+                stop_command = abjad.LilyPondLiteral(
+                    r"\stopStaff", format_slot="after"
+                )
+                abjad.attach(
+                    stop_command, final_rest, tag=abjad.Tag("applying ending skips")
+                )
+            else:
+                abjad.attach(
+                    stop_command, final_rest, tag=abjad.Tag("applying ending skips")
+                )
             abjad.attach(
                 rest_literal, penultimate_rest, tag=abjad.Tag("applying ending skips")
             )
@@ -437,8 +447,12 @@ class SegmentMaker:
                     }
                 }
             """,
-            format_slot="absolute_after",
+            format_slot="after",
         )
+        last_voice = abjad.select(self.score_template).components(abjad.Voice)[-1]
+        colophon_leaf = abjad.select(last_voice).leaves()[-2]
+        if self.colophon is not None:
+            abjad.attach(self.colophon, colophon_leaf)
 
         instruments = evans.cyc(self.instruments)
 
@@ -477,8 +491,12 @@ class SegmentMaker:
             for staff in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Staff
             ):
-                last_leaf = abjad.select(staff).leaves()[-3]
-                abjad.attach(bar_line, last_leaf)
+                if self.barline == "|.":
+                    last_leaf = abjad.select(staff).leaves()[-1]
+                    abjad.attach(bar_line, last_leaf)
+                else:
+                    last_leaf = abjad.select(staff).leaves()[-3]
+                    abjad.attach(bar_line, last_leaf)
 
         for abbrev, name, inst, handler, voice in zip(
             abbreviations,
@@ -599,55 +617,24 @@ class SegmentMaker:
     def _extracting_parts(self):
         print("Extracting parts ...")
         ###make parts###
-        directory = self.current_directory
         for count, staff in enumerate(
-            abjad.iterate(self.score_template).components(abjad.Voice)
+            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Staff)
         ):
-            signatures = abjad.select(self.score_template["Global Context"]).components(
-                abjad.Staff
-            )
-            signature_copy = abjad.mutate(signatures).copy()
-            copied_staff = abjad.mutate(staff).copy()
-            part = abjad.Score()
-            part.insert(0, copied_staff)
-            part.insert(0, signature_copy)
-            part_file = abjad.LilyPondFile.new(part, includes=self.parts_includes)
-            pdf_path = f"{directory}/part_illustration{count + 1}.pdf"
-            path = pathlib.Path(f"part_illustration{count + 1}.pdf")
-            if path.exists():
-                print(f"Removing {pdf_path} ...")
-                path.unlink()
-            print(f"Persisting {pdf_path} ...")
-            result = abjad.persist(part_file).as_pdf(pdf_path, strict=79)
-            print(result[0])
-            print(result[1])
-            print(result[2])
-            success = result[3]
-            if success is False:
-                print("LilyPond failed!")
-            if path.exists():
-                print(f"Opening {pdf_path} ...")
-                os.system(f"open {pdf_path}")
-            build_path = (self.build_path / f"parts/part_{count + 1}").resolve()
-            part_lines = open(
-                f"{directory}/part_illustration{count + 1}.ly"
-            ).readlines()
-            open(f"{build_path}/{self.segment_name}.ly", "w").writelines(
-                part_lines[15:-1]
-            )
+            t = r"\tag #'" + f"voice{count + 1}" + r" {"
+            pre_lit = abjad.LilyPondLiteral(t, format_slot="absolute_before")
+            post_lit = abjad.LilyPondLiteral(r"}", format_slot="absolute_after")
+            abjad.attach(pre_lit, staff)
+            abjad.attach(post_lit, staff)
         self.time_6 = time.time()
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
         abjad_time = self.time_4 - self.time_3
         segment_time = self.time_2 - self.time_1
-        # parts_time = self.time_6 - self.time_5
+        parts_time = self.time_6 - self.time_5
         open(f"{self.current_directory}/.optimization", "a").writelines(
-            f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \n\n"
+            f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
         )
-        # open(f"{self.current_directory}/.optimization", "a").writelines(
-        #     f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
-        # ) old version
 
 
 # ###DEMO###
