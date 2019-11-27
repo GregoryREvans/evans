@@ -21,6 +21,7 @@ class SegmentMaker:
         clef_handlers=None,
         voicewise_persistent_indicators=None,
         add_final_grand_pause=True,
+        fermata="scripts.ushortfermata",
         score_includes=None,
         parts_includes=None,
         segment_name=None,
@@ -29,7 +30,7 @@ class SegmentMaker:
         cutaway=True,
         beam_pattern="runs",
         tempo=((1, 4), 90),
-        rehearsal_mark="A",
+        rehearsal_mark=None,
         barline="||",
         midi=False,
     ):
@@ -43,6 +44,7 @@ class SegmentMaker:
         self.clef_handlers = clef_handlers
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
         self.add_final_grand_pause = add_final_grand_pause
+        self.fermata = fermata
         self.score_includes = score_includes
         self.parts_includes = parts_includes
         self.segment_name = segment_name
@@ -292,7 +294,7 @@ class SegmentMaker:
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
             markup = abjad.Markup.musicglyph(
-                "scripts.ushortfermata", direction=abjad.Up
+                self.fermata, direction=abjad.Up
             )
             markup.center_align()
             start_command = abjad.LilyPondLiteral(
