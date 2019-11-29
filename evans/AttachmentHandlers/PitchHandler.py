@@ -30,7 +30,11 @@ class PitchHandler:
 
     def _apply_pitches(self, selections):
         leaf_maker = abjad.LeafMaker()
-        old_ties = [tie for tie in abjad.iterate(selections).logical_ties() if isinstance(tie[0], abjad.Note)]
+        old_ties = [
+            tie
+            for tie in abjad.iterate(selections).logical_ties()
+            if isinstance(tie[0], abjad.Note)
+        ]
         if len(old_ties) > 0:
             pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
                 old_ties

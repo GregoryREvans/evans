@@ -32,6 +32,7 @@ class SegmentMaker:
         tempo=((1, 4), 90),
         rehearsal_mark=None,
         colophon=None,
+        page_break_counts=None,
         barline="||",
         midi=False,
     ):
@@ -56,6 +57,7 @@ class SegmentMaker:
         self.tempo = tempo
         self.rehearsal_mark = rehearsal_mark
         self.colophon = colophon
+        self.page_break_counts = page_break_counts
         self.barline = barline
         self.midi = midi
         self.time_1 = None
@@ -82,6 +84,7 @@ class SegmentMaker:
         if self.add_final_grand_pause is False:
             self._remove_final_grand_pause()
         self._extracting_parts()
+        self._break_pages()
         self._render_file()
         self._write_optimization_log()
 
@@ -295,9 +298,7 @@ class SegmentMaker:
             mult_rest_leaf = abjad.MultimeasureRest(1, multiplier=(leaf_duration))
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
-            markup = abjad.Markup.musicglyph(
-                self.fermata, direction=abjad.Up
-            )
+            markup = abjad.Markup.musicglyph(self.fermata, direction=abjad.Up)
             markup.center_align()
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
@@ -319,9 +320,7 @@ class SegmentMaker:
                 start_command, penultimate_rest, tag=abjad.Tag("applying ending skips")
             )
             if self.barline == "|.":
-                stop_command = abjad.LilyPondLiteral(
-                    r"\stopStaff", format_slot="after"
-                )
+                stop_command = abjad.LilyPondLiteral(r"\stopStaff", format_slot="after")
                 abjad.attach(
                     stop_command, final_rest, tag=abjad.Tag("applying ending skips")
                 )
@@ -465,7 +464,9 @@ class SegmentMaker:
                 leaf1 = abjad.select(staff).leaves()[0]
                 abjad.attach(metro, leaf1)
 
-        markup2 = abjad.RehearsalMark(markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}"))
+        markup2 = abjad.RehearsalMark(
+            markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}")
+        )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate(
                 self.score_template["Global Context"]
@@ -546,6 +547,19 @@ class SegmentMaker:
             open(f"{self.current_directory}/.persistent_info_cache", "a").writelines(
                 f"{datetime.datetime.now()}\nvoice_{i}\n{persistent_attachments}\n\n"
             )
+
+    def _break_pages(self):
+        if self.page_break_counts is not None:
+            lit = abjad.LilyPondLiteral(r"\pageBreak", format_slot="absolute_after")
+            result = abjad.select(self.score_template["Global Context"]).components(abjad.Skip)
+            result = result.partition_by_counts(
+                self.page_break_counts,
+                cyclic=True,
+                overhang=False,
+                )
+
+            for item in result:
+                abjad.attach(lit, item[-1])
 
     def _render_file(self):
         print("Rendering file ...")
