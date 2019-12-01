@@ -73,7 +73,7 @@ class SegmentMaker:
         self._splitting_and_rewriting()
         self._adding_ending_skips()
         self._handlers()
-        self._multimeasure_rests_and_cutaway()
+        # self._multimeasure_rests_and_cutaway()
         self._transform_brackets()
         self._beaming_runs()
         self._adding_attachments()
