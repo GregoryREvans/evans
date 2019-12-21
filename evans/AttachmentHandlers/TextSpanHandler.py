@@ -1,6 +1,6 @@
 import abjad
 from evans.AttachmentHandlers.CyclicList import CyclicList
-from evans.abjad_functions.add_spanner_anchor import add_spanner_anchor
+from evans.abjad_functions.AddSpannerAnchor import AddSpannerAnchor
 from fractions import Fraction
 
 #incorporate spanner anchors
@@ -266,7 +266,7 @@ class TextSpanHandler:
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
                 leaf_after_run,
             )
-            add_spanner_anchor(leaf=ties[-1][-1], anchor_leaf=following_leaf) # new
+            # add_spanner_anchor(leaf=ties[-1][-1], anchor_leaf=following_leaf) # new
 
     def _apply_position_and_span_to_left(
         self, selections, positions, style, span_command, span_padding

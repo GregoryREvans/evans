@@ -91,4 +91,7 @@ for run in abjad.select(selections).runs():
     print(new_selections)
     new_selections + tail
     print(new_selections)
+
 #DOESN'T WORK
+#Maybe allow attachments by hand
+#in dynamic and text span handler, go through process of attachments while compiling a list of things to attach to anchor, then attach them all?
