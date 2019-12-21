@@ -1,3 +1,4 @@
+from .add_spanner_anchor import add_spanner_anchor
 from .beam_meter import beam_meter
 from .ConvertTimespans import ConvertTimespans
 from .NoteheadBracketMaker import NoteheadBracketMaker
