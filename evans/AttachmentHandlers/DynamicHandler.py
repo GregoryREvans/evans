@@ -1,7 +1,7 @@
 import abjad
 from evans.AttachmentHandlers.CyclicList import CyclicList
 
-#incorporate spanner anchors
+# incorporate spanner anchors
 class DynamicHandler:
     def __init__(
         self,
@@ -191,12 +191,14 @@ class DynamicHandler:
                             )
                         else:
                             if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
-                                stop = abjad.Dynamic(stop, command="\!", leak=True) #attach to anchor
+                                stop = abjad.Dynamic(
+                                    stop, command="\!", leak=True
+                                )  # attach to anchor
                             else:
                                 pass
                     else:
                         if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
-                            stop = abjad.Dynamic(stop, leak=True) #attach to anchor
+                            stop = abjad.Dynamic(stop, leak=True)  # attach to anchor
                         else:
                             pass
                     if abjad.inspect(run[0]).has_indicator(abjad.Dynamic):
@@ -242,17 +244,25 @@ class DynamicHandler:
                                 start = abjad.Dynamic(start_string)
                         if effort_bools[1] == 0:
                             if stop == "niente":
-                                stop = abjad.Dynamic(stop, command="\!", leak=True) #attach to anchor
+                                stop = abjad.Dynamic(
+                                    stop, command="\!", leak=True
+                                )  # attach to anchor
                             else:
-                                stop = abjad.Dynamic(stop, leak=True) #attach to anchor
+                                stop = abjad.Dynamic(
+                                    stop, leak=True
+                                )  # attach to anchor
                         else:
                             stop_string = self._make_effort_dynamics(stop)
                             if stop_string == "niente":
                                 stop = abjad.Dynamic(
-                                    stop_string, command="\!", leak=True #attach to anchor
+                                    stop_string,
+                                    command="\!",
+                                    leak=True,  # attach to anchor
                                 )
                             else:
-                                stop = abjad.Dynamic(stop_string, leak=True) #attach to anchor
+                                stop = abjad.Dynamic(
+                                    stop_string, leak=True
+                                )  # attach to anchor
                         hairpin = abjad.StartHairpin(
                             self._calculate_hairpin(
                                 start,
@@ -289,12 +299,14 @@ class DynamicHandler:
                     if dynamic.command == "\!":
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command="\!", leak=True), leaf #attach to anchor
+                            abjad.Dynamic(dynamic, command="\!", leak=True),
+                            leaf,  # attach to anchor
                         )  # maybe just continue instead of replacing?
                     elif dynamic.leak is True:
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command="\!", leak=True), leaf #attach to anchor
+                            abjad.Dynamic(dynamic, command="\!", leak=True),
+                            leaf,  # attach to anchor
                         )
                     else:
                         abjad.detach(dynamic, leaf)

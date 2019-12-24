@@ -1,23 +1,14 @@
 import abjad
+from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
 
 
 class AddSpannerAnchor:
-    def __init__(
-        self,
-        leaf,
-        anchor_dur=None,
-        anchor_leaf=None,
-    ):
+    def __init__(self, leaf, anchor_dur=None):
         self.leaf = leaf
         self.anchor_dur = anchor_dur
-        self.anchor_leaf = anchor_leaf
 
     def calc_anchor(self):
-        if self.anchor_leaf is not None:
-            self.anchor_dur = self.anchor_leaf.written_duration
-            durs = [self.leaf.written_duration]
-        else:
-            durs = [self.leaf.written_duration, self.anchor_dur]
+        durs = [self.leaf.written_duration, self.anchor_dur]
         container = abjad.Container()
         pre_mult = self.leaf.written_duration - self.anchor_dur
         mult = pre_mult / self.leaf.written_duration
@@ -30,22 +21,16 @@ class AddSpannerAnchor:
             pass
         maker = abjad.LeafMaker()
         new_leaves = [l for l in maker([pitches], durs)]
-        new_leaf = new_leaves[0]
         indicators = abjad.inspect(self.leaf).indicators()
         for indicator in indicators:
-            abjad.attach(indicator, new_leaf)
-        new_leaf.multiplier = mult
+            abjad.attach(indicator, new_leaves[0][0])
         self.leaf.multiplier = mult
-        if self.anchor_leaf is not None:
-            anchor = self.anchor_leaf
-            l = [_ for _ in abjad.inspect(self.leaf).pitches()]
-            anchor.written_pitch = l[0]
-        else:
-            anchor = new_leaves[1]
-        abjad.attach(abjad.LilyPondLiteral(r"""\abjad-invisible-music""", format_slot="before"), anchor)
-        abjad.annotate(anchor, "type", "spanner anchor")
-        container.append(new_leaf)
-        container.append(anchor)
+        abjad.attach(
+            abjad.LilyPondLiteral(r"""\abjad-invisible-music""", format_slot="before"),
+            new_leaves[1],
+        )
+        abjad.annotate(new_leaves[1], "type", "spanner anchor")
+        container.extend(new_leaves)
         return container
 
     def add_anchor(self):
@@ -60,6 +45,7 @@ class AddSpannerAnchor:
                 pass
         else:
             self.add_anchor()
+
 
 # #DEMO 1#
 # staff = abjad.Staff("cs'4")
@@ -76,22 +62,31 @@ class AddSpannerAnchor:
 # maker.add_spanner_anchor()
 # abjad.f(staff)
 #
-#DEMO 3#
+# DEMO 3#
 staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 r8 c'8 c'4 r1")
 selections = abjad.select(staff[:])
-new_selections = abjad.Selection()
+handler = DynamicHandler(
+    dynamic_list=["f", "mp", "p", "mf", "ff"],
+    flare_boolean_vector=[1, 0, 0, 1],
+    flare_continuous=True,
+    continuous=True,
+    name="dynamic_handler_one",
+)
 for run in abjad.select(selections).runs():
     ties = abjad.select(run).logical_ties()
     maker = AddSpannerAnchor(leaf=ties[-1][-1], anchor_dur=abjad.Duration(1, 16))
     maker.add_spanner_anchor()
-    sel = abjad.select(run)
-    tail = abjad.select(maker.calc_anchor()[-1])
-    print(sel)
-    new_selections + sel
-    print(new_selections)
-    new_selections + tail
-    print(new_selections)
+    new_ties = ties + abjad.select([abjad.LogicalTie(items=maker.calc_anchor()[-1])])
+    print("NEW TIES")
+    print(new_ties)
+    print("TIE 0")
+    print(new_ties[0])
+    print("TIE -1")
+    print(new_ties[-1])
+    handler(new_ties)
+abjad.f(staff)
 
-#DOESN'T WORK
-#Maybe allow attachments by hand
-#in dynamic and text span handler, go through process of attachments while compiling a list of things to attach to anchor, then attach them all?
+
+# WHY DOES THE SPANNER ANCHOR ONLY EXIST AS A NOTE WITH NO LOGICAL TIE?
+# WHY DOES ABJAD NOT RECOGNIZE THAT THE ANCHOR IS IN THE SELECTION?
+# MULTIPLIERS DISAPPEAR AFTER abjad.show()

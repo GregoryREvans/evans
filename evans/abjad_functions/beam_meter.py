@@ -56,7 +56,7 @@ def beam_meter(components, meter, offset_depth):
     for subgroup in beamed_groups:
         subgrouper = abjad.select(subgroup).group_by_contiguity()
         for beam_group in subgrouper:
-            #if not all(isinstance(leaf, abjad.Rest) for leaf in beam_group)
+            # if not all(isinstance(leaf, abjad.Rest) for leaf in beam_group)
             abjad.beam(
                 beam_group[:],
                 beam_rests=True,

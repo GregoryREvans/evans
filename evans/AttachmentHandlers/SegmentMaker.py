@@ -551,12 +551,12 @@ class SegmentMaker:
     def _break_pages(self):
         if self.page_break_counts is not None:
             lit = abjad.LilyPondLiteral(r"\pageBreak", format_slot="absolute_after")
-            result = abjad.select(self.score_template["Global Context"]).components(abjad.Skip)
+            result = abjad.select(self.score_template["Global Context"]).components(
+                abjad.Skip
+            )
             result = result.partition_by_counts(
-                self.page_break_counts,
-                cyclic=True,
-                overhang=False,
-                )
+                self.page_break_counts, cyclic=True, overhang=False
+            )
 
             for item in result:
                 abjad.attach(lit, item[-1])

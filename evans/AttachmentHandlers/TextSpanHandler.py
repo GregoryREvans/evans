@@ -3,7 +3,7 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 from evans.abjad_functions.AddSpannerAnchor import AddSpannerAnchor
 from fractions import Fraction
 
-#incorporate spanner anchors
+# incorporate spanner anchors
 class TextSpanHandler:
     def __init__(
         self,
