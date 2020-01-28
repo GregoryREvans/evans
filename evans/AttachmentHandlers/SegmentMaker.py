@@ -20,6 +20,7 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         voicewise_persistent_indicators=None,
+        tuplet_bracket_noteheads=True,
         add_final_grand_pause=True,
         fermata="scripts.ushortfermata",
         score_includes=None,
@@ -45,6 +46,7 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
+        self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.add_final_grand_pause = add_final_grand_pause
         self.fermata = fermata
         self.score_includes = score_includes
@@ -356,9 +358,10 @@ class SegmentMaker:
                     notehead_wrapper = wrapper_pair[1]
                     dots = ""
                 multiplier = 1
-                abjad.tweak(
-                    tuplet
-                ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
+                if self.tuplet_bracket_noteheads is True:
+                    abjad.tweak(
+                        tuplet
+                    ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
