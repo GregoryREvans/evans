@@ -27,4 +27,10 @@ def combination_tones(pitches=[0, 5, 7], depth=1):
     return pitches
 
 
-# print(combination_tones(pitches=[0, 5.25, 6.5], depth=2))
+# print(combination_tones(pitches=[8.25, 18.75, 23.5], depth=1))
+# print(combination_tones(pitches=[7.75, 19, 25.25, 28.5], depth=1))
+# combs = combination_tones(pitches=[7.75, 8.25, 18.75, 19, 23.5, 25.25, 28.5], depth=1)
+# staff = abjad.Staff([abjad.Note() for _ in combs])
+# for note, pitch in zip(abjad.select(staff).leaves(), combs):
+#     note.written_pitch = pitch
+# abjad.show(staff)
