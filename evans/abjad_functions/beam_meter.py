@@ -1,7 +1,7 @@
 import abjad
 
 
-def beam_meter(components, meter, offset_depth):
+def beam_meter(components, meter, offset_depth, include_rests=True):
     offsets = meter.depthwise_offset_inventory[offset_depth]
     offset_pairs = []
     for i, _ in enumerate(offsets[:-1]):
@@ -23,7 +23,7 @@ def beam_meter(components, meter, offset_depth):
             is False
         ):
             abjad.beam(
-                t[:], beam_rests=True, stemlet_length=0.75, beam_lone_notes=False
+                t[:], beam_rests=include_rests, stemlet_length=0.75, beam_lone_notes=False
             )
         else:
             continue
@@ -59,7 +59,7 @@ def beam_meter(components, meter, offset_depth):
             # if not all(isinstance(leaf, abjad.Rest) for leaf in beam_group)
             abjad.beam(
                 beam_group[:],
-                beam_rests=True,
+                beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
             )

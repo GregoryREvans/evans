@@ -30,6 +30,7 @@ class SegmentMaker:
         build_path=None,
         cutaway=True,
         beam_pattern="runs",
+        beam_rests=True,
         tempo=((1, 4), 90),
         rehearsal_mark=None,
         colophon=None,
@@ -56,6 +57,7 @@ class SegmentMaker:
         self.build_path = build_path
         self.cutaway = cutaway
         self.beam_pattern = beam_pattern
+        self.beam_rests = beam_rests
         self.tempo = tempo
         self.rehearsal_mark = rehearsal_mark
         self.colophon = colophon
@@ -390,12 +392,14 @@ class SegmentMaker:
                             components=shard[:],
                             meter=met,
                             offset_depth=inventories[-1][0],
+                            include_rests=self.beam_rests,
                         )
                     else:
                         evans.beam_meter(
                             components=shard[:],
                             meter=met,
                             offset_depth=inventories[-2][0],
+                            include_rests=self.beam_rests,
                         )
         else:
             pass
