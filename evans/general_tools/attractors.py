@@ -1,4 +1,5 @@
 import numpy as np
+import scipy as sp
 from scipy.integrate import odeint
 from decimal import Decimal
 
@@ -46,14 +47,13 @@ def lorenz(
 
 
 def henon(
-    initial_x=(-0.75),
-    initial_y=0.32,
+    first_state=[(-0.75), 0.32]
     a=1.2,
     b=0.3,
     iters=10000,
     ):
-    x_coordinates = [initial_x]
-    y_coordinates = [initial_y]
+    x_coordinates = [first_state[0]]
+    y_coordinates = [first_state[1]]
     for _ in range(iters):
         prev_x = x_coordinates[-1]
         prev_y = y_coordinates[-1]
@@ -81,3 +81,29 @@ def henon(
 #     iters=10000,
 # )
 # plt.scatter(map[0], map[1], s=0.5)
+
+#We define a function which is going to be the recursive function.
+def roessler(
+    a=0.13,
+    b=0.2,
+    c=6.5,
+    t_ini=0,
+    t_fin=32*pi,
+    h=0.0001,
+    first_state=[0, 0, 0],
+    ):
+    def num_rossler(x_n,y_n,z_n,h,a_,b_,c_):
+        x_n1=x_n+h*(-y_n-z_n)
+        y_n1=y_n+h*(x_n+a_*y_n)
+        z_n1=z_n+h*(b_+z_n*(x_n-c_))
+        return x_n1,y_n1,z_n1
+    numsteps=int((t_fin-t_ini)/h)
+    t=linspace(t_ini,t_fin,numsteps)
+    x=zeros(numsteps)
+    y=zeros(numsteps)
+    z=zeros(numsteps)
+    x[0]=first_state[0]
+    y[0]=first_state[1]
+    z[0]=first_state[2]
+    for k in range(x.size-1):
+        [x[k+1],y[k+1],z[k+1]]=num_rossler(x[k],y[k],z[k],t[k+1]-t[k],a,b,c)
