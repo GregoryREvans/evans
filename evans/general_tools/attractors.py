@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import odeint
+from decimal import Decimal
 
 
 def lorenz(
@@ -28,3 +29,40 @@ def lorenz(
 #         iters=5,
 #         )
 #     )
+
+def henon(
+    initial_x=(-0.75),
+    initial_y=0.32,
+    a=1.2,
+    b=0.3,
+    iters=10000,
+    ):
+    x_coordinates = [initial_x]
+    y_coordinates = [initial_y]
+    for _ in range(iters):
+        prev_x = x_coordinates[-1]
+        prev_y = y_coordinates[-1]
+        x_coordinates.append((Decimal(prev_y) + 1) - (Decimal(a) * (Decimal(prev_x) ** 2)))
+        y_coordinates.append(Decimal(b) * Decimal(prev_x))
+    return x_coordinates, y_coordinates
+
+###DEMO###
+# print(
+#     henon(
+#         initial_x=(-0.75),
+#         initial_y=0.32,
+#         a=1.2,
+#         b=0.3,
+#         iters=10000,
+#         )
+# )
+# import matplotlib.pyplot as plt
+#
+# map = henon(
+#     initial_x=1,
+#     initial_y=1,
+#     a=1.4,
+#     b=0.3,
+#     iters=10000,
+# )
+# plt.scatter(map[0], map[1], s=0.5)

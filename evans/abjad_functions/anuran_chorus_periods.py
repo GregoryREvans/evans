@@ -27,20 +27,20 @@ def altered_period( #round to halves and use with talea timespanmaker
     return answer
 
 
-print(
-    altered_period(
-        phase_response_curve=0.5,
-        time_elapsed_since_last_call_of_focal_male=35,
-        distance_of_stimulus_in_meters=10,
-        decay=100,
-        effector_delay=60,
-        period_in_miliseconds=500,
-        stochastic_element=30,
-        neighbor_stimulus_length=60,
-        stimulus_length=50,
-        return_in_seconds=True,
-        )
-)
+# print(
+#     altered_period(
+#         phase_response_curve=0.5,
+#         time_elapsed_since_last_call_of_focal_male=35,
+#         distance_of_stimulus_in_meters=10,
+#         decay=100,
+#         effector_delay=60,
+#         period_in_miliseconds=500,
+#         stochastic_element=30,
+#         neighbor_stimulus_length=60,
+#         stimulus_length=50,
+#         return_in_seconds=True,
+#         )
+# )
 
 def make_focal_voice(
     target_timespan=None,
@@ -62,7 +62,8 @@ def make_focal_voice(
         ts_list = ts_list - sil
     return ts_list
 
-def make_altered_period( #basically do the same process as make_focal_voice but adjust the length of silence each time
+#basically do the same process as make_focal_voice but adjust the length of silence each time
+def make_altered_period(
     focal_voice_timespan_list=None,
     target_timespan=None,
     period_timespan=None,
