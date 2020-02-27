@@ -60,7 +60,7 @@ def roessler(
     return x, y, z
 
 ###DEMOS###
-##LORENZ DEMO###
+### LORENZ DEMO###
 # from matplotlib import *
 # from pylab import figure, show, setp
 # map = lorenz(
@@ -76,38 +76,41 @@ def roessler(
 # plt.scatter(map[0], map[1], s=0.5)
 # plt.scatter(map[1], map[2], s=0.5)
 # plt.scatter(map[0], map[2], s=0.5)
-#3D
-# fig = figure()
+# 3D
+# fig = figure(figsize=(20, 20))
 # ax1 = fig.add_axes([0.1, 0.7, 0.4, 0.2])
 # ax2 = fig.add_axes([0.1, 0.4, 0.4, 0.2])
 # ax3 = fig.add_axes([0.1, 0.1, 0.4, 0.2])
-# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.5], projection='3d')
+# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.4], projection='3d')
 # ax1.plot([_ for _ in range(len(map[0]))], map[0], color='red',lw=1,label='x(t)')
+# ax1.set_title('values of x where first state is 1')
 # ax1.set_xlabel('t')
 # ax1.set_ylabel('x(t)')
 # ax1.legend()
 # ax1.axis((0, len(map[0]), min(map[0]), max(map[0])))
 #
 # ax2.plot([_ for _ in range(len(map[1]))], map[1], color='green',lw=1,label='y(t)')
+# ax2.set_title('values of y where first state is 1')
 # ax2.set_xlabel('t')
 # ax2.set_ylabel('y(t)')
 # ax2.legend()
 # ax2.axis((0, len(map[1]), min(map[1]), max(map[1])))
 #
 # ax3.plot([_ for _ in range(len(map[1]))], map[2], color='blue',lw=1,label='z(t)')
+# ax3.set_title('values of z where first state is 1')
 # ax3.set_xlabel('t')
 # ax3.set_ylabel('z(t)')
 # ax3.legend()
 # ax3.axis((0, len(map[2]), min(map[2]), max(map[2])))
 #
 # ax4.plot(map[0], map[1], map[2], color='black',lw=1,label='Evolution(t)')
+# ax4.set_title('Lorenz map of time values 0.0-40.0 with steps of 0.01, where rho=28, sigma=10, and beta=2.667')
 # ax4.set_xlabel('x(t)')
 # ax4.set_ylabel('y(t)')
 # ax4.set_zlabel('z(t)')
-# ax4.set_title('Evolution')
 # fig.savefig('lorenz.png')
 
-###HENON DEMO###
+### HENON DEMO###
 # import matplotlib.pyplot as plt
 #
 # map = henon(
@@ -116,7 +119,7 @@ def roessler(
 #     b=0.3,
 #     iters=400,
 # )
-
+#
 # fig = plt.figure()
 # ax=fig.add_axes([0,0,1,1])
 # ax.scatter(map[0], map[1], s=0.5)
@@ -125,27 +128,29 @@ def roessler(
 # import matplotlib.pyplot as plt
 # from matplotlib import *
 # from pylab import figure, show, setp
-# fig = figure()
-# ax1 = fig.add_axes([0.1, 0.7, 0.4, 0.2])
-# ax2 = fig.add_axes([0.1, 0.4, 0.4, 0.2])
-# ax3 = fig.add_axes([0.55, 0.25, 0.35, 0.5])
+# fig = figure(figsize=(20, 20))
+# ax1 = fig.add_axes([0.1, 0.7, 0.8, 0.2])
+# ax2 = fig.add_axes([0.1, 0.45, 0.8, 0.2])
+# ax3 = fig.add_axes([0.1, 0.1, 0.8, 0.3])
 # ax1.plot([_ for _ in range(len(map[0]))], map[0], color='red',lw=1,label='x(t)')
+# ax1.set_title('values of x where first state is -0.75')
 # ax1.set_xlabel('t')
 # ax1.set_ylabel('x(t)')
 # ax1.legend()
 #
 # ax2.plot([_ for _ in range(len(map[1]))], map[1], color='green',lw=1,label='y(t)')
+# ax2.set_title('values of y where first state is 0.32')
 # ax2.set_xlabel('t')
 # ax2.set_ylabel('y(t)')
 # ax2.legend()
 #
 # ax3.scatter(map[0], map[1], color='black',lw=1,label='Evolution(t)', s=0.5)
+# ax3.set_title('Henon map of 400 iterations of x and y values where a=1.4 and b=0.3')
 # ax3.set_xlabel('x(t)')
 # ax3.set_ylabel('y(t)')
-# ax3.set_title('Evolution')
 # fig.savefig('henon.png')
 
-###ROESSLER DEMO###
+### ROESSLER DEMO###
 # map = roessler(
 #     a=0.13,
 #     b=0.2,
@@ -159,33 +164,36 @@ def roessler(
 # from pylab import figure, show, setp
 # from mpl_toolkits.mplot3d import Axes3D
 # t = sp.linspace(0, (32 * (np.pi)), int(((32 * (np.pi) - 0) / 0.0001)))
-# fig = figure()
+# fig = figure(figsize=(20, 20))
 # ax1 = fig.add_axes([0.1, 0.7, 0.4, 0.2])
 # ax2 = fig.add_axes([0.1, 0.4, 0.4, 0.2])
 # ax3 = fig.add_axes([0.1, 0.1, 0.4, 0.2])
-# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.5],projection='3d')
+# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.4],projection='3d')
 #
 # ax1.plot(t, map[0], color='red',lw=1,label='x(t)')
+# ax1.set_title('values of x where h=0.0001')
 # ax1.set_xlabel('t')
 # ax1.set_ylabel('x(t)')
 # ax1.legend()
 # ax1.axis((0, (32 * (np.pi)), min(map[0]), max(map[0])))
 #
 # ax2.plot(t, map[1], color='green',lw=1,label='y(t)')
+# ax2.set_title('values of y where a=0.13 and h=0.0001')
 # ax2.set_xlabel('t')
 # ax2.set_ylabel('y(t)')
 # ax2.legend()
 # ax2.axis((0, (32 * (np.pi)), min(map[1]), max(map[1])))
 #
 # ax3.plot(t, map[2], color='blue',lw=1,label='z(t)')
+# ax3.set_title('values of z where b=0.2, c=6.5 and h=0.0001')
 # ax3.set_xlabel('t')
 # ax3.set_ylabel('z(t)')
 # ax3.legend()
 # ax3.axis((0, (32 * (np.pi)), min(map[2]), max(map[2])))
 #
 # ax4.plot(map[0], map[1], map[2],color='black',lw=1,label='Evolution(t)')
+# ax4.set_title('Roessler map of 32pi')
 # ax4.set_xlabel('x(t)')
 # ax4.set_ylabel('y(t)')
 # ax4.set_zlabel('z(t)')
-# ax4.set_title('Evolution')
 # fig.savefig('roessler.png')
