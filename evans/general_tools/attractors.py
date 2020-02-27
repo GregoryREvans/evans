@@ -192,7 +192,7 @@ def roessler(
 # ax3.axis((0, (32 * (np.pi)), min(map[2]), max(map[2])))
 #
 # ax4.plot(map[0], map[1], map[2],color='black',lw=1,label='Evolution(t)')
-# ax4.set_title('Roessler map of 32pi')
+# ax4.set_title('Roessler map of 32pi iterations')
 # ax4.set_xlabel('x(t)')
 # ax4.set_ylabel('y(t)')
 # ax4.set_zlabel('z(t)')
