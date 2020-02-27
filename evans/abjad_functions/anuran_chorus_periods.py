@@ -75,12 +75,17 @@ def make_altered_period(
 
 ###DEMO###
 
-# target_tspan = abjad.Timespan(0, 22)
-# period_tspan = abjad.Timespan(0, 2)
-# stimulus_length_tspan = abjad.Timespan(0, (1, 2))
+# target_tspan = abjad.Timespan(0, 5000)
+# period_tspan = abjad.Timespan(0, 500)
+# stimulus_length_tspan = abjad.Timespan(0, 50)
 #
-# make_focal_voice(
+# ts_l = make_focal_voice(
 #     target_timespan=target_tspan,
 #     period_timespan=period_tspan,
 #     stimulus_length_timespan=stimulus_length_tspan,
 #     )
+# abjad.show(ts_l, scale=0.5)
+# ts_l.scale(0.02)
+# ts_l.round_offsets((1, 8))
+# abjad.show(ts_l, scale=0.5)
+# #how to reduce silence?
