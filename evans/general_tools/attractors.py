@@ -20,19 +20,9 @@ def lorenz(
     return [[_ for _ in states[:iters, 0]], [_ for _ in states[:iters, 1]], [_ for _ in states[:iters, 2]]]
 
 ###DEMO###
-# print(
-#     lorenz(
-#         rho=28.0,
-#         sigma=10.0,
-#         beta=(8.0 / 3.0),
-#         first_state=[1.0, 1.0, 1.0],
-#         time_values=[0.0, 40.0, 0.01],
-#         iters=5,
-#         )
-#     )
 
 # import matplotlib.pyplot as plt
-#
+
 # map = lorenz(
 #         rho=28.0,
 #         sigma=10.0,
@@ -44,10 +34,24 @@ def lorenz(
 # plt.scatter(map[0], map[1], s=0.5)
 # plt.scatter(map[1], map[2], s=0.5)
 # plt.scatter(map[0], map[2], s=0.5)
+# #3D
+# fig = figure()
+# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.5], projection='3d')
+# x = map[0]
+# y = map[1]
+# z = map[2]
+# ax4.plot(x, y, z, color='black',lw=1,label='Evolution(t)')
+# ax4.set_xlabel('x(t)')
+# ax4.set_ylabel('y(t)')
+# ax4.set_zlabel('z(t)')
+# ax4.set_title('Evolution')
+# from matplotlib import pyplot as plt
+# fig.savefig('lorenz.png')
+
 
 
 def henon(
-    first_state=[(-0.75), 0.32]
+    first_state=[(-0.75), 0.32],
     a=1.2,
     b=0.3,
     iters=10000,
@@ -62,48 +66,87 @@ def henon(
     return x_coordinates, y_coordinates
 
 ###DEMO###
-# print(
-#     henon(
-#         initial_x=(-0.75),
-#         initial_y=0.32,
-#         a=1.2,
-#         b=0.3,
-#         iters=10000,
-#         )
-# )
 # import matplotlib.pyplot as plt
 #
 # map = henon(
-#     initial_x=1,
-#     initial_y=1,
+#     first_state=[(-0.75), 0.32],
 #     a=1.4,
 #     b=0.3,
 #     iters=10000,
 # )
-# plt.scatter(map[0], map[1], s=0.5)
+# fig = plt.figure()
+# ax=fig.add_axes([0,0,1,1])
+# ax.scatter(map[0], map[1], s=0.5)
+# fig.savefig('henon.png')
 
-#We define a function which is going to be the recursive function.
 def roessler(
     a=0.13,
     b=0.2,
     c=6.5,
     t_ini=0,
-    t_fin=32*pi,
+    t_fin=(32 * (np.pi)),
     h=0.0001,
-    first_state=[0, 0, 0],
     ):
-    def num_rossler(x_n,y_n,z_n,h,a_,b_,c_):
-        x_n1=x_n+h*(-y_n-z_n)
-        y_n1=y_n+h*(x_n+a_*y_n)
-        z_n1=z_n+h*(b_+z_n*(x_n-c_))
-        return x_n1,y_n1,z_n1
-    numsteps=int((t_fin-t_ini)/h)
-    t=linspace(t_ini,t_fin,numsteps)
-    x=zeros(numsteps)
-    y=zeros(numsteps)
-    z=zeros(numsteps)
-    x[0]=first_state[0]
-    y[0]=first_state[1]
-    z[0]=first_state[2]
-    for k in range(x.size-1):
-        [x[k+1],y[k+1],z[k+1]]=num_rossler(x[k],y[k],z[k],t[k+1]-t[k],a,b,c)
+    def calc_coordinates(x_n,y_n,z_n,h,a_,b_,c_):
+        x_n1 = x_n + h * (-y_n - z_n)
+        y_n1 = y_n + h * (x_n + a_ * y_n)
+        z_n1 = z_n + h * (b_ + z_n * (x_n - c_))
+        return x_n1, y_n1, z_n1
+    numsteps = int((t_fin - t_ini) / h)
+    t = sp.linspace(t_ini, t_fin, numsteps)
+    x = np.zeros(numsteps)
+    y = np.zeros(numsteps)
+    z = np.zeros(numsteps)
+    x[0]=0
+    y[0]=0
+    z[0]=0
+    for _ in range(x.size-1):
+        [x[_+1], y[_+1], z[_+1]] = calc_coordinates(x[_], y[_], z[_], t[_+1]-t[_], a, b, c)
+    return x, y, z
+
+###DEMO###
+
+# map = roessler(
+#     a=0.13,
+#     b=0.2,
+#     c=6.5,
+#     t_ini=0,
+#     t_fin=(32 * (np.pi)),
+#     h=0.0001,
+# )
+#
+# from matplotlib import *
+# from pylab import figure, show, setp
+# from mpl_toolkits.mplot3d import Axes3D
+# t = sp.linspace(0, (32 * (np.pi)), int(((32 * (np.pi) - 0) / 0.0001)))
+# fig = figure()
+# ax1 = fig.add_axes([0.1, 0.7, 0.4, 0.2])
+# ax2 = fig.add_axes([0.1, 0.4, 0.4, 0.2])
+# ax3 = fig.add_axes([0.1, 0.1, 0.4, 0.2])
+# ax4 = fig.add_axes([0.55, 0.25, 0.35, 0.5],projection='3d')
+#
+# ax1.plot(t, map[0], color='red',lw=1,label='x(t)')
+# ax1.set_xlabel('t')
+# ax1.set_ylabel('x(t)')
+# ax1.legend()
+# ax1.axis((0,(32 * (np.pi)),min(map[0]),max(map[0])))
+#
+# ax2.plot(t, map[1], color='green',lw=1,label='y(t)')
+# ax2.set_xlabel('t')
+# ax2.set_ylabel('y(t)')
+# ax2.legend()
+# ax2.axis((0,(32 * (np.pi)),min(map[1]),max(map[1])))
+#
+# ax3.plot(t, map[2], color='blue',lw=1,label='z(t)')
+# ax3.set_xlabel('t')
+# ax3.set_ylabel('z(t)')
+# ax3.legend()
+# ax3.axis((0,(32 * (np.pi)),min(map[2]),max(map[2])))
+#
+# ax4.plot(map[0], map[1], map[2],color='black',lw=1,label='Evolution(t)')
+# ax4.set_xlabel('x(t)')
+# ax4.set_ylabel('y(t)')
+# ax4.set_zlabel('z(t)')
+# ax4.set_title('Evolution')
+# from matplotlib import pyplot as plt
+# fig.savefig('roessler.png')
