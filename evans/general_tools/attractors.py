@@ -169,19 +169,19 @@ def roessler(
 # ax1.set_xlabel('t')
 # ax1.set_ylabel('x(t)')
 # ax1.legend()
-# ax1.axis((0, len(map[0]),min(map[0]),max(map[0])))
+# ax1.axis((0, (32 * (np.pi)), min(map[0]), max(map[0])))
 #
 # ax2.plot(t, map[1], color='green',lw=1,label='y(t)')
 # ax2.set_xlabel('t')
 # ax2.set_ylabel('y(t)')
 # ax2.legend()
-# ax2.axis((0, len(map[1]), min(map[1]), max(map[1])))
+# ax2.axis((0, (32 * (np.pi)), min(map[1]), max(map[1])))
 #
 # ax3.plot(t, map[2], color='blue',lw=1,label='z(t)')
 # ax3.set_xlabel('t')
 # ax3.set_ylabel('z(t)')
 # ax3.legend()
-# ax3.axis((0, len(map[2]), min(map[2]), max(map[2])))
+# ax3.axis((0, (32 * (np.pi)), min(map[2]), max(map[2])))
 #
 # ax4.plot(map[0], map[1], map[2],color='black',lw=1,label='Evolution(t)')
 # ax4.set_xlabel('x(t)')
