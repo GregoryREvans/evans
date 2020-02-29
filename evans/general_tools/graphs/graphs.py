@@ -131,10 +131,7 @@ import evans
 ####
 ###Normalized Lorenz###
 # map = evans.lorenz()
-# m0 = evans.normalize_to_indices(map[0])
-# m1 = evans.normalize_to_indices(map[1])
-# m2 = evans.normalize_to_indices(map[2])
-# map = [m0, m1, m2]
+# map = evans.normalize_to_indices(map)
 # from matplotlib import *
 # from pylab import figure, show, setp
 # from mpl_toolkits.mplot3d import Axes3D
@@ -170,8 +167,8 @@ import evans
 # ax4.set_xlabel('x(t)')
 # ax4.set_ylabel('y(t)')
 # ax4.set_zlabel('z(t)')
-# fig.savefig('normalized_lorenz.png')
-###
+# fig.savefig('normalized_lorenz_2.png')
+##
 ###Normalized roessler###
 # map = evans.roessler(t_fin=(32 * (3.14)))
 # m0 = evans.normalize_to_indices(map[0])
