@@ -5,9 +5,9 @@ one-eighth-sharp =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\musicglyph #"accidentals.natural"
-          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+          \postscript #"gsave 0.17 setlinewidth -1.2 1.25 moveto -1.2 2 lineto
           stroke grestore
-          gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+          gsave 0.1 setlinewidth -1.5 1.4 moveto -1.2 2.18 lineto -0.9 1.4 lineto
           stroke grestore"}
         $note #})
 
@@ -31,9 +31,9 @@ five-eighths-sharp =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\musicglyph #"accidentals.sharp"
-          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+          \postscript #"gsave 0.17 setlinewidth -0.91 1.25 moveto -0.91 2 lineto
           stroke grestore
-          gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+          gsave 0.1 setlinewidth -1.21 1.4 moveto -0.91 2.18 lineto -0.61 1.4 lineto
           stroke grestore"}
         $note #})
 
@@ -57,9 +57,9 @@ one-eighth-flat =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\musicglyph #"accidentals.natural"
-          \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
+          \postscript #"gsave 0.15 setlinewidth -0.67 -1.35 moveto -0.67 -2.1 lineto
           stroke grestore
-          gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
+          gsave 0.1 setlinewidth -0.97 -1.4 moveto -0.67 -2.18 lineto -0.37 -1.4 lineto
           stroke grestore"}
         $note #})
 
@@ -83,9 +83,9 @@ five-eighths-flat =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
           \markup {\musicglyph #"accidentals.flat"
-          \postscript #"gsave 0.15 setlinewidth -1.40 -0.25 moveto -1.40 -1.4 lineto
+          \postscript #"gsave 0.15 setlinewidth -1.38 -0.25 moveto -1.38 -1.4 lineto
           stroke grestore
-          gsave 0.1 setlinewidth -1.70 -0.7 moveto -1.40 -1.48 lineto -1.10 -0.7 lineto
+          gsave 0.1 setlinewidth -1.68 -0.7 moveto -1.38 -1.48 lineto -1.08 -0.7 lineto
           stroke grestore"}
         $note #})
 
