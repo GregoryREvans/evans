@@ -4,7 +4,11 @@ one-eighth-sharp =
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.natural.arrowup"}
+          \markup {\musicglyph #"accidentals.natural"
+          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+          stroke grestore
+          gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+          stroke grestore"}
         $note #})
 
 %%% three eighth tones up %%%
@@ -26,7 +30,11 @@ five-eighths-sharp =
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.sharp.arrowup"}
+          \markup {\musicglyph #"accidentals.sharp"
+          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
+          stroke grestore
+          gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
+          stroke grestore"}
         $note #})
 
 %%% seven eighth tones up %%%
@@ -48,7 +56,11 @@ one-eighth-flat =
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.natural.arrowdown"}
+          \markup {\musicglyph #"accidentals.natural"
+          \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
+          stroke grestore
+          gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
+          stroke grestore"}
         $note #})
 
 %%% three eighth tones down %%%
@@ -70,7 +82,11 @@ five-eighths-flat =
  #{ \once \override Voice.Accidental.stencil =
           #ly:text-interface::print
         \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.flat.arrowdown"}
+          \markup {\musicglyph #"accidentals.flat"
+          \postscript #"gsave 0.15 setlinewidth -1.40 -0.25 moveto -1.40 -1.4 lineto
+          stroke grestore
+          gsave 0.1 setlinewidth -1.70 -0.7 moveto -1.40 -1.48 lineto -1.10 -0.7 lineto
+          stroke grestore"}
         $note #})
 
 %%% seven eighth tones down %%%
