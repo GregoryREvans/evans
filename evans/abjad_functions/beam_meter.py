@@ -23,7 +23,10 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
             is False
         ):
             abjad.beam(
-                t[:], beam_rests=include_rests, stemlet_length=0.75, beam_lone_notes=False
+                t[:],
+                beam_rests=include_rests,
+                stemlet_length=0.75,
+                beam_lone_notes=False,
             )
         else:
             continue

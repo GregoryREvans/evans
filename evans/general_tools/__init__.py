@@ -1,3 +1,4 @@
+from .attractors import *
 from .cyc import cyc
 from .e_bonacci import e_bonacci_cycle
 from .e_dovan import e_dovan_cycle
@@ -8,6 +9,7 @@ from .Markov_Chain import MarkovChain
 from .mirror import mirror
 from .n_bonacci import n_bonacci_cycle
 from .normalize_sum import normalize_sum
+from .normalize_to_indices import normalize_to_indices
 from .perm import perm
 from .random_walk import random_walk
 from .reciprocal import reciprocal
