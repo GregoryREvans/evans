@@ -94,7 +94,7 @@ def lu_chen(
     a=36,
     b=3,
     c=20,
-    u=(-15.15),
+    u=(-15.15), #-15 through 15 are interesting
     first_state=[0.1, 0.3, -0.6],
     time_values=[0.0, 40.0, 0.01],
     iters=4000,

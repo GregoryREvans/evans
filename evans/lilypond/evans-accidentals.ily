@@ -1,327 +1,435 @@
-%%% one eighth tone up %%%
-one-eighth-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.natural"
-          \postscript #"gsave 0.17 setlinewidth -1.2 1.25 moveto -1.2 2 lineto
-          stroke grestore
-          gsave 0.1 setlinewidth -1.5 1.4 moveto -1.2 2.18 lineto -0.9 1.4 lineto
-          stroke grestore"}
-        $note #})
+\version "2.19.84"
+\language "english"
+\include "evans-accidentals-markups.ily"
 
-%%% three eighth tones up %%%
-three-eighths-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.sharp.slashslash.stem"
-       \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-       stroke grestore
-       gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-       stroke grestore"}
-        $note #})
+#(define-public Double-Sharp  8/8)
+#(define-public Eleven-Twelf-Sharp 11/12)
+#(define-public Seven-Eighth-Sharp  7/8)
+#(define-public Five-Sixth-Sharp 5/6)
+#(define-public Three-Quarter-Sharp  3/4)
+#(define-public Two-Third-Sharp 2/3)
+#(define-public Five-Eighth-Sharp  5/8)
+#(define-public STwelf-Sharp 7/12)
+#(define-public Sharp  1/2)
+#(define-public Five-Twelf-Sharp 5/12)
+#(define-public Three-Eighth-Sharp  3/8)
+#(define-public Third-Sharp 1/3)
+#(define-public Quarter-Sharp  1/4)
+#(define-public Sixth-Sharp 1/6)
+#(define-public Eighth-Sharp  1/8)
+#(define-public Twelf-Sharp 1/12)
+#(define-public Natural 0/1)
+#(define-public Twelf-Flat  -1/12)
+#(define-public Eighth-Flat  -1/8)
+#(define-public Sixth-Flat  -1/6)
+#(define-public Quarter-Flat  -1/4)
+#(define-public Third-Flat  -1/3)
+#(define-public Three-Eighth-Flat  -3/8)
+#(define-public Five-Twelf-Flat  -5/12)
+#(define-public Flat  -1/2)
+#(define-public STwelf-Flat  -7/12)
+#(define-public Five-Eighth-Flat  -5/8)
+#(define-public Two-Third-Flat  -2/3)
+#(define-public Three-Quarter-Flat  -3/4)
+#(define-public Five-Sixth-Flat  -5/6)
+#(define-public Seven-Eighth-Flat  -7/8)
+#(define-public Eleven-Twelf-Flat  -11/12)
+#(define-public Double-Flat  -8/8)
 
-%%% five eighth tones up %%%
-five-eighths-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.sharp"
-          \postscript #"gsave 0.17 setlinewidth -0.91 1.25 moveto -0.91 2 lineto
-          stroke grestore
-          gsave 0.1 setlinewidth -1.21 1.4 moveto -0.91 2.18 lineto -0.61 1.4 lineto
-          stroke grestore"}
-        $note #})
+newPitchNames = #`(
+    (cff . ,(ly:make-pitch -1 0 Double-Flat))
+    (cetf . ,(ly:make-pitch -1 0 Eleven-Twelf-Flat))
+    (csef . ,(ly:make-pitch -1 0 Seven-Eighth-Flat))
+    (cfxf . ,(ly:make-pitch -1 0 Five-Sixth-Flat))
+    (ctqf . ,(ly:make-pitch -1 0 Three-Quarter-Flat))
+    (ctrf . ,(ly:make-pitch -1 0 Two-Third-Flat))
+    (cfef . ,(ly:make-pitch -1 0 Five-Eighth-Flat))
+    (cstf . ,(ly:make-pitch -1 0 STwelf-Flat))
+    (cf . ,(ly:make-pitch -1 0 Flat))
+    (cftf . ,(ly:make-pitch -1 0 Five-Twelf-Flat))
+    (ctef . ,(ly:make-pitch -1 0 Three-Eighth-Flat))
+    (crf . ,(ly:make-pitch -1 0 Third-Flat))
+    (cqf . ,(ly:make-pitch -1 0 Quarter-Flat))
+    (cxf . ,(ly:make-pitch -1 0 Sixth-Flat))
+    (cef . ,(ly:make-pitch -1 0 Eighth-Flat))
+    (ctf . ,(ly:make-pitch -1 0 Twelf-Flat))
+    (c . ,(ly:make-pitch -1 0 Natural))
+    (cts . ,(ly:make-pitch -1 0 Twelf-Sharp))
+    (ces . ,(ly:make-pitch -1 0 Eighth-Sharp))
+    (cxs . ,(ly:make-pitch -1 0 Sixth-Sharp))
+    (cqs . ,(ly:make-pitch -1 0 Quarter-Sharp))
+    (crs . ,(ly:make-pitch -1 0 Third-Sharp))
+    (ctes . ,(ly:make-pitch -1 0 Three-Eighth-Sharp))
+    (cfts . ,(ly:make-pitch -1 0 Five-Twelf-Sharp))
+    (cs . ,(ly:make-pitch -1 0 Sharp))
+    (csts . ,(ly:make-pitch -1 0 STwelf-Sharp))
+    (cfes . ,(ly:make-pitch -1 0 Five-Eighth-Sharp))
+    (ctrs . ,(ly:make-pitch -1 0 Two-Third-Sharp))
+    (ctqs . ,(ly:make-pitch -1 0 Three-Quarter-Sharp))
+    (cfxs . ,(ly:make-pitch -1 0 Five-Sixth-Sharp))
+    (cses . ,(ly:make-pitch -1 0 Seven-Eighth-Sharp))
+    (cets . ,(ly:make-pitch -1 0 Eleven-Twelf-Sharp))
+    (css . ,(ly:make-pitch -1 0 Double-Sharp))
 
-%%% seven eighth tones up %%%
-seven-eighths-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.sharp.slashslash.stemstemstem"
-          \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-          stroke grestore
-          gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-          stroke grestore"}
-        $note #})
+    (dff . ,(ly:make-pitch -1 1 Double-Flat))
+    (detf . ,(ly:make-pitch -1 1 Eleven-Twelf-Flat))
+    (dsef . ,(ly:make-pitch -1 1 Seven-Eighth-Flat))
+    (dfxf . ,(ly:make-pitch -1 1 Five-Sixth-Flat))
+    (dtqf . ,(ly:make-pitch -1 1 Three-Quarter-Flat))
+    (dtrf . ,(ly:make-pitch -1 1 Two-Third-Flat))
+    (dfef . ,(ly:make-pitch -1 1 Five-Eighth-Flat))
+    (dstf . ,(ly:make-pitch -1 1 STwelf-Flat))
+    (df . ,(ly:make-pitch -1 1 Flat))
+    (dftf . ,(ly:make-pitch -1 1 Five-Twelf-Flat))
+    (dtef . ,(ly:make-pitch -1 1 Three-Eighth-Flat))
+    (drf . ,(ly:make-pitch -1 1 Third-Flat))
+    (dqf . ,(ly:make-pitch -1 1 Quarter-Flat))
+    (dxf . ,(ly:make-pitch -1 1 Sixth-Flat))
+    (def . ,(ly:make-pitch -1 1 Eighth-Flat))
+    (dtf . ,(ly:make-pitch -1 1 Twelf-Flat))
+    (d . ,(ly:make-pitch -1 1 Natural))
+    (dts . ,(ly:make-pitch -1 1 Twelf-Sharp))
+    (des . ,(ly:make-pitch -1 1 Eighth-Sharp))
+    (dxs . ,(ly:make-pitch -1 1 Sixth-Sharp))
+    (dqs . ,(ly:make-pitch -1 1 Quarter-Sharp))
+    (drs . ,(ly:make-pitch -1 1 Third-Sharp))
+    (dtes . ,(ly:make-pitch -1 1 Three-Eighth-Sharp))
+    (dfts . ,(ly:make-pitch -1 1 Five-Twelf-Sharp))
+    (ds . ,(ly:make-pitch -1 1 Sharp))
+    (dsts . ,(ly:make-pitch -1 1 STwelf-Sharp))
+    (dfes . ,(ly:make-pitch -1 1 Five-Eighth-Sharp))
+    (dtrs . ,(ly:make-pitch -1 1 Two-Third-Sharp))
+    (dtqs . ,(ly:make-pitch -1 1 Three-Quarter-Sharp))
+    (dfxs . ,(ly:make-pitch -1 1 Five-Sixth-Sharp))
+    (dses . ,(ly:make-pitch -1 1 Seven-Eighth-Sharp))
+    (dets . ,(ly:make-pitch -1 1 Eleven-Twelf-Sharp))
+    (dss . ,(ly:make-pitch -1 1 Double-Sharp))
 
-%%% one eighth tone down %%%
-one-eighth-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.natural"
-          \postscript #"gsave 0.15 setlinewidth -0.67 -1.35 moveto -0.67 -2.1 lineto
-          stroke grestore
-          gsave 0.1 setlinewidth -0.97 -1.4 moveto -0.67 -2.18 lineto -0.37 -1.4 lineto
-          stroke grestore"}
-        $note #})
+    (eff . ,(ly:make-pitch -1 2 Double-Flat))
+    (eetf . ,(ly:make-pitch -1 2 Eleven-Twelf-Flat))
+    (esef . ,(ly:make-pitch -1 2 Seven-Eighth-Flat))
+    (efxf . ,(ly:make-pitch -1 2 Five-Sixth-Flat))
+    (etqf . ,(ly:make-pitch -1 2 Three-Quarter-Flat))
+    (etrf . ,(ly:make-pitch -1 2 Two-Third-Flat))
+    (efef . ,(ly:make-pitch -1 2 Five-Eighth-Flat))
+    (estf . ,(ly:make-pitch -1 2 STwelf-Flat))
+    (ef . ,(ly:make-pitch -1 2 Flat))
+    (eftf . ,(ly:make-pitch -1 2 Five-Twelf-Flat))
+    (etef . ,(ly:make-pitch -1 2 Three-Eighth-Flat))
+    (erf . ,(ly:make-pitch -1 2 Third-Flat))
+    (eqf . ,(ly:make-pitch -1 2 Quarter-Flat))
+    (exf . ,(ly:make-pitch -1 2 Sixth-Flat))
+    (eef . ,(ly:make-pitch -1 2 Eighth-Flat))
+    (etf . ,(ly:make-pitch -1 2 Twelf-Flat))
+    (e . ,(ly:make-pitch -1 2 Natural))
+    (ets . ,(ly:make-pitch -1 2 Twelf-Sharp))
+    (ees . ,(ly:make-pitch -1 2 Eighth-Sharp))
+    (exs . ,(ly:make-pitch -1 2 Sixth-Sharp))
+    (eqs . ,(ly:make-pitch -1 2 Quarter-Sharp))
+    (ers . ,(ly:make-pitch -1 2 Third-Sharp))
+    (etes . ,(ly:make-pitch -1 2 Three-Eighth-Sharp))
+    (efts . ,(ly:make-pitch -1 2 Five-Twelf-Sharp))
+    (es . ,(ly:make-pitch -1 2 Sharp))
+    (ests . ,(ly:make-pitch -1 2 STwelf-Sharp))
+    (efes . ,(ly:make-pitch -1 2 Five-Eighth-Sharp))
+    (etrs . ,(ly:make-pitch -1 2 Two-Third-Sharp))
+    (etqs . ,(ly:make-pitch -1 2 Three-Quarter-Sharp))
+    (efxs . ,(ly:make-pitch -1 2 Five-Sixth-Sharp))
+    (eses . ,(ly:make-pitch -1 2 Seven-Eighth-Sharp))
+    (eets . ,(ly:make-pitch -1 2 Eleven-Twelf-Sharp))
+    (ess . ,(ly:make-pitch -1 2 Double-Sharp))
 
-%%% three eighth tones down %%%
-three-eighths-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.mirroredflat"
-       \postscript #"gsave 0.15 setlinewidth -0.73 -0.25 moveto -0.73 -1.4 lineto
-       stroke grestore
-       gsave 0.1 setlinewidth -1.03 -0.7 moveto -0.73 -1.48 lineto -0.43 -0.7 lineto
-       stroke grestore"}
-        $note #})
+    (fff . ,(ly:make-pitch -1 3 Double-Flat))
+    (fetf . ,(ly:make-pitch -1 3 Eleven-Twelf-Flat))
+    (fsef . ,(ly:make-pitch -1 3 Seven-Eighth-Flat))
+    (ffxf . ,(ly:make-pitch -1 3 Five-Sixth-Flat))
+    (ftqf . ,(ly:make-pitch -1 3 Three-Quarter-Flat))
+    (ftrf . ,(ly:make-pitch -1 3 Two-Third-Flat))
+    (ffef . ,(ly:make-pitch -1 3 Five-Eighth-Flat))
+    (fstf . ,(ly:make-pitch -1 3 STwelf-Flat))
+    (ff . ,(ly:make-pitch -1 3 Flat))
+    (fftf . ,(ly:make-pitch -1 3 Five-Twelf-Flat))
+    (ftef . ,(ly:make-pitch -1 3 Three-Eighth-Flat))
+    (frf . ,(ly:make-pitch -1 3 Third-Flat))
+    (fqf . ,(ly:make-pitch -1 3 Quarter-Flat))
+    (fxf . ,(ly:make-pitch -1 3 Sixth-Flat))
+    (fef . ,(ly:make-pitch -1 3 Eighth-Flat))
+    (ftf . ,(ly:make-pitch -1 3 Twelf-Flat))
+    (f . ,(ly:make-pitch -1 3 Natural))
+    (fts . ,(ly:make-pitch -1 3 Twelf-Sharp))
+    (fes . ,(ly:make-pitch -1 3 Eighth-Sharp))
+    (fxs . ,(ly:make-pitch -1 3 Sixth-Sharp))
+    (fqs . ,(ly:make-pitch -1 3 Quarter-Sharp))
+    (frs . ,(ly:make-pitch -1 3 Third-Sharp))
+    (ftes . ,(ly:make-pitch -1 3 Three-Eighth-Sharp))
+    (ffts . ,(ly:make-pitch -1 3 Five-Twelf-Sharp))
+    (fs . ,(ly:make-pitch -1 3 Sharp))
+    (fsts . ,(ly:make-pitch -1 3 STwelf-Sharp))
+    (ffes . ,(ly:make-pitch -1 3 Five-Eighth-Sharp))
+    (ftrs . ,(ly:make-pitch -1 3 Two-Third-Sharp))
+    (ftqs . ,(ly:make-pitch -1 3 Three-Quarter-Sharp))
+    (ffxs . ,(ly:make-pitch -1 3 Five-Sixth-Sharp))
+    (fses . ,(ly:make-pitch -1 3 Seven-Eighth-Sharp))
+    (fets . ,(ly:make-pitch -1 3 Eleven-Twelf-Sharp))
+    (fss . ,(ly:make-pitch -1 3 Double-Sharp))
 
-%%% five eighth tones down %%%
-five-eighths-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.flat"
-          \postscript #"gsave 0.15 setlinewidth -1.38 -0.25 moveto -1.38 -1.4 lineto
-          stroke grestore
-          gsave 0.1 setlinewidth -1.68 -0.7 moveto -1.38 -1.48 lineto -1.08 -0.7 lineto
-          stroke grestore"}
-        $note #})
+    (gff . ,(ly:make-pitch -1 4 Double-Flat))
+    (getf . ,(ly:make-pitch -1 4 Eleven-Twelf-Flat))
+    (gsef . ,(ly:make-pitch -1 4 Seven-Eighth-Flat))
+    (gfxf . ,(ly:make-pitch -1 4 Five-Sixth-Flat))
+    (gtqf . ,(ly:make-pitch -1 4 Three-Quarter-Flat))
+    (gtrf . ,(ly:make-pitch -1 4 Two-Third-Flat))
+    (gfef . ,(ly:make-pitch -1 4 Five-Eighth-Flat))
+    (gstf . ,(ly:make-pitch -1 4 STwelf-Flat))
+    (gf . ,(ly:make-pitch -1 4 Flat))
+    (gftf . ,(ly:make-pitch -1 4 Five-Twelf-Flat))
+    (gtef . ,(ly:make-pitch -1 4 Three-Eighth-Flat))
+    (grf . ,(ly:make-pitch -1 4 Third-Flat))
+    (gqf . ,(ly:make-pitch -1 4 Quarter-Flat))
+    (gxf . ,(ly:make-pitch -1 4 Sixth-Flat))
+    (gef . ,(ly:make-pitch -1 4 Eighth-Flat))
+    (gtf . ,(ly:make-pitch -1 4 Twelf-Flat))
+    (g . ,(ly:make-pitch -1 4 Natural))
+    (gts . ,(ly:make-pitch -1 4 Twelf-Sharp))
+    (ges . ,(ly:make-pitch -1 4 Eighth-Sharp))
+    (gxs . ,(ly:make-pitch -1 4 Sixth-Sharp))
+    (gqs . ,(ly:make-pitch -1 4 Quarter-Sharp))
+    (grs . ,(ly:make-pitch -1 4 Third-Sharp))
+    (gtes . ,(ly:make-pitch -1 4 Three-Eighth-Sharp))
+    (gfts . ,(ly:make-pitch -1 4 Five-Twelf-Sharp))
+    (gs . ,(ly:make-pitch -1 4 Sharp))
+    (gsts . ,(ly:make-pitch -1 4 STwelf-Sharp))
+    (gfes . ,(ly:make-pitch -1 4 Five-Eighth-Sharp))
+    (gtrs . ,(ly:make-pitch -1 4 Two-Third-Sharp))
+    (gtqs . ,(ly:make-pitch -1 4 Three-Quarter-Sharp))
+    (gfxs . ,(ly:make-pitch -1 4 Five-Sixth-Sharp))
+    (gses . ,(ly:make-pitch -1 4 Seven-Eighth-Sharp))
+    (gets . ,(ly:make-pitch -1 4 Eleven-Twelf-Sharp))
+    (gss . ,(ly:make-pitch -1 4 Double-Sharp))
 
-%%% seven eighth tones down %%%
-seven-eighths-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\musicglyph #"accidentals.mirroredflat.flat"
-       \postscript #"gsave 0.15 setlinewidth -1.40 -0.25 moveto -1.40 -1.4 lineto
-       stroke grestore
-       gsave 0.1 setlinewidth -1.70 -0.7 moveto -1.40 -1.48 lineto -1.10 -0.7 lineto
-       stroke grestore"}
-        $note #})
+    (aff . ,(ly:make-pitch -1 5 Double-Flat))
+    (aetf . ,(ly:make-pitch -1 5 Eleven-Twelf-Flat))
+    (asef . ,(ly:make-pitch -1 5 Seven-Eighth-Flat))
+    (afxf . ,(ly:make-pitch -1 5 Five-Sixth-Flat))
+    (atqf . ,(ly:make-pitch -1 5 Three-Quarter-Flat))
+    (atrf . ,(ly:make-pitch -1 5 Two-Third-Flat))
+    (afef . ,(ly:make-pitch -1 5 Five-Eighth-Flat))
+    (astf . ,(ly:make-pitch -1 5 STwelf-Flat))
+    (af . ,(ly:make-pitch -1 5 Flat))
+    (aftf . ,(ly:make-pitch -1 5 Five-Twelf-Flat))
+    (atef . ,(ly:make-pitch -1 5 Three-Eighth-Flat))
+    (arf . ,(ly:make-pitch -1 5 Third-Flat))
+    (aqf . ,(ly:make-pitch -1 5 Quarter-Flat))
+    (axf . ,(ly:make-pitch -1 5 Sixth-Flat))
+    (aef . ,(ly:make-pitch -1 5 Eighth-Flat))
+    (atf . ,(ly:make-pitch -1 5 Twelf-Flat))
+    (a . ,(ly:make-pitch -1 5 Natural))
+    (ats . ,(ly:make-pitch -1 5 Twelf-Sharp))
+    (aes . ,(ly:make-pitch -1 5 Eighth-Sharp))
+    (axs . ,(ly:make-pitch -1 5 Sixth-Sharp))
+    (aqs . ,(ly:make-pitch -1 5 Quarter-Sharp))
+    (ars . ,(ly:make-pitch -1 5 Third-Sharp))
+    (ates . ,(ly:make-pitch -1 5 Three-Eighth-Sharp))
+    (afts . ,(ly:make-pitch -1 5 Five-Twelf-Sharp))
+    (as . ,(ly:make-pitch -1 5 Sharp))
+    (asts . ,(ly:make-pitch -1 5 STwelf-Sharp))
+    (afes . ,(ly:make-pitch -1 5 Five-Eighth-Sharp))
+    (atrs . ,(ly:make-pitch -1 5 Two-Third-Sharp))
+    (atqs . ,(ly:make-pitch -1 5 Three-Quarter-Sharp))
+    (afxs . ,(ly:make-pitch -1 5 Five-Sixth-Sharp))
+    (ases . ,(ly:make-pitch -1 5 Seven-Eighth-Sharp))
+    (aets . ,(ly:make-pitch -1 5 Eleven-Twelf-Sharp))
+    (ass . ,(ly:make-pitch -1 5 Double-Sharp))
 
-%%% one third up %%%
-one-third-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 3
-              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-              stroke grestore"}
-        $note #})
+    (bff . ,(ly:make-pitch -1 6 Double-Flat))
+    (betf . ,(ly:make-pitch -1 6 Eleven-Twelf-Flat))
+    (bsef . ,(ly:make-pitch -1 6 Seven-Eighth-Flat))
+    (bfxf . ,(ly:make-pitch -1 6 Five-Sixth-Flat))
+    (btqf . ,(ly:make-pitch -1 6 Three-Quarter-Flat))
+    (btrf . ,(ly:make-pitch -1 6 Two-Third-Flat))
+    (bfef . ,(ly:make-pitch -1 6 Five-Eighth-Flat))
+    (bstf . ,(ly:make-pitch -1 6 STwelf-Flat))
+    (bf . ,(ly:make-pitch -1 6 Flat))
+    (bftf . ,(ly:make-pitch -1 6 Five-Twelf-Flat))
+    (btef . ,(ly:make-pitch -1 6 Three-Eighth-Flat))
+    (brf . ,(ly:make-pitch -1 6 Third-Flat))
+    (bqf . ,(ly:make-pitch -1 6 Quarter-Flat))
+    (bxf . ,(ly:make-pitch -1 6 Sixth-Flat))
+    (bef . ,(ly:make-pitch -1 6 Eighth-Flat))
+    (btf . ,(ly:make-pitch -1 6 Twelf-Flat))
+    (b . ,(ly:make-pitch -1 6 Natural))
+    (bts . ,(ly:make-pitch -1 6 Twelf-Sharp))
+    (bes . ,(ly:make-pitch -1 6 Eighth-Sharp))
+    (bxs . ,(ly:make-pitch -1 6 Sixth-Sharp))
+    (bqs . ,(ly:make-pitch -1 6 Quarter-Sharp))
+    (brs . ,(ly:make-pitch -1 6 Third-Sharp))
+    (btes . ,(ly:make-pitch -1 6 Three-Eighth-Sharp))
+    (bfts . ,(ly:make-pitch -1 6 Five-Twelf-Sharp))
+    (bs . ,(ly:make-pitch -1 6 Sharp))
+    (bsts . ,(ly:make-pitch -1 6 STwelf-Sharp))
+    (bfes . ,(ly:make-pitch -1 6 Five-Eighth-Sharp))
+    (btrs . ,(ly:make-pitch -1 6 Two-Third-Sharp))
+    (btqs . ,(ly:make-pitch -1 6 Three-Quarter-Sharp))
+    (bfxs . ,(ly:make-pitch -1 6 Five-Sixth-Sharp))
+    (bses . ,(ly:make-pitch -1 6 Seven-Eighth-Sharp))
+    (bets . ,(ly:make-pitch -1 6 Eleven-Twelf-Sharp))
+    (bss . ,(ly:make-pitch -1 6 Double-Sharp))
+    )
 
-%%% two thirds up %%%
-two-thirds-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 2 3
-              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-              stroke grestore"}
-        $note #})
+pitchnames = \newPitchNames
+#(ly:parser-set-note-names pitchnames)
 
-%%% one third down %%%
-one-third-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 3
-              \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
-              stroke grestore"}
-        $note #})
+accidentalGlyphs = #`(
+    (,Double-Sharp . "accidentals.doublesharp")
+    (,Eleven-Twelf-Sharp . "scripts.thumb")
+    (,Seven-Eighth-Sharp . "scripts.ustaccatissimo")
+    (,Five-Sixth-Sharp . "scripts.tenuto")
+    (,Three-Quarter-Sharp . "accidentals.sharp.slashslash.stemstemstem")
+    (,Two-Third-Sharp . "scripts.dportato")
+    (,Five-Eighth-Sharp . "accidentals.sharp.arrowup")
+    (,STwelf-Sharp . "scripts.dmarcato")
+    (,Sharp . "accidentals.sharp")
+    (,Five-Twelf-Sharp . "scripts.halfopen")
+    (,Three-Eighth-Sharp . "accidentals.sharp.arrowdown")
+    (,Third-Sharp . "scripts.stopped")
+    (,Quarter-Sharp . "accidentals.sharp.slashslash.stem")
+    (,Sixth-Sharp . "scripts.upedalheel")
+    (,Eighth-Sharp . "accidentals.natural.arrowup")
+    (,Twelf-Sharp . "scripts.upedaltoe")
+    (,Natural . "accidentals.natural")
+    (,Twelf-Flat . "scripts.flageolet")
+    (,Eighth-Flat . "accidentals.natural.arrowdown")
+    (,Sixth-Flat . "scripts.lcomma")
+    (,Quarter-Flat . "accidentals.mirroredflat")
+    (,Third-Flat . "scripts.snappizzicato")
+    (,Three-Eighth-Flat . "accidentals.flat.arrowup")
+    (,Five-Twelf-Flat . "scripts.open")
+    (,Flat . "accidentals.flat")
+    (,STwelf-Flat . "scripts.halfopenvertical")
+    (,Five-Eighth-Flat . "accidentals.flat.arrowdown")
+    (,Two-Third-Flat . "scripts.dpedalheel")
+    (,Three-Quarter-Flat . "accidentals.mirroredflat.flat")
+    (,Five-Sixth-Flat . "scripts.dpedaltoe")
+    (,Seven-Eighth-Flat . "scripts.rcomma")
+    (,Eleven-Twelf-Flat . "scripts.tickmark")
+    (,Double-Flat . "accidentals.flatflat")
+)
 
-%%% two thirds down %%%
-two-thirds-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 2 3
-              \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% one sixth up %%%
-one-sixth-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 6
-              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% five sixths up %%%
-five-sixths-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 5 6
-              \postscript #"gsave 0.17 setlinewidth -0.95 1.25 moveto -0.95 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.25 1.4 moveto -0.95 2.18 lineto -0.65 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% one sixth down %%%
-one-sixth-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 6
-              \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% five sixths down %%%
-five-sixths-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 5 6
-              \postscript #"gsave 0.15 setlinewidth -1 -1.35 moveto -1 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.30 -1.4 moveto -1 -2.18 lineto -0.7 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% one twelf up %%%
-one-twelf-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 12
-              \postscript #"gsave 0.17 setlinewidth -1.35 1.25 moveto -1.35 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.65 1.4 moveto -1.35 2.18 lineto -1.05 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% five twelfs up %%%
-five-twelfs-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 5 12
-              \postscript #"gsave 0.17 setlinewidth -1.35 1.25 moveto -1.35 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.65 1.4 moveto -1.35 2.18 lineto -1.05 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% seven twelfs up %%%
-seven-twelfs-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 7 12
-              \postscript #"gsave 0.17 setlinewidth -1.35 1.25 moveto -1.35 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.65 1.4 moveto -1.35 2.18 lineto -1.05 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% eleven twelfs up %%%
-eleven-twelfs-sharp =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 11 12
-              \postscript #"gsave 0.17 setlinewidth -1.35 1.25 moveto -1.35 2 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.65 1.4 moveto -1.35 2.18 lineto -1.05 1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% one twelf down %%%
-one-twelf-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 1 12
-              \postscript #"gsave 0.15 setlinewidth -1.40 -1.35 moveto -1.40 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.70 -1.4 moveto -1.40 -2.18 lineto -1.10 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% five twelfs down %%%
-five-twelfs-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 5 12
-              \postscript #"gsave 0.15 setlinewidth -1.40 -1.35 moveto -1.40 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.70 -1.4 moveto -1.40 -2.18 lineto -1.10 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% seven twelfs down %%%
-seven-twelfs-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 7 12
-              \postscript #"gsave 0.15 setlinewidth -1.40 -1.35 moveto -1.40 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.70 -1.4 moveto -1.40 -2.18 lineto -1.10 -1.4 lineto
-              stroke grestore"}
-        $note #})
-
-%%% eleven twelfs down %%%
-eleven-twelfs-flat =
-#(define-music-function (parser location note)   (ly:music?)
- #{ \once \override Voice.Accidental.stencil =
-          #ly:text-interface::print
-        \once \override Voice.Accidental.text =
-          \markup {\fontsize #-4
-              \translate #'(0 . -0.5) \fraction 11 12
-              \postscript #"gsave 0.15 setlinewidth -1.40 -1.35 moveto -1.40 -2.1 lineto
-              stroke grestore
-              gsave 0.1 setlinewidth -1.70 -1.4 moveto -1.40 -2.18 lineto -1.10 -1.4 lineto
-              stroke grestore"}
-        $note #})
+\layout {
+    \context {
+        \Score
+        \override KeySignature.glyph-name-alist = \accidentalGlyphs
+        \override Accidental.glyph-name-alist = \accidentalGlyphs
+        \override AccidentalCautionary.glyph-name-alist = \accidentalGlyphs
+        \override TrillPitchAccidental.glyph-name-alist = \accidentalGlyphs
+        \override AmbitusAccidental.glyph-name-alist = \accidentalGlyphs
+        \override Accidental.stencil =
+          #(lambda (grob)
+             (let* (
+                    (glyph (ly:grob-property grob 'glyph-name))
+                    )
+                     (cond
+                      (
+                         (equal? glyph "scripts.thumb")
+                         (grob-interpret-markup grob eleven-twelfs-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.ustaccatissimo")
+                         (grob-interpret-markup grob seven-eighths-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.tenuto")
+                         (grob-interpret-markup grob five-sixths-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.dportato")
+                         (grob-interpret-markup grob two-thirds-sharp)
+                      )
+                      (
+                         (equal? glyph "accidentals.sharp.arrowup")
+                         (grob-interpret-markup grob five-eighths-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.dmarcato")
+                         (grob-interpret-markup grob seven-twelfs-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.halfopen")
+                         (grob-interpret-markup grob five-twelfs-sharp)
+                      )
+                      (
+                         (equal? glyph "accidentals.sharp.arrowdown")
+                         (grob-interpret-markup grob three-eighths-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.stopped")
+                         (grob-interpret-markup grob one-third-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.upedalheel")
+                         (grob-interpret-markup grob one-sixth-sharp)
+                      )
+                      (
+                         (equal? glyph "accidentals.natural.arrowup")
+                         (grob-interpret-markup grob one-eighth-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.upedaltoe")
+                         (grob-interpret-markup grob one-twelf-sharp)
+                      )
+                      (
+                         (equal? glyph "scripts.flageolet")
+                         (grob-interpret-markup grob one-twelf-flat)
+                      )
+                      (
+                         (equal? glyph "accidentals.natural.arrowdown")
+                         (grob-interpret-markup grob one-eighth-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.lcomma")
+                         (grob-interpret-markup grob one-sixth-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.snappizzicato")
+                         (grob-interpret-markup grob one-third-flat)
+                      )
+                      (
+                         (equal? glyph "accidentals.flat.arrowup")
+                         (grob-interpret-markup grob three-eighths-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.open")
+                         (grob-interpret-markup grob five-twelfs-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.halfopenvertical")
+                         (grob-interpret-markup grob seven-twelfs-flat)
+                      )
+                      (
+                         (equal? glyph "accidentals.flat.arrowdown")
+                         (grob-interpret-markup grob five-eighths-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.dpedalheel")
+                         (grob-interpret-markup grob two-thirds-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.dpedaltoe")
+                         (grob-interpret-markup grob five-sixths-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.rcomma")
+                         (grob-interpret-markup grob seven-eighths-flat)
+                      )
+                      (
+                         (equal? glyph "scripts.tickmark")
+                         (grob-interpret-markup grob eleven-twelfs-flat)
+                      )
+                      (
+                          else (ly:accidental-interface::print grob))
+                      )
+             )
+            )
+    }
+}
+%will not replace substituted accidentals for markups, only default accidentals
