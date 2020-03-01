@@ -281,37 +281,37 @@ pitchnames = \newPitchNames
 
 accidentalGlyphs = #`(
     (,Double-Sharp . "accidentals.doublesharp")
-    (,Eleven-Twelf-Sharp . "scripts.thumb")
-    (,Seven-Eighth-Sharp . "scripts.ustaccatissimo")
-    (,Five-Sixth-Sharp . "scripts.tenuto")
+    (,Eleven-Twelf-Sharp . "noteheads.s0cross")
+    (,Seven-Eighth-Sharp . "noteheads.s0cross")
+    (,Five-Sixth-Sharp . "noteheads.s0cross")
     (,Three-Quarter-Sharp . "accidentals.sharp.slashslash.stemstemstem")
-    (,Two-Third-Sharp . "scripts.dportato")
+    (,Two-Third-Sharp . "noteheads.s0cross")
     (,Five-Eighth-Sharp . "accidentals.sharp.arrowup")
-    (,STwelf-Sharp . "scripts.dmarcato")
+    (,STwelf-Sharp . "noteheads.s0cross")
     (,Sharp . "accidentals.sharp")
-    (,Five-Twelf-Sharp . "scripts.halfopen")
+    (,Five-Twelf-Sharp . "noteheads.s0cross")
     (,Three-Eighth-Sharp . "accidentals.sharp.arrowdown")
-    (,Third-Sharp . "scripts.stopped")
+    (,Third-Sharp . "noteheads.s0cross")
     (,Quarter-Sharp . "accidentals.sharp.slashslash.stem")
-    (,Sixth-Sharp . "scripts.upedalheel")
+    (,Sixth-Sharp . "noteheads.s0cross")
     (,Eighth-Sharp . "accidentals.natural.arrowup")
-    (,Twelf-Sharp . "scripts.upedaltoe")
+    (,Twelf-Sharp . "noteheads.s0cross")
     (,Natural . "accidentals.natural")
-    (,Twelf-Flat . "scripts.flageolet")
+    (,Twelf-Flat . "noteheads.s0cross")
     (,Eighth-Flat . "accidentals.natural.arrowdown")
-    (,Sixth-Flat . "scripts.lcomma")
+    (,Sixth-Flat . "noteheads.s0cross")
     (,Quarter-Flat . "accidentals.mirroredflat")
-    (,Third-Flat . "scripts.snappizzicato")
+    (,Third-Flat . "noteheads.s0cross")
     (,Three-Eighth-Flat . "accidentals.flat.arrowup")
-    (,Five-Twelf-Flat . "scripts.open")
+    (,Five-Twelf-Flat . "noteheads.s0cross")
     (,Flat . "accidentals.flat")
-    (,STwelf-Flat . "scripts.halfopenvertical")
+    (,STwelf-Flat . "noteheads.s0cross")
     (,Five-Eighth-Flat . "accidentals.flat.arrowdown")
-    (,Two-Third-Flat . "scripts.dpedalheel")
+    (,Two-Third-Flat . "noteheads.s0cross")
     (,Three-Quarter-Flat . "accidentals.mirroredflat.flat")
-    (,Five-Sixth-Flat . "scripts.dpedaltoe")
-    (,Seven-Eighth-Flat . "scripts.rcomma")
-    (,Eleven-Twelf-Flat . "scripts.tickmark")
+    (,Five-Sixth-Flat . "noteheads.s0cross")
+    (,Seven-Eighth-Flat . "noteheads.s0cross")
+    (,Eleven-Twelf-Flat . "noteheads.s0cross")
     (,Double-Flat . "accidentals.flatflat")
 )
 
@@ -323,106 +323,427 @@ accidentalGlyphs = #`(
         \override AccidentalCautionary.glyph-name-alist = \accidentalGlyphs
         \override TrillPitchAccidental.glyph-name-alist = \accidentalGlyphs
         \override AmbitusAccidental.glyph-name-alist = \accidentalGlyphs
-        \override Accidental.stencil =
+            \override Accidental.stencil =
+              #(lambda (grob)
+                 (let* (
+                        (alteration (ly:grob-property grob 'alteration))
+                        )
+                         (cond
+                          (
+                             (equal? alteration 11/12)
+                             (grob-interpret-markup grob eleven-twelfs-sharp)
+                          )
+                          (
+                             (equal? alteration 7/8)
+                             (grob-interpret-markup grob seven-eighths-sharp)
+                          )
+                          (
+                             (equal? alteration 5/6)
+                             (grob-interpret-markup grob five-sixths-sharp)
+                          )
+                          (
+                             (equal? alteration 2/3)
+                             (grob-interpret-markup grob two-thirds-sharp)
+                          )
+                          (
+                             (equal? alteration 5/8)
+                             (grob-interpret-markup grob five-eighths-sharp)
+                          )
+                          (
+                             (equal? alteration 7/12)
+                             (grob-interpret-markup grob seven-twelfs-sharp)
+                          )
+                          (
+                             (equal? alteration 5/12)
+                             (grob-interpret-markup grob five-twelfs-sharp)
+                          )
+                          (
+                             (equal? alteration 3/8)
+                             (grob-interpret-markup grob three-eighths-sharp)
+                          )
+                          (
+                             (equal? alteration 1/3)
+                             (grob-interpret-markup grob one-third-sharp)
+                          )
+                          (
+                             (equal? alteration 1/6)
+                             (grob-interpret-markup grob one-sixth-sharp)
+                          )
+                          (
+                             (equal? alteration 1/8)
+                             (grob-interpret-markup grob one-eighth-sharp)
+                          )
+                          (
+                             (equal? alteration 1/12)
+                             (grob-interpret-markup grob one-twelf-sharp)
+                          )
+                          (
+                             (equal? alteration -1/12)
+                             (grob-interpret-markup grob one-twelf-flat)
+                          )
+                          (
+                             (equal? alteration -1/8)
+                             (grob-interpret-markup grob one-eighth-flat)
+                          )
+                          (
+                             (equal? alteration -1/6)
+                             (grob-interpret-markup grob one-sixth-flat)
+                          )
+                          (
+                             (equal? alteration -1/3)
+                             (grob-interpret-markup grob one-third-flat)
+                          )
+                          (
+                             (equal? alteration -3/8)
+                             (grob-interpret-markup grob three-eighths-flat)
+                          )
+                          (
+                             (equal? alteration -5/12)
+                             (grob-interpret-markup grob five-twelfs-flat)
+                          )
+                          (
+                             (equal? alteration -7/12)
+                             (grob-interpret-markup grob seven-twelfs-flat)
+                          )
+                          (
+                             (equal? alteration -5/8)
+                             (grob-interpret-markup grob five-eighths-flat)
+                          )
+                          (
+                             (equal? alteration -2/3)
+                             (grob-interpret-markup grob two-thirds-flat)
+                          )
+                          (
+                             (equal? alteration -5/6)
+                             (grob-interpret-markup grob five-sixths-flat)
+                          )
+                          (
+                             (equal? alteration -7/8)
+                             (grob-interpret-markup grob seven-eighths-flat)
+                          )
+                          (
+                             (equal? alteration -11/12)
+                             (grob-interpret-markup grob eleven-twelfs-flat)
+                          )
+                          (
+                              else (ly:accidental-interface::print grob))
+                          )
+                 )
+                )
+        \override AccidentalCautionary.stencil =
           #(lambda (grob)
              (let* (
-                    (glyph (ly:grob-property grob 'glyph-name))
+                    (alteration (ly:grob-property grob 'alteration))
                     )
                      (cond
                       (
-                         (equal? glyph "scripts.thumb")
+                         (equal? alteration 11/12)
                          (grob-interpret-markup grob eleven-twelfs-sharp)
                       )
                       (
-                         (equal? glyph "scripts.ustaccatissimo")
+                         (equal? alteration 7/8)
                          (grob-interpret-markup grob seven-eighths-sharp)
                       )
                       (
-                         (equal? glyph "scripts.tenuto")
+                         (equal? alteration 5/6)
                          (grob-interpret-markup grob five-sixths-sharp)
                       )
                       (
-                         (equal? glyph "scripts.dportato")
+                         (equal? alteration 2/3)
                          (grob-interpret-markup grob two-thirds-sharp)
                       )
                       (
-                         (equal? glyph "accidentals.sharp.arrowup")
+                         (equal? alteration 5/8)
                          (grob-interpret-markup grob five-eighths-sharp)
                       )
                       (
-                         (equal? glyph "scripts.dmarcato")
+                         (equal? alteration 7/12)
                          (grob-interpret-markup grob seven-twelfs-sharp)
                       )
                       (
-                         (equal? glyph "scripts.halfopen")
+                         (equal? alteration 5/12)
                          (grob-interpret-markup grob five-twelfs-sharp)
                       )
                       (
-                         (equal? glyph "accidentals.sharp.arrowdown")
+                         (equal? alteration 3/8)
                          (grob-interpret-markup grob three-eighths-sharp)
                       )
                       (
-                         (equal? glyph "scripts.stopped")
+                         (equal? alteration 1/3)
                          (grob-interpret-markup grob one-third-sharp)
                       )
                       (
-                         (equal? glyph "scripts.upedalheel")
+                         (equal? alteration 1/6)
                          (grob-interpret-markup grob one-sixth-sharp)
                       )
                       (
-                         (equal? glyph "accidentals.natural.arrowup")
+                         (equal? alteration 1/8)
                          (grob-interpret-markup grob one-eighth-sharp)
                       )
                       (
-                         (equal? glyph "scripts.upedaltoe")
+                         (equal? alteration 1/12)
                          (grob-interpret-markup grob one-twelf-sharp)
                       )
                       (
-                         (equal? glyph "scripts.flageolet")
+                         (equal? alteration -1/12)
                          (grob-interpret-markup grob one-twelf-flat)
                       )
                       (
-                         (equal? glyph "accidentals.natural.arrowdown")
+                         (equal? alteration -1/8)
                          (grob-interpret-markup grob one-eighth-flat)
                       )
                       (
-                         (equal? glyph "scripts.lcomma")
+                         (equal? alteration -1/6)
                          (grob-interpret-markup grob one-sixth-flat)
                       )
                       (
-                         (equal? glyph "scripts.snappizzicato")
+                         (equal? alteration -1/3)
                          (grob-interpret-markup grob one-third-flat)
                       )
                       (
-                         (equal? glyph "accidentals.flat.arrowup")
+                         (equal? alteration -3/8)
                          (grob-interpret-markup grob three-eighths-flat)
                       )
                       (
-                         (equal? glyph "scripts.open")
+                         (equal? alteration -5/12)
                          (grob-interpret-markup grob five-twelfs-flat)
                       )
                       (
-                         (equal? glyph "scripts.halfopenvertical")
+                         (equal? alteration -7/12)
                          (grob-interpret-markup grob seven-twelfs-flat)
                       )
                       (
-                         (equal? glyph "accidentals.flat.arrowdown")
+                         (equal? alteration -5/8)
                          (grob-interpret-markup grob five-eighths-flat)
                       )
                       (
-                         (equal? glyph "scripts.dpedalheel")
+                         (equal? alteration -2/3)
                          (grob-interpret-markup grob two-thirds-flat)
                       )
                       (
-                         (equal? glyph "scripts.dpedaltoe")
+                         (equal? alteration -5/6)
                          (grob-interpret-markup grob five-sixths-flat)
                       )
                       (
-                         (equal? glyph "scripts.rcomma")
+                         (equal? alteration -7/8)
                          (grob-interpret-markup grob seven-eighths-flat)
                       )
                       (
-                         (equal? glyph "scripts.tickmark")
+                         (equal? alteration -11/12)
+                         (grob-interpret-markup grob eleven-twelfs-flat)
+                      )
+                      (
+                          else (ly:accidental-interface::print grob))
+                      )
+             )
+            )
+        \override TrillPitchAccidental.stencil =
+          #(lambda (grob)
+             (let* (
+                    (alteration (ly:grob-property grob 'alteration))
+                    )
+                     (cond
+                      (
+                         (equal? alteration 11/12)
+                         (grob-interpret-markup grob eleven-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 7/8)
+                         (grob-interpret-markup grob seven-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 5/6)
+                         (grob-interpret-markup grob five-sixths-sharp)
+                      )
+                      (
+                         (equal? alteration 2/3)
+                         (grob-interpret-markup grob two-thirds-sharp)
+                      )
+                      (
+                         (equal? alteration 5/8)
+                         (grob-interpret-markup grob five-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 7/12)
+                         (grob-interpret-markup grob seven-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 5/12)
+                         (grob-interpret-markup grob five-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 3/8)
+                         (grob-interpret-markup grob three-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 1/3)
+                         (grob-interpret-markup grob one-third-sharp)
+                      )
+                      (
+                         (equal? alteration 1/6)
+                         (grob-interpret-markup grob one-sixth-sharp)
+                      )
+                      (
+                         (equal? alteration 1/8)
+                         (grob-interpret-markup grob one-eighth-sharp)
+                      )
+                      (
+                         (equal? alteration 1/12)
+                         (grob-interpret-markup grob one-twelf-sharp)
+                      )
+                      (
+                         (equal? alteration -1/12)
+                         (grob-interpret-markup grob one-twelf-flat)
+                      )
+                      (
+                         (equal? alteration -1/8)
+                         (grob-interpret-markup grob one-eighth-flat)
+                      )
+                      (
+                         (equal? alteration -1/6)
+                         (grob-interpret-markup grob one-sixth-flat)
+                      )
+                      (
+                         (equal? alteration -1/3)
+                         (grob-interpret-markup grob one-third-flat)
+                      )
+                      (
+                         (equal? alteration -3/8)
+                         (grob-interpret-markup grob three-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -5/12)
+                         (grob-interpret-markup grob five-twelfs-flat)
+                      )
+                      (
+                         (equal? alteration -7/12)
+                         (grob-interpret-markup grob seven-twelfs-flat)
+                      )
+                      (
+                         (equal? alteration -5/8)
+                         (grob-interpret-markup grob five-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -2/3)
+                         (grob-interpret-markup grob two-thirds-flat)
+                      )
+                      (
+                         (equal? alteration -5/6)
+                         (grob-interpret-markup grob five-sixths-flat)
+                      )
+                      (
+                         (equal? alteration -7/8)
+                         (grob-interpret-markup grob seven-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -11/12)
+                         (grob-interpret-markup grob eleven-twelfs-flat)
+                      )
+                      (
+                          else (ly:accidental-interface::print grob))
+                      )
+             )
+            )
+        \override AmbitusAccidental.stencil =
+          #(lambda (grob)
+             (let* (
+                    (alteration (ly:grob-property grob 'alteration))
+                    )
+                     (cond
+                      (
+                         (equal? alteration 11/12)
+                         (grob-interpret-markup grob eleven-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 7/8)
+                         (grob-interpret-markup grob seven-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 5/6)
+                         (grob-interpret-markup grob five-sixths-sharp)
+                      )
+                      (
+                         (equal? alteration 2/3)
+                         (grob-interpret-markup grob two-thirds-sharp)
+                      )
+                      (
+                         (equal? alteration 5/8)
+                         (grob-interpret-markup grob five-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 7/12)
+                         (grob-interpret-markup grob seven-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 5/12)
+                         (grob-interpret-markup grob five-twelfs-sharp)
+                      )
+                      (
+                         (equal? alteration 3/8)
+                         (grob-interpret-markup grob three-eighths-sharp)
+                      )
+                      (
+                         (equal? alteration 1/3)
+                         (grob-interpret-markup grob one-third-sharp)
+                      )
+                      (
+                         (equal? alteration 1/6)
+                         (grob-interpret-markup grob one-sixth-sharp)
+                      )
+                      (
+                         (equal? alteration 1/8)
+                         (grob-interpret-markup grob one-eighth-sharp)
+                      )
+                      (
+                         (equal? alteration 1/12)
+                         (grob-interpret-markup grob one-twelf-sharp)
+                      )
+                      (
+                         (equal? alteration -1/12)
+                         (grob-interpret-markup grob one-twelf-flat)
+                      )
+                      (
+                         (equal? alteration -1/8)
+                         (grob-interpret-markup grob one-eighth-flat)
+                      )
+                      (
+                         (equal? alteration -1/6)
+                         (grob-interpret-markup grob one-sixth-flat)
+                      )
+                      (
+                         (equal? alteration -1/3)
+                         (grob-interpret-markup grob one-third-flat)
+                      )
+                      (
+                         (equal? alteration -3/8)
+                         (grob-interpret-markup grob three-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -5/12)
+                         (grob-interpret-markup grob five-twelfs-flat)
+                      )
+                      (
+                         (equal? alteration -7/12)
+                         (grob-interpret-markup grob seven-twelfs-flat)
+                      )
+                      (
+                         (equal? alteration -5/8)
+                         (grob-interpret-markup grob five-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -2/3)
+                         (grob-interpret-markup grob two-thirds-flat)
+                      )
+                      (
+                         (equal? alteration -5/6)
+                         (grob-interpret-markup grob five-sixths-flat)
+                      )
+                      (
+                         (equal? alteration -7/8)
+                         (grob-interpret-markup grob seven-eighths-flat)
+                      )
+                      (
+                         (equal? alteration -11/12)
                          (grob-interpret-markup grob eleven-twelfs-flat)
                       )
                       (
@@ -432,4 +753,3 @@ accidentalGlyphs = #`(
             )
     }
 }
-%will not replace substituted accidentals for markups, only default accidentals
