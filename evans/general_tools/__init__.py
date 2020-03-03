@@ -1,4 +1,4 @@
-from .attractors import *
+# from .attractors import *
 from .cyc import cyc
 from .e_bonacci import e_bonacci_cycle
 from .e_dovan import e_dovan_cycle

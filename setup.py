@@ -1,7 +1,7 @@
 import setuptools
 
 
-install_requires = ["abjad"]
+install_requires = ["abjad", "numpy", "scipy"]
 
 keywords = [
     "abjad",
