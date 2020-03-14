@@ -19,6 +19,9 @@ def nested_list_to_rtm(nested_list):
         if item == "]":
             out_string += ")"
         if str.isdigit(item):
+            print(item)
+            out_string += item
+        if item == "-":
             out_string += item
         if item == " ":
             out_string += item
