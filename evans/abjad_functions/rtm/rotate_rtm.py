@@ -1,6 +1,3 @@
-from mtools.rtmrewrite import funnel_tree_to_x
-
-
 def flatten(lst):
     out = []
     for i in lst:
@@ -43,6 +40,47 @@ def rotate_tree(rtm_string, n=1):
     return opening + new_middle + closing
 
 
+def funnel_tree_to_x(rtm, x):
+    list_out = [rtm]
+    out = rtm
+    digits = [int(_) for _ in out if _.isdigit()]
+    if x < max(digits):
+        for _ in range(abs(x - max(digits))):
+            if not all(digit == x for digit in digits):
+                new_out = ""
+                for i, _ in enumerate(out):
+                    if _.isdigit():
+                        if int(_) == x:
+                            new_out = new_out + _
+                        elif int(_) > x:
+                            new_out = new_out + f"{int(_) - 1}"
+                        else:
+                            new_out = new_out + f"{int(_) + 1}"
+                    else:
+                        new_out = new_out + _
+                    out = new_out
+                digits = [int(_) for _ in out if _.isdigit()]
+                list_out.append(out)
+    else:
+        for _ in range(abs(x - min(digits))):
+            if not all(digit == x for digit in digits):
+                new_out = ""
+                for i, _ in enumerate(out):
+                    if _.isdigit():
+                        if int(_) == x:
+                            new_out = new_out + _
+                        elif int(_) > x:
+                            new_out = new_out + f"{int(_) - 1}"
+                        else:
+                            new_out = new_out + f"{int(_) + 1}"
+                    else:
+                        new_out = new_out + _
+                    out = new_out
+                digits = [int(_) for _ in out if _.isdigit()]
+                list_out.append(out)
+    return list_out
+
+
 def funnel_inner_tree_to_x(rtm_string, x=1):
     opening = rtm_string[:3]
     middle = rtm_string[3:-1]
@@ -56,7 +94,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
 # rtm = '(1 (3 (2 (1 2 1 1)) 3))'
 # for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
 #     print(x)
-
+# 
 # nested_list = [1, 1, [1, [1, 1]], 1]
 # rtm = nested_list_to_rtm(nested_list)
 # flat = flatten(nested_list)
