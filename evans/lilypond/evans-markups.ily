@@ -98,3 +98,44 @@ piston-jete-markup =
 evans-upbow = #"scripts.upbow"
 
 evans-downbow = #"scripts.downbow"
+
+evans-clockwise-arc = \markup {
+    \translate #'(0 . 1.5)
+    \postscript #"
+        0 -0.5 0.5 90 -90 arc
+        stroke
+        gsave 0.1 setlinewidth
+        -0.20 0.20 moveto
+        0.13 -0.05 lineto
+        -0.20 -0.30 lineto
+        closepath
+        fill
+        stroke grestore
+        "
+}
+
+%{ \concat {
+\translate #'(0.2 . 0.75)
+\scale #'(0.4 . 0.4) \concat {\translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o}
+} %}
+
+
+evans-counterclockwise-arc = \markup {
+    \translate #'(0 . 1.5)
+    \postscript #"
+        0 -0.5 0.5 90 -90 arc
+        stroke
+        gsave 0.1 setlinewidth
+        -0.20 -0.7 moveto
+        0.13 -0.95 lineto
+        -0.20 -1.2 lineto
+        closepath
+        fill
+        stroke grestore
+        "
+}
+
+%{ \concat {
+\translate #'(0 . 0.75)
+\scale #'(0.4 . 0.4) \concat {\translate #'(0 . 0.3) - \translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o}
+} %}
