@@ -433,9 +433,9 @@ class SegmentMaker:
         #     abjad.attach(stop, first_leaf)
 
         staffs = [
-            staff
-            for staff in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Staff
+            voice
+            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.Voice
             )
         ]
 
@@ -465,32 +465,32 @@ class SegmentMaker:
 
         metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
         if self.tempo is not None:
-            for staff in abjad.iterate(
+            for voice in abjad.iterate(
                 self.score_template["Global Context"]
-            ).components(abjad.Staff):
-                leaf1 = abjad.select(staff).leaves()[0]
+            ).components(abjad.Voice):
+                leaf1 = abjad.select(voice).leaves()[0]
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
             markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
-            for staff in abjad.iterate(
+            for voice in abjad.iterate(
                 self.score_template["Global Context"]
-            ).components(abjad.Staff):
-                leaf1 = abjad.select(staff).leaves()[0]
+            ).components(abjad.Voice):
+                leaf1 = abjad.select(voice).leaves()[0]
                 abjad.attach(markup2, leaf1)
 
         bar_line = abjad.BarLine(self.barline)
         if self.barline is not None:
-            for staff in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Staff
+            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.Voice
             ):
                 if self.barline == "|.":
-                    last_leaf = abjad.select(staff).leaves()[-1]
+                    last_leaf = abjad.select(voice).leaves()[-1]
                     abjad.attach(bar_line, last_leaf)
                 else:
-                    last_leaf = abjad.select(staff).leaves()[-3]
+                    last_leaf = abjad.select(voice).leaves()[-3]
                     abjad.attach(bar_line, last_leaf)
 
         for abbrev, name, inst, handler, voice in zip(
@@ -530,11 +530,11 @@ class SegmentMaker:
                     )
 
     def _remove_final_grand_pause(self):
-        for staff in abjad.select(self.score_template["Global Context"]).components(
-            abjad.Staff
+        for voice in abjad.select(self.score_template["Global Context"]).components(
+            abjad.Voice
         ):
             print()
-            grand_pause = abjad.mutate(staff[:]).split(self.time_signatures)[-1]
+            grand_pause = abjad.mutate(voice[:]).split(self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
         for voice in abjad.select(self.score_template["Staff Group"]).components(
@@ -625,14 +625,14 @@ class SegmentMaker:
     def _extracting_parts(self):
         print("Extracting parts ...")
         ###make parts###
-        for count, staff in enumerate(
-            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Staff)
+        for count, voice in enumerate(
+            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
             t = r"\tag #'" + f"voice{count + 1}" + r" {"
             pre_lit = abjad.LilyPondLiteral(t, format_slot="absolute_before")
             post_lit = abjad.LilyPondLiteral(r"}", format_slot="absolute_after")
-            abjad.attach(pre_lit, staff)
-            abjad.attach(post_lit, staff)
+            abjad.attach(pre_lit, voice)
+            abjad.attach(post_lit, voice)
         self.time_6 = time.time()
 
     def _write_optimization_log(self):

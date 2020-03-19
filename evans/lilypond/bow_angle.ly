@@ -1,5 +1,7 @@
 \version "2.19.84"
 \language "english"
+#(set-default-paper-size "11x17landscape")
+#(set-global-staff-size 20)
 \include "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
 \include "evans-markups.ily"
 \include "evans-spanners.ily"
@@ -7,7 +9,7 @@
 \layout {
 	\context {
 		\Score
-		proportionalNotationDuration = #(ly:make-moment 1 15)
+		proportionalNotationDuration = #(ly:make-moment 1 60)
 	}
 }
 
