@@ -14,6 +14,7 @@ class SegmentMaker:
         instruments=None,
         names=None,
         abbreviations=None,
+        name_staves=True,
         rhythm_timespans=None,
         handler_timespans=None,
         score_template=None,
@@ -42,6 +43,7 @@ class SegmentMaker:
         self.instruments = instruments
         self.names = names
         self.abbreviations = abbreviations
+        self.name_staves = name_staves
         self.rhythm_timespans = rhythm_timespans
         self.handler_timespans = handler_timespans
         self.score_template = score_template
@@ -505,12 +507,13 @@ class SegmentMaker:
             abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
         ):
             first_leaf = abjad.select(voice).leaves()[0]
-            abjad.attach(
-                abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
-            )
-            abjad.attach(
-                name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
-            )
+            if self.name_staves is True:
+                abjad.attach(
+                    abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                )
+                abjad.attach(
+                    name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                )
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
@@ -534,7 +537,7 @@ class SegmentMaker:
                     )
 
     def _direct_stems(self):
-        for voice, direction in zip(abjad.select(self.score_template).components(abjad.Voice), self.voicewise_stem_directions):
+        for voice, direction in zip(abjad.select(self.score_template["Staff Group"]).components(abjad.Voice), self.voicewise_stem_directions):
             if direction is not None:
                 abjad.override(voice).stem.direction = direction
 
