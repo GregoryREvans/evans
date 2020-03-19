@@ -20,6 +20,7 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         voicewise_persistent_indicators=None,
+        voicewise_stem_directions=None,
         tuplet_bracket_noteheads=True,
         add_final_grand_pause=True,
         fermata="scripts.ushortfermata",
@@ -47,6 +48,7 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
+        self.voicewise_stem_directions = voicewise_stem_directions
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.add_final_grand_pause = add_final_grand_pause
         self.fermata = fermata
@@ -83,6 +85,8 @@ class SegmentMaker:
         self._adding_attachments()
         if self.voicewise_persistent_indicators is not None:
             self._attach_previous_indicators()
+        if self.voicewise_stem_directions is not None:
+            self._direct_stems()
         # self._transposing_and_adding_clefs()
         self._cache_persistent_info()
         if self.add_final_grand_pause is False:
@@ -528,6 +532,11 @@ class SegmentMaker:
                         first_leaf,
                         tag=abjad.Tag("attaching persistent indicators"),
                     )
+
+    def _direct_stems(self):
+        for voice, direction in zip(abjad.select(self.score_template).components(abjad.Voice), self.voicewise_stem_directions):
+            if direction is not None:
+                abjad.override(voice).stem.direction = direction
 
     def _remove_final_grand_pause(self):
         for voice in abjad.select(self.score_template["Global Context"]).components(
