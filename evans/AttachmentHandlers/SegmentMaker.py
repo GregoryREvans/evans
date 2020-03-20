@@ -471,20 +471,20 @@ class SegmentMaker:
 
         metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
         if self.tempo is not None:
-            for voice in abjad.iterate(
+            for staff in abjad.iterate(
                 self.score_template["Global Context"]
-            ).components(abjad.Voice):
-                leaf1 = abjad.select(voice).leaves()[0]
+            ).components(abjad.Staff):
+                leaf1 = abjad.select(staff).leaves()[0]
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
             markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
-            for voice in abjad.iterate(
+            for staff in abjad.iterate(
                 self.score_template["Global Context"]
-            ).components(abjad.Voice):
-                leaf1 = abjad.select(voice).leaves()[0]
+            ).components(abjad.Staff):
+                leaf1 = abjad.select(staff).leaves()[0]
                 abjad.attach(markup2, leaf1)
 
         bar_line = abjad.BarLine(self.barline)
@@ -542,11 +542,10 @@ class SegmentMaker:
                 abjad.override(voice).stem.direction = direction
 
     def _remove_final_grand_pause(self):
-        for voice in abjad.select(self.score_template["Global Context"]).components(
-            abjad.Voice
+        for staff in abjad.select(self.score_template["Global Context"]).components(
+            abjad.Staff
         ):
-            print()
-            grand_pause = abjad.mutate(voice[:]).split(self.time_signatures)[-1]
+            grand_pause = abjad.mutate(staff[:]).split(self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
         for voice in abjad.select(self.score_template["Staff Group"]).components(
