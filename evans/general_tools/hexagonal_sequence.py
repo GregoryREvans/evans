@@ -18,7 +18,8 @@ def mod(sequence, modulus, indices=False):
             continue
     return new_seq
 
-# 
+
+#
 # seq = hexagonal_sequence(n_list=[_ for _ in range(8)])
 # print(seq)
 #

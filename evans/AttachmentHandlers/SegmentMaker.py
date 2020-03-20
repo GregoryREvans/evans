@@ -537,7 +537,10 @@ class SegmentMaker:
                     )
 
     def _direct_stems(self):
-        for voice, direction in zip(abjad.select(self.score_template["Staff Group"]).components(abjad.Voice), self.voicewise_stem_directions):
+        for voice, direction in zip(
+            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
+            self.voicewise_stem_directions,
+        ):
             if direction is not None:
                 abjad.override(voice).stem.direction = direction
 

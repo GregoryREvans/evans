@@ -11,8 +11,9 @@ def normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]):
         if isinstance(_, list):
             out.append(normalize_to_indices(_))
         else:
-            out.append(int(float(_)/minimum_value))
+            out.append(int(float(_) / minimum_value))
     return out
+
 
 ###DEMO###
 # import evans
