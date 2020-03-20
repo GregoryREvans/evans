@@ -10,9 +10,9 @@ def subgroup(l, n):
         yield l[i : i + n]
 
 
-groups = list(subgroup(items, 3))
-for group in groups:
-    print(group)
+# groups = list(subgroup(items, 3))
+# for group in groups:
+#     print(group)
 
 ###sample result###
 # ['item7', 'item8', 'item3']

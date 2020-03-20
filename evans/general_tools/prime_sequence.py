@@ -26,7 +26,7 @@ def mod(sequence, modulus, indices=False):
     return new_seq
 
 
-primes = prime_sequence(start=11, end=25)
-print(primes)
-mod_seq = mod(sequence=primes, modulus=7)
-print(mod_seq)
+# primes = prime_sequence(start=11, end=25)
+# print(primes)
+# mod_seq = mod(sequence=primes, modulus=7)
+# print(mod_seq)

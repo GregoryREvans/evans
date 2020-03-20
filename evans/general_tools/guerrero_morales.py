@@ -16,8 +16,8 @@ def guerrero_morales(set, group_size):
 
 
 ###DEMO###
-set_ = "ABCDEFG"
-group_size_ = 3
-net = guerrero_morales(set=set_, group_size=group_size_)
-for _ in net:
-    print(_)
+# set_ = "ABCDEFG"
+# group_size_ = 3
+# net = guerrero_morales(set=set_, group_size=group_size_)
+# for _ in net:
+#     print(_)

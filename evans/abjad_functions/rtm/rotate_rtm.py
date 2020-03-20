@@ -16,7 +16,6 @@ def nested_list_to_rtm(nested_list):
         if item == "]":
             out_string += ")"
         if str.isdigit(item):
-            print(item)
             out_string += item
         if item == "-":
             out_string += item
@@ -94,7 +93,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
 # rtm = '(1 (3 (2 (1 2 1 1)) 3))'
 # for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
 #     print(x)
-# 
+#
 # nested_list = [1, 1, [1, [1, 1]], 1]
 # rtm = nested_list_to_rtm(nested_list)
 # flat = flatten(nested_list)

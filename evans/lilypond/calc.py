@@ -80,4 +80,4 @@ for i, x in enumerate(dia):
             "(" + x + y + f" . ,(ly:make-pitch -1 {i} {name_converter[i_]}))"
         )
 
-print(all_notes)
+# print(all_notes)

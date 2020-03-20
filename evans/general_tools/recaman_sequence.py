@@ -28,7 +28,7 @@ def mod(sequence, modulus, indices=False):
     return new_seq
 
 
-seq = [recaman_sequence(number=_ + 1) for _ in range(80)]
-print(seq)
-mod_seq = mod(sequence=seq, modulus=7)
-print(mod_seq)
+# seq = [recaman_sequence(number=_ + 1) for _ in range(80)]
+# print(seq)
+# mod_seq = mod(sequence=seq, modulus=7)
+# print(mod_seq)

@@ -14,5 +14,5 @@ def complement(collection, scale):
     return [item for item in collection if item not in scale]
 
 
-list = complement(base, [0, 3, 6])
-print(list)
+# list = complement(base, [0, 3, 6])
+# print(list)

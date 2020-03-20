@@ -1,4 +1,4 @@
-nested_list = [1, 1, [1, [1, 1]], 1]
+# nested_list = [1, 1, [1, [1, 1]], 1]
 
 
 def nested_list_to_rtm(nested_list):
@@ -15,4 +15,4 @@ def nested_list_to_rtm(nested_list):
     return out_string
 
 
-print(nested_list_to_rtm(nested_list))
+# print(nested_list_to_rtm(nested_list))
