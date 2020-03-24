@@ -245,7 +245,7 @@ class SegmentMaker:
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            leaves = abjad.select(voice).leaves()
+            leaves = abjad.select(voice).leaves(grace=False)
             shards = abjad.mutate(leaves).split(self.time_signatures)
             for shard in shards[:-1]:
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):

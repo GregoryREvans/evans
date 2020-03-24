@@ -29,7 +29,6 @@ class GraceHandler:
         vectors = self._cyc_boolean_vector(r=len(ties))
         if self.boolean_vector != None:
             for value, tie in zip(vectors, ties):
-                print(value)
                 if value == 1:
                     grace_list = ""
                     if self.gesture_lengths != None:
@@ -38,10 +37,12 @@ class GraceHandler:
                             s = "c'16"
                             grace_list = grace_list + s
                             grace_list = grace_list + " "
-                        grace = abjad.BeforeGraceContainer(grace_list, command=r"\acciaccatura")
+                        grace = abjad.BeforeGraceContainer(grace_list, command=r"\appoggiatura")
+                        if len(grace) > 1:
+                            abjad.beam(grace)
                         abjad.attach(grace, tie[0])
                     else:
-                        grace = abjad.BeforeGraceContainer("c'16", command=r"\acciaccatura")
+                        grace = abjad.BeforeGraceContainer("c'16", command=r"\appoggiatura")
                         abjad.attach(grace, tie[0])
                 else:
                     continue
@@ -52,7 +53,7 @@ class GraceHandler:
         return self.name
 
     def state(self):
-        return self._count
+        return f"""vector count\n{self._cyc_boolean_vector.state()}\ngesture count\n{self._cyc_gesture_lengths.state()}"""
 
 
 ###DEMO
