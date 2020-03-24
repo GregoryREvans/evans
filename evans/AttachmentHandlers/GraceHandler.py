@@ -1,4 +1,5 @@
 import abjad
+from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class GraceHandler:
@@ -7,65 +8,43 @@ class GraceHandler:
         boolean_vector=None,
         gesture_lengths=None,
         continuous=False,
-        count=0,
+        vector_count=-1,
+        gesture_count=-1,
         name="Grace Handler",
     ):
-        def cyc(lst):
-            if self.continuous == False:
-                self._count = 0
-            while True:
-                yield lst[self._count % len(lst)]
-                self._count += 1
-
+        self.continuous = continuous
+        self._vector_count = vector_count
+        self._gesture_count = gesture_count
         self.boolean_vector = boolean_vector
         self.gesture_lengths = gesture_lengths
-        self.continuous = continuous
-        self._cyc_boolean_vector = cyc(boolean_vector)
-        self._cyc_gesture_lengths = cyc(gesture_lengths)
-        self._count = count
+        self._cyc_boolean_vector = CyclicList(boolean_vector, self.continuous, self._vector_count)
+        self._cyc_gesture_lengths = CyclicList(gesture_lengths, self.continuous, self._gesture_count)
         self.name = name
 
     def __call__(self, selections):
-        return self._add_grace_notes(selections)
+        self._add_grace_notes(selections)
 
     def _add_grace_notes(self, selections):
-        container = abjad.Container()
-        container.extend(selections)
+        ties = abjad.select(selections).logical_ties(pitched=True)
+        vectors = self._cyc_boolean_vector(r=len(ties))
         if self.boolean_vector != None:
-            for run in abjad.select(container).runs():
-                ties = abjad.select(run).logical_ties()
-                vector_values = [next(self._cyc_boolean_vector) for _ in ties]
-                for value, tie in zip(vector_values, ties):
-                    if value == 1:
-                        grace_list = []
-                        if self.gesture_lengths != None:
-                            grace_length = next(self._cyc_gesture_lengths)
-                            for x in range(0, grace_length):
-                                note = abjad.Note("c'16")
-                                grace_list.append(note)
-                            grace = abjad.AfterGraceContainer(grace_list)
-                            literal = abjad.LilyPondLiteral(
-                                "#(define afterGraceFraction (cons 15 16))"
-                            )
-                            if len(tie) > 1:
-                                abjad.attach(literal, tie[-2])
-                                abjad.attach(grace, tie[-1])
-                            else:
-                                abjad.attach(literal, tie[0])
-                                abjad.attach(grace, tie[0])
-                        else:
-                            grace = abjad.AfterGraceContainer(abjad.Note("c'16"))
-                            literal = abjad.LilyPondLiteral(
-                                "#(define afterGraceFraction (cons 15 16))"
-                            )
-                            if len(tie) > 1:
-                                abjad.attach(literal, tie[-2])
-                                abjad.attach(grace, tie[-1])
-                            else:
-                                abjad.attach(literal, tie[0])
-                                abjad.attach(grace, tie[0])
+            for value, tie in zip(vectors, ties):
+                print(value)
+                if value == 1:
+                    grace_list = ""
+                    if self.gesture_lengths != None:
+                        grace_length = self._cyc_gesture_lengths(r=1)[0]
+                        for x in range(grace_length):
+                            s = "c'16"
+                            grace_list = grace_list + s
+                            grace_list = grace_list + " "
+                        grace = abjad.BeforeGraceContainer(grace_list, command=r"\acciaccatura")
+                        abjad.attach(grace, tie[0])
                     else:
-                        continue
+                        grace = abjad.BeforeGraceContainer("c'16", command=r"\acciaccatura")
+                        abjad.attach(grace, tie[0])
+                else:
+                    continue
         else:
             pass
 
@@ -74,3 +53,14 @@ class GraceHandler:
 
     def state(self):
         return self._count
+
+
+###DEMO
+# s = abjad.Staff("c'4 c'4 c'4 c'4")
+# h = GraceHandler(
+#     boolean_vector=[0, 1, 0, 1],
+#     gesture_lengths=[1, 2],
+#     continuous=True,
+# )
+# h(s[:])
+# abjad.show(s)

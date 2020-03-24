@@ -78,11 +78,11 @@ class SegmentMaker:
     def build_segment(self):
         self._interpret_file()
         self._making_containers()
+        self._transform_brackets()
         self._splitting_and_rewriting()
         self._adding_ending_skips()
         self._handlers()
         self._multimeasure_rests_and_cutaway()
-        self._transform_brackets()
         self._beaming_runs()
         self._adding_attachments()
         if self.voicewise_persistent_indicators is not None:
