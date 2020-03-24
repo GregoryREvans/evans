@@ -4,6 +4,7 @@ from .ClefHandler import ClefHandler
 from .CyclicList import CyclicList
 from .DynamicHandler import DynamicHandler
 from .GlissandoHandler import GlissandoHandler
+from .GraceHandler import GraceHandler
 from .NoteheadHandler import NoteheadHandler
 from .PitchHandler import PitchHandler
 from .RhythmHandler import RhythmHandler
