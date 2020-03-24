@@ -349,7 +349,7 @@ class SegmentMaker:
     def _transform_brackets(self):
         print("Transforming brackets ...")
         for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
-            tuplet.rewrite_dots()
+            # tuplet.rewrite_dots()
             if tuplet.trivial() is True:
                 tuplet.hide = True
             else:
@@ -455,19 +455,24 @@ class SegmentMaker:
 
         instruments = evans.cyc(self.instruments)
 
-        abbreviations = []
-        abb = self.abbreviations
-        mark_abbreviations = [abjad.Markup(_) for _ in abb]
-        for x in mark_abbreviations:
-            x.hcenter_in(12)
-            abbreviations.append(abjad.MarginMarkup(markup=x))
-
-        names = []
-        nm = self.names
-        mark_names = [abjad.Markup(_) for _ in nm]
-        for x in mark_names:
-            x.hcenter_in(14)
-            names.append(abjad.StartMarkup(markup=x))
+        if self.abbreviations is not None:
+            abbreviations = []
+            abb = self.abbreviations
+            mark_abbreviations = [abjad.Markup(_) for _ in abb]
+            for x in mark_abbreviations:
+                x.hcenter_in(12)
+                abbreviations.append(abjad.MarginMarkup(markup=x))
+        else:
+            abbreviations = [_ for _ in range(len(self.instruments))]
+        if self.names is not None:
+            names = []
+            nm = self.names
+            mark_names = [abjad.Markup(_) for _ in nm]
+            for x in mark_names:
+                x.hcenter_in(14)
+                names.append(abjad.StartMarkup(markup=x))
+        else:
+            names = [_ for _ in range(len(self.instruments))]
 
         metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
         if self.tempo is not None:
@@ -508,12 +513,14 @@ class SegmentMaker:
         ):
             first_leaf = abjad.select(voice).leaves()[0]
             if self.name_staves is True:
-                abjad.attach(
-                    abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
-                )
-                abjad.attach(
-                    name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
-                )
+                if not isinstance(abbrev, int):
+                    abjad.attach(
+                        abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                    )
+                if not isinstance(name, int):
+                    abjad.attach(
+                        name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                    )
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
