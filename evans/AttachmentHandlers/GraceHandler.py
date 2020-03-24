@@ -37,12 +37,23 @@ class GraceHandler:
                             s = "c'16"
                             grace_list = grace_list + s
                             grace_list = grace_list + " "
+                            grace_list = grace_list + "s8"
+                            grace_list = grace_list + " "
+                        grace_list = grace_list + "s2"
                         grace = abjad.BeforeGraceContainer(grace_list, command=r"\appoggiatura")
-                        if len(grace) > 1:
-                            abjad.beam(grace)
+                        if len(abjad.select(grace).leaves(pitched=True)) > 1:
+                            abjad.beam(grace, beam_rests=True, beam_lone_notes=True, stemlet_length=0)
+                        open_literal = abjad.LilyPondLiteral("\scaleDurations #'(1 . 1) {", format_slot="before")
+                        close_literal = abjad.LilyPondLiteral("}", format_slot="after")
+                        abjad.attach(open_literal, grace)
+                        abjad.attach(close_literal, grace)
                         abjad.attach(grace, tie[0])
                     else:
                         grace = abjad.BeforeGraceContainer("c'16", command=r"\appoggiatura")
+                        open_literal = abjad.LilyPondLiteral("\scaleDurations #'(1 . 1) {", format_slot="before")
+                        close_literal = abjad.LilyPondLiteral("}", format_slot="after")
+                        abjad.attach(open_literal, grace)
+                        abjad.attach(close_literal, grace)
                         abjad.attach(grace, tie[0])
                 else:
                     continue
@@ -64,4 +75,4 @@ class GraceHandler:
 #     continuous=True,
 # )
 # h(s[:])
-# abjad.show(s)
+# abjad.f(s)
