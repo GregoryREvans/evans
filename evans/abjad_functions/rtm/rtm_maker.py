@@ -147,6 +147,8 @@ class RTMMaker_4(object):
         selection = abjad.select(rtm_parser(rtm)[0](duration))
         for tuplet in abjad.select(selection).components(abjad.Tuplet):
             tuplet.normalize_multiplier()
+            if tuplet.trivializable() is True:
+                tuplet.trivialize()
         return selection
 
     def _rtm_maker(self, divisions, starting_index=0):
