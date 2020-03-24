@@ -125,7 +125,7 @@ class RTMMaker_3(object):
 class RTMMaker_4(object):
     def __init__(self, rtm, continuous=False):
         self.rtm = abjad.CyclicTuple(rtm)
-        self.state = {"last index used": 0}
+        self.state = {"last index used": -1}
 
     def __call__(self, divisions, previous_state=None):
         starting_index = -1
