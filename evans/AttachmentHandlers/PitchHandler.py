@@ -35,7 +35,6 @@ class PitchHandler:
             for tie in abjad.iterate(selections).logical_ties()
             if isinstance(tie[0], abjad.Note)
         ]
-        print(old_ties)
         if len(old_ties) > 0:
             pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
                 old_ties
