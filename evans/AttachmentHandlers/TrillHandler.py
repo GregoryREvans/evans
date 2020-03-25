@@ -18,7 +18,7 @@ class TrillHandler:
         ties = abjad.select(selections).logical_ties(pitched=True)
         vector = self.boolean_vector
         for tie, bool in zip(ties, vector(r=len(ties))):
-            if bool is 0:
+            if bool is 1:
                 if all(
                     isinstance(leaf, abjad.Chord)
                     for leaf in abjad.iterate(tie).leaves()
@@ -58,11 +58,14 @@ class TrillHandler:
                     tail = abjad.select(tie).leaves()[1:]
                     for leaf in tail:
                         new_tail = abjad.Note(base_pitch, leaf.written_duration)
-                        parent = abjad.inspect(leaf).parentage().parent
-                        parent[parent.index(leaf)] = new_tail
                         indicators = abjad.inspect(leaf).indicators()
                         for indicator in indicators:
                             abjad.attach(indicator, new_tail)
+                        before_grace = abjad.inspect(leaf).before_grace_container()
+                        if before_grace is not None:
+                            abjad.attach(before_grace, new_tail)
+                        parent = abjad.inspect(leaf).parentage().parent
+                        parent[parent.index(leaf)] = new_tail
                 else:
                     continue
             else:

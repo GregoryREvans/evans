@@ -37,7 +37,7 @@ class GraceHandler:
                             s = "c'16"
                             grace_list = grace_list + s
                             grace_list = grace_list + " "
-                            grace_list = grace_list + "s8"
+                            grace_list = grace_list + "s8.."
                             grace_list = grace_list + " "
                         grace_list = grace_list + "s2"
                         grace = abjad.BeforeGraceContainer(grace_list, command=r"\appoggiatura")

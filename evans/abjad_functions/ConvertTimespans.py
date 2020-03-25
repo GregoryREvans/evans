@@ -51,6 +51,7 @@ class ConvertTimespans:
         add_silence=True,
         fill_gaps=True,
         split=False,
+        is_global=False,
     ):
 
         cyclic_materials = CyclicList(materials, continuous=True)
@@ -78,19 +79,35 @@ class ConvertTimespans:
             ts_list = abjad.TimespanList()
             for timespan in timespan_dict["items"]:
                 if isinstance(timespan, abjad.AnnotatedTimespan):
-                    timespan.annotation = timespan_functions.TimespanSpecifier(
-                        voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
-                    )
-                    ts_list.append(timespan)
-                elif isinstance(timespan, PerformedTimespan):
-                    timespan = abjad.AnnotatedTimespan(
-                        start_offset=timespan.start_offset,
-                        stop_offset=timespan.stop_offset,
-                        annotation=timespan_functions.TimespanSpecifier(
+                    if is_global is False:
+                        timespan.annotation = timespan_functions.TimespanSpecifier(
                             voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
-                        ),
-                    )
-                    ts_list.append(timespan)
+                        )
+                        ts_list.append(timespan)
+                    else:
+                        timespan.annotation = timespan_functions.TimespanSpecifier(
+                            voice_name=f"Global Context", handler=cyclic_materials(r=1)[0]
+                        )
+                        ts_list.append(timespan)
+                elif isinstance(timespan, PerformedTimespan):
+                    if is_global is False:
+                        timespan = abjad.AnnotatedTimespan(
+                            start_offset=timespan.start_offset,
+                            stop_offset=timespan.stop_offset,
+                            annotation=timespan_functions.TimespanSpecifier(
+                                voice_name=f"Voice {i}", handler=cyclic_materials(r=1)[0]
+                            ),
+                        )
+                        ts_list.append(timespan)
+                    else:
+                        timespan = abjad.AnnotatedTimespan(
+                            start_offset=timespan.start_offset,
+                            stop_offset=timespan.stop_offset,
+                            annotation=timespan_functions.TimespanSpecifier(
+                                voice_name=f"Global Context", handler=cyclic_materials(r=1)[0]
+                            ),
+                        )
+                        ts_list.append(timespan)
                 else:
                     if fill_gaps is True:
                         if add_silence is True:
@@ -129,7 +146,10 @@ class ConvertTimespans:
         master_list = split_timespans
 
         master_length = len(master_list)
-        voices = [f"Voice {i + 1}" for i in range(master_length)]
+        if is_global is False:
+            voices = [f"Voice {i + 1}" for i in range(master_length)]
+        else:
+            voices = ["Global Context"]
         final_timespan_dict = {
             voice: timespan_list for voice, timespan_list in zip(voices, master_list)
         }

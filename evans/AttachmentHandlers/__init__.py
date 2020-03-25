@@ -10,5 +10,6 @@ from .PitchHandler import PitchHandler
 from .RhythmHandler import RhythmHandler
 from .SegmentMaker import SegmentMaker
 from .SlurHandler import SlurHandler
+from .TempoSpannerHandler import TempoSpannerHandler
 from .TextSpanHandler import TextSpanHandler
 from .TrillHandler import TrillHandler

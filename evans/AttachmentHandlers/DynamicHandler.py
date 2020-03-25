@@ -14,6 +14,7 @@ class DynamicHandler:
         hold_last_continuous=True,
         effort_boolean_vector=[0],
         effort_continuous=True,
+        with_constante_hairpins=True,
         continuous=True,
         count_1=-1,
         count_2=-1,
@@ -31,6 +32,7 @@ class DynamicHandler:
         self.hold_last_continuous = hold_last_continuous
         self.effort_boolean_vector = effort_boolean_vector
         self.effort_continuous = effort_continuous
+        self.with_constante_hairpins = with_constante_hairpins
         self.continuous = continuous
         self._count_1 = count_1
         self._count_2 = count_2
@@ -185,10 +187,11 @@ class DynamicHandler:
                         stop = abjad.Dynamic("niente", command="\!")
                     if hold_last == 1:
                         if stop.name != "niente":
-                            abjad.attach(abjad.StartHairpin("--"), run[-1])
-                            abjad.attach(
-                                abjad.StopHairpin(), abjad.inspect(run[-1]).leaf(1)
-                            )
+                            if self.with_constante_hairpins is True:
+                                abjad.attach(abjad.StartHairpin("--"), run[-1])
+                                abjad.attach(
+                                    abjad.StopHairpin(), abjad.inspect(run[-1]).leaf(1)
+                                )
                         else:
                             if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
                                 stop = abjad.Dynamic(
@@ -223,9 +226,10 @@ class DynamicHandler:
                         sustain = abjad.StartHairpin("--")
                         next_leaf = abjad.inspect(run[-1]).leaf(1)
                         abjad.attach(start, run[0])
-                        abjad.attach(sustain, run[0])
-                        if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
-                            abjad.attach(abjad.StopHairpin(), next_leaf)
+                        if self.with_constante_hairpins is True:
+                            abjad.attach(sustain, run[0])
+                            if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
+                                abjad.attach(abjad.StopHairpin(), next_leaf)
                     else:
                         items = self._cyc_dynamics(r=2)
                         effort_bools = self._cyc_effort_boolean_vector(r=2)
@@ -285,9 +289,10 @@ class DynamicHandler:
                 stopper = abjad.StopHairpin()
                 next_leaf = abjad.inspect(run[-1]).leaf(1)
                 abjad.attach(start, run[0])
-                abjad.attach(hairpin, run[0])
-                if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
-                    abjad.attach(stopper, next_leaf)
+                if self.with_constante_hairpins is True:
+                    abjad.attach(hairpin, run[0])
+                    if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
+                        abjad.attach(stopper, next_leaf)
                 else:
                     pass
         self._remove_niente(selections)
