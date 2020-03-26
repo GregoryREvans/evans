@@ -14,5 +14,5 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
 
 
 # ###DEMO###
-# warp(-0.9, 0.9, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-# warp(-4, 4, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], by_integers=True)
+# print(warp(-0.5, 0.5, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+# print(warp(-1, 1, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], by_integers=True))
