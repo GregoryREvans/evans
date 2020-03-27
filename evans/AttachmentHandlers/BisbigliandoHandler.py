@@ -34,6 +34,7 @@ class BisbigliandoHandler:
                     start_literal = abjad.LilyPondLiteral(
                         [
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
+                            r"""- \tweak bound-details.right.padding #1.5""",
                             r"""- \tweak bound-details.left.text""",
                             r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
                         	r"""\startTrillSpan""",
@@ -50,6 +51,7 @@ class BisbigliandoHandler:
                     start_literal_pre = abjad.LilyPondLiteral(
                         [
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
+                            r"""- \tweak bound-details.right.padding #1.5""",
                             r"""- \tweak bound-details.left.text""",
                         ],
                         format_slot="after"
