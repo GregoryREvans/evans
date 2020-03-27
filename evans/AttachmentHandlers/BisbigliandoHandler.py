@@ -33,7 +33,7 @@ class BisbigliandoHandler:
                 if fingering is None:
                     start_literal = abjad.LilyPondLiteral(
                         [
-                            r"""- \tweak staff_padding""" + f""" #{self.staff_padding}""",
+                            r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                             r"""- \tweak bound-details.left.text""",
                             r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
                         	r"""\startTrillSpan""",
@@ -49,7 +49,7 @@ class BisbigliandoHandler:
                 else:
                     start_literal_pre = abjad.LilyPondLiteral(
                         [
-                            r"""- \tweak staff_padding""" + f""" #{self.staff_padding}""",
+                            r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                             r"""- \tweak bound-details.left.text""",
                         ],
                         format_slot="after"
