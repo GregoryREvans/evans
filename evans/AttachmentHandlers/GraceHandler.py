@@ -40,9 +40,21 @@ class GraceHandler:
                             grace_list = grace_list + "s8.."
                             grace_list = grace_list + " "
                         grace_list = grace_list + "s2"
-                        grace = abjad.BeforeGraceContainer(grace_list, command=r"\appoggiatura")
+                        grace = abjad.BeforeGraceContainer(grace_list, command=r"\acciaccatura")
                         if len(abjad.select(grace).leaves(pitched=True)) > 1:
                             abjad.beam(grace, beam_rests=True, beam_lone_notes=True, stemlet_length=0)
+                            literal_slash = abjad.LilyPondLiteral(r"\slash", format_slot="before")
+                            abjad.attach(literal_slash, abjad.select(grace).leaves(pitched=True)[0])
+                            direction_override = abjad.LilyPondLiteral(
+                                r"\override Stem.direction = #UP",
+                                format_slot="before",
+                                )
+                            direction_revert = abjad.LilyPondLiteral(
+                                r"\revert Stem.direction",
+                                format_slot="after"
+                                )
+                            abjad.attach(direction_override, abjad.select(grace).leaves(pitched=True)[0])
+                            abjad.attach(direction_revert, abjad.select(grace).leaves(pitched=True)[-1])
                         open_literal = abjad.LilyPondLiteral("\scaleDurations #'(1 . 1) {", format_slot="before")
                         close_literal = abjad.LilyPondLiteral("}", format_slot="after")
                         abjad.attach(open_literal, grace)
