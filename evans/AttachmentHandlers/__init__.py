@@ -1,5 +1,6 @@
 from .ArticulationHandler import ArticulationHandler
 from .BendHandler import BendHandler
+from .BisbigliandoHandler import BisbigliandoHandler
 from .ClefHandler import ClefHandler
 from .CyclicList import CyclicList
 from .DynamicHandler import DynamicHandler
