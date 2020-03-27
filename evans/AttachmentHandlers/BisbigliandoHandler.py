@@ -25,7 +25,7 @@ class BisbigliandoHandler:
         self.add_spanner(selections)
 
     def add_spanner(self, selections):
-        ties = abjad.select(selections).logical_ties()
+        ties = abjad.select(selections).logical_ties(pitched=True)
         values = self.boolean_vector(r=len(ties))
         for value, tie in zip(values, ties):
             if value == 1:
