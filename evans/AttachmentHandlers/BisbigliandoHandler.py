@@ -7,6 +7,7 @@ class BisbigliandoHandler:
         self,
         fingering_list=[None,],
         boolean_vector=[1],
+        padding=2,
         staff_padding=2,
         right_padding=2,
         continuous=True,
@@ -17,6 +18,7 @@ class BisbigliandoHandler:
         self._bis_count = bis_count
         self._bool_count = bool_count
         self.continuous = continuous
+        self.padding = padding
         self.staff_padding = staff_padding
         self.right_padding = right_padding
         self.fingering_list = CyclicList(fingering_list, self.continuous, self._bis_count)
@@ -35,6 +37,7 @@ class BisbigliandoHandler:
                 if fingering is None:
                     start_literal = abjad.LilyPondLiteral(
                         [
+                            r"""- \tweak padding""" + f""" #{self.padding}""",
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                             r"""- \tweak bound-details.right.padding""" + f""" #{self.right_padding}""",
                             r"""- \tweak bound-details.left.text""",
@@ -52,6 +55,7 @@ class BisbigliandoHandler:
                 else:
                     start_literal_pre = abjad.LilyPondLiteral(
                         [
+                            r"""- \tweak padding""" + f""" #{self.padding}""",
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                             r"""- \tweak bound-details.right.padding""" + f""" #{self.right_padding}""",
                             r"""- \tweak bound-details.left.text""",

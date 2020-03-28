@@ -20,8 +20,12 @@ class SegmentMaker:
         score_template=None,
         time_signatures=None,
         clef_handlers=None,
+        voicewise_direct_detachments=None,
+        voicewise_direct_attachments=None,
         voicewise_persistent_indicators=None,
         voicewise_stem_directions=None,
+        voicewise_measure_replacement=None,
+        measure_replacement_timing=None,
         tuplet_bracket_noteheads=True,
         add_final_grand_pause=True,
         fermata="scripts.ushortfermata",
@@ -49,8 +53,12 @@ class SegmentMaker:
         self.score_template = score_template
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
+        self.voicewise_direct_detachments = voicewise_direct_detachments
+        self.voicewise_direct_attachments = voicewise_direct_attachments
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
         self.voicewise_stem_directions = voicewise_stem_directions
+        self.voicewise_measure_replacement = voicewise_measure_replacement
+        self.measure_replacement_timing = measure_replacement_timing
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.add_final_grand_pause = add_final_grand_pause
         self.fermata = fermata
@@ -81,12 +89,20 @@ class SegmentMaker:
         self._transform_brackets()
         self._splitting_and_rewriting()
         self._adding_ending_skips()
+        if self.measure_replacement_timing == "pre-handlers":
+            self._replace_measures()
         self._handlers()
+        if self.measure_replacement_timing == "post-handlers":
+            self._replace_measures()
         self._multimeasure_rests_and_cutaway()
         self._beaming_runs()
         self._adding_attachments()
         if self.voicewise_persistent_indicators is not None:
             self._attach_previous_indicators()
+        if self.voicewise_direct_detachments is not None:
+            self._direct_detachments()
+        if self.voicewise_direct_attachments is not None:
+            self._direct_attachments()
         if self.voicewise_stem_directions is not None:
             self._direct_stems()
         # self._transposing_and_adding_clefs()
@@ -370,6 +386,33 @@ class SegmentMaker:
                     abjad.tweak(
                         tuplet
                     ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
+
+    def _replace_measures(self):
+        if self.voicewise_measure_replacement is not None:
+            for i, replacement_list in enumerate(self.voicewise_measure_replacement):
+                if len(replacement_list) > 0:
+                    measures = abjad.mutate(self.score_template[f"Voice {i + 1}"]).split(self.time_signatures)
+                    for pair in replacement_list:
+                        measure_index = pair[0]
+                        measure = measures[measure_index]
+                        container = pair[1]
+                        abjad.mutate(measure).replace(container[:])
+
+    def _direct_detachments(self):
+        for detachment_list in self.voicewise_direct_detachments:
+            if len(detachment_list) > 0:
+                for pair in detachment_list:
+                    selector = pair[0]
+                    item = pair[1]
+                    abjad.detach(item, selector(self.score_template))
+
+    def _direct_attachments(self):
+        for attachment_list in self.voicewise_direct_attachments:
+            if len(attachment_list) > 0:
+                for pair in attachment_list:
+                    selector = pair[0]
+                    item = pair[1]
+                    abjad.attach(item, selector(self.score_template))
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
