@@ -591,11 +591,10 @@ class SegmentMaker:
 
     def _render_file(self):
         print("Rendering file ...")
+        abjad.SegmentMaker.comment_measure_numbers(self.score_template)
         score_file = abjad.LilyPondFile.new(
             self.score_template, includes=self.score_includes
         )
-
-        # abjad.SegmentMaker.comment_measure_numbers(self.score_template)
         for leaf in abjad.iterate(self.score_template).leaves():
             literal = abjad.LilyPondLiteral("", "absolute_before")
             abjad.attach(literal, leaf, tag=None)
