@@ -8,6 +8,7 @@ class BisbigliandoHandler:
         fingering_list=[None,],
         boolean_vector=[1],
         staff_padding=2,
+        right_padding=2,
         continuous=True,
         bis_count=-1,
         bool_count=-1,
@@ -17,6 +18,7 @@ class BisbigliandoHandler:
         self._bool_count = bool_count
         self.continuous = continuous
         self.staff_padding = staff_padding
+        self.right_padding = right_padding
         self.fingering_list = CyclicList(fingering_list, self.continuous, self._bis_count)
         self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._bool_count)
         self.name = name
@@ -34,7 +36,7 @@ class BisbigliandoHandler:
                     start_literal = abjad.LilyPondLiteral(
                         [
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
-                            r"""- \tweak bound-details.right.padding #1.5""",
+                            r"""- \tweak bound-details.right.padding""" + f""" #{self.right_padding}""",
                             r"""- \tweak bound-details.left.text""",
                             r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
                         	r"""\startTrillSpan""",
@@ -51,7 +53,7 @@ class BisbigliandoHandler:
                     start_literal_pre = abjad.LilyPondLiteral(
                         [
                             r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
-                            r"""- \tweak bound-details.right.padding #1.5""",
+                            r"""- \tweak bound-details.right.padding""" + f""" #{self.right_padding}""",
                             r"""- \tweak bound-details.left.text""",
                         ],
                         format_slot="after"
