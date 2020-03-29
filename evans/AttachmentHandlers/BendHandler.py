@@ -33,7 +33,7 @@ class BendHandler:
         vector = self.boolean_vector(r=len(ties))
         amounts = self.bend_amounts(r=len(ties))
         for tie, bool, amount in zip(ties, vector, amounts):
-            if bool is 0:
+            if bool is 1:
                 abjad.attach(abjad.BendAfter(amount), tie[-1])
             else:
                 continue
