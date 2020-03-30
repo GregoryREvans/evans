@@ -388,31 +388,47 @@ class SegmentMaker:
                     ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
 
     def _replace_measures(self):
+        print("Replacing measures ...")
         if self.voicewise_measure_replacement is not None:
             for i, replacement_list in enumerate(self.voicewise_measure_replacement):
                 if len(replacement_list) > 0:
-                    measures = abjad.mutate(self.score_template[f"Voice {i + 1}"]).split(self.time_signatures)
+                    split_voice = abjad.select(
+                        self.score_template[f"Voice {i + 1}"]
+                    ).components().group_by_measure()
                     for pair in replacement_list:
-                        measure_index = pair[0]
-                        measure = measures[measure_index]
-                        container = pair[1]
-                        abjad.mutate(measure).replace(container[:])
+                        target = split_voice[pair[0]]
+                        for tuplet in abjad.select(target).components(abjad.Tuplet):
+                            maker = abjad.LeafMaker()
+                            abjad.mutate(tuplet).replace(
+                                maker([0], [abjad.inspect(tuplet).duration()])
+                            )
+                        split_voice = abjad.select(
+                            self.score_template[f"Voice {i + 1}"]
+                        ).components().group_by_measure()
+                        for pair in replacement_list:
+                            target = split_voice[pair[0]]
+                            container = pair[1][:]
+                            abjad.mutate(target).replace(container)
 
     def _direct_detachments(self):
-        for detachment_list in self.voicewise_direct_detachments:
+        print("Detaching from list ...")
+        for i, detachment_list in enumerate(self.voicewise_direct_detachments):
             if len(detachment_list) > 0:
+                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(abjad.Voice)
                 for pair in detachment_list:
                     selector = pair[0]
                     item = pair[1]
-                    abjad.detach(item, selector(self.score_template))
+                    abjad.detach(item, selector(voice)[0])
 
     def _direct_attachments(self):
-        for attachment_list in self.voicewise_direct_attachments:
+        print("Attaching from list ...")
+        for i, attachment_list in enumerate(self.voicewise_direct_attachments):
             if len(attachment_list) > 0:
+                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(abjad.Voice)
                 for pair in attachment_list:
                     selector = pair[0]
                     item = pair[1]
-                    abjad.attach(item, selector(self.score_template))
+                    abjad.attach(item, selector(voice)[0])
 
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
@@ -452,6 +468,11 @@ class SegmentMaker:
                         )
         else:
             pass
+        for trem in abjad.select(self.score_template).components(abjad.TremoloContainer):
+            if abjad.StartBeam() in abjad.inspect(trem[0]).indicators():
+                abjad.detach(abjad.StartBeam(), trem[0])
+            if abjad.StopBeam() in abjad.inspect(trem[-1]).indicators():
+                abjad.detach(abjad.StopBeam(), trem[-1])
 
         # print('Stopping Hairpins and Text Spans...')
         # for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
