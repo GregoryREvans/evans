@@ -7,6 +7,7 @@ class TempoSpannerHandler:
         self,
         tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
         boolean_vector=[1],
+        padding=4,
         staff_padding=2,
         continuous=True,
         tempo_count=-1,
@@ -15,6 +16,7 @@ class TempoSpannerHandler:
     ):
         self._tempo_count = tempo_count
         self._bool_count = bool_count
+        self.padding = padding
         self.continuous = continuous
         self.staff_padding = staff_padding
         self.tempo_list = CyclicList(tempo_list, self.continuous, self._tempo_count)
@@ -34,6 +36,7 @@ class TempoSpannerHandler:
                 [
                     r"- \abjad-dashed-line-with-arrow",
                     r"- \baca-metronome-mark-spanner-left-text " + f"{start_temp[0]} {start_temp[1]} {start_temp[2]} \"{start_temp[3]}\"",
+                    r"- \tweak padding #" + f"{self.padding}",
                     r"- \tweak staff-padding #" + f"{self.staff_padding}",
                     r"\bacaStartTextSpanMM",
                 ],
@@ -44,6 +47,7 @@ class TempoSpannerHandler:
                     r"\bacaStopTextSpanMM",
                     r"- \abjad-invisible-line",
                     r"- \baca-metronome-mark-spanner-left-text " + f"{stop_temp[0]} {stop_temp[1]} {stop_temp[2]} \"{stop_temp[3]}\"",
+                    r"- \tweak padding #" + f"{self.padding}",
                     r"- \tweak staff-padding #" + f"{self.staff_padding}",
                     r"\bacaStartTextSpanMM",
                 ],
