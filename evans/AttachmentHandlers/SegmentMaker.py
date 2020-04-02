@@ -21,7 +21,9 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         voicewise_direct_detachments=None,
+        global_direct_detachments=None,
         voicewise_direct_attachments=None,
+        global_direct_attachments=None,
         voicewise_persistent_indicators=None,
         voicewise_stem_directions=None,
         voicewise_measure_replacement=None,
@@ -54,7 +56,9 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.voicewise_direct_detachments = voicewise_direct_detachments
+        self.global_direct_detachments = global_direct_detachments
         self.voicewise_direct_attachments = voicewise_direct_attachments
+        self.global_direct_attachments = global_direct_attachments
         self.voicewise_persistent_indicators = voicewise_persistent_indicators
         self.voicewise_stem_directions = voicewise_stem_directions
         self.voicewise_measure_replacement = voicewise_measure_replacement
@@ -101,8 +105,12 @@ class SegmentMaker:
             self._attach_previous_indicators()
         if self.voicewise_direct_detachments is not None:
             self._direct_detachments()
+        if self.global_direct_detachments is not None:
+            self._direct_global_detachments()
         if self.voicewise_direct_attachments is not None:
             self._direct_attachments()
+        if self.global_direct_attachments is not None:
+            self._direct_global_attachments()
         if self.voicewise_stem_directions is not None:
             self._direct_stems()
         # self._transposing_and_adding_clefs()
@@ -425,6 +433,26 @@ class SegmentMaker:
         for i, attachment_list in enumerate(self.voicewise_direct_attachments):
             if len(attachment_list) > 0:
                 voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(abjad.Voice)
+                for pair in attachment_list:
+                    selector = pair[0]
+                    item = pair[1]
+                    abjad.attach(item, selector(voice)[0])
+
+    def _direct_global_detachments(self):
+        print("Detaching from global context ...")
+        for i, detachment_list in enumerate(self.global_direct_detachments):
+            if len(detachment_list) > 0:
+                voice = abjad.select(self.score_template[f"Global Context"]).components(abjad.Staff)
+                for pair in detachment_list:
+                    selector = pair[0]
+                    item = pair[1]
+                    abjad.detach(item, selector(voice)[0])
+
+    def _direct_global_attachments(self):
+        print("Attaching from global context ...")
+        for i, attachment_list in enumerate(self.global_direct_attachments):
+            if len(attachment_list) > 0:
+                voice = abjad.select(self.score_template[f"Global Context"]).components(abjad.Staff)
                 for pair in attachment_list:
                     selector = pair[0]
                     item = pair[1]
