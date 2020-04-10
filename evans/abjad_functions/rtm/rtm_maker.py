@@ -1,4 +1,5 @@
 import abjad
+import abjadext.rmakers
 
 
 class RTMMaker(object):
@@ -145,10 +146,6 @@ class RTMMaker_4(object):
     def _rhythm_cell(duration, rtm):
         rtm_parser = abjad.rhythmtrees.RhythmTreeParser()
         selection = abjad.select(rtm_parser(rtm)[0](duration))
-        for tuplet in abjad.select(selection).components(abjad.Tuplet):
-            tuplet.normalize_multiplier()
-            if tuplet.trivializable() is True:
-                tuplet.trivialize()
         return selection
 
     def _rtm_maker(self, divisions, starting_index=0):

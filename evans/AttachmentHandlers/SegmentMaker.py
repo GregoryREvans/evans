@@ -373,12 +373,26 @@ class SegmentMaker:
     def _transform_brackets(self):
         print("Transforming brackets ...")
         for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
-            # tuplet.rewrite_dots()
+            if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
+                tuplet.toggle_prolation()
+            tuplet.normalize_multiplier()
+            if tuplet.trivializable() is True:
+                tuplet.trivialize()
             if tuplet.trivial() is True:
                 tuplet.hide = True
-            else:
-                # if tuplet.augmentation() is True:  # is this necessary? diminution?
-                #     tuplet.toggle_prolation()
+            if tuplet.sustained() is True:
+                dur = abjad.inspect(tuplet).duration()
+                maker = abjad.NoteMaker()
+                donor_leaves = maker([0], [dur])
+                indicators = abjad.inspect(tuplet[0]).indicators()
+                for indicator in indicators:
+                    abjad.attach(indicator, donor_leaves[-1])
+                abjad.mutate(tuplet).replace(donor_leaves[:])
+            if tuplet.rest_filled() is True:
+                dur = abjad.inspect(tuplet).duration()
+                maker = abjad.NoteMaker()
+                abjad.mutate(tuplet).replace(maker([None], [dur]))
+            if tuplet.hide is not True:
                 time_duration = tuplet.multiplied_duration
                 imp_num, imp_den = tuplet.implied_prolation.pair
                 notehead_wrapper = time_duration / imp_num
