@@ -374,7 +374,11 @@ class SegmentMaker:
         print("Transforming brackets ...")
         for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
             if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
-                tuplet.toggle_prolation()
+                if tuplet.diminution() is True:
+                    tuplet.toggle_prolation()
+            if tuplet.multiplier.pair[0] % tuplet.multiplier.pair[1] > 1:
+                if tuplet.augmentation() is True:
+                    tuplet.toggle_prolation()
             tuplet.normalize_multiplier()
             if tuplet.trivializable() is True:
                 tuplet.trivialize()
