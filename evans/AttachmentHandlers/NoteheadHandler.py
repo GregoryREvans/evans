@@ -44,10 +44,10 @@ class NoteheadHandler:
         trans_vector = self.transition_boolean_vector(r=len(ties))
         if self.notehead_list != None:
             for tie, head, bool in zip(ties, heads, head_vector):
-                string = str(r"""\once \override Staff.NoteHead.style = #'""")
+                string = str(r"""\tweak NoteHead.style #'""")
                 full_string = string + head
                 style = abjad.LilyPondLiteral(full_string, format_slot="before")
-                if bool is 0:
+                if bool is 1:
                     for leaf in abjad.select(tie).leaves(pitched=True):
                         abjad.attach(style, leaf)
                 else:
@@ -66,8 +66,8 @@ class NoteheadHandler:
             for tie, bool1, bool2 in zip(
                 ties, head_vector, trans_vector
             ):  # verify that heads are different?
-                if bool1 is 0:
-                    if bool2 is 0:
+                if bool1 is 1:
+                    if bool2 is 1:
                         abjad.attach(transition_arrow, tie[-1])
                     else:
                         continue
