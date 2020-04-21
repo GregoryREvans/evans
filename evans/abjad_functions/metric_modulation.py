@@ -39,34 +39,84 @@ def metric_modulation(
     left_speed_multiplier = compare_speed(
         l_note=tempo_note,
         r_note=left_note
-        )
+    )
     left_speed = metronome_mark[1] * left_speed_multiplier
     modulation_speed = calculate_metric_modulation(
         l_tempo=left_speed,
         l_note=left_note,
         r_note=right_note,
-        )
+    )
     returned_speed = float(modulation_speed * compare_speed(left_note, modulated_beat))
     if returned_speed % 1 == 0.0:
-        return int(returned_speed)
+        met = abjad.MetronomeMark.make_tempo_equation_markup(
+            abjad.inspect(modulated_beat).duration(),
+            int(returned_speed),
+        )
+        mod =  abjad.MetricModulation(
+            left_rhythm=left_note,
+            right_rhythm=right_note,
+            scale=(0.5, 0.5),
+        )
+        mark = abjad.LilyPondLiteral(
+            [
+                r"^ \markup {",
+                r"  \concat {",
+                f"      {str(met)[8:]}",
+                r"      \hspace #2",
+                r"      \upright [",
+                f"      {str(mod)[8:]}",
+                r"      \hspace #0.5",
+                r"      \upright ]",
+                r"  }",
+                r"}",
+            ],
+            format_slot="after",
+        )
+        return mark
     else:
-        return mixed_number(fraction_pair=returned_speed)
+        met = abjad.MetronomeMark.make_tempo_equation_markup(
+            abjad.inspect(modulated_beat).duration(),
+            Fraction(returned_speed).limit_denominator(),
+        )
+        mod =  abjad.MetricModulation(
+            left_rhythm=left_note,
+            right_rhythm=right_note,
+            scale=(0.5, 0.5),
+        )
+        mark = abjad.LilyPondLiteral(
+            [
+                r"^ \markup {",
+                r"  \concat {",
+                f"      {str(met)[8:]}",
+                r"      \hspace #2",
+                r"      \upright [",
+                f"      {str(mod)[8:]}",
+                r"      \hspace #0.5",
+                r"      \upright ]",
+                r"  }",
+                r"}",
+            ],
+            format_slot="after",
+        )
+        return mark
 
-###DEMO###
-# print(
-#     metric_modulation(
-#         metronome_mark=((1, 4), 96),
-#         left_note=(abjad.Tuplet(multiplier=(5, 3), components=[abjad.Note()])),
-#         right_note=(abjad.Note("c'4")),
-#         modulated_beat=(abjad.Note("c'4")),
-#     )
+###DEMO 1###
+# m = metric_modulation(
+#     metronome_mark=((1, 4), 96),
+#     left_note=(abjad.Tuplet(multiplier=(5, 3), components=[abjad.Note()])),
+#     right_note=(abjad.Note("c'4")),
+#     modulated_beat=(abjad.Note("c'4")),
 # )
-#
-# print(
-#     metric_modulation(
-#         metronome_mark=((1, 4), 96),
-#         left_note=(abjad.Note("c'4.")),
-#         right_note=(abjad.Note("c'4")),
-#         modulated_beat=(abjad.Note("c'4")),
-#     )
+# staff = abjad.Staff("c'1")
+# abjad.attach(m, staff[0])
+# abjad.f(staff)
+###DEMO 2###
+# m = metric_modulation(
+#     metronome_mark=((1, 4), 96),
+#     left_note=(abjad.Note("c'4.")),
+#     right_note=(abjad.Note("c'4")),
+#     modulated_beat=(abjad.Note("c'4")),
 # )
+# staff = abjad.Staff("c'1")
+# abjad.attach(m, staff[0])
+# abjad.f(staff)
