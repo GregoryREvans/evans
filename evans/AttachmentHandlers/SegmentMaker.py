@@ -585,6 +585,7 @@ class SegmentMaker:
             names = [_ for _ in range(len(self.instruments))]
 
         metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
+        # metro = abjad.MetronomeMark(custom_markup=metro.make_tempo_equation_markup())#remove if broken
         if self.tempo is not None:
             for staff in abjad.iterate(
                 self.score_template["Global Context"]

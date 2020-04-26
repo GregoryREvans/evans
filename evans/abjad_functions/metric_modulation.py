@@ -55,14 +55,15 @@ def metric_modulation(
         mod =  abjad.MetricModulation(
             left_rhythm=left_note,
             right_rhythm=right_note,
-            scale=(0.5, 0.5),
+            scale=(0.6, 0.6),
         )
         mark = abjad.LilyPondLiteral(
             [
                 r"^ \markup {",
+                r"  \huge",
                 r"  \concat {",
                 f"      {str(met)[8:]}",
-                r"      \hspace #2",
+                r"      \hspace #1",
                 r"      \upright [",
                 f"      {str(mod)[8:]}",
                 r"      \hspace #0.5",
@@ -81,14 +82,15 @@ def metric_modulation(
         mod =  abjad.MetricModulation(
             left_rhythm=left_note,
             right_rhythm=right_note,
-            scale=(0.5, 0.5),
+            scale=(0.6, 0.6),
         )
         mark = abjad.LilyPondLiteral(
             [
                 r"^ \markup {",
+                r"  \huge",
                 r"  \concat {",
                 f"      {str(met)[8:]}",
-                r"      \hspace #2",
+                r"      \hspace #1",
                 r"      \upright [",
                 f"      {str(mod)[8:]}",
                 r"      \hspace #0.5",
@@ -115,6 +117,16 @@ def metric_modulation(
 #     metronome_mark=((1, 4), 96),
 #     left_note=(abjad.Note("c'4.")),
 #     right_note=(abjad.Note("c'4")),
+#     modulated_beat=(abjad.Note("c'4")),
+# )
+# staff = abjad.Staff("c'1")
+# abjad.attach(m, staff[0])
+# abjad.f(staff)
+###DEMO 3###
+# m = metric_modulation(
+#     metronome_mark=((1, 4), 71),
+#     left_note=(abjad.Tuplet(multiplier=(10, 9), components=[abjad.Note("c'16")])),
+#     right_note=(abjad.Note("c'16")),
 #     modulated_beat=(abjad.Note("c'4")),
 # )
 # staff = abjad.Staff("c'1")
