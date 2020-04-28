@@ -132,3 +132,13 @@ def metric_modulation(
 # staff = abjad.Staff("c'1")
 # abjad.attach(m, staff[0])
 # abjad.f(staff)
+###DEMO 4###
+# m = metric_modulation(
+#     metronome_mark=((1, 4), 40),
+#     left_note=(abjad.Tuplet(multiplier=(2, 3), components=[abjad.Note("c'2")])),
+#     right_note=(abjad.Note("c'2")),
+#     modulated_beat=(abjad.Note("c'4")),
+# )
+# staff = abjad.Staff("c'1")
+# abjad.attach(m, staff[0])
+# abjad.f(staff)

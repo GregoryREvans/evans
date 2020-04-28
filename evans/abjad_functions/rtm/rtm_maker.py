@@ -124,8 +124,9 @@ class RTMMaker_3(object):
 
 
 class RTMMaker_4(object):
-    def __init__(self, rtm, continuous=False):
+    def __init__(self, rtm, tie_across_divisions=False, continuous=False):
         self.rtm = abjad.CyclicTuple(rtm)
+        self.tie_across_divisions = tie_across_divisions
         self.state = {"last index used": -1}
 
     def __call__(self, divisions, previous_state=None):
@@ -155,7 +156,10 @@ class RTMMaker_4(object):
         for rtm_string, division in zip(rtm, divisions):
             selection = self._rhythm_cell(division, rtm_string)
             selections.append(selection)
-
+        for selection_ in selections[:-1]:
+            if self.tie_across_divisions is True:
+                last_leaf = abjad.select(selection_).leaves()[-1]
+                abjad.attach(abjad.Tie(), last_leaf)
         return selections
 
 
