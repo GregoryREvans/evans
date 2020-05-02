@@ -21,6 +21,8 @@ class PitchHandler:
             if isinstance(tie[0], abjad.Note):
                 pitch = self._cyc_pitches(r=1)[0]
                 for leaf in tie:
+                    if isinstance(pitch, list):
+                        pitch = list(set(pitch))
                     pitches.append(pitch)
                     durations.append(leaf.written_duration)
                     leaves.append(leaf)
