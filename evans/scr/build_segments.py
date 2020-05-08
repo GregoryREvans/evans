@@ -22,35 +22,25 @@ def git_push(repo_dir):
     execute_shell_command(cmd, repo_dir)
 
 print("Building Scores ...")
-build_path = pathlib.Path(__file__).parent
-full_build_path = pathlib.Path(build_path).absolute()
-scores = [f.path for f in os.scandir(build_path) if f.is_dir()]
-for score in scores:
-    if score[2:] == "__pycache__":
+ignores = ("archive", "guerrero", "trio", "onkos")
+build_path = pathlib.Path("/Users/evansdsg2/Scores")
+for score in build_path.iterdir():
+    if not score.is_dir():
         continue
-    elif score[2:] == "archive":
+    if score.name in ignores:
         continue
-    elif score[2:] == "guerrero":
-        continue
-    elif score[2:] == "trio":
-        continue
-    elif score[2:] == "onkos":
-        continue
-    else:
-        print(f"Now building {score[2:]} ...")
-        segments_path = (build_path / score / score[2:] / "Segments").resolve()
-        segments = [f.path for f in os.scandir(segments_path) if f.is_dir()]
-        for x in segments:
-            if x[-11:] == "__pycache__":
-                segments.remove(x)
-            else:
-                print(f"Building {x} ...")
-                os.system(f"python {x}/definition.py")
-        score_path = f"{(full_build_path / score).resolve()}"
-        os.system(f"black {score_path}")
-        print("git adding ...")
-        git_add(file_path=score_path, repo_dir=score_path)
-        print("git committing ...")
-        git_commit(commit_message="Rerendered Segments.", repo_dir=score_path)
-        print("git pushing ...")
-        git_push(score_path)
+    print(f"Now building {score.name} ...")
+    segments_path = score / score.name / "Segments"
+    for x in segments_path.iterdir():
+        if x.name.startswith("_"):
+            continue
+        print(f"Building {x} ...")
+        os.system(f"python {x}/definition.py")
+    os.system(f"black {score}")
+    score = str(score)
+    print("git adding ...")
+    git_add(file_path=score, repo_dir=score)
+    print("git committing ...")
+    git_commit(commit_message="Rerendered Segments.", repo_dir=score)
+    print("git pushing ...")
+    git_push(score)
