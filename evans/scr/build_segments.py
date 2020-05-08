@@ -31,11 +31,11 @@ for score in build_path.iterdir():
         continue
     print(f"Now building {score.name} ...")
     segments_path = score / score.name / "Segments"
-    for x in segments_path.iterdir():
-        if x.name.startswith("_"):
+    for segment in segments_path.iterdir():
+        if segment.name.startswith("_"):
             continue
-        print(f"Building {x} ...")
-        os.system(f"python {x}/definition.py")
+        print(f"Building {segment} ...")
+        os.system(f"python {segment}/definition.py")
     os.system(f"black {score}")
     score = str(score)
     print("git adding ...")
