@@ -418,9 +418,11 @@ class SegmentMaker:
         if self.voicewise_measure_replacement is not None:
             for i, replacement_list in enumerate(self.voicewise_measure_replacement):
                 if len(replacement_list) > 0:
-                    split_voice = abjad.select(
-                        self.score_template[f"Voice {i + 1}"]
-                    ).components().group_by_measure()
+                    split_voice = (
+                        abjad.select(self.score_template[f"Voice {i + 1}"])
+                        .components()
+                        .group_by_measure()
+                    )
                     for pair in replacement_list:
                         target = split_voice[pair[0]]
                         for tuplet in abjad.select(target).components(abjad.Tuplet):
@@ -428,9 +430,11 @@ class SegmentMaker:
                             abjad.mutate(tuplet).replace(
                                 maker([0], [abjad.inspect(tuplet).duration()])
                             )
-                        split_voice = abjad.select(
-                            self.score_template[f"Voice {i + 1}"]
-                        ).components().group_by_measure()
+                        split_voice = (
+                            abjad.select(self.score_template[f"Voice {i + 1}"])
+                            .components()
+                            .group_by_measure()
+                        )
                         for pair in replacement_list:
                             target = split_voice[pair[0]]
                             container = pair[1][:]
@@ -440,7 +444,9 @@ class SegmentMaker:
         print("Detaching from list ...")
         for i, detachment_list in enumerate(self.voicewise_direct_detachments):
             if len(detachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(abjad.Voice)
+                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(
+                    abjad.Voice
+                )
                 for pair in detachment_list:
                     selector = pair[0]
                     item = pair[1]
@@ -450,7 +456,9 @@ class SegmentMaker:
         print("Attaching from list ...")
         for i, attachment_list in enumerate(self.voicewise_direct_attachments):
             if len(attachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(abjad.Voice)
+                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(
+                    abjad.Voice
+                )
                 for pair in attachment_list:
                     selector = pair[0]
                     item = pair[1]
@@ -460,7 +468,9 @@ class SegmentMaker:
         print("Detaching from global context ...")
         for i, detachment_list in enumerate(self.global_direct_detachments):
             if len(detachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Global Context"]).components(abjad.Staff)
+                voice = abjad.select(self.score_template[f"Global Context"]).components(
+                    abjad.Staff
+                )
                 for pair in detachment_list:
                     selector = pair[0]
                     item = pair[1]
@@ -470,7 +480,9 @@ class SegmentMaker:
         print("Attaching from global context ...")
         for i, attachment_list in enumerate(self.global_direct_attachments):
             if len(attachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Global Context"]).components(abjad.Staff)
+                voice = abjad.select(self.score_template[f"Global Context"]).components(
+                    abjad.Staff
+                )
                 for pair in attachment_list:
                     selector = pair[0]
                     item = pair[1]
@@ -514,7 +526,9 @@ class SegmentMaker:
                         )
         else:
             pass
-        for trem in abjad.select(self.score_template).components(abjad.TremoloContainer):
+        for trem in abjad.select(self.score_template).components(
+            abjad.TremoloContainer
+        ):
             if abjad.StartBeam() in abjad.inspect(trem[0]).indicators():
                 abjad.detach(abjad.StartBeam(), trem[0])
             if abjad.StopBeam() in abjad.inspect(trem[-1]).indicators():
@@ -626,11 +640,15 @@ class SegmentMaker:
             if self.name_staves is True:
                 if not isinstance(abbrev, int):
                     abjad.attach(
-                        abbrev, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                        abbrev,
+                        first_leaf,
+                        tag=abjad.Tag("applying staff names and clefs"),
                     )
                 if not isinstance(name, int):
                     abjad.attach(
-                        name, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                        name,
+                        first_leaf,
+                        tag=abjad.Tag("applying staff names and clefs"),
                     )
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")

@@ -57,6 +57,7 @@ class PitchHandler:
     def state(self):
         return f"""count\n{self._cyc_pitches.state()}"""
 
+
 ###DEMO
 # s = abjad.Staff("c'4 c'4 c'4 c'4")
 # grace = abjad.BeforeGraceContainer("c'16")

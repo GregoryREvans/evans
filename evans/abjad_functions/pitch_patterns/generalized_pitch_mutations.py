@@ -11,13 +11,18 @@ def adjacent_combinations(l=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], count=2):
             combination_list.append(group)
     return combination_list
 
+
 for n in range(2, 13):
     score = abjad.Score([])
-    for combination_group in adjacent_combinations(l=[0, 5, 7, 1, 4, 11, 3, 2, 10, 8, 9, 6], count=n):
+    for combination_group in adjacent_combinations(
+        l=[0, 5, 7, 1, 4, 11, 3, 2, 10, 8, 9, 6], count=n
+    ):
         staff_group1 = abjad.StaffGroup([])
         for rotation in range(len(combination_group)):
             staff_group2 = abjad.StaffGroup([])
-            p = abjad.PitchClassSegment(combination_group).rotate(n=0 - rotation, stravinsky=False)
+            p = abjad.PitchClassSegment(combination_group).rotate(
+                n=0 - rotation, stravinsky=False
+            )
             i = p.invert()
             p_values = [item.number for item in p.items]
             i_values = [item.number for item in i.items]
@@ -70,4 +75,6 @@ for n in range(2, 13):
     sig = abjad.TimeSignature((n, 4))
     first_leaf = abjad.select(score).leaves()[0]
     abjad.attach(sig, first_leaf)
-    abjad.persist(score).as_ly(f"/Users/evansdsg2/evans/evans/abjad_functions/pitch_patterns/divisions_of_{n}.ly")
+    abjad.persist(score).as_ly(
+        f"/Users/evansdsg2/evans/evans/abjad_functions/pitch_patterns/divisions_of_{n}.ly"
+    )

@@ -228,7 +228,9 @@ class DynamicHandler:
                         abjad.attach(start, run[0])
                         if self.with_constante_hairpins is True:
                             abjad.attach(sustain, run[0])
-                            if isinstance(next_leaf, (abjad.Rest, abjad.MultimeasureRest)):
+                            if isinstance(
+                                next_leaf, (abjad.Rest, abjad.MultimeasureRest)
+                            ):
                                 abjad.attach(abjad.StopHairpin(), next_leaf)
                     else:
                         items = self._cyc_dynamics(r=2)

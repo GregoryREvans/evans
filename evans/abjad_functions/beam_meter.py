@@ -27,7 +27,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.select().leaves(grace=False)
+                selector=abjad.select().leaves(grace=False),
             )
         else:
             continue
@@ -66,8 +66,9 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.select().leaves(grace=False)
+                selector=abjad.select().leaves(grace=False),
             )
+
 
 # ###DEMO###
 # pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
