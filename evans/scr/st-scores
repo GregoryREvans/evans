@@ -1,0 +1,35 @@
+#! /usr/bin/env python
+import pathlib
+import subprocess
+from return_directories import return_directories
+
+
+def execute_shell_command(cmd, work_dir):
+    pipe = subprocess.Popen(
+        cmd, shell=True, cwd=work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    # (out, error) = pipe.communicate()
+    lines = []
+    string = pipe.stdout.read()
+    for line in string.splitlines():
+        line = line.decode(errors="ignore")
+        lines.append(line)
+        string_ = "\n".join(lines)
+        print(string_)
+    pipe.wait()
+
+
+def git_status(file_path, repo_dir):
+    cmd = "git status " + file_path
+    execute_shell_command(cmd, repo_dir)
+
+
+def st_scores():
+    for score in return_directories():
+        print(f"Examining {score.name} ...")
+        print(" ")
+        score = str(score)
+        git_status(file_path=score, repo_dir=score)
+
+if __name__ == "__main__":
+    st_scores()

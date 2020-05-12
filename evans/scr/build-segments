@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import os
 from return_directories import return_directories
 
@@ -14,3 +15,6 @@ def build_segments():
                 continue
             print(f"Building {segment} ...")
             os.system(f"python {segment}/definition.py")
+
+if __name__ == "__main__":
+    build_segments()

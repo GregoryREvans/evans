@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import pathlib
 import subprocess
 from return_directories import return_directories
@@ -29,7 +30,7 @@ def git_push(repo_dir):
 
 def push_scores():
     print("Pushing Scores ...")
-    for score in return_diretories():
+    for score in return_directories():
         score = str(score)
         print("git adding ...")
         git_add(file_path=score, repo_dir=score)
@@ -37,3 +38,6 @@ def push_scores():
         git_commit(commit_message="Rerendered Segments.", repo_dir=score)
         print("git pushing ...")
         git_push(score)
+
+if __name__ == "__main__":
+    push_scores()
