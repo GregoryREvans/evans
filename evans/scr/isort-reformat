@@ -1,0 +1,13 @@
+isort \
+	--case-sensitive \
+	--multi-line 3 \
+	--line-width 90 \
+	--project abjad \
+	--project abjadext \
+	--recursive \
+	--thirdparty ply \
+	--thirdparty roman \
+	--thirdparty uqbar \
+	--trailing-comma \
+	--use-parentheses -y \
+	$1

@@ -62,6 +62,7 @@ chmod <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equivalent to -rwxr-xr-x <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this gives permission to execute the script <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+x is the semantic version (executability) <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order = `chmod`+`modifications`+`path` <br />
 
 git checkout . <br />
 &nbsp;&nbsp;&nbsp;&nbsp;discards local changes <br />
