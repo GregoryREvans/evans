@@ -6,7 +6,7 @@ def return_directories(
 ):
     build_path = pathlib.Path(p)
     returns = []
-    for score in build_path.iterdir():
+    for score in sorted(build_path.iterdir()):
         if not score.is_dir():
             continue
         if score.name in ignores:
