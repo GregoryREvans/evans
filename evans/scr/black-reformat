@@ -4,9 +4,11 @@ from return_directories import return_directories
 
 
 def black_scores():
-    print("Formatting Scores ...")
+    print("black formatting Scores ...")
     for score in return_directories():
-        os.system(f"black {score}")
+        print("Formatting {score.name} ...")
+        os.system(f"black --line-length 90 --target-version py36 {score}")
+        print()
 
 if __name__ == "__main__":
     black_scores()

@@ -1,0 +1,6 @@
+black \
+	--check \
+	--diff \
+	--line-length 90 \
+	--target-version py36 \
+	$1

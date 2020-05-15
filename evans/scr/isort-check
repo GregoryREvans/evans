@@ -1,6 +1,7 @@
 isort \
 	--case-sensitive \
-    --check-only \
+	--check-only \
+	--diff \
 	--line-width 90 \
 	--multi-line 3 \
 	--project abjad \
