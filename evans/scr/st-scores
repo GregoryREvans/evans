@@ -23,6 +23,7 @@ def st_scores():
         print()
         score = str(score)
         git_status(score)
+        print("#########")
 
 if __name__ == "__main__":
     st_scores()
