@@ -6,8 +6,8 @@ from return_directories import return_directories
 def black_scores():
     print("black formatting Scores ...")
     for score in return_directories():
-        print("Formatting {score.name} ...")
-        os.system(f"black --line-length 90 --target-version py36 {score}")
+        print(f"Formatting {score.name} ...")
+        os.system(f"black-reformat-local {score}")
         print()
 
 if __name__ == "__main__":

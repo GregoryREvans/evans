@@ -7,7 +7,7 @@ def black_check():
     print("black checking Scores ...")
     for score in return_directories():
         print(f"Checking {score.name} ...")
-        os.system(f"black --check --diff --line-length 90 --target-version py36 {score}")
+        os.system(f"black-check-local {score}")
         print()
 
 if __name__ == "__main__":
