@@ -31,11 +31,11 @@ class GraceHandler:
     def _add_grace_notes(self, selections):
         ties = abjad.select(selections).logical_ties(pitched=True)
         vectors = self._cyc_boolean_vector(r=len(ties))
-        if self.boolean_vector != None:
+        if self.boolean_vector is not None:
             for value, tie in zip(vectors, ties):
                 if value == 1:
                     grace_list = ""
-                    if self.gesture_lengths != None:
+                    if self.gesture_lengths is not None:
                         grace_length = self._cyc_gesture_lengths(r=1)[0]
                         for x in range(grace_length):
                             s = "c'16"
@@ -76,7 +76,7 @@ class GraceHandler:
                                 abjad.select(grace).leaves(pitched=True)[-1],
                             )
                         open_literal = abjad.LilyPondLiteral(
-                            "\scaleDurations #'(1 . 1) {", format_slot="before"
+                            r"\scaleDurations #'(1 . 1) {", format_slot="before"
                         )
                         close_literal = abjad.LilyPondLiteral("}", format_slot="after")
                         abjad.attach(open_literal, grace)
@@ -87,7 +87,7 @@ class GraceHandler:
                             "c'16", command=r"\slashedGrace"
                         )
                         open_literal = abjad.LilyPondLiteral(
-                            "\scaleDurations #'(1 . 1) {", format_slot="before"
+                            r"\scaleDurations #'(1 . 1) {", format_slot="before"
                         )
                         close_literal = abjad.LilyPondLiteral("}", format_slot="after")
                         abjad.attach(open_literal, grace)

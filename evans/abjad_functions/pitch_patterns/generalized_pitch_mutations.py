@@ -1,12 +1,12 @@
 import abjad
 
 
-def adjacent_combinations(l=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], count=2):
+def adjacent_combinations(list_=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], count=2):
     combination_list = []
-    for i, _ in enumerate(l):
+    for i, _ in enumerate(list_):
         start = i
         stop = i + count
-        group = l[start:stop]
+        group = list_[start:stop]
         if len(group) == count:
             combination_list.append(group)
     return combination_list
@@ -15,7 +15,7 @@ def adjacent_combinations(l=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], count=2):
 for n in range(2, 13):
     score = abjad.Score([])
     for combination_group in adjacent_combinations(
-        l=[0, 5, 7, 1, 4, 11, 3, 2, 10, 8, 9, 6], count=n
+        list_=[0, 5, 7, 1, 4, 11, 3, 2, 10, 8, 9, 6], count=n
     ):
         staff_group1 = abjad.StaffGroup([])
         for rotation in range(len(combination_group)):
@@ -36,36 +36,36 @@ for n in range(2, 13):
             ri_staff = abjad.Staff()
             for _ in p_list:
                 numbers = [n.number for n in _]
-                l = []
+                list_ = []
                 for note in numbers:
                     leaf = abjad.Note()
                     leaf.written_pitch = note
-                    l.append(leaf)
-                p_staff.extend(l)
+                    list_.append(leaf)
+                p_staff.extend(list_)
             for _ in i_list:
                 numbers = [n.number for n in _]
-                l = []
+                list_ = []
                 for note in numbers:
                     leaf = abjad.Note()
                     leaf.written_pitch = note
-                    l.append(leaf)
-                i_staff.extend(l)
+                    list_.append(leaf)
+                i_staff.extend(list_)
             for _ in r_list:
                 numbers = [n.number for n in _]
-                l = []
+                list_ = []
                 for note in numbers:
                     leaf = abjad.Note()
                     leaf.written_pitch = note
-                    l.append(leaf)
-                r_staff.extend(l)
+                    list_.append(leaf)
+                r_staff.extend(list_)
             for _ in ri_list:
                 numbers = [n.number for n in _]
-                l = []
+                list_ = []
                 for note in numbers:
                     leaf = abjad.Note()
                     leaf.written_pitch = note
-                    l.append(leaf)
-                ri_staff.extend(l)
+                    list_.append(leaf)
+                ri_staff.extend(list_)
             staff_group2.append(p_staff)
             staff_group2.append(i_staff)
             staff_group2.append(r_staff)

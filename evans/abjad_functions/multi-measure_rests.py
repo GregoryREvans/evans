@@ -260,8 +260,8 @@ def make_container(rhythm_maker, durations):
     selections = rhythm_maker(durations)
     container = abjad.Container(selections)
     # Add analysis brackets so we can see the phrasing graphically
-    start_indicator = abjad.LilyPondLiteral("\startGroup", format_slot="after")
-    stop_indicator = abjad.LilyPondLiteral("\stopGroup", format_slot="after")
+    start_indicator = abjad.LilyPondLiteral(r"\startGroup", format_slot="after")
+    stop_indicator = abjad.LilyPondLiteral(r"\stopGroup", format_slot="after")
     for cell in selections:
         cell_first_leaf = abjad.select(cell).leaves()[0]
         cell_last_leaf = abjad.select(cell).leaves()[-1]
@@ -269,8 +269,8 @@ def make_container(rhythm_maker, durations):
         abjad.attach(stop_indicator, cell_last_leaf)
     # The extra space in the literals is a hack around a check for whether an
     # identical object has already been attached
-    start_indicator = abjad.LilyPondLiteral("\startGroup ", format_slot="after")
-    stop_indicator = abjad.LilyPondLiteral("\stopGroup ", format_slot="after")
+    start_indicator = abjad.LilyPondLiteral(r"\startGroup ", format_slot="after")
+    stop_indicator = abjad.LilyPondLiteral(r"\stopGroup ", format_slot="after")
     phrase_first_leaf = abjad.select(container).leaves()[0]
     phrase_last_leaf = abjad.select(container).leaves()[-1]
     abjad.attach(start_indicator, phrase_first_leaf)

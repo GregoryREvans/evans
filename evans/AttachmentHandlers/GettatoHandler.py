@@ -42,11 +42,11 @@ class GettatoHandler:
                 repetitions = self.attacks(r=1)[0]
                 pitches = [_ for _ in abjad.inspect(tie[0]).pitches()]
                 repeated_pitch = pitches[-1]
-                l = []
-                l.append(abjad.Chord([repeated_pitch], (1, 32)))
+                list_ = []
+                list_.append(abjad.Chord([repeated_pitch], (1, 32)))
                 for _ in range(repetitions - 1):
-                    l.append(abjad.Note(repeated_pitch, (1, 32)))
-                sel = abjad.Selection(l)
+                    list_.append(abjad.Note(repeated_pitch, (1, 32)))
+                sel = abjad.Selection(list_)
                 abjad.beam(sel)
                 t = abjad.LilyPondLiteral(
                     [
@@ -66,7 +66,7 @@ class GettatoHandler:
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
-                        f"\hspace #1 throw ({repetitions})", direction=abjad.Up
+                        fr"\hspace #1 throw ({repetitions})", direction=abjad.Up
                     )
                     abjad.attach(mark, sel[0])
                 elif a == "drop":
@@ -76,7 +76,7 @@ class GettatoHandler:
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
-                        f"\hspace#1 drop ({repetitions})", direction=abjad.Up
+                        fr"\hspace#1 drop ({repetitions})", direction=abjad.Up
                     )
                     abjad.attach(mark, sel[0])
                 else:

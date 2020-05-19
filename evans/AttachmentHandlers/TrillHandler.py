@@ -32,7 +32,7 @@ class TrillHandler:
                         r"\pitchedTrill", format_slot="before"
                     )
                     trill_literal = abjad.LilyPondLiteral(
-                        f"\startTrillSpan {trill_pitch}", format_slot="after"
+                        fr"\startTrillSpan {trill_pitch}", format_slot="after"
                     )
                     trill_stop = abjad.LilyPondLiteral(
                         r"\stopTrillSpan", format_slot="after"
@@ -41,7 +41,7 @@ class TrillHandler:
                     abjad.attach(trill_literal, new_leaf)
                     last_leaf = tie[-1]
                     next_leaf = abjad.inspect(last_leaf).leaf(1)
-                    if next_leaf != None:
+                    if next_leaf is not None:
                         abjad.attach(trill_stop, next_leaf)
                     else:
                         continue

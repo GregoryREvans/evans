@@ -1,26 +1,26 @@
 def orbits(initial_state=0.4, iterations=10):
-    l = []
+    list_ = []
     for _ in range(iterations):
         front = 4 * initial_state
         back = 1 - initial_state
         next_state = front * back
-        l.append(next_state)
+        list_.append(next_state)
         initial_state = next_state
-    return l
+    return list_
 
 
 # print(orbits(initial_state=0.4, iterations=20))
 
 
 def feigenbaum_bifurcations(fertility=3.59785, initial_state=0.5, iterations=10):
-    l = [initial_state]
+    list_ = [initial_state]
     for _ in range(iterations):
         front = fertility * initial_state
         back = 1 - initial_state
         next_state = front * back
-        l.append(next_state)
+        list_.append(next_state)
         initial_state = next_state
-    return l
+    return list_
 
 
 # print(feigenbaum_bifurcations(fertility= 2.3, initial_state=0.5, iterations=10))

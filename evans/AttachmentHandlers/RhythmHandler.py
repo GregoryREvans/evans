@@ -13,7 +13,7 @@ class RhythmHandler:
         return self._make_music(durations)
 
     def _make_basic_rhythm(self, durations):
-        if self.continuous == True:
+        if self.continuous is True:
             if self._input_state is not None:
                 self.state = self._input_state
                 selections = self.rmaker(durations, previous_state=self.state)

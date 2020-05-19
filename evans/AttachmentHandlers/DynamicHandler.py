@@ -82,7 +82,7 @@ class DynamicHandler:
                     hairpin = "<|"
             else:
                 if stop.name == "niente":
-                    stop = abjad.Dynamic("niente", command="\!")
+                    stop = abjad.Dynamic("niente", command=r"\!")
                     hairpin = "|>o"
                 else:
                     hairpin = "|>"
@@ -95,7 +95,7 @@ class DynamicHandler:
                     hairpin = "<"
             else:
                 if stop.name == "niente":
-                    stop = abjad.Dynamic("niente", command="\!")
+                    stop = abjad.Dynamic("niente", command=r"\!")
                     hairpin = ">o"
                 else:
                     hairpin = ">"
@@ -185,7 +185,7 @@ class DynamicHandler:
                     if start.name == "niente":
                         start = abjad.Dynamic("niente", hide=True)
                     if stop.name == "niente":
-                        stop = abjad.Dynamic("niente", command="\!")
+                        stop = abjad.Dynamic("niente", command=r"\!")
                     if hold_last == 1:
                         if stop.name != "niente":
                             if self.with_constante_hairpins is True:
@@ -196,7 +196,7 @@ class DynamicHandler:
                         else:
                             if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
                                 stop = abjad.Dynamic(
-                                    stop, command="\!", leak=True
+                                    stop, command=r"\!", leak=True
                                 )  # attach to anchor
                             else:
                                 pass
@@ -252,7 +252,7 @@ class DynamicHandler:
                         if effort_bools[1] == 0:
                             if stop == "niente":
                                 stop = abjad.Dynamic(
-                                    stop, command="\!", leak=True
+                                    stop, command=r"\!", leak=True
                                 )  # attach to anchor
                             else:
                                 stop = abjad.Dynamic(
@@ -263,7 +263,7 @@ class DynamicHandler:
                             if stop_string == "niente":
                                 stop = abjad.Dynamic(
                                     stop_string,
-                                    command="\!",
+                                    command=r"\!",
                                     leak=True,  # attach to anchor
                                 )
                             else:
@@ -304,16 +304,16 @@ class DynamicHandler:
         for leaf in abjad.select(selections).leaves():
             for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
                 if dynamic.name is "niente":
-                    if dynamic.command == "\!":
+                    if dynamic.command == r"\!":
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command="\!", leak=True),
+                            abjad.Dynamic(dynamic, command=r"\!", leak=True),
                             leaf,  # attach to anchor
                         )  # maybe just continue instead of replacing?
                     elif dynamic.leak is True:
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command="\!", leak=True),
+                            abjad.Dynamic(dynamic, command=r"\!", leak=True),
                             leaf,  # attach to anchor
                         )
                     else:

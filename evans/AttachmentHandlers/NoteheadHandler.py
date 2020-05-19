@@ -42,7 +42,7 @@ class NoteheadHandler:
         heads = self._cyc_noteheads(r=len(ties))
         head_vector = self.head_boolean_vector(r=len(ties))
         trans_vector = self.transition_boolean_vector(r=len(ties))
-        if self.notehead_list != None:
+        if self.notehead_list is not None:
             for tie, head, bool in zip(ties, heads, head_vector):
                 string = str(r"""\tweak NoteHead.style #'""")
                 full_string = string + head
@@ -52,7 +52,7 @@ class NoteheadHandler:
                         abjad.attach(style, leaf)
                 else:
                     continue
-        if self.transition == True:
+        if self.transition is True:
             transition_arrow = abjad.LilyPondLiteral(
                 r"""
                 - \tweak arrow-length #2

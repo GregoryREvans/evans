@@ -47,7 +47,7 @@ class RTMMaker:
         continuous=False,
     ):
         def cyc(lst):
-            if self.continuous == False:
+            if self.continuous is False:
                 self._count = 0
             while True:
                 yield lst[self._count % len(lst)]
