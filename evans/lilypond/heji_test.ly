@@ -3,25 +3,33 @@
 \include "evans-heji-accidentals.ily"
 
 
-
+\layout{\accidentalStyle dodecaphonic}
 \paper {#(include-special-characters)}
 
 \score {
     \new Staff
     {
-            \heji-numbers-test
-            cs'1
+            \tempered-natural
+            c'8
 
-            \heji-qwerty-test
-            cs'1
+            \nat-comma-down
+            e'8
 
-            \heji-asdf-test
-            cs'1
+            g'8
 
-            \heji-zxc-test
-            cs'1
+            \septimal-comma-down
+            bf'8
 
-			\ekmelos-test
-            cs'1
+            \undecimal-quarter-sharp
+            f'8
+
+            \tridecimal-third-flat
+            a'8
+
+            \seventeen-schisma-up
+            cs''8
+
+            \nineteen-schisma-down
+            ef''8
     }
 }

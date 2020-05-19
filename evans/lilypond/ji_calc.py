@@ -1,29 +1,19 @@
-import abjad
+from math import log10
 
-def hz_to_hz_from_ratio(hz=440, ratio=(7/4)):
-    return hz * ratio
+def ratio_to_cents(ratio):
+    log_ratio = log10(ratio)
+    log_2 = 1200 / log10(2)
+    return log_ratio * log_2
 
-
-just_pitch = hz_to_hz_from_ratio(
-        hz=261.625565,
-        ratio=736/729
+print(
+    ratio_to_cents(ratio=(16/15))
 )
 
-note = abjad.NamedPitch().from_hertz(
-    just_pitch
-)
-
-abjad_pitch = note.hertz
-
-# print(just_pitch - abjad_pitch)
-# print(just_pitch)
-# print(abjad_pitch)
-# print(just_pitch - 261.625565)
-
-syntonic_comma_hertz = 3.270319562499992
-septimal_comma_hertz = 4.1527867460317225
-eleven_limit_undecimal_quarter_tone_hertz = 0.5095843792258847
-thirteen_limit_tridecimal_third_tone_hertz = 8.175798906250009
-seventeen_limit_schisma_hertz = 1.0259826078431615
-nineteen_limit_schisma_hertz = 0.5109874316406149
-twenty_three_limit_comma_hertz = 2.5121796364883267
+pythagorean_fifth = ratio_to_cents(ratio=(3/2))
+syntonic_comma = ratio_to_cents(ratio=(81/80))
+septimal_comma = ratio_to_cents(ratio=(64/63))
+eleven_limit_undecimal_quarter_tone = ratio_to_cents(ratio=(33/32))
+thirteen_limit_tridecimal_third_tone = ratio_to_cents(ratio=(27/26))
+seventeen_limit_schisma = ratio_to_cents(ratio=(256/255))
+nineteen_limit_schisma = ratio_to_cents(ratio=(513/512))
+twenty_three_limit_comma = ratio_to_cents(ratio=(736/729))
