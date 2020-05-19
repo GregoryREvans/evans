@@ -81,3 +81,19 @@ for ratio in [(3/2), (81/80), (64/63), (33/32), (27/26), (256/255), (513/512), (
             )
         )
     )
+
+print(
+    return_difference(
+        ratio_to_cents(
+            (9/4)
+        )
+    )
+)
+
+print(
+    return_difference(
+        ratio_to_cents(
+            (24/23)
+        )
+    )
+)
