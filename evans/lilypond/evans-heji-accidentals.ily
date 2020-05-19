@@ -64,3 +64,17 @@ heji-zxc-test =
                 "z Z x X c C v V b B n N m M , < . > / ?"
             }
         $note #})
+
+
+%%% ekmelos test %%%
+ekmelos-test =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+        #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+            \markup {
+                \fontsize #4
+                \override #'(font-name . "ekmelos")
+                \char ##xe2e5
+            }
+        $note #})
