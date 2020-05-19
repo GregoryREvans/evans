@@ -26,9 +26,6 @@ class TrillHandler:
                     old_chord = tie[0]
                     base_pitch = old_chord.written_pitches[0]
                     trill_pitch = old_chord.written_pitches[-1]
-                    interval_ = abjad.NamedInterval().from_pitch_carriers(
-                        base_pitch, trill_pitch
-                    )
                     new_leaf = abjad.Note(base_pitch, old_chord.written_duration)
 
                     trill_start = abjad.LilyPondLiteral(

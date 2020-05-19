@@ -1,0 +1,21 @@
+#! /usr/bin/env python
+import os
+import pathlib
+import sys
+
+
+def build_segments_local(wrapper_path):
+    score = pathlib.Path(wrapper_path).absolute()
+    print(f"Now building {score.name} ...")
+    segments_path = score / score.name / "Segments"
+    for segment in sorted(segments_path.iterdir()):
+        if segment.name.startswith("_"):
+            continue
+        if segment.name.startswith("."):
+            continue
+        print(f"Building {segment} ...")
+        os.system(f"python {segment}/definition.py")
+
+if __name__ == "__main__":
+    wrapper = sys.argv[1]
+    build_segments_local(wrapper)
