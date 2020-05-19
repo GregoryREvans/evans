@@ -64,6 +64,20 @@ print(
     )
 )
 
-# print(
-#     ratio_to_cents(ratio=(16/15))
-# )
+for ratio in [(1/1), (5/4), (3/2), (7/4), (11/8), (13/8), (17/6), (19/16)]: #requires pythagorean fifths with deviations?
+    print(
+        return_difference(
+            ratio_to_cents(
+                ratio
+            )
+        )
+    )
+
+for ratio in [(3/2), (81/80), (64/63), (33/32), (27/26), (256/255), (513/512), (736/729)]:
+    print(
+        return_difference(
+            ratio_to_cents(
+                ratio
+            )
+        )
+    )
