@@ -10,26 +10,28 @@
     \new Staff
     {
             \tempered-natural
-            c'8
+            c'16
 
             \nat-comma-down
-            e'8
+            e'16
 
-            g'8
+            g'16
 
             \septimal-comma-down
-            bf'8
+            bf'16
+
+			d'16
 
             \undecimal-quarter-sharp
-            f'8
+            f'16
 
             \tridecimal-third-flat
-            a'8
+            a'16
 
-            \seventeen-schisma-up
-            cs''8
+            \flat-up
+            cs''32
 
-            \nineteen-schisma-down
-            ef''8
+            \sharp-down
+            ef''32
     }
 }

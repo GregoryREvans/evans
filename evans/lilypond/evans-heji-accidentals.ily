@@ -118,3 +118,51 @@ nineteen-schisma-down =
                 \char ##xe2e8
             }
         $note #})
+
+%%% mixed %%%
+mixed-test =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+        #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+            \markup {
+                \concat {
+                    \fontsize #4
+                    \override #'(font-name . "ekmelos")
+                    \char ##xe2e7
+                    \musicglyph #"accidentals.sharp"
+                }
+            }
+        $note #})
+
+%%% flat 17 up %%%
+flat-up =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+        #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+            \markup {
+                \concat {
+                    \fontsize #4
+                    \override #'(font-name . "ekmelos")
+                    \char ##xe2e7
+                    \musicglyph #"accidentals.flat"
+                }
+            }
+        $note #})
+
+%%% sharp 19 down %%%
+sharp-down =
+#(define-music-function (parser location note)   (ly:music?)
+ #{ \once \override Voice.Accidental.stencil =
+        #ly:text-interface::print
+        \once \override Voice.Accidental.text =
+            \markup {
+                \concat {
+                    \fontsize #4
+                    \override #'(font-name . "ekmelos")
+                    \char ##xe2e8
+                    \musicglyph #"accidentals.sharp"
+                }
+            }
+        $note #})
