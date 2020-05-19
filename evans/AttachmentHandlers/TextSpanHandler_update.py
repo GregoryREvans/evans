@@ -1,7 +1,9 @@
+from fractions import Fraction
+
 import abjad
 from evans.AttachmentHandlers.CyclicList import CyclicList
 from evans.abjad_functions.AddSpannerAnchor import AddSpannerAnchor
-from fractions import Fraction
+
 
 # incorporate spanner anchors
 class TextSpanHandler:

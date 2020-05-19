@@ -1,6 +1,5 @@
 import abjad
 
-
 meters = [
     abjad.Meter(pair)
     for pair in [

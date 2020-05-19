@@ -1,7 +1,6 @@
 import abjad
 import evans
 
-
 # map = [
 #     evans.e_dovan_cycle(n=3, iters=85, first=3, second=5, modulus=5),
 #     evans.e_dovan_cycle(n=2, iters=85, first=2, second=3, modulus=5),

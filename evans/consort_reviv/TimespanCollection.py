@@ -1,5 +1,5 @@
-from evans.consort_reviv.AbjadObject import AbjadObject
 from abjad import system
+from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class TimespanCollection(AbjadObject):

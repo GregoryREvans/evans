@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import abc
 
-
 AbstractBase = abc.ABCMeta(
     "AbstractBase",
     (),

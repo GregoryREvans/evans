@@ -1,11 +1,12 @@
-import abjad
-import abjadext.rmakers
-import evans
+import datetime
 import itertools
 import os
 import pathlib
 import time
-import datetime
+
+import abjad
+import abjadext.rmakers
+import evans
 
 
 class SegmentMaker:

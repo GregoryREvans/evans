@@ -1,5 +1,6 @@
-import abjad
 from fractions import Fraction
+
+import abjad
 
 
 def to_nearest_quarter_tone(number):

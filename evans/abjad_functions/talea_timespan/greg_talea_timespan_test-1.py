@@ -1,12 +1,11 @@
 import abjad
-from abjadext import rmakers
 import timespan_functions
+from abjadext import rmakers
+from evans.AttachmentHandlers.ArticulationHandler import ArticulationHandler
+from evans.AttachmentHandlers.ClefHandler import ClefHandler
+from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
 from evans.AttachmentHandlers.MusicMaker import MusicMaker
 from evans.AttachmentHandlers.PitchHandler import PitchHandler
-from evans.AttachmentHandlers.ArticulationHandler import ArticulationHandler
-from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
-from evans.AttachmentHandlers.ClefHandler import ClefHandler
-
 
 rmaker_one = rmakers.TaleaRhythmMaker(
     talea=rmakers.Talea(counts=[12, 7, -1, 11, 8, -1, 10, 9, -1], denominator=16),

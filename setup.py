@@ -1,6 +1,5 @@
 import setuptools
 
-
 install_requires = ["abjad"]
 
 keywords = [

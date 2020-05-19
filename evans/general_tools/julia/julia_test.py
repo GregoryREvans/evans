@@ -1,7 +1,9 @@
-from PIL import Image, ImageDraw
-from julia import julia
 from collections import defaultdict
-from math import floor, ceil
+from math import ceil, floor
+
+from PIL import Image, ImageDraw
+
+from julia import julia
 
 
 def linear_interpolation(color1, color2, t):

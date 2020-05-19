@@ -1,6 +1,6 @@
 import abjad
-from abjadext import rmakers
 import timespan_functions
+from abjadext import rmakers
 
 talea = rmakers.Talea(counts=[5, 3, -1, 6, -7, 2], denominator=4)
 

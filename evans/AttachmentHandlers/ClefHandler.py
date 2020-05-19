@@ -1,5 +1,7 @@
-import abjad
 from statistics import mean
+
+import abjad
+
 
 # add shelf for ottava to ensure that no notes in the bracket are illegible
 class ClefHandler:

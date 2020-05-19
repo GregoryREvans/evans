@@ -1,6 +1,6 @@
 import abjad
-from abjadext import rmakers
 import timespan_functions
+from abjadext import rmakers
 
 
 # Rhythm cells

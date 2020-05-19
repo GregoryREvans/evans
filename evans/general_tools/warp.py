@@ -1,4 +1,4 @@
-from random import random, randint, seed, uniform
+from random import randint, random, seed, uniform
 
 
 def warp(min, max, random_seed, warped_list, by_integers=False):

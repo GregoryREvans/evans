@@ -1,7 +1,8 @@
+from decimal import Decimal
+
 import numpy as np
 import scipy as sp
 from scipy.integrate import odeint
-from decimal import Decimal
 
 
 def lorenz(

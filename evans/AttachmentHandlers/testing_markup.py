@@ -1,5 +1,6 @@
-import abjad
 from fractions import Fraction
+
+import abjad
 from evans.AttachmentHandlers.TextSpanHandler import TextSpanHandler
 
 handler = TextSpanHandler(

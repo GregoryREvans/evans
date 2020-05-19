@@ -1,5 +1,6 @@
-import abjad
 from fractions import Fraction
+
+import abjad
 
 
 def mixed_number(fraction_pair=(288, 5)):

@@ -1,6 +1,6 @@
-from evans.consort_reviv.AbjadObject import AbjadObject
 from abjad import system
 from abjad.top.inspect import inspect
+from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class LogicalTieCollection(AbjadObject):

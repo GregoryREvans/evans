@@ -33,8 +33,8 @@
 
 ###THIS WORKFLOW IS IN PROGRESS###
 import abjad
-from abjadext import rmakers
 import evans.abjad_functions.talea_timespan.timespan_functions
+from abjadext import rmakers
 
 
 class RTMMaker:

@@ -1,16 +1,16 @@
-import abjad
-import abjadext.rmakers
 import os
 import pathlib
 import time
-from tsmakers.PerformedTimespan import PerformedTimespan
+from collections import defaultdict
+
+import abjad
+import abjadext.rmakers
 from evans.AttachmentHandlers.CyclicList import CyclicList
 from evans.AttachmentHandlers.RhythmHandler import RhythmHandler
 from evans.abjad_functions.talea_timespan import timespan_functions
-from collections import defaultdict
-from evans.general_tools.sorted_keys import sorted_keys
 from evans.abjad_functions.timespan_human_keys import human_sorted_keys
-
+from evans.general_tools.sorted_keys import sorted_keys
+from tsmakers.PerformedTimespan import PerformedTimespan
 
 silence_maker = abjadext.rmakers.stack(
     abjadext.rmakers.NoteRhythmMaker(),

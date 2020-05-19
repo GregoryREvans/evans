@@ -1,7 +1,7 @@
 import abjad
-from evans.consort_reviv.AbjadValueObject import AbjadValueObject
-from abjad import mathtools
 import abjadext.rmakers
+from abjad import mathtools
+from evans.consort_reviv.AbjadValueObject import AbjadValueObject
 
 
 class CompositeRhythmMaker(AbjadValueObject):

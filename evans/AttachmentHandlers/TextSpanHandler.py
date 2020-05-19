@@ -1,6 +1,7 @@
+from fractions import Fraction
+
 import abjad
 from evans.AttachmentHandlers.CyclicList import CyclicList
-from fractions import Fraction
 
 
 class TextSpanHandler:

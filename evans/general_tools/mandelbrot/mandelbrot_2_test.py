@@ -1,8 +1,8 @@
 import numpy as np
-from matplotlib import pyplot as plt
 from matplotlib import colors
-from mandelbrot_2 import mandelbrot_set
+from matplotlib import pyplot as plt
 
+from mandelbrot_2 import mandelbrot_set
 
 image_counter = 30
 

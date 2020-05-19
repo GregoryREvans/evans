@@ -1,6 +1,6 @@
-import abjad
 import os
 
+import abjad
 
 abjad_stylesheet = os.path.join(
     os.environ.get("HOME"), "abjad/docs/source/_stylesheets/abjad.ily"

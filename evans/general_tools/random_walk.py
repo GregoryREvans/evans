@@ -1,7 +1,7 @@
-from random import random
-from random import seed
-from evans.general_tools.reduce_mod import reduce_mod
+from random import random, seed
+
 from evans.general_tools.cyc import cyc
+from evans.general_tools.reduce_mod import reduce_mod
 
 
 def random_walk(random_seed, length, step_list, mapped_list):

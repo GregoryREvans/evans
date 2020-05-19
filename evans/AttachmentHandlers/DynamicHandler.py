@@ -1,6 +1,7 @@
 import abjad
 from evans.AttachmentHandlers.CyclicList import CyclicList
 
+
 # incorporate spanner anchors
 class DynamicHandler:
     def __init__(

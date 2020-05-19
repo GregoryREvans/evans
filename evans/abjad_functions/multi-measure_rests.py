@@ -1,7 +1,7 @@
 import itertools
+
 import abjad
 import abjadext.rmakers
-
 
 # Define the time signatures we would like to apply against the timespan structure.
 
