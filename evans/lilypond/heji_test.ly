@@ -9,7 +9,16 @@
 \score {
     \new Staff
     {
-            \heji-test
-            cs'4
+            \heji-numbers-test
+            cs'1
+
+            \heji-qwerty-test
+            cs'1
+
+            \heji-asdf-test
+            cs'1
+
+            \heji-zxc-test
+            cs'1
     }
 }
