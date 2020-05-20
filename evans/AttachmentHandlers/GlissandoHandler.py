@@ -30,7 +30,7 @@ class GlissandoHandler:
             if self.glissando_style == "hide_middle_note_heads":
                 if self.line_style is not None:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
                                     run[:],
@@ -43,7 +43,7 @@ class GlissandoHandler:
                             continue
                 else:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(run[:], hide_middle_note_heads=True)
                             else:
@@ -53,7 +53,7 @@ class GlissandoHandler:
             elif self.glissando_style == "hide_middle_stems":
                 if self.line_style is not None:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
                                     run[:],
@@ -67,7 +67,7 @@ class GlissandoHandler:
                             continue
                 else:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
                                     run[:],
@@ -81,7 +81,7 @@ class GlissandoHandler:
             else:
                 if self.line_style is not None:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
                                     run[:],
@@ -95,7 +95,7 @@ class GlissandoHandler:
                             continue
                 else:
                     for run in runs:
-                        if self.boolean_vector(r=1)[0] is 1:
+                        if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
                                     run[:], allow_repeats=True, allow_ties=False

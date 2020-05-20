@@ -18,7 +18,7 @@ class TrillHandler:
         ties = abjad.select(selections).logical_ties(pitched=True)
         vector = self.boolean_vector
         for tie, bool in zip(ties, vector(r=len(ties))):
-            if bool is 1:
+            if bool == 1:
                 if all(
                     isinstance(leaf, abjad.Chord)
                     for leaf in abjad.iterate(tie).leaves()

@@ -303,7 +303,7 @@ class DynamicHandler:
     def _remove_niente(self, selections):
         for leaf in abjad.select(selections).leaves():
             for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
-                if dynamic.name is "niente":
+                if dynamic.name == "niente":
                     if dynamic.command == r"\!":
                         abjad.detach(dynamic, leaf)
                         abjad.attach(

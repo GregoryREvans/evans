@@ -5,7 +5,6 @@ import pathlib
 import time
 
 import abjad
-import abjadext.rmakers
 import evans
 
 
@@ -144,7 +143,7 @@ class SegmentMaker:
                     abjad.AnnotatedTimespan(
                         start_offset=silence_timespan.start_offset,
                         stop_offset=silence_timespan.stop_offset,
-                        annotation=TimespanSpecifier(
+                        annotation=evans.TimespanSpecifier(
                             handler=None, voice_name=voice_name
                         ),
                     )
@@ -469,7 +468,7 @@ class SegmentMaker:
         print("Detaching from global context ...")
         for i, detachment_list in enumerate(self.global_direct_detachments):
             if len(detachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Global Context"]).components(
+                voice = abjad.select(self.score_template["Global Context"]).components(
                     abjad.Staff
                 )
                 for pair in detachment_list:
@@ -481,7 +480,7 @@ class SegmentMaker:
         print("Attaching from global context ...")
         for i, attachment_list in enumerate(self.global_direct_attachments):
             if len(attachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Global Context"]).components(
+                voice = abjad.select(self.score_template["Global Context"]).components(
                     abjad.Staff
                 )
                 for pair in attachment_list:
@@ -535,41 +534,6 @@ class SegmentMaker:
             if abjad.StopBeam() in abjad.inspect(trem[-1]).indicators():
                 abjad.detach(abjad.StopBeam(), trem[-1])
 
-        # print('Stopping Hairpins and Text Spans...')
-        # for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
-        #     for rest in abjad.iterate(staff).components(abjad.Rest):
-        #         previous_leaf = abjad.inspect(rest).leaf(-1)
-        #         if isinstance(previous_leaf, abjad.Note):
-        #             abjad.attach(abjad.StopHairpin(), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
-        #         elif isinstance(previous_leaf, abjad.Chord):
-        #             abjad.attach(abjad.StopHairpin(), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanOne'), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanTwo'), rest)
-        #             abjad.attach(abjad.StopTextSpan(command=r'\stopTextSpanThree'), rest)
-        #         elif isinstance(previous_leaf, abjad.Rest):
-        #             pass
-        # for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
-        #     for run in abjad.select(staff).runs():
-        #         last_leaf = run[-1]
-        #         next_leaf = abjad.inspect(last_leaf).leaf(1)
-        #         abjad.attach(abjad.StopTextSpan(), next_leaf)
-        #         abjad.attach(abjad.StopHairpin(), next_leaf)
-
-        # for staff in abjad.iterate(self.score_template['Staff Group']).components(abjad.Staff):
-        #     first_leaf = abjad.select(staff).leaves()[0]
-        #     stop = abjad.LilyPondLiteral(r'\!', format_slot='after',)
-        #     abjad.attach(stop, first_leaf)
-
-        staffs = [
-            voice
-            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Voice
-            )
-        ]
-
     def _adding_attachments(self):
 
         print("Adding attachments ...")
@@ -577,8 +541,6 @@ class SegmentMaker:
         colophon_leaf = abjad.select(last_voice).leaves()[-2]
         if self.colophon is not None:
             abjad.attach(self.colophon, colophon_leaf)
-
-        instruments = evans.cyc(self.instruments)
 
         if self.abbreviations is not None:
             abbreviations = []
@@ -609,7 +571,7 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(f"\\bold {{ {self.rehearsal_mark} }}")
+            markup=abjad.Markup(fr"\\bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate(
@@ -809,7 +771,7 @@ class SegmentMaker:
 # from passagenwerk.Materials.rhythm.Segment_I.rhythm_handlers import * #does this need to be here?
 # from passagenwerk.Materials.pitch.Segment_I.clef_handlers import clef_handlers
 # from evans.abjad_functions.talea_timespan.timespan_functions import (
-#     TimespanSpecifier,
+#     evans.TimespanSpecifier,
 # )  # rename module
 #
 # maker = SegmentMaker(

@@ -1,5 +1,4 @@
 import abjad
-import abjadext.rmakers
 
 
 class RTMMaker(object):

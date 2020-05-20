@@ -34,7 +34,7 @@ class ArticulationHandler:
         articulations = self._cyc_articulations(r=len(ties))
         vector = self.articulation_boolean_vector(r=len(ties))
         for tie, articulation, bool in zip(ties, articulations, vector):
-            if bool is 0:
+            if bool == 0:
                 if self.articulation_list is not None:
                     if articulation == "tremolo":
                         for leaf in tie:

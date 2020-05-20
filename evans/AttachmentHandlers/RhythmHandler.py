@@ -1,6 +1,3 @@
-import abjad
-
-
 class RhythmHandler:
     def __init__(self, rmaker, continuous=False, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker

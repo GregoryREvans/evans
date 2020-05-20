@@ -81,14 +81,14 @@ class GettatoHandler:
                     abjad.attach(mark, sel[0])
                 else:
                     pass
-                container = abjad.on_beat_grace_container(
-                    sel,
-                    tie[:],
-                    leaf_duration=(1, 24),
-                    do_not_slur=True,
-                    do_not_beam=True,
-                    font_size=-4,
-                )
+                # container = abjad.on_beat_grace_container(
+                #     sel,
+                #     tie[:],
+                #     leaf_duration=(1, 24),
+                #     do_not_slur=True,
+                #     do_not_beam=True,
+                #     font_size=-4,
+                # )
 
     def name(self):
         return self.name

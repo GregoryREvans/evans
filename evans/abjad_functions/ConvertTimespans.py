@@ -86,7 +86,7 @@ class ConvertTimespans:
                         ts_list.append(timespan)
                     else:
                         timespan.annotation = timespan_functions.TimespanSpecifier(
-                            voice_name=f"Global Context",
+                            voice_name="Global Context",
                             handler=cyclic_materials(r=1)[0],
                         )
                         ts_list.append(timespan)
@@ -106,7 +106,7 @@ class ConvertTimespans:
                             start_offset=timespan.start_offset,
                             stop_offset=timespan.stop_offset,
                             annotation=timespan_functions.TimespanSpecifier(
-                                voice_name=f"Global Context",
+                                voice_name="Global Context",
                                 handler=cyclic_materials(r=1)[0],
                             ),
                         )

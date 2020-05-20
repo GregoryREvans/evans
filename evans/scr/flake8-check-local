@@ -1,7 +1,7 @@
 flake8 \
     --exclude=__init__.py \
     --isolated \
-    --ignore=E123,E203,E265,E266,E501,E722,F81,W503 \
+    --ignore=E123,E203,E265,E266,E501,E722,E731,F81,W503 \
     --max-line-length=88 \
     --statistics \
     $1

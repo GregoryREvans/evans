@@ -47,7 +47,7 @@ class NoteheadHandler:
                 string = str(r"""\tweak NoteHead.style #'""")
                 full_string = string + head
                 style = abjad.LilyPondLiteral(full_string, format_slot="before")
-                if bool is 1:
+                if bool == 1:
                     for leaf in abjad.select(tie).leaves(pitched=True):
                         abjad.attach(style, leaf)
                 else:
@@ -66,8 +66,8 @@ class NoteheadHandler:
             for tie, bool1, bool2 in zip(
                 ties, head_vector, trans_vector
             ):  # verify that heads are different?
-                if bool1 is 1:
-                    if bool2 is 1:
+                if bool1 == 1:
+                    if bool2 == 1:
                         abjad.attach(transition_arrow, tie[-1])
                     else:
                         continue

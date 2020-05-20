@@ -1,4 +1,4 @@
-from abjad import system
+from abjad import inspect, system
 from evans.consort_reviv.AbjadObject import AbjadObject
 
 

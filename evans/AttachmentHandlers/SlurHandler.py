@@ -22,13 +22,13 @@ class SlurHandler:
 
     def add_slurs(self, selections):
         if self.slurs == "selections":
-            if self.boolean_vector(r=1)[0] is 0:
+            if self.boolean_vector(r=1)[0] == 0:
                 abjad.slur(selections[:])
             else:
                 pass
         elif self.slurs == "runs":
             for run in abjad.select(selections).runs():
-                if self.boolean_vector(r=1)[0] is 0:
+                if self.boolean_vector(r=1)[0] == 0:
                     abjad.slur(run[:])
                 else:
                     continue

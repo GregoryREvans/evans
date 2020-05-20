@@ -10,7 +10,6 @@ base = scale(0, 1, 12)
 
 
 def complement(collection, scale):
-    second = set(scale)
     return [item for item in collection if item not in scale]
 
 
