@@ -16,6 +16,7 @@ before_install:
     # alias package:
     - PACKAGE=`pwd`/evans
     - export PYTHONPATH=$PACKAGE:$PYTHONPATH
+    - export PATH=$PACKAGE/evans/scr/:$PATH
 
     # upgrade pip:
     - pip install --upgrade pip
