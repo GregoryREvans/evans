@@ -8,4 +8,5 @@ from .metric_modulation import metric_modulation
 from .pitch_rounding import *
 from .pitch_warp import pitch_warp
 from .rtm import *
+from .timespan_functions import TimespanSpecifier
 from .timespan_human_keys import human_sorted_keys, to_digit

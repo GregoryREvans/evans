@@ -1,15 +1,7 @@
-#! /usr/bin/env python
-import os
-
-from return_directories import return_directories
-
-
-def flake8_check():
-    print("flake8 checking Scores ...")
-    for score in return_directories():
-        print(f"Checking {score.name} ...")
-        os.system(f"flake8-check-local {score}")
-        print()
-
-if __name__ == "__main__":
-    flake8_check()
+flake8 \
+    --exclude=__init__.py \
+    --isolated \
+    --ignore=E123,E203,E265,E266,E501,E722,F81,W503 \
+    --max-line-length=88 \
+    --statistics \
+    $1
