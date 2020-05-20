@@ -7,7 +7,7 @@ import abjad
 import abjadext.rmakers
 from evans.AttachmentHandlers.CyclicList import CyclicList
 from evans.AttachmentHandlers.RhythmHandler import RhythmHandler
-from evans.abjad_functions.talea_timespan import timespan_functions
+from evans.abjad_functions import timespan_functions
 from evans.abjad_functions.timespan_human_keys import human_sorted_keys
 from evans.general_tools.sorted_keys import sorted_keys
 from tsmakers.PerformedTimespan import PerformedTimespan
