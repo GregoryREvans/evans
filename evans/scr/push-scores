@@ -32,13 +32,14 @@ def git_push(repo_dir):
 
 def push_scores():
     print("Pushing Scores ...")
+    message = input("Commit message: ")
     for score in return_directories():
         print(f"NOW HANDLING {score.name} ...")
         score = str(score)
         print("git adding ...")
         git_add(file_path=score, repo_dir=score)
         print("git committing ...")
-        git_commit(commit_message="Rerendered Segments.", repo_dir=score)
+        git_commit(commit_message=message, repo_dir=score)
         print("git pushing ...")
         git_push(score)
         print("#########")
