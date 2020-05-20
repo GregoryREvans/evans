@@ -22,7 +22,7 @@ def _apply_position_and_span_to_leaves(
                 ):
                     start_strings[
                         i
-                    ] = fr"""\\center-column {{ \\center-align \\vcenter \\musicglyph \\evans-upbow \\upright \\fraction {start_string[0]} {start_string[-1]} }}"""
+                    ] = fr"""\center-column {{ \center-align \vcenter \musicglyph \evans-upbow \upright \fraction {start_string[0]} {start_string[-1]} }}"""
                 elif Fraction(
                     int(start_strings[i][0]), int(start_strings[i][-1])
                 ) < Fraction(
@@ -30,15 +30,15 @@ def _apply_position_and_span_to_leaves(
                 ):
                     start_strings[
                         i
-                    ] = fr"""\\center-column {{ \\center-align \\vcenter \\musicglyph \\evans-downbow \\upright \\fraction {start_string[0]} {start_string[-1]} }}"""
+                    ] = fr"""\center-column {{ \center-align \vcenter \musicglyph \evans-downbow \upright \fraction {start_string[0]} {start_string[-1]} }}"""
                 else:
                     start_strings[
                         i
-                    ] = fr"""\\center-column {{ \\center-align \\vcenter \\upright \\fraction {start_string[0]} {start_string[-1]} }}"""
+                    ] = fr"""\center-column {{ \center-align \vcenter \upright \fraction {start_string[0]} {start_string[-1]} }}"""
             else:
                 start_strings[
                     i
-                ] = fr"""\\center-column {{ \\upright \\center-align \\vcenter {start_string} }}"""
+                ] = fr"""\center-column {{ \upright \center-align \vcenter {start_string} }}"""
         start_indicators = [
             abjad.StartTextSpan(
                 left_text=abjad.Markup(start_string, literal=True),
@@ -52,7 +52,7 @@ def _apply_position_and_span_to_leaves(
         if all(start_string[-1].isdigit() for _ in (0, -1)):
             final_indicator = abjad.StartTextSpan(
                 left_text=abjad.Markup(
-                    fr"""\\center-column {{ \\center-align \\vcenter \\upright \\fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
+                    fr"""\center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
                     literal=True,
                 ),
                 style=r"invisible-line",
@@ -62,7 +62,7 @@ def _apply_position_and_span_to_leaves(
         else:
             final_indicator = abjad.StartTextSpan(
                 left_text=abjad.Markup(
-                    fr"""\\center-column {{ \\center-align \\upright \\vcenter {start_strings[-1]} }}""",
+                    fr"""\center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
                     literal=True,
                 ),
                 style=r"invisible-line",

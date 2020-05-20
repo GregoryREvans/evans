@@ -571,7 +571,7 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(fr"\\bold {{ {self.rehearsal_mark} }}")
+            markup=abjad.Markup(fr"\bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate(
