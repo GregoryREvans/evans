@@ -1,4 +1,3 @@
-# from .attractors import lorenz
 from .Markov_Chain import MarkovChain
 from .cyc import cyc
 from .e_bonacci import e_bonacci_cycle
