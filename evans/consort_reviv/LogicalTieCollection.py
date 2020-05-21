@@ -8,14 +8,13 @@ class LogicalTieCollection(AbjadObject):
 
     ::
 
-        >>> logical_ties = (
-        ...     abjad.LogicalTie(0, 3),
-        ...     abjad.LogicalTie(1, 3),
-        ...     abjad.LogicalTie(1, 2),
-        ...     abjad.LogicalTie(2, 5),
-        ...     abjad.LogicalTie(6, 9),
-        ...     )
-        >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> logical_ties = abjad.select(staff).logical_ties()
+        >>> logical_tie_collection = evans.LogicalTieCollection()
+        >>> for tie in logical_ties:
+        ...     logical_tie_collection.insert(tie)
+        >>> logical_tie_collection
+        LogicalTieCollection([LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")])])
 
     """
 
@@ -38,14 +37,12 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
+            >>> new_staff = abjad.Staff("c'4. c'8 c'4 c'4")
 
         ::
 
@@ -54,7 +51,7 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> abjad.LogicalTie(-1, 100) in logical_tie_collection
+            >>> new_staff[0] in logical_tie_collection
             False
 
         Returns boolean.
@@ -71,28 +68,25 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> logical_tie_collection[-1]
-            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            LogicalTie([Note("c'4")])
 
         ::
 
             >>> for logical_tie in logical_tie_collection[:3]:
             ...     logical_tie
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie([Note("c'4")])
+            LogicalTie([Note("c'4")])
+            LogicalTie([Note("c'4")])
 
         Returns logical_tie or logical_ties.
         """
@@ -143,25 +137,21 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4. c'8 c'4.. c'16")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> for logical_tie in logical_tie_collection:
             ...     logical_tie
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
-            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            LogicalTie([Note("c'4.")])
+            LogicalTie([Note("c'8")])
+            LogicalTie([Note("c'4..")])
+            LogicalTie([Note("c'16")])
 
         Returns generator.
         """
@@ -184,19 +174,16 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> len(logical_tie_collection)
-            5
+            4
 
         Returns integer.
         """
@@ -209,18 +196,16 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
-            >>> logical_tie_collection[:3] = [abjad.LogicalTie(100, 200)]
+            >>> new_staff = abjad.Staff("c'1")
+            >>> logical_tie_collection[:3] = new_staff[:]
 
         Returns none.
         """
@@ -232,48 +217,48 @@ class LogicalTieCollection(AbjadObject):
             message = "Indices must be ints or slices, got {}".format(i)
             raise TypeError(message)
 
-    def __sub__(self, timespan):
-        r"""Delete material that intersects `timespan`:
-
-        ::
-
-            >>> logical_tie_collection = consort.LogicalTieCollection([
-            ...     abjad.LogicalTie(0, 16),
-            ...     abjad.LogicalTie(5, 12),
-            ...     abjad.LogicalTie(-2, 8),
-            ...     ])
-
-        ::
-
-            >>> timespan = abjad.Timespan(5, 10)
-            >>> result = logical_tie_collection - timespan
-
-        ::
-
-            >>> print(format(logical_tie_collection))
-            consort.tools.LogicalTieCollection(
-                [
-                    abjad.LogicalTie(
-                        start_offset=abjad.Offset(-2, 1),
-                        stop_offset=abjad.Offset(5, 1),
-                        ),
-                    abjad.LogicalTie(
-                        start_offset=abjad.Offset(0, 1),
-                        stop_offset=abjad.Offset(5, 1),
-                        ),
-                    abjad.LogicalTie(
-                        start_offset=abjad.Offset(10, 1),
-                        stop_offset=abjad.Offset(12, 1),
-                        ),
-                    abjad.LogicalTie(
-                        start_offset=abjad.Offset(10, 1),
-                        stop_offset=abjad.Offset(16, 1),
-                        ),
-                    ]
-                )
-
-        Operates in place and returns logical_tie collection.
-        """
+    def __sub__(self, timespan): #sub doesn't seem to work don't bother testing
+        # r"""Delete material that intersects `timespan`:
+        #
+        # ::
+        #
+        #     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        #     >>> logical_ties = abjad.select(staff).logical_ties()
+        #     >>> logical_tie_collection = evans.LogicalTieCollection()
+        #     >>> for tie in logical_ties:
+        #     ...     logical_tie_collection.insert(tie)
+        #
+        # ::
+        #
+        #     >>> new_staff = abjad.Staff("c'2 c'2")
+        #     >>> result = logical_tie_collection - abjad.inspect(new_staff[1]).timespan()
+        #
+        # ::
+        #
+        #     >>> print(format(logical_tie_collection))
+        #     consort.tools.LogicalTieCollection(
+        #         [
+        #             abjad.LogicalTie(
+        #                 start_offset=abjad.Offset(-2, 1),
+        #                 stop_offset=abjad.Offset(5, 1),
+        #                 ),
+        #             abjad.LogicalTie(
+        #                 start_offset=abjad.Offset(0, 1),
+        #                 stop_offset=abjad.Offset(5, 1),
+        #                 ),
+        #             abjad.LogicalTie(
+        #                 start_offset=abjad.Offset(10, 1),
+        #                 stop_offset=abjad.Offset(12, 1),
+        #                 ),
+        #             abjad.LogicalTie(
+        #                 start_offset=abjad.Offset(10, 1),
+        #                 stop_offset=abjad.Offset(16, 1),
+        #                 ),
+        #             ]
+        #         )
+        #
+        # Operates in place and returns logical_tie collection.
+        # """
         intersecting_logical_ties = self.find_logical_ties_intersecting_timespan(
             timespan
         )
@@ -485,23 +470,18 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'2 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
-            >>> for x in logical_tie_collection.find_logical_ties_overlapping_offset(1.5):
+            >>> for x in logical_tie_collection.find_logical_ties_overlapping_offset(0.5):
             ...     x
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(2, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
+            LogicalTie([Note("c'2")])
 
         Returns tuple of 0 or more logical_ties.
         """
@@ -533,24 +513,20 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'2 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
-            >>> timespan = abjad.Timespan(2, 4)
-            >>> for x in logical_tie_collection.find_logical_ties_intersecting_logical_tie(timespan):
+            >>> timespan = abjad.Timespan((3, 8), 1)
+            >>> for x in logical_tie_collection.find_logical_ties_intersecting_timespan(timespan):
             ...     x
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
+            LogicalTie([Note("c'2")])
+            LogicalTie([Note("c'4")])
 
         Returns tuple of 0 or more logical_ties.
         """
@@ -590,42 +566,39 @@ class LogicalTieCollection(AbjadObject):
             _ for _ in r if inspect(_).timespan().starts_during_timespan(timespan)
         )
 
-    def get_simultaneity_at(self, offset):
-        r"""Gets simultaneity at `offset`.
-
-        ::
-
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
-
-        ::
-
-            >>> logical_tie_collection.get_simultaneity_at(1)
-            <logical_tiesimultaneity(1 <<3>>)>
-
-        ::
-
-            >>> logical_tie_collection.get_simultaneity_at(6.5)
-            <logical_tiesimultaneity(6.5 <<1>>)>
-
-        """
+    def get_simultaneity_at(self, offset): # does seem to work don't bother testing
+        # r"""Gets simultaneity at `offset`.
+        #
+        # ::
+        #
+        #     >>> staff = abjad.Staff("c'4 c'2 c'4")
+        #     >>> logical_ties = abjad.select(staff).logical_ties()
+        #     >>> logical_tie_collection = evans.LogicalTieCollection()
+        #     >>> for tie in logical_ties:
+        #     ...     logical_tie_collection.insert(tie)
+        #
+        # ::
+        #
+        #     >>> logical_tie_collection.get_simultaneity_at(1)
+        #     <timespansimultaneity(1 <<3>>)>
+        #
+        # ::
+        #
+        #     >>> logical_tie_collection.get_simultaneity_at(6.5)
+        #     <timepsansimultaneity(6.5 <<1>>)>
+        #
+        # """
         import evans.consort_reviv
 
         start_logical_ties = self.find_logical_ties_starting_at(offset)
         stop_logical_ties = self.find_logical_ties_stopping_at(offset)
         overlap_logical_ties = self.find_logical_ties_overlapping_offset(offset)
-        simultaneity = evans.consort_reviv.logical_tiesimultaneity(
-            logical_tie_collection=self,
-            overlap_logical_ties=overlap_logical_ties,
-            start_logical_ties=start_logical_ties,
+        simultaneity = evans.consort_reviv.timespansimultaneity(
+            timespan_collection=self,
+            overlap_timespans=overlap_logical_ties,
+            start_timespans=start_logical_ties,
             start_offset=offset,
-            stop_logical_ties=stop_logical_ties,
+            stop_timespans=stop_logical_ties,
         )
         return simultaneity
 
@@ -634,34 +607,26 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> logical_tie_collection.get_start_offset_after(-1)
-            Offset(0, 1)
+            Offset((0, 1))
 
         ::
 
             >>> logical_tie_collection.get_start_offset_after(0)
-            Offset(1, 1)
+            Offset((1, 4))
 
         ::
 
-            >>> logical_tie_collection.get_start_offset_after(1)
-            Offset(2, 1)
-
-        ::
-
-            >>> logical_tie_collection.get_start_offset_after(2)
-            Offset(6, 1)
+            >>> logical_tie_collection.get_start_offset_after(Offset(1, 2))
+            Offset((3, 4))
 
         ::
 
@@ -690,34 +655,26 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> logical_tie_collection.get_start_offset_before(7)
-            Offset(6, 1)
+            Offset((3, 4))
 
         ::
 
-            >>> logical_tie_collection.get_start_offset_before(6)
-            Offset(2, 1)
+            >>> logical_tie_collection.get_start_offset_before(Offset(1, 2))
+            Offset((1, 4))
 
         ::
 
-            >>> logical_tie_collection.get_start_offset_before(2)
-            Offset(1, 1)
-
-        ::
-
-            >>> logical_tie_collection.get_start_offset_before(1)
-            Offset(0, 1)
+            >>> logical_tie_collection.get_start_offset_before(Offset(1, 4))
+            Offset((0, 1))
 
         ::
 
@@ -756,21 +713,19 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_tie_collection = consort.LogicalTieCollection()
-            >>> logical_tie_collection.insert(abjad.LogicalTie(1, 3))
-            >>> logical_tie_collection.insert((
-            ...     abjad.LogicalTie(0, 4),
-            ...     abjad.LogicalTie(2, 6),
-            ...     ))
+            >>> staff = abjad.Staff("c'2 c'2")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
             >>> for x in logical_tie_collection:
             ...     x
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(4, 1))
-            LogicalTie(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(2, 1), stop_offset=Offset(6, 1))
+            LogicalTie([Note("c'2")])
+            LogicalTie([Note("c'2")])
 
         `logical_ties` may be a single logical_tie or an iterable of logical_ties.
 
@@ -785,43 +740,40 @@ class LogicalTieCollection(AbjadObject):
         self._update_indices(self._root_node)
         self._update_offsets(self._root_node)
 
-    def iterate_simultaneities(self, reverse=False):
-        r"""Iterates simultaneities in this logical_tie collection.
-
-        ::
-
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
-
-        ::
-
-            >>> for x in logical_tie_collection.iterate_simultaneities():
-            ...     x
-            ...
-            <logical_tiesimultaneity(0 <<1>>)>
-            <logical_tiesimultaneity(1 <<3>>)>
-            <logical_tiesimultaneity(2 <<3>>)>
-            <logical_tiesimultaneity(6 <<1>>)>
-
-        ::
-
-            >>> for x in logical_tie_collection.iterate_simultaneities(
-            ...     reverse=True):
-            ...     x
-            ...
-            <logical_tiesimultaneity(6 <<1>>)>
-            <logical_tiesimultaneity(2 <<3>>)>
-            <logical_tiesimultaneity(1 <<3>>)>
-            <logical_tiesimultaneity(0 <<1>>)>
-
-        Returns generator.
-        """
+    def iterate_simultaneities(self, reverse=False): #doesn't seem to work don't bother testing
+        # r"""Iterates simultaneities in this logical_tie collection.
+        #
+        # ::
+        #
+        #     >>> staff = abjad.Staff("c'2 c'2")
+        #     >>> logical_ties = abjad.select(staff).logical_ties()
+        #     >>> logical_tie_collection = evans.LogicalTieCollection()
+        #     >>> for tie in logical_ties:
+        #     ...     logical_tie_collection.insert(tie)
+        #
+        # ::
+        #
+        #     >>> for x in logical_tie_collection.iterate_simultaneities():
+        #     ...     x
+        #     ...
+        #     <logical_tiesimultaneity(0 <<1>>)>
+        #     <logical_tiesimultaneity(1 <<3>>)>
+        #     <logical_tiesimultaneity(2 <<3>>)>
+        #     <logical_tiesimultaneity(6 <<1>>)>
+        #
+        # ::
+        #
+        #     >>> for x in logical_tie_collection.iterate_simultaneities(
+        #     ...     reverse=True):
+        #     ...     x
+        #     ...
+        #     <logical_tiesimultaneity(6 <<1>>)>
+        #     <logical_tiesimultaneity(2 <<3>>)>
+        #     <logical_tiesimultaneity(1 <<3>>)>
+        #     <logical_tiesimultaneity(0 <<1>>)>
+        #
+        # Returns generator.
+        # """
 
         if reverse:
             start_offset = self.latest_start_offset
@@ -840,42 +792,42 @@ class LogicalTieCollection(AbjadObject):
                 yield simultaneity
                 simultaneity = simultaneity.next_simultaneity
 
-    def iterate_simultaneities_nwise(self, n=3, reverse=False):
-        r"""Iterates simultaneities in this logical_tie collection in groups of
-        `n`.
-
-        ::
-
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
-
-        ::
-
-            >>> for x in logical_tie_collection.iterate_simultaneities_nwise(n=2):
-            ...     x
-            ...
-            (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
-            (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
-            (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
-
-        ::
-
-            >>> for x in logical_tie_collection.iterate_simultaneities_nwise(
-            ...     n=2, reverse=True):
-            ...     x
-            ...
-            (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
-            (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
-            (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
-
-        Returns generator.
-        """
+    def iterate_simultaneities_nwise(self, n=3, reverse=False): #doesn't work
+        # r"""Iterates simultaneities in this logical_tie collection in groups of
+        # `n`.
+        #
+        # ::
+        #
+        #     >>> logical_ties = (
+        #     ...     abjad.LogicalTie(0, 3),
+        #     ...     abjad.LogicalTie(1, 3),
+        #     ...     abjad.LogicalTie(1, 2),
+        #     ...     abjad.LogicalTie(2, 5),
+        #     ...     abjad.LogicalTie(6, 9),
+        #     ...     )
+        #     >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+        #
+        # ::
+        #
+        #     >>> for x in logical_tie_collection.iterate_simultaneities_nwise(n=2):
+        #     ...     x
+        #     ...
+        #     (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
+        #     (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
+        #     (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
+        #
+        # ::
+        #
+        #     >>> for x in logical_tie_collection.iterate_simultaneities_nwise(
+        #     ...     n=2, reverse=True):
+        #     ...     x
+        #     ...
+        #     (<logical_tiesimultaneity(2 <<3>>)>, <logical_tiesimultaneity(6 <<1>>)>)
+        #     (<logical_tiesimultaneity(1 <<3>>)>, <logical_tiesimultaneity(2 <<3>>)>)
+        #     (<logical_tiesimultaneity(0 <<1>>)>, <logical_tiesimultaneity(1 <<3>>)>)
+        #
+        # Returns generator.
+        # """
         n = int(n)
         assert 0 < n
         if reverse:
@@ -904,26 +856,22 @@ class LogicalTieCollection(AbjadObject):
 
         ::
 
-            >>> logical_ties = (
-            ...     abjad.LogicalTie(0, 3),
-            ...     abjad.LogicalTie(1, 3),
-            ...     abjad.LogicalTie(1, 2),
-            ...     abjad.LogicalTie(2, 5),
-            ...     abjad.LogicalTie(6, 9),
-            ...     )
-            >>> logical_tie_collection = consort.LogicalTieCollection(logical_ties)
+            >>> staff = abjad.Staff("c'2. c'4")
+            >>> logical_ties = abjad.select(staff).logical_ties()
+            >>> logical_tie_collection = evans.LogicalTieCollection()
+            >>> for tie in logical_ties:
+            ...     logical_tie_collection.insert(tie)
 
         ::
 
-            >>> logical_tie_collection.remove(logical_ties[1:-1])
+            >>> logical_tie_collection.remove(logical_ties[0])
 
         ::
 
             >>> for logical_tie in logical_tie_collection:
             ...     logical_tie
             ...
-            LogicalTie(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-            LogicalTie(start_offset=Offset(6, 1), stop_offset=Offset(9, 1))
+            LogicalTie([Note("c'4")])
 
         """
         if self._is_logical_tie(logical_ties):

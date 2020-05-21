@@ -3,6 +3,66 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class BisbigliandoHandler:
+    r"""
+    >>> s = abjad.Staff("c''4 c''4 c''4 c''4")
+    >>> m = [
+    ...     r"\markup {",
+    ...     r"\lower #1.5",
+    ...     r"\override #'(graphical . #t)",
+    ...     r"\override #'(size . 0.4)",
+    ...     r"\override #'(thickness . 0.25)",
+    ...     r"\woodwind-diagram",
+    ...     r"#'flute",
+    ...     r"#'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))",
+    ...     r"}",
+    ... ]
+    >>> handler = evans.BisbigliandoHandler(
+    ...     fingering_list=[None, m],
+    ...     boolean_vector=[1],
+    ...     staff_padding=2,
+    ... continuous=True,
+    ... )
+    >>> handler(s[:-1])
+    >>> abjad.f(s)
+     \new Staff
+    {
+        c''4
+        - \tweak padding #2
+        - \tweak staff-padding #2
+        - \tweak bound-details.right.padding #2
+        - \tweak bound-details.left.text
+        \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+        \startTrillSpan
+        c''4
+        \stopTrillSpan
+        - \tweak padding #2
+        - \tweak staff-padding #2
+        - \tweak bound-details.right.padding #2
+        - \tweak bound-details.left.text
+        \markup {
+        \lower #1.5
+        \override #'(graphical . #t)
+        \override #'(size . 0.4)
+        \override #'(thickness . 0.25)
+        \woodwind-diagram
+        #'flute
+        #'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))
+        }
+        \startTrillSpan
+        c''4
+        \stopTrillSpan
+        - \tweak padding #2
+        - \tweak staff-padding #2
+        - \tweak bound-details.right.padding #2
+        - \tweak bound-details.left.text
+        \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+        \startTrillSpan
+        c''4
+        \stopTrillSpan
+    }
+
+    """
+
     def __init__(
         self,
         fingering_list=[None],
@@ -88,26 +148,3 @@ class BisbigliandoHandler:
 
     def state(self):
         return f"""count\n{self.boolean_vector.state()}"""
-
-
-# ###demo###
-# s = abjad.Staff("c''4 c''4 c''4 c''4")
-# m = [
-#         r"\markup {",
-#         r"\lower #1.5",
-#         r"\override #'(graphical . #t)",
-#         r"\override #'(size . 0.4)",
-#         r"\override #'(thickness . 0.25)",
-#         r"\woodwind-diagram",
-#         r"#'flute",
-#         r"#'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))",
-#         r"}",
-#     ]
-# handler = BisbigliandoHandler(
-#     fingering_list=[None, m],
-#     boolean_vector=[1],
-#     staff_padding=2,
-#     continuous=True,
-# )
-# handler(s[:-1])
-# abjad.f(s)

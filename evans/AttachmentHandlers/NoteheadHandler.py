@@ -3,6 +3,39 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class NoteheadHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.NoteheadHandler(
+    ...     notehead_list=["default", "harmonic", "triangle", "slash"],
+    ...     transition=True,
+    ...     head_boolean_vector=[1],
+    ...     head_vector_continuous=True,
+    ...     transition_boolean_vector=[0, 1],
+    ...     transition_vector_continuous=True,
+    ...     continuous=False,
+    ... )
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        \tweak NoteHead.style #'default
+        c'4
+        \tweak NoteHead.style #'harmonic
+        c'4
+        - \tweak arrow-length #2
+        - \tweak arrow-width #0.5
+        - \tweak bound-details.right.arrow ##t
+        - \tweak thickness #2.5
+        \glissando
+        \tweak NoteHead.style #'triangle
+        c'4
+        \tweak NoteHead.style #'slash
+        c'4
+    }
+
+
+    """
+
     def __init__(
         self,
         notehead_list=None,
@@ -60,7 +93,7 @@ class NoteheadHandler:
                 - \tweak bound-details.right.arrow ##t
                 - \tweak thickness #2.5
                 \glissando
-            """,
+                """,
                 "absolute_after",
             )
             for tie, bool1, bool2 in zip(

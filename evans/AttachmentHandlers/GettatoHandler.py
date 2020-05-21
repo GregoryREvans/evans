@@ -3,6 +3,200 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class GettatoHandler:
+    r"""
+    >>> staff = abjad.Voice("c'4 fs'4 c''4 gqs''4", name="Voice 1")
+    >>> handler = evans.GettatoHandler(
+    ...     number_of_attacks=[4, 5, 6],
+    ...     actions=["throw", "drop"],
+    ... )
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \context Voice = "Voice 1"
+    {
+        <<
+            \context Voice = "On_Beat_Grace_Container"
+            {
+                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                \once \override Beam.grow-direction = #left
+                \slash %! abjad.on_beat_grace_container(2)
+                \voiceOne %! abjad.on_beat_grace_container(3)
+                <
+                    \tweak font-size #0
+                    \tweak transparent ##t
+                    c'
+                >32 * 4/3
+                ^ \markup {
+                    \hspace
+                        #1
+                    throw
+                    (4)
+                    }
+                [
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c'32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c'32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c'32 * 4/3
+                ]
+            }
+            \context Voice = "Voice 1"
+            {
+                \voiceTwo %! abjad.on_beat_grace_container(4)
+                c'4
+            }
+        >>
+        <<
+            \context Voice = "On_Beat_Grace_Container"
+            {
+                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                \once \override Beam.grow-direction = #right
+                \slash %! abjad.on_beat_grace_container(2)
+                \voiceOne %! abjad.on_beat_grace_container(3)
+                <
+                    \tweak font-size #0
+                    \tweak transparent ##t
+                    fs'
+                >32 * 4/3
+                ^ \markup {
+                    \hspace
+                        #1
+                    drop
+                    (5)
+                    }
+                [
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                fs'32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                fs'32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                fs'32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                fs'32 * 4/3
+                ]
+            }
+            \context Voice = "Voice 1"
+            {
+                \voiceTwo %! abjad.on_beat_grace_container(4)
+                fs'4
+            }
+        >>
+        <<
+            \context Voice = "On_Beat_Grace_Container"
+            {
+                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                \once \override Beam.grow-direction = #left
+                \slash %! abjad.on_beat_grace_container(2)
+                \voiceOne %! abjad.on_beat_grace_container(3)
+                <
+                    \tweak font-size #0
+                    \tweak transparent ##t
+                    c''
+                >32 * 4/3
+                ^ \markup {
+                    \hspace
+                        #1
+                    throw
+                    (6)
+                    }
+                [
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                c''32 * 4/3
+                ]
+            }
+            \context Voice = "Voice 1"
+            {
+                \voiceTwo %! abjad.on_beat_grace_container(4)
+                c''4
+            }
+        >>
+        <<
+            \context Voice = "On_Beat_Grace_Container"
+            {
+                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                \once \override Beam.grow-direction = #right
+                \slash %! abjad.on_beat_grace_container(2)
+                \voiceOne %! abjad.on_beat_grace_container(3)
+                <
+                    \tweak font-size #0
+                    \tweak transparent ##t
+                    gqs''
+                >32 * 4/3
+                ^ \markup {
+                    \hspace
+                        #1
+                    drop
+                    (4)
+                    }
+                [
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                gqs''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                gqs''32 * 4/3
+                \once \override NoteHead.no-ledgers = ##t
+                \once \override Accidental.transparent = ##t
+                \tweak transparent ##t
+                gqs''32 * 4/3
+                ]
+            }
+            \context Voice = "Voice 1"
+            {
+                \voiceTwo %! abjad.on_beat_grace_container(4)
+                gqs''4
+            }
+        >>
+    }
+
+    """
+
     def __init__(
         self,
         number_of_attacks=[4, 5, 6],
@@ -81,27 +275,17 @@ class GettatoHandler:
                     abjad.attach(mark, sel[0])
                 else:
                     pass
-                # container = abjad.on_beat_grace_container(
-                #     sel,
-                #     tie[:],
-                #     leaf_duration=(1, 24),
-                #     do_not_slur=True,
-                #     do_not_beam=True,
-                #     font_size=-4,
-                # )
+                abjad.on_beat_grace_container(
+                    sel,
+                    tie[:],
+                    leaf_duration=(1, 24),
+                    do_not_slur=True,
+                    do_not_beam=True,
+                    font_size=-4,
+                )
 
     def name(self):
         return self.name
 
     def state(self):
         return f"""attack count\n{self.attacks.state()}\naction count\n{self.actions.state()}\nvector count\n{self.boolean_vector.state()}"""
-
-
-###DEMO###
-# staff = abjad.Voice("c'4 fs'4 c''4 gqs''4", name="Voice 1")
-# handler = GettatoHandler(
-#     number_of_attacks=[4, 5, 6],
-#     actions=["throw", "drop"],
-# )
-# handler(staff)
-# abjad.show(staff)

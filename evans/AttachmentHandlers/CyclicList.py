@@ -1,4 +1,27 @@
 class CyclicList:
+    r"""
+    >>> _cyc_count = -1
+    >>> _non_cyc_count = -1
+    >>> cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
+    >>> non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
+
+    >>> cyc_generator(r=2)
+    [1, 2]
+
+    >>> cyc_generator(r=7)
+    [3, 1, 2, 3, 1, 2, 3]
+
+    >>> non_cyc_generator(r=2)
+    [1, 2]
+
+    >>> non_cyc_generator(r=7)
+    [1, 2, 3, 1, 2, 3, 1]
+
+    >>> print((cyc_generator.state(), non_cyc_generator.state()))
+    (8, 6)
+
+    """
+
     def __init__(self, lst=None, continuous=False, count=-1):
         self.lst = lst
         self.continuous = continuous
@@ -27,22 +50,3 @@ class CyclicList:
 
     def state(self):
         return self.count
-
-
-# _cyc_count = -1
-# _non_cyc_count = -1
-# cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
-# non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
-#
-# cyc_generator(r=2)[0]
-#
-# for _ in cyc_generator(r=8):
-#     print(_)
-# for _ in non_cyc_generator(r=7):
-#     print(_)
-#
-# print(cyc_generator.state())
-#
-# new_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=7)
-# for _ in new_cyc_generator(r=8):
-#     print(_)

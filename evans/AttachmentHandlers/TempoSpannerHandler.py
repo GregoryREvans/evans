@@ -3,6 +3,39 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class TempoSpannerHandler:
+    r"""
+    >>> s = abjad.Staff("s4 s4 s4 s4")
+    >>> handler = TempoSpannerHandler(
+    ...     tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
+    ...     boolean_vector=[1],
+    ...     padding=4,
+    ...     staff_padding=2,
+    ...     continuous=True,
+    ... )
+    >>> handler(s[:-1])
+    >>> abjad.f(s)
+    \new Staff
+    {
+        s4
+        - \abjad-dashed-line-with-arrow
+        - \baca-metronome-mark-spanner-left-text 3 0 1 "87"
+        - \tweak padding #4
+        - \tweak staff-padding #2
+        \bacaStartTextSpanMM
+        s4
+        s4
+        \bacaStopTextSpanMM
+        - \abjad-invisible-line
+        - \baca-metronome-mark-spanner-left-text 3 0 1 "95"
+        - \tweak padding #4
+        - \tweak staff-padding #2
+        \bacaStartTextSpanMM
+        s4
+        \bacaStopTextSpanMM
+    }
+
+    """
+
     def __init__(
         self,
         tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
@@ -69,10 +102,3 @@ class TempoSpannerHandler:
 
     def state(self):
         return f"""count\n{self.boolean_vector.state()}"""
-
-
-# ###demo###
-# s = abjad.Staff("s4 s4 s4 s4")
-# handler = TempoSpannerHandler()
-# handler(s[:-1])
-# abjad.f(s)

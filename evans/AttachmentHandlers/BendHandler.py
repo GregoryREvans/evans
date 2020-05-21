@@ -3,6 +3,29 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class BendHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.BendHandler(
+    ...     bend_amounts=[1, 1.5],
+    ...     bend_continuous=True,
+    ...     boolean_vector=[1, 1, 0, 1],
+    ...     vector_continuous=True,
+    ... )
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        - \bendAfter #'1
+        c'4
+        - \bendAfter #'1.5
+        c'4
+        c'4
+        - \bendAfter #'1.5
+    }
+
+    """
+
     def __init__(
         self,
         bend_amounts=[1],

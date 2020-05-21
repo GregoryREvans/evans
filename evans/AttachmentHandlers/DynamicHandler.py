@@ -4,6 +4,98 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 # incorporate spanner anchors
 class DynamicHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+    >>> handler = evans.DynamicHandler(
+    ...     dynamic_list=['f', 'niente', 'p', 'mf'],
+    ...     flare_boolean_vector=[0, 0, 0, 1],
+    ...     flare_continuous=True,
+    ...     hold_first_boolean_vector=[1, 0, 0,],
+    ...     hold_first_continuous=True,
+    ...     hold_last_boolean_vector=[0, 1],
+    ...     hold_last_continuous=True,
+    ...     effort_boolean_vector=[1, 0],
+    ...     effort_continuous=True,
+    ...     continuous=True,
+    ... )
+    >>> first_group = staff[0:3]
+    >>> second_group = staff[2:]
+    >>> handler(first_group)
+    >>> handler(second_group)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        _ #(make-dynamic-script
+            (markup
+                #:whiteout
+                #:line (
+                    #:general-align Y -2 #:normal-text #:larger "“"
+                    #:hspace -0.4
+                    #:dynamic "f"
+                    #:hspace -0.2
+                    #:general-align Y -2 #:normal-text #:larger "”"
+                    )
+                )
+            )
+        - \tweak stencil #constante-hairpin
+        \<
+        d'4
+        e'4
+        - \tweak circled-tip ##t
+        \<
+        f'4
+        <>
+        _ #(make-dynamic-script
+            (markup
+                #:whiteout
+                #:line (
+                    #:general-align Y -2 #:normal-text #:larger "“"
+                    #:hspace -0.1
+                    #:dynamic "p"
+                    #:hspace -0.25
+                    #:general-align Y -2 #:normal-text #:larger "”"
+                    )
+                )
+            )
+        r4
+        g'4
+        \mf
+        - \tweak stencil #constante-hairpin
+        \<
+        r2
+        \!
+    }
+
+    # >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+    # >>> handler = evans.DynamicHandler(
+    # ...     dynamic_list=[3, -1, 2, 4],
+    # ...     hold_first_boolean_vector=[1, 0, 0,],
+    # ...     with_constante_hairpins=False,
+    # ...     continuous=False,
+    # ... )
+    # >>> first_group = staff[0:3]
+    # >>> second_group = staff[2:]
+    # >>> handler(first_group)
+    # >>> handler(second_group)
+    # >>> abjad.f(staff)
+    # \new Staff
+    # {
+    #     c'4
+    #     d'4
+    #     e'4
+    #     \ff
+    #     \>
+    #     f'4
+    #     <>
+    #     \mp
+    #     r4
+    #     g'4
+    #     r2
+    # }
+
+    """
+
     def __init__(
         self,
         dynamic_list=None,
@@ -327,34 +419,3 @@ class DynamicHandler:
 
     def state(self):
         return f"""count 1\n{self._cyc_dynamics.state()}\ncount 2\n{self._cyc_flare_boolean_vector.state()}\ncount 3\n{self._cyc_hold_first_boolean_vector.state()}\ncount 4\n{self._cyc_hold_last_boolean_vector.state()}\ncount 5\n{self._cyc_effort_boolean_vector.state()}"""
-
-
-# ###DEMO###
-# staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
-#
-# handler = DynamicHandler(
-#     # dynamic_list=[3, -1, 2, 4],
-#     dynamic_list=['f', 'niente', 'p', 'mf'],
-#     flare_boolean_vector=[0, 0, 0, 1],
-#     flare_continuous=True,
-#     hold_first_boolean_vector=[1, 0, 0,],
-#     hold_first_continuous=True,
-#     hold_last_boolean_vector=[0, 1],
-#     hold_last_continuous=True,
-#     effort_boolean_vector=[1, 0],
-#     effort_continuous=True,
-#     continuous=True,
-# )
-#
-# # for run in abjad.select(staff).runs():
-# #     handler(run)
-#
-# # handler(staff) # should be different but is not
-#
-# first_group = staff[0:3]
-# second_group = staff[2:]
-#
-# handler(first_group)
-# handler(second_group)
-#
-# abjad.show(staff)

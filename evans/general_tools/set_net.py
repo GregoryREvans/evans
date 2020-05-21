@@ -2,6 +2,30 @@ import itertools
 
 
 def set_net(set, group_size, filter_depth):
+    r"""
+    >>> filter_depth_ = 7
+    >>> set_ = "ABCDEFG"
+    >>> group_size_ = 3
+    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+    >>> print(net)
+    [('A', 'B', 'C'), ('A', 'D', 'E'), ('A', 'F', 'G'), ('B', 'D', 'F'), ('B', 'E', 'G'), ('C', 'D', 'G'), ('C', 'E', 'F')]
+
+    >>> filter_depth_ = 3
+    >>> set_ = "ABCDEFGHI"
+    >>> group_size_ = 4
+    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+    >>> print(net)
+    [('A', 'B', 'C', 'D'), ('A', 'E', 'F', 'G'), ('B', 'E', 'H', 'I')]
+
+    >>> filter_depth_ = 2
+    >>> set_ = "ABCDE"
+    >>> group_size_ = 3
+    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+    >>> print(net)
+    [('A', 'B', 'C'), ('A', 'D', 'E')]
+
+    """
+
     combination_sets = [_ for _ in itertools.combinations(set, group_size)]
     for i, letter in enumerate(range(filter_depth)):
         reference_set = combination_sets[i]
@@ -21,25 +45,3 @@ def set_net(set, group_size, filter_depth):
                 else:
                     continue
     return combination_sets
-
-
-###DEMO###
-# filter_depth_ = 7
-# set_ = "ABCDEFG"
-# group_size_ = 3
-# net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-# print(net)
-#
-# ###DEMO2###
-# filter_depth_ = 3
-# set_ = "ABCDEFGHI"
-# group_size_ = 4
-# net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-# print(net)
-#
-# ###DEMO3###
-# filter_depth_ = 2
-# set_ = "ABCDE"
-# group_size_ = 3
-# net = setNet(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-# print(net)

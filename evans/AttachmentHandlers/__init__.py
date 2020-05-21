@@ -4,6 +4,7 @@ from .BisbigliandoHandler import BisbigliandoHandler
 from .ClefHandler import ClefHandler
 from .CyclicList import CyclicList
 from .DynamicHandler import DynamicHandler
+from .GettatoHandler import GettatoHandler
 from .GlissandoHandler import GlissandoHandler
 from .GraceHandler import GraceHandler
 from .NoteheadHandler import NoteheadHandler

@@ -66,6 +66,7 @@ before_install:
     - ls
     - echo $PACKAGE
     - which black-check
+    - which evans-doctest
     - which flake8-check
     - which isort-check
 
@@ -73,6 +74,7 @@ script:
     - black-check $PACKAGE
     - flake8-check $PACKAGE
     - isort-check $PACKAGE
+    - evans-doctest $PACKAGE
     # - py.test -rf $PACKAGE/test.py
 
 notifications:

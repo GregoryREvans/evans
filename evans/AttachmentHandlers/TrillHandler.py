@@ -3,6 +3,28 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class TrillHandler:
+    r"""
+    >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
+    >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        <c' d'>4
+        c'4
+        c'4
+        \pitchedTrill
+        c'4
+        \startTrillSpan d'
+        c'4
+        \stopTrillSpan
+        c'4
+        c'4
+        c'4
+    }
+
+    """
+
     def __init__(
         self, boolean_vector=[0], continuous=True, count=-1, name="Trill Handler"
     ):
@@ -73,10 +95,3 @@ class TrillHandler:
 
     def state(self):
         return f"""count\n{self.boolean_vector.state()}"""
-
-
-# ###DEMO###
-# staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
-# handler = TrillHandler(boolean_vector=[0, 0], continuous=True)
-# handler(staff)
-# abjad.f(staff)

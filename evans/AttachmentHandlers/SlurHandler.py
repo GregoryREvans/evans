@@ -3,10 +3,27 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class SlurHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.SlurHandler()
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        (
+        c'4
+        c'4
+        c'4
+        )
+    }
+
+    """
+
     def __init__(
         self,
         apply_slur_to="runs",
-        boolean_vector=[0],
+        boolean_vector=[1],
         continuous=True,
         count=-1,
         name="Slur Handler",
@@ -21,14 +38,14 @@ class SlurHandler:
         self.add_slurs(selections)
 
     def add_slurs(self, selections):
-        if self.slurs == "selections":
-            if self.boolean_vector(r=1)[0] == 0:
+        if self.apply_slur_to == "selections":
+            if self.boolean_vector(r=1)[0] == 1:
                 abjad.slur(selections[:])
             else:
                 pass
-        elif self.slurs == "runs":
+        elif self.apply_slur_to == "runs":
             for run in abjad.select(selections).runs():
-                if self.boolean_vector(r=1)[0] == 0:
+                if self.boolean_vector(r=1)[0] == 1:
                     abjad.slur(run[:])
                 else:
                     continue

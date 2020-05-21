@@ -3,6 +3,40 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class ArticulationHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
+    >>> art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
+    >>> handler = evans.ArticulationHandler(
+    ...     articulation_list=art_lst,
+    ...     articulation_boolean_vector=[0],
+    ...     vector_continuous=True,
+    ...     continuous=True,
+    ... )
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        - \staccato
+        c'4
+        - \tenuto
+        c'4
+        - \staccatissimo
+        r4
+        c'4
+        - \open
+        c'4
+        - \halfopen
+        c'4
+        - \stopped
+        c'4
+        - \portato
+        c'4
+        :32
+    }
+
+    """
+
     def __init__(
         self,
         articulation_list=None,
@@ -57,16 +91,3 @@ class ArticulationHandler:
 
     def state(self):
         return f"""count\n{self._cyc_articulations.state()}\nvector count\n{self.articulation_boolean_vector.state()}"""
-
-
-# ###DEMO###
-# staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
-# art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
-# handler = ArticulationHandler(
-#     articulation_list=art_lst,
-#     articulation_boolean_vector=[0],
-#     vector_continuous=True,
-#     continuous=True,
-# )
-# handler(staff)
-# abjad.show(staff)

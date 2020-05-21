@@ -10,12 +10,12 @@ class RatioPartsExpression(AbjadObject):
 
         ::
 
-            >>> expression = consort.RatioPartsExpression(
+            >>> expression = evans.RatioPartsExpression(
             ...     ratio=(1, 2, 1),
             ...     parts=(0, 2),
             ...     )
             >>> print(format(expression))
-            consort.tools.RatioPartsExpression(
+            evans.RatioPartsExpression(
                 parts=(0, 2),
                 ratio=abjad.Ratio((1, 2, 1)),
                 )
@@ -29,14 +29,14 @@ class RatioPartsExpression(AbjadObject):
             >>> for x in expression(timespan):
             ...     x
             ...
-            Timespan(start_offset=Offset(1, 2), stop_offset=Offset(3, 4))
-            Timespan(start_offset=Offset(5, 4), stop_offset=Offset(3, 2))
+            Timespan(Offset((1, 2)), Offset((3, 4)))
+            Timespan(Offset((5, 4)), Offset((3, 2)))
 
     ..  container:: example
 
         ::
 
-            >>> expression = consort.RatioPartsExpression(
+            >>> expression = evans.RatioPartsExpression(
             ...     ratio=(1, 2, 1),
             ...     parts=(0, 2),
             ...     mask_timespan=abjad.Timespan(
@@ -50,8 +50,8 @@ class RatioPartsExpression(AbjadObject):
             >>> for x in expression(timespan):
             ...     x
             ...
-            Timespan(start_offset=Offset(1, 4), stop_offset=Offset(1, 1))
-            Timespan(start_offset=Offset(3, 1), stop_offset=Offset(4, 1))
+            Timespan(Offset((1, 4)), Offset((1, 1)))
+            Timespan(Offset((3, 1)), Offset((4, 1)))
 
     """
 
@@ -95,12 +95,12 @@ class RatioPartsExpression(AbjadObject):
         ::
 
             >>> ratio = [-1, 2, -1, 1, -1]
-            >>> expression = consort.RatioPartsExpression.from_sequence(ratio)
+            >>> expression = evans.RatioPartsExpression.from_sequence(ratio)
             >>> print(format(expression))
-            consort.tools.RatioPartsExpression(
+            evans.RatioPartsExpression(
                 parts=(1, 3),
                 ratio=abjad.Ratio((1, 2, 1, 1, 1)),
-                )
+            )
 
         Returns new ratio parts expression.
         """

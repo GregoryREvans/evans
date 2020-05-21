@@ -3,6 +3,32 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class GlissandoHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.GlissandoHandler(
+    ...     line_style="dotted-line",
+    ...     boolean_vector=[1],
+    ...     continuous=True,
+    ...     apply_to="runs",
+    ... )
+    >>> handler(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        - \tweak style #'dotted-line %! abjad.glissando(7)
+        \glissando                   %! abjad.glissando(7)
+        c'4
+        - \tweak style #'dotted-line %! abjad.glissando(7)
+        \glissando                   %! abjad.glissando(7)
+        c'4
+        - \tweak style #'dotted-line %! abjad.glissando(7)
+        \glissando                   %! abjad.glissando(7)
+        c'4
+    }
+
+    """
+
     def __init__(
         self,
         glissando_style=None,

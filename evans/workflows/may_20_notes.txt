@@ -1,0 +1,6 @@
+may 20 notes
+
+git checkout [file]
+	reverts to last pushed version
+
+***git checkout . reverts the entire repository not pwd***

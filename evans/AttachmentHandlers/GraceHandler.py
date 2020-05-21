@@ -3,6 +3,48 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class GraceHandler:
+    r"""
+    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = GraceHandler(
+    ...     boolean_vector=[0, 1, 0, 1],
+    ...     gesture_lengths=[1, 2],
+    ...     continuous=True,
+    ... )
+    >>> handler(staff[:])
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'4
+        \scaleDurations #'(1 . 1) {
+        \slashedGrace {
+            c'16
+            s8..
+            s2
+        }
+        }
+        c'4
+        c'4
+        \scaleDurations #'(1 . 1) {
+        \slashedGrace {
+            \slash
+            \override Stem.direction = #UP
+            \override Staff.Stem.stemlet-length = 0
+            c'16
+            [
+            s8..
+            c'16
+            \revert Stem.direction
+            s8..
+            \revert Staff.Stem.stemlet-length
+            s2
+            ]
+        }
+        }
+        c'4
+    }
+
+    """
+
     def __init__(
         self,
         boolean_vector=None,
@@ -103,14 +145,3 @@ class GraceHandler:
 
     def state(self):
         return f"""vector count\n{self._cyc_boolean_vector.state()}\ngesture count\n{self._cyc_gesture_lengths.state()}"""
-
-
-###DEMO
-# s = abjad.Staff("c'4 c'4 c'4 c'4")
-# h = GraceHandler(
-#     boolean_vector=[0, 1, 0, 1],
-#     gesture_lengths=[1, 2],
-#     continuous=True,
-# )
-# h(s[:])
-# abjad.f(s)

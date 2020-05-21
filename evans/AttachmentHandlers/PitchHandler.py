@@ -3,6 +3,24 @@ from evans.AttachmentHandlers.CyclicList import CyclicList
 
 
 class PitchHandler:
+    r"""
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[1, 2, 3, 4],
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> abjad.f(s)
+    \new Staff
+    {
+        cs'4
+        d'4
+        ef'4
+        e'4
+    }
+
+    """
+
     def __init__(
         self, pitch_list=None, continuous=False, count=-1, name="Pitch Handler"
     ):
@@ -56,15 +74,3 @@ class PitchHandler:
 
     def state(self):
         return f"""count\n{self._cyc_pitches.state()}"""
-
-
-###DEMO
-# s = abjad.Staff("c'4 c'4 c'4 c'4")
-# grace = abjad.BeforeGraceContainer("c'16")
-# abjad.attach(grace, s[1])
-# handler = PitchHandler(
-#     pitch_list=[0, 1, 2, 3, 4],
-#     continuous=True,
-# )
-# handler(abjad.select(s).logical_ties())
-# abjad.f(s)
