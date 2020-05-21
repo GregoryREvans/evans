@@ -77,9 +77,9 @@ script:
     - evans-doctest $PACKAGE
     # - py.test -rf $PACKAGE/test.py
 
-after_success:
-    - pip install --quiet coveralls
-    - coveralls
+# after_success:
+#     - pip install --quiet coveralls
+#     - coveralls
 
 notifications:
     email: false
