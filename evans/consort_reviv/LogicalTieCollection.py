@@ -217,7 +217,7 @@ class LogicalTieCollection(AbjadObject):
             message = "Indices must be ints or slices, got {}".format(i)
             raise TypeError(message)
 
-    def __sub__(self, timespan): #sub doesn't seem to work don't bother testing
+    def __sub__(self, timespan):  # sub doesn't seem to work don't bother testing
         # r"""Delete material that intersects `timespan`:
         #
         # ::
@@ -566,7 +566,7 @@ class LogicalTieCollection(AbjadObject):
             _ for _ in r if inspect(_).timespan().starts_during_timespan(timespan)
         )
 
-    def get_simultaneity_at(self, offset): # does seem to work don't bother testing
+    def get_simultaneity_at(self, offset):  # does seem to work don't bother testing
         # r"""Gets simultaneity at `offset`.
         #
         # ::
@@ -740,7 +740,9 @@ class LogicalTieCollection(AbjadObject):
         self._update_indices(self._root_node)
         self._update_offsets(self._root_node)
 
-    def iterate_simultaneities(self, reverse=False): #doesn't seem to work don't bother testing
+    def iterate_simultaneities(
+        self, reverse=False
+    ):  # doesn't seem to work don't bother testing
         # r"""Iterates simultaneities in this logical_tie collection.
         #
         # ::
@@ -792,7 +794,7 @@ class LogicalTieCollection(AbjadObject):
                 yield simultaneity
                 simultaneity = simultaneity.next_simultaneity
 
-    def iterate_simultaneities_nwise(self, n=3, reverse=False): #doesn't work
+    def iterate_simultaneities_nwise(self, n=3, reverse=False):  # doesn't work
         # r"""Iterates simultaneities in this logical_tie collection in groups of
         # `n`.
         #

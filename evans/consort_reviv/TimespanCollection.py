@@ -229,7 +229,7 @@ class TimespanCollection(AbjadObject):
             message = "Indices must be ints or slices, got {}".format(i)
             raise TypeError(message)
 
-    def __sub__(self, timespan): #doesn't work
+    def __sub__(self, timespan):  # doesn't work
         # r"""Delete material that intersects `timespan`:
         #
         # ::
@@ -509,7 +509,7 @@ class TimespanCollection(AbjadObject):
         results.sort(key=lambda x: (x.start_offset, x.stop_offset))
         return tuple(results)
 
-    def find_timespans_intersecting_timespan(self, timespan): #doesn't work
+    def find_timespans_intersecting_timespan(self, timespan):  # doesn't work
         # r"""Finds timespans overlapping `timespan`.
         #
         # ::
