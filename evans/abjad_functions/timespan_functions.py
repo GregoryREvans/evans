@@ -2,8 +2,12 @@ import os
 
 import abjad
 
+env = os.environ.get("HOME")
+
+assert isinstance(env, str)
+
 abjad_stylesheet = os.path.join(
-    os.environ.get("HOME"), "abjad/docs/source/_stylesheets/abjad.ily"
+    env, "abjad/docs/source/_stylesheets/abjad.ily"
 )
 
 dir_path = os.path.split(__file__)[0]

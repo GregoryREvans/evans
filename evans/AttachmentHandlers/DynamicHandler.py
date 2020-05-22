@@ -67,33 +67,6 @@ class DynamicHandler:
         \!
     }
 
-    # >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
-    # >>> handler = evans.DynamicHandler(
-    # ...     dynamic_list=[3, -1, 2, 4],
-    # ...     hold_first_boolean_vector=[1, 0, 0,],
-    # ...     with_constante_hairpins=False,
-    # ...     continuous=False,
-    # ... )
-    # >>> first_group = staff[0:3]
-    # >>> second_group = staff[2:]
-    # >>> handler(first_group)
-    # >>> handler(second_group)
-    # >>> abjad.f(staff)
-    # \new Staff
-    # {
-    #     c'4
-    #     d'4
-    #     e'4
-    #     \ff
-    #     \>
-    #     f'4
-    #     <>
-    #     \mp
-    #     r4
-    #     g'4
-    #     r2
-    # }
-
     """
 
     def __init__(

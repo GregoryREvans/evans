@@ -1,17 +1,4 @@
-# -*- coding: utf-8 -*-
-import abc
-
-AbstractBase = abc.ABCMeta(
-    "AbstractBase",
-    (),
-    {"__metaclass__": abc.ABCMeta, "__module__": __name__, "__slots__": ()},
-)
-
-
-class AbjadObject(AbstractBase):
-    """Abstract base class from which many custom classes inherit.
-    """
-
+class AbjadObject(object):
     ### CLASS VARIABLES ###
 
     __slots__ = ()
