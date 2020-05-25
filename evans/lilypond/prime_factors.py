@@ -88,8 +88,14 @@ def ratio_to_pc(ratio):
 print(ratio_to_pc(Fraction(17, 1)))
 
 print(power_of_prime_factor(12, 2))
-print(factorize_ratio(18, 16))
+print(factorize_ratio(9, 8))
+print(factorize_ratio(7, 4))
 print(ratio_to_pc(12))
 
 print(gcd(5, 3))
 print(Fraction(5, 3))
+
+fifths = [440]
+for x in [2, 4, 2, 4, 2, 4, 4, 2, 4, 2, 4, 2]:
+    fifths.append(fifths[-1] * 3 / x)
+print(sorted(fifths))
