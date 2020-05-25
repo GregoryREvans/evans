@@ -29,7 +29,7 @@
             a'16
 
             \flat-up
-            cs''32
+            df''32
 
             \sharp-down
             ef''32

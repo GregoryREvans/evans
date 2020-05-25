@@ -61,9 +61,12 @@ septimal-comma-down =
         #ly:text-interface::print
         \once \override Voice.Accidental.text =
             \markup {
-                \fontsize #4
-                \override #'(font-name . "ekmelos")
-                \char ##xe2de
+                \concat {
+                    \fontsize #4
+                    \override #'(font-name . "ekmelos")
+                    \char ##xe2de
+                    \musicglyph #"accidentals.flat"
+                }
             }
         $note #})
 
@@ -145,8 +148,10 @@ flat-up =
                 \concat {
                     \fontsize #4
                     \override #'(font-name . "ekmelos")
-                    \char ##xe2e7
-                    \musicglyph #"accidentals.flat"
+                    \char ##xe2e6
+                    \fontsize #4
+                    \override #'(font-name . "ekmelos")
+                    \char ##xe2c6
                 }
             }
         $note #})
@@ -161,8 +166,8 @@ sharp-down =
                 \concat {
                     \fontsize #4
                     \override #'(font-name . "ekmelos")
-                    \char ##xe2e8
-                    \musicglyph #"accidentals.sharp"
+                    \char ##xe2e9
+                    \musicglyph #"accidentals.flat"
                 }
             }
         $note #})
