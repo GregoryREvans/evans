@@ -42,7 +42,7 @@ def factorize_ratio(ratio):
 def ratio_to_pc(pitch, ratio):
     ratio = Fraction(ratio)
     vals = factorize_ratio(ratio)
-    cumulative_accidentals = []
+    # cumulative_accidentals = []
     for prime_list in vals:
         for prime in prime_list:
             continue
