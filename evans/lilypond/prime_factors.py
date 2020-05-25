@@ -1,11 +1,4 @@
 from fractions import Fraction
-from math import fmod, gcd, modf
-
-print(3 % 2)
-print(fmod(3, 2))
-print(modf(Fraction(3, 2)))
-
-circleoffifths = ["f", "c", "g", "d", "a", "e", "b"]
 
 
 def is_prime(n):
@@ -39,63 +32,21 @@ def prime_factors(n):
     return prime_factor_list
 
 
-def power_of_prime_factor(integer, factor):
-    factors = prime_factors(integer)
-    return factors.count(factor)
-
-
-def factorize_ratio(n, d):
-    numerator_factors = prime_factors(n)
-    denominator_factors = prime_factors(d)
+def factorize_ratio(ratio):
+    ratio = Fraction(ratio)
+    numerator_factors = prime_factors(ratio.numerator)
+    denominator_factors = prime_factors(ratio.denominator)
     return [numerator_factors, denominator_factors]
 
 
-def truncate(f, n):
-    s = "{}".format(f)
-    if "e" in s or "E" in s:
-        return "{0:.{1}f}".format(f, n)
-    i, p, d = s.partition(".")
-    final = ".".join([i, (d + "0" * n)[:n]])
-    return int(float(final))
-
-
-def ratio_to_pc(ratio):
-    # unfinished
+def ratio_to_pc(pitch, ratio):
     ratio = Fraction(ratio)
-    primes = [
-        Fraction(2),
-        Fraction(3, 2),
-        Fraction(5, 3),
-        Fraction(7, 5),
-        Fraction(11, 7),
-        Fraction(13, 11),
-        Fraction(17, 13),
-        Fraction(19, 17),
-        Fraction(23, 19),
-    ]
-    constituent_primes = []
-    for prime in primes:
-        if ratio == 1:
-            remainder = "NO REMAINDER"
-            pass
-        else:
-            constituent_primes.append([prime, truncate(float(ratio / prime), 0)])
-            ratio = ratio / prime
-            remainder = f"REMAINDER = {ratio}"
-    return constituent_primes, remainder
+    vals = factorize_ratio(ratio)
+    cumulative_accidentals = []
+    for prime_list in vals:
+        for prime in prime_list:
+            continue
+    return vals
 
 
-print(ratio_to_pc(Fraction(17, 1)))
-
-print(power_of_prime_factor(12, 2))
-print(factorize_ratio(9, 8))
-print(factorize_ratio(7, 4))
-print(ratio_to_pc(12))
-
-print(gcd(5, 3))
-print(Fraction(5, 3))
-
-fifths = [440]
-for x in [2, 4, 2, 4, 2, 4, 4, 2, 4, 2, 4, 2]:
-    fifths.append(fifths[-1] * 3 / x)
-print(sorted(fifths))
+print(ratio_to_pc("c", Fraction(3, 2)))
