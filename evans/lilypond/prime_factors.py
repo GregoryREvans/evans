@@ -7,6 +7,7 @@ print(modf(Fraction(3, 2)))
 
 circleoffifths = ["f", "c", "g", "d", "a", "e", "b"]
 
+
 def is_prime(n):
     if n == 1:
         return False
@@ -18,6 +19,7 @@ def is_prime(n):
             return False
         i += 2
     return True
+
 
 def prime_factors(n):
     prime_factor_list = []
@@ -36,25 +38,29 @@ def prime_factors(n):
         i += 2
     return prime_factor_list
 
+
 def power_of_prime_factor(integer, factor):
     factors = prime_factors(integer)
     return factors.count(factor)
+
 
 def factorize_ratio(n, d):
     numerator_factors = prime_factors(n)
     denominator_factors = prime_factors(d)
     return [numerator_factors, denominator_factors]
 
+
 def truncate(f, n):
-    s = '{}'.format(f)
-    if 'e' in s or 'E' in s:
-        return '{0:.{1}f}'.format(f, n)
-    i, p, d = s.partition('.')
-    final = '.'.join([i, (d+'0'*n)[:n]])
+    s = "{}".format(f)
+    if "e" in s or "E" in s:
+        return "{0:.{1}f}".format(f, n)
+    i, p, d = s.partition(".")
+    final = ".".join([i, (d + "0" * n)[:n]])
     return int(float(final))
 
+
 def ratio_to_pc(ratio):
-    #unfinished
+    # unfinished
     ratio = Fraction(ratio)
     primes = [
         Fraction(2),
@@ -66,17 +72,18 @@ def ratio_to_pc(ratio):
         Fraction(17, 13),
         Fraction(19, 17),
         Fraction(23, 19),
-        ]
+    ]
     constituent_primes = []
     for prime in primes:
         if ratio == 1:
-            remainder = f"NO REMAINDER"
+            remainder = "NO REMAINDER"
             pass
         else:
             constituent_primes.append([prime, truncate(float(ratio / prime), 0)])
             ratio = ratio / prime
             remainder = f"REMAINDER = {ratio}"
     return constituent_primes, remainder
+
 
 print(ratio_to_pc(Fraction(17, 1)))
 

@@ -6,9 +6,7 @@ env = os.environ.get("HOME")
 
 assert isinstance(env, str)
 
-abjad_stylesheet = os.path.join(
-    env, "abjad/docs/source/_stylesheets/abjad.ily"
-)
+abjad_stylesheet = os.path.join(env, "abjad/docs/source/_stylesheets/abjad.ily")
 
 dir_path = os.path.split(__file__)[0]
 rhythm_stylesheet = os.path.join(dir_path, "_rhythm_sketch_stylesheet.ily")

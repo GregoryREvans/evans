@@ -1,5 +1,6 @@
-import abjad
 from fractions import Fraction
+
+import abjad
 
 
 def combination_tones(pitches=[0, 5, 7], depth=1):
@@ -27,10 +28,9 @@ def combination_tones(pitches=[0, 5, 7], depth=1):
     pitches = reduce
     return pitches
 
+
 def herz_combination_tone_ratios(
-    fundamental=261.625565,
-    pitches=[327.03195625, 392.43834749999996],
-    depth=2,
+    fundamental=261.625565, pitches=[327.03195625, 392.43834749999996], depth=2
 ):
     new_pitches = []
     for iter in range(depth):
