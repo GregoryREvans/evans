@@ -1,0 +1,4 @@
+black-check .
+isort-check .
+flake8-check .
+mypy-check .
