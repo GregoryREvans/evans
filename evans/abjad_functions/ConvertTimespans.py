@@ -12,12 +12,12 @@ from evans.abjad_functions.timespan_human_keys import human_sorted_keys
 from evans.general_tools.sorted_keys import sorted_keys
 from tsmakers.PerformedTimespan import PerformedTimespan
 
-silence_maker = abjadext.rmakers.stack(
+silence_maker_ = abjadext.rmakers.stack(
     abjadext.rmakers.NoteRhythmMaker(),
     abjadext.rmakers.force_rest(abjad.select().leaves(pitched=True)),
 )
 
-silence_maker = RhythmHandler(rmaker=silence_maker, name="silence maker")
+silence_maker = RhythmHandler(rmaker=silence_maker_, name="silence maker")
 
 
 class ConvertTimespans:
@@ -42,6 +42,7 @@ class ConvertTimespans:
     def __call__(self):
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
+    @staticmethod
     def convert_timespans(
         materials,
         ts_list,
