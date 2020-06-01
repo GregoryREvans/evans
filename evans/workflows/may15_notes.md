@@ -6,6 +6,8 @@ may 15 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;made with `ln -s [remotepath] [localname]` <br />
 &nbsp;&nbsp;&nbsp;&nbsp;unlinked with `rm -rf [localname]` <br />
 &nbsp;&nbsp;&nbsp;&nbsp;`unlink` synonym for `rm` <br />
+* always view symlink (atom etc) to ensure paths are written correctly.
+* we can link to non-existent files which error silently.
 
 get black and isort to agree <br />
 &nbsp;&nbsp;&nbsp;&nbsp;Done by setting both to 90 characters? <br />
