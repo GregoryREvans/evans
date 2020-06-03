@@ -1,4 +1,4 @@
-may 11 <br />
+- unix: <br />
 
 \ <br />
 &nbsp;&nbsp;&nbsp;&nbsp;line continuation character <br />
@@ -66,3 +66,45 @@ chmod <br />
 
 git checkout . <br />
 &nbsp;&nbsp;&nbsp;&nbsp;discards local changes <br />
+
+
+\`\` opens subshell in unix and returns the result <br />
+	i.e. `which py.test` - rf <br />
+		may be redundant <br />
+
+updating python? <br />
+
+always use git diff (in the largest vertical window) <br />
+
+isort <br />
+	- check status of repo <br />
+	- run `isort-check` in wrapper directory of package <br />
+	- run `isort-reformat` in wrapper directory <br />
+	- git diff <br />
+	- rerender segments <br />
+	- git diff . in specific segment directory  to check that lily file is unchanged <br />
+
+update os by friday <br />
+
+do this process for all scores <br />
+
+`git mv` but *not* `git rm` <br />
+
+`symlinks` <br />
+&nbsp;&nbsp;&nbsp;&nbsp;made with `ln -s [remotepath] [localname]` <br />
+&nbsp;&nbsp;&nbsp;&nbsp;unlinked with `rm -rf [localname]` <br />
+&nbsp;&nbsp;&nbsp;&nbsp;`unlink` synonym for `rm` <br />
+* always view symlink (atom etc) to ensure paths are written correctly.
+* we can link to non-existent files which error silently.
+
+get black and isort to agree <br />
+&nbsp;&nbsp;&nbsp;&nbsp;Done by setting both to 90 characters? <br />
+
+find ways to run scores over all scores or 1 score <br />
+&nbsp;&nbsp;&nbsp;&nbsp;controllability <br />
+&nbsp;&nbsp;&nbsp;&nbsp;temporary local scripts <br />
+
+git checkout [file]
+	reverts to last pushed version
+
+***git checkout . reverts the entire repository not pwd***
