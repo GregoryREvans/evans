@@ -14,6 +14,36 @@ from .random_walk import random_walk
 from .reciprocal import reciprocal
 from .reduce_mod import reduce_mod
 from .rotate import rotate
-from .scale_reproportioning import *
+from .scale_reproportioning import (
+    reproportion_chord,
+    reproportion_chromatic_decimals,
+    reproportion_harmonics,
+    reproportion_scale,
+)
 from .set_net import set_net
 from .sorted_keys import sorted_keys
+
+__all__ = [
+    "MarkovChain",
+    "cyc",
+    "e_bonacci_cycle",
+    "e_dovan_cycle",
+    "flatten",
+    "grouper",
+    "lindenmayer",
+    "mirror",
+    "n_bonacci_cycle",
+    "normalize_sum",
+    "normalize_to_indices",
+    "perm",
+    "random_walk",
+    "reciprocal",
+    "reduce_mod",
+    "rotate",
+    "reproportion_chord",
+    "reproportion_chromatic_decimals",
+    "reproportion_harmonics",
+    "reproportion_scale",
+    "set_net",
+    "sorted_keys",
+]
