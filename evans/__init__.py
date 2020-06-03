@@ -1,22 +1,20 @@
-from .AttachmentHandlers import (
-    ArticulationHandler,
-    BendHandler,
-    BisbigliandoHandler,
-    ClefHandler,
-    CyclicList,
-    DynamicHandler,
-    GettatoHandler,
-    GlissandoHandler,
-    GraceHandler,
-    NoteheadHandler,
-    PitchHandler,
-    RhythmHandler,
-    SegmentMaker,
-    SlurHandler,
-    TempoSpannerHandler,
-    TextSpanHandler,
-    TrillHandler,
-)
+from .AttachmentHandlers.ArticulationHandler import ArticulationHandler
+from .AttachmentHandlers.BendHandler import BendHandler
+from .AttachmentHandlers.BisbigliandoHandler import BisbigliandoHandler
+from .AttachmentHandlers.ClefHandler import ClefHandler
+from .AttachmentHandlers.CyclicList import CyclicList
+from .AttachmentHandlers.DynamicHandler import DynamicHandler
+from .AttachmentHandlers.GettatoHandler import GettatoHandler
+from .AttachmentHandlers.GlissandoHandler import GlissandoHandler
+from .AttachmentHandlers.GraceHandler import GraceHandler
+from .AttachmentHandlers.NoteheadHandler import NoteheadHandler
+from .AttachmentHandlers.PitchHandler import PitchHandler
+from .AttachmentHandlers.RhythmHandler import RhythmHandler
+from .AttachmentHandlers.SegmentMaker import SegmentMaker
+from .AttachmentHandlers.SlurHandler import SlurHandler
+from .AttachmentHandlers.TempoSpannerHandler import TempoSpannerHandler
+from .AttachmentHandlers.TextSpanHandler import TextSpanHandler
+from .AttachmentHandlers.TrillHandler import TrillHandler
 from .abjad_functions import (
     ConvertTimespans,
     NoteheadBracketMaker,
