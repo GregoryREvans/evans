@@ -1,0 +1,94 @@
+os: linux
+
+dist: xenial
+
+language: python
+
+python:
+    - 3.6
+    - 3.7
+    - 3.8
+
+before_install:
+    # alias package:
+    - PACKAGE=`pwd`/$name
+    - export PYTHONPATH=$PACKAGE:$PYTHONPATH
+
+    # upgrade pip:
+    - pip install --upgrade pip
+
+    # install testers:
+    - pip install flake8
+    - pip install isort
+    - pip install mypy
+
+    # install lilypond:
+    - LILYPOND=/tmp/lilypond
+    - LILYPOND_URL=http://lilypond.org/download/binaries/linux-64/
+    - LILYPOND_SOURCE=lilypond-2.19.84-1.linux-64.sh
+    - wget -q -O $LILYPOND $LILYPOND_URL/$LILYPOND_SOURCE
+    - sh $LILYPOND --batch
+
+    # clone & install abjad:
+    - ABJAD=/tmp/abjad
+    - git clone -b master https://github.com/Abjad/abjad.git $ABJAD
+    - pip install -e $ABJAD
+    - export MYPYPATH=$ABJAD
+    - export PATH=$PATH:$ABJAD/abjad/scr
+
+    # clone & install rmakers:
+    - RMAKERS=/tmp/abjad-ext-rmakers
+    - git clone https://github.com/Abjad/abjad-ext-rmakers.git $RMAKERS
+    - pip install -e $RMAKERS
+    - export MYPYPATH=$MYPYPATH:$RMAKERS
+
+    # clone & install evans:
+    - EVANS=/tmp/evans
+    - git clone https://github.com/GregoryREvans/evans.git $EVANS
+    - export PYTHONPATH=$EVANS/:$PYTHONPATH
+    - export PATH=$EVANS/evans/scr/:$PATH
+    - export MYPYPATH=$MYPYPATH:$EVANS
+    - ln -s $EVANS/evans/dotfiles/.mypy.ini ~/.mypy.ini
+
+    # clone & install baca:
+    - BACA=/tmp/baca
+    - git clone https://github.com/trevorbaca/baca.git $BACA
+    - export PYTHONPATH=$BACA/:$PYTHONPATH
+
+    # clone & install evans test:
+    - TEST=/tmp/test
+    - git clone https://github.com/GregoryREvans/test.git $TEST
+
+    # symlink to evans test
+    - unlink $PACKAGE/test.py
+    - ln -s $TEST/test_segments.py $PACKAGE/test.py
+
+    # clone & install tsmakers:
+    - TSMAKERS=/tmp/tsmakers
+    - git clone https://github.com/ivanalexandermoscotta/tsmakers.git $TSMAKERS
+    - export PYTHONPATH=$TSMAKERS:$PYTHONPATH
+
+    # log setup:
+    - echo $PATH
+    - echo $PYTHONPATH
+    - echo $TRAVIS_BUILD_DIR
+    - ls
+    - echo $PACKAGE
+    - pwd
+    - echo $TRAVIS_BUILD_DIR
+    - which black-check
+    - which evans-doctest
+    - which flake8-check
+    - which isort-check
+    - which mypy
+
+script:
+    - black-check $PACKAGE
+    - flake8-check $PACKAGE
+    - isort-check $PACKAGE
+    - evans-doctest $PACKAGE
+    - mypy $PACKAGE
+    - py.test -rf $PACKAGE/test.py
+
+notifications:
+    email: false
