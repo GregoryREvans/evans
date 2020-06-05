@@ -1,5 +1,6 @@
 import fractions
 
+
 def return_pitch_class_set(pitches):
     """
     return_pitch_class_set([15, 10, 8, -5, 3, 11])
@@ -11,7 +12,7 @@ def return_pitch_class_set(pitches):
     pitches = set(pitches)
     pitches = sorted(pitches)
     pitches = list(pitches)
-    if pitches[1] - pitches [0] > pitches[-1] - pitches[-2]:
+    if pitches[1] - pitches[0] > pitches[-1] - pitches[-2]:
         pitches.reverse()
         intervals = [pitches[0] - i for i in pitches]
     else:
@@ -20,13 +21,14 @@ def return_pitch_class_set(pitches):
     pitches = [root + interval for interval in intervals]
     return pitches
 
+
 # print(return_pitch_class_set([15, 10, 8, -5, 3, 11]))
 # rotate to smallest outer interval
 # filter to inner intervals if outer intervals match
 print(
     [
-        str(x) for x in
-        return_pitch_class_set(
+        str(x)
+        for x in return_pitch_class_set(
             [
                 fractions.Fraction(31, 2),
                 10,
