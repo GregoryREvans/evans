@@ -71,10 +71,10 @@ before_install:
     - which isort-check
 
 script:
-    - black-check $PACKAGE
-    - flake8-check $PACKAGE
-    - isort-check $PACKAGE
-    - evans-doctest $PACKAGE
+    - black-check .
+    - flake8-check .
+    - isort-check .
+    - evans-doctest .
     # - py.test -rf $PACKAGE/test.py
 
 # after_success:
