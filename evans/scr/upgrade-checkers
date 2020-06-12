@@ -1,0 +1,7 @@
+pip install --upgrade black
+echo ""
+pip install --upgrade flake8
+echo ""
+pip install --upgrade isort
+echo ""
+pip install --upgrade mypy
