@@ -11,7 +11,8 @@ python:
 
 before_install:
     # alias package:
-    - PACKAGE=`pwd`/$name
+    - NAME=`basename $TRAVIS_BUILD_DIR`
+    - PACKAGE=$TRAVIS_BUILD_DIR/$NAME
     - export PYTHONPATH=$PACKAGE:$PYTHONPATH
 
     # upgrade pip:
