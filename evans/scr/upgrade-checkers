@@ -7,3 +7,7 @@ echo ""
 pip install --upgrade mypy
 echo ""
 pip install --upgrade pytest
+echo ""
+pip install --upgrade pytest-cov
+echo ""
+pip install --upgrade pytest-helpers-namespace
