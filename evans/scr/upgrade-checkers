@@ -5,3 +5,5 @@ echo ""
 pip install --upgrade isort
 echo ""
 pip install --upgrade mypy
+echo ""
+pip install --upgrade pytest
