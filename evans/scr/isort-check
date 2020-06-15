@@ -11,6 +11,7 @@ isort \
     --skip=__metadata__.py \
     --skip=__persist__.py \
     --thirdparty=ply \
+    --thirdparty=pytest \
     --thirdparty=roman \
     --thirdparty=uqbar \
     --trailing-comma \
