@@ -8,7 +8,7 @@ def normalize_sum(integer_list, desired_sum=1):
     return normalized_list
 
 
-###DEMO###
+# ##DEMO###
 # weights = [15, 6, 14, 4, 16, 6, 14, 4, 16, 5]
 # print(normalize_sum(integer_list=weights, desired_sum=1))
 #

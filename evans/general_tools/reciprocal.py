@@ -2,5 +2,5 @@ def reciprocal(value):
     return 1 / value
 
 
-###DEMO###
+# ##DEMO###
 # print(reciprocal(0.5))

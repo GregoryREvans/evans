@@ -81,7 +81,7 @@ class TimespanMaker(object):
         return self._total_duration
 
 
-### DEMO ###
+# ### DEMO ###
 
 # timespan_maker = TimespanMaker(
 #     denominator=8,

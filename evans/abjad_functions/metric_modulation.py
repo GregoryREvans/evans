@@ -93,7 +93,7 @@ def metric_modulation(
         return mark
 
 
-###DEMO 1###
+# ###DEMO 1###
 # m = metric_modulation(
 #     metronome_mark=((1, 4), 96),
 #     left_note=(abjad.Tuplet(multiplier=(5, 3), components=[abjad.Note()])),
@@ -103,7 +103,7 @@ def metric_modulation(
 # staff = abjad.Staff("c'1")
 # abjad.attach(m, staff[0])
 # abjad.f(staff)
-###DEMO 2###
+# ###DEMO 2###
 # m = metric_modulation(
 #     metronome_mark=((1, 4), 96),
 #     left_note=(abjad.Note("c'4.")),
@@ -113,7 +113,7 @@ def metric_modulation(
 # staff = abjad.Staff("c'1")
 # abjad.attach(m, staff[0])
 # abjad.f(staff)
-###DEMO 3###
+# ###DEMO 3###
 # m = metric_modulation(
 #     metronome_mark=((1, 4), 71),
 #     left_note=(abjad.Tuplet(multiplier=(10, 9), components=[abjad.Note("c'16")])),
@@ -123,7 +123,7 @@ def metric_modulation(
 # staff = abjad.Staff("c'1")
 # abjad.attach(m, staff[0])
 # abjad.f(staff)
-###DEMO 4###
+# ###DEMO 4###
 # m = metric_modulation(
 #     metronome_mark=((1, 4), 40),
 #     left_note=(abjad.Tuplet(multiplier=(2, 3), components=[abjad.Note("c'2")])),

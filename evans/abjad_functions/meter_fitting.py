@@ -42,7 +42,7 @@ timespan_list = timespan_maker(
 
 # abjad.show(timespan_list, scale=0.7, key='voice_name')
 timespan_list
-####
+#
 offset_counter = abjad.OffsetCounter(timespan_list)
 
 # abjad.show(offset_counter, scale=0.7)
@@ -50,7 +50,7 @@ offset_counter = abjad.OffsetCounter(timespan_list)
 permitted_meters = abjad.MeterList([(3, 4), (4, 4), (5, 16), (7, 8)])
 
 # abjad.show(permitted_meters, scale=0.7)
-####
+#
 fitted_meters = abjad.Meter.fit_meters(
     argument=offset_counter, meters=permitted_meters, maximum_run_length=1
 )

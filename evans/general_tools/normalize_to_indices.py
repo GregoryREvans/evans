@@ -15,7 +15,7 @@ def normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]):
     return out
 
 
-###DEMO###
+# ##DEMO###
 # import evans
 # h = evans.henon()[0][:10]
 # print(h)
@@ -25,5 +25,5 @@ def normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]):
 # for _ in norm_to_ind_h:
 #     index = _ % len(source)
 #     print(source[index])
-###DEMO2###
+# ##DEMO2###
 # print(normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]))

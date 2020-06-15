@@ -7,11 +7,11 @@ class AbjadValueObject(AbjadObject):
     storage format.
     """
 
-    ### CLASS VARIABLES ###
+    # ### CLASS VARIABLES ###
 
     __slots__ = ()
 
-    ### SPECIAL METHODS ###
+    # ### SPECIAL METHODS ###
 
     def __copy__(self, *arguments):
         r"""Copies Abjad value object.

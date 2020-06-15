@@ -700,7 +700,7 @@ class SegmentMaker:
             literal = abjad.LilyPondLiteral("", "closing")
             abjad.attach(literal, container, tag=None)
         self.time_2 = time.time()
-        ###################
+        # ###################
         directory = self.current_directory
         print("directory")
         print(directory)
@@ -736,7 +736,7 @@ class SegmentMaker:
 
     def _extracting_parts(self):
         print("Extracting parts ...")
-        ###make parts###
+        # ###make parts###
         for count, voice in enumerate(
             abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
         ):

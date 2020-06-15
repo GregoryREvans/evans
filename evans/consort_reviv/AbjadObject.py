@@ -1,9 +1,9 @@
 class AbjadObject(object):
-    ### CLASS VARIABLES ###
+    # ### CLASS VARIABLES ###
 
     __slots__ = ()
 
-    ### SPECIAL METHODS ###
+    # ### SPECIAL METHODS ###
 
     def __eq__(self, argument):
         r"""Is true when ID of `argument` equals ID of Abjad object.
@@ -69,7 +69,7 @@ class AbjadObject(object):
         for key, value in state.items():
             setattr(self, key, value)
 
-    ### PRIVATE METHODS ###
+    # ### PRIVATE METHODS ###
 
     def _debug(self, value, annotation=None, blank=False):
         if annotation is None:

@@ -13,7 +13,7 @@ def subgroup(list_, n):
 # for group in groups:
 #     print(group)
 
-###sample result###
+# ##sample result###
 # ['item7', 'item8', 'item3']
 # ['item4', 'item1', 'item2']
 # ['item6', 'item5']

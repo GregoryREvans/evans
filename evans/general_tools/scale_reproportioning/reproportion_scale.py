@@ -67,7 +67,7 @@ def reproportion_chord(base, chord, round=False):
     return collection
 
 
-###DEMO###
+# ##DEMO###
 # insert_scale = (reproportion_scale(base=15, limit=17))
 # print(insert_scale)
 # print(reproportion_harmonics(fund=20, scale=insert_scale, return_amp_reciprocals='as_tuples'))

@@ -141,7 +141,7 @@ import abjad
 #         payload = ''
 #     print(index, repr(payload))
 
-###
+# ##
 
 pattern = abjad.Pattern(indices=[2, 3, 6], payload="Allegro non troppo", period=8)
 

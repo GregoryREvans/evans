@@ -1,6 +1,6 @@
 flake8 \
     --isolated \
-    --ignore=E123,E203,E265,E266,E501,E722,F81,W503 \
+    --ignore=E203,E266,E501,W503 \
     --max-line-length=88 \
     --statistics \
     $1
