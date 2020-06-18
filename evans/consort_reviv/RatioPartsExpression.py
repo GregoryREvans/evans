@@ -3,57 +3,57 @@ from evans.consort_reviv.AbjadObject import AbjadObject
 
 
 class RatioPartsExpression(AbjadObject):
-    r"""Ratio parts expression.
-
-
-    ..  container:: example
-
-        ::
-
-            >>> expression = evans.RatioPartsExpression(
-            ...     ratio=(1, 2, 1),
-            ...     parts=(0, 2),
-            ...     )
-            >>> print(format(expression))
-            evans.RatioPartsExpression(
-                parts=(0, 2),
-                ratio=abjad.Ratio((1, 2, 1)),
-                )
-
-        ::
-
-            >>> timespan = abjad.Timespan(
-            ...     start_offset=abjad.Duration(1, 2),
-            ...     stop_offset=abjad.Duration(3, 2),
-            ...     )
-            >>> for x in expression(timespan):
-            ...     x
-            ...
-            Timespan(Offset((1, 2)), Offset((3, 4)))
-            Timespan(Offset((5, 4)), Offset((3, 2)))
-
-    ..  container:: example
-
-        ::
-
-            >>> expression = evans.RatioPartsExpression(
-            ...     ratio=(1, 2, 1),
-            ...     parts=(0, 2),
-            ...     mask_timespan=abjad.Timespan(
-            ...          start_offset=(1, 4),
-            ...          ),
-            ...     )
-
-        ::
-
-            >>> timespan = abjad.Timespan(0, 4)
-            >>> for x in expression(timespan):
-            ...     x
-            ...
-            Timespan(Offset((1, 4)), Offset((1, 1)))
-            Timespan(Offset((3, 1)), Offset((4, 1)))
-
-    """
+    # r"""Ratio parts expression.
+    #
+    #
+    # ..  container:: example
+    #
+    #     ::
+    #
+    #         >>> expression = evans.RatioPartsExpression(
+    #         ...     ratio=(1, 2, 1),
+    #         ...     parts=(0, 2),
+    #         ...     )
+    #         >>> print(repr(expression))
+    #         evans.RatioPartsExpression(
+    #             parts=(0, 2),
+    #             ratio=abjad.Ratio((1, 2, 1)),
+    #             )
+    #
+    #     ::
+    #
+    #         >>> timespan = abjad.Timespan(
+    #         ...     start_offset=abjad.Duration(1, 2),
+    #         ...     stop_offset=abjad.Duration(3, 2),
+    #         ...     )
+    #         >>> for x in expression(timespan):
+    #         ...     x
+    #         ...
+    #         Timespan(Offset((1, 2)), Offset((3, 4)))
+    #         Timespan(Offset((5, 4)), Offset((3, 2)))
+    #
+    # ..  container:: example
+    #
+    #     ::
+    #
+    #         >>> expression = evans.RatioPartsExpression(
+    #         ...     ratio=(1, 2, 1),
+    #         ...     parts=(0, 2),
+    #         ...     mask_timespan=abjad.Timespan(
+    #         ...          start_offset=(1, 4),
+    #         ...          ),
+    #         ...     )
+    #
+    #     ::
+    #
+    #         >>> timespan = abjad.Timespan(0, 4)
+    #         >>> for x in expression(timespan):
+    #         ...     x
+    #         ...
+    #         Timespan(Offset((1, 4)), Offset((1, 1)))
+    #         Timespan(Offset((3, 1)), Offset((4, 1)))
+    #
+    # """
 
     ### CLASS VARIABLES ###
 
@@ -90,20 +90,20 @@ class RatioPartsExpression(AbjadObject):
 
     @staticmethod
     def from_sequence(sequence):
-        r"""Creates a ratio parts expression from `sequence`.
-
-        ::
-
-            >>> ratio = [-1, 2, -1, 1, -1]
-            >>> expression = evans.RatioPartsExpression.from_sequence(ratio)
-            >>> print(format(expression))
-            evans.RatioPartsExpression(
-                parts=(1, 3),
-                ratio=abjad.Ratio((1, 2, 1, 1, 1)),
-            )
-
-        Returns new ratio parts expression.
-        """
+        # r"""Creates a ratio parts expression from `sequence`.
+        #
+        # ::
+        #
+        #     >>> ratio = [-1, 2, -1, 1, -1]
+        #     >>> expression = evans.RatioPartsExpression.from_sequence(ratio)
+        #     >>> print(format(expression))
+        #     evans.RatioPartsExpression(
+        #         parts=(1, 3),
+        #         ratio=abjad.Ratio((1, 2, 1, 1, 1)),
+        #     )
+        #
+        # Returns new ratio parts expression.
+        # """
         assert all(sequence)
         assert len(sequence)
         ratio = []
