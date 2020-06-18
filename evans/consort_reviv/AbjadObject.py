@@ -93,4 +93,4 @@ class AbjadObject(object):
     def _get_format_specification(self):
         from abjad import format
 
-        return system.FormatSpecification(client=self)
+        return format.FormatSpecification(client=self)
