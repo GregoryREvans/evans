@@ -21,7 +21,7 @@ class AbjadObject(object):
         from abjad import system
 
         if format_specification in ("", "storage"):
-            return system.StorageFormatManager(self).get_storage_format()
+            return format.StorageFormatManager(self).get_storage_format()
         return str(self)
 
     def __getstate__(self):
@@ -60,7 +60,7 @@ class AbjadObject(object):
         """
         from abjad import system
 
-        return system.StorageFormatManager(self).get_repr_format()
+        return format.StorageFormatManager(self).get_repr_format()
 
     def __setstate__(self, state):
         r"""Sets state of Abjad object.

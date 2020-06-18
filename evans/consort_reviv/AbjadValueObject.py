@@ -36,7 +36,7 @@ class AbjadValueObject(AbjadObject):
         """
         from abjad import system
 
-        hash_values = system.StorageFormatManager(self).get_hash_values()
+        hash_values = format.StorageFormatManager(self).get_hash_values()
         try:
             result = hash(hash_values)
         except TypeError:
