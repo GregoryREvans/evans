@@ -18,7 +18,7 @@ class AbjadObject(object):
         Interprets `''` equal to `'storage'`.
         Returns string.
         """
-        from abjad import system
+        from abjad import format
 
         if format_specification in ("", "storage"):
             return format.StorageFormatManager(self).get_storage_format()
@@ -58,7 +58,7 @@ class AbjadObject(object):
         r"""Gets interpreter representation of Abjad object.
         Returns string.
         """
-        from abjad import system
+        from abjad import format
 
         return format.StorageFormatManager(self).get_repr_format()
 
@@ -91,6 +91,6 @@ class AbjadObject(object):
                 print()
 
     def _get_format_specification(self):
-        from abjad import system
+        from abjad import format
 
         return system.FormatSpecification(client=self)

@@ -34,7 +34,7 @@ class AbjadValueObject(AbjadObject):
         r"""Hashes Abjad value object.
         Returns integer.
         """
-        from abjad import system
+        from abjad import format
 
         hash_values = format.StorageFormatManager(self).get_hash_values()
         try:
