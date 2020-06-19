@@ -89,7 +89,8 @@ script:
   - evans-doctest $package
   - mypy $package
   - py.test -rf $package/test.py
-  - ls /tmp
+  - echo "hello world" > /tmp/foo.log
+  - ls -al /tmp
   - for name in `ls /tmp/*.log`; do cat $name; done
 
 notifications:
