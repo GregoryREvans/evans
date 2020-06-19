@@ -1,0 +1,13 @@
+cd ~/Scores
+black-check .
+isort-check .
+flake8-check .
+cd ~/Scores/chalk_line; mypy .
+cd ~/Scores/guerrero; mypy .
+cd ~/Scores/hamon_shu; mypy .
+cd ~/Scores/magnolia; mypy .
+cd ~/Scores/onkos; mypy .
+cd ~/Scores/passagenwerk; mypy .
+cd ~/Scores/sim; mypy .
+cd ~/Scores/trio; mypy .
+cd ~/evans; check
