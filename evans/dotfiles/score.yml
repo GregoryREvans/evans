@@ -89,6 +89,8 @@ script:
   - evans-doctest $package
   - mypy $package
   - py.test -rf $package/test.py
+  - ls /tmp
+  - for name in `ls /tmp/*.log`; do cat $name; done
 
 notifications:
   email: false
