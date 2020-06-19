@@ -18,10 +18,10 @@ class AbjadObject(object):
         Interprets `''` equal to `'storage'`.
         Returns string.
         """
-        from abjad import format
+        from abjad import formatting
 
         if format_specification in ("", "storage"):
-            return format.StorageFormatManager(self).get_storage_format()
+            return formatting.StorageFormatManager(self).get_storage_format()
         return str(self)
 
     def __getstate__(self):
@@ -58,9 +58,9 @@ class AbjadObject(object):
         r"""Gets interpreter representation of Abjad object.
         Returns string.
         """
-        from abjad import format
+        from abjad import formatting
 
-        return format.StorageFormatManager(self).get_repr_format()
+        return formatting.StorageFormatManager(self).get_repr_format()
 
     def __setstate__(self, state):
         r"""Sets state of Abjad object.
@@ -91,6 +91,6 @@ class AbjadObject(object):
                 print()
 
     def _get_format_specification(self):
-        from abjad import format
+        from abjad import formatting
 
-        return format.FormatSpecification(client=self)
+        return formatting.FormatSpecification(client=self)
