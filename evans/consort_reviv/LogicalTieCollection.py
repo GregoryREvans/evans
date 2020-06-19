@@ -1,4 +1,4 @@
-from abjad import formatting
+import abjad
 from abjad.top import inspect
 from evans.consort_reviv.AbjadObject import AbjadObject
 
@@ -427,7 +427,7 @@ class LogicalTieCollection(AbjadObject):
         if logical_ties:
             values.append(logical_ties)
         names = []
-        return formatting.FormatSpecification(
+        return abjad.FormatSpecification(
             client=self,
             storage_format_args_values=values,
             storage_format_kwargs_names=names,
