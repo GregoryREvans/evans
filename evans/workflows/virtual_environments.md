@@ -1,6 +1,6 @@
 - virtual environments: <br />
- * `pip install virtualenv` or ` pip install upgrade virtualenv`
- * `python3 -m virtualenv ~/.virtualenvs/[path]`
+ * `pip install venv` or ` pip install upgrade venv`
+ * `python3 -m venv ~/.virtualenvs/[path]`
  * activated with `source ~/.virtualenvs/[path]/bin/activate`
     * this can be aliased in `.bash_profile`, `.zshrc`, etc as follows:
 ```
