@@ -53,7 +53,6 @@ from .consort_reviv import (
     TimespanSimultaneity,
 )
 from .general_tools import (
-    MarkovChain,
     cyc,
     e_bonacci_cycle,
     e_dovan_cycle,
@@ -128,7 +127,6 @@ __all__ = [
     "RatioPartsExpression",
     "TimespanCollection",
     "TimespanSimultaneity",
-    "MarkovChain",
     "cyc",
     "e_bonacci_cycle",
     "e_dovan_cycle",

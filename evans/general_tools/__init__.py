@@ -1,4 +1,3 @@
-from .Markov_Chain import MarkovChain
 from .cyc import cyc
 from .e_bonacci import e_bonacci_cycle
 from .e_dovan import e_dovan_cycle
@@ -24,7 +23,6 @@ from .set_net import set_net
 from .sorted_keys import sorted_keys
 
 __all__ = [
-    "MarkovChain",
     "cyc",
     "e_bonacci_cycle",
     "e_dovan_cycle",
