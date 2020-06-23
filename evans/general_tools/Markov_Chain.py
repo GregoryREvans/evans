@@ -1,4 +1,4 @@
-import numpy as np
+import random
 
 
 class MarkovChain(object):
@@ -7,7 +7,7 @@ class MarkovChain(object):
         self.states = list(transition_prob.keys())
 
     def next_state(self, current_state):
-        return np.random.choice(
+        return random.choice(
             self.states,
             p=[
                 self.transition_prob[current_state][next_state]
