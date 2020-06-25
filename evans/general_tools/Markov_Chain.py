@@ -1,5 +1,6 @@
 import numpy
 
+
 class MarkovChain(object):
     # """
     # >>> import numpy
