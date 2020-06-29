@@ -1,5 +1,4 @@
 import abjad
-from abjad.top import inspect
 from evans.consort_reviv.AbjadObject import AbjadObject
 
 
@@ -58,7 +57,7 @@ class LogicalTieCollection(AbjadObject):
         """
         assert LogicalTieCollection._is_logical_tie(logical_tie)
         candidates = self.find_logical_ties_starting_at(
-            inspect(logical_tie).timespan().start_offset
+            abjad.inspect(logical_tie).timespan().start_offset
         )
         result = logical_tie in candidates
         return result
@@ -283,17 +282,17 @@ class LogicalTieCollection(AbjadObject):
 
     def _insert_logical_tie(self, logical_tie):
         self._root_node = self._insert_node(
-            self._root_node, inspect(logical_tie).timespan().start_offset
+            self._root_node, abjad.inspect(logical_tie).timespan().start_offset
         )
         node = self._search(
-            self._root_node, inspect(logical_tie).timespan().start_offset
+            self._root_node, abjad.inspect(logical_tie).timespan().start_offset
         )
         node.payload.append(logical_tie)
-        node.payload.sort(key=lambda x: inspect(x).timespan().stop_offset)
+        node.payload.sort(key=lambda x: abjad.inspect(x).timespan().stop_offset)
 
     @staticmethod
     def _is_logical_tie(expr):
-        if inspect(expr).timespan() is not None:
+        if abjad.inspect(expr).timespan() is not None:
             return True
         return False
 
@@ -333,7 +332,7 @@ class LogicalTieCollection(AbjadObject):
         return self._rebalance(node)
 
     def _remove_logical_tie(self, logical_tie, old_start_offset=None):
-        start_offset = inspect(logical_tie).timespan().start_offset
+        start_offset = abjad.inspect(logical_tie).timespan().start_offset
         if old_start_offset is not None:
             start_offset = old_start_offset
         node = self._search(self._root_node, start_offset)
@@ -403,8 +402,12 @@ class LogicalTieCollection(AbjadObject):
     def _update_offsets(self, node):
         if node is None:
             return
-        stop_offset_low = min(inspect(x).timespan().stop_offset for x in node.payload)
-        stop_offset_high = max(inspect(x).timespan().stop_offset for x in node.payload)
+        stop_offset_low = min(
+            abjad.inspect(x).timespan().stop_offset for x in node.payload
+        )
+        stop_offset_high = max(
+            abjad.inspect(x).timespan().stop_offset for x in node.payload
+        )
         if node.left_child:
             left_child = self._update_offsets(node.left_child)
             if left_child.stop_offset_low < stop_offset_low:
@@ -448,7 +451,7 @@ class LogicalTieCollection(AbjadObject):
             if node is not None:
                 if node.stop_offset_low <= offset <= node.stop_offset_high:
                     for logical_tie in node.payload:
-                        if inspect(logical_tie).timespan().stop_offset == offset:
+                        if abjad.inspect(logical_tie).timespan().stop_offset == offset:
                             result.append(logical_tie)
                     if node.left_child is not None:
                         result.extend(recurse(node.left_child, offset))
@@ -459,8 +462,8 @@ class LogicalTieCollection(AbjadObject):
         results = recurse(self._root_node, offset)
         results.sort(
             key=lambda x: (
-                inspect(x).timespan().start_offset,
-                inspect(x).timespan().stop_offset,
+                abjad.inspect(x).timespan().start_offset,
+                abjad.inspect(x).timespan().stop_offset,
             )
         )
         return tuple(results)
@@ -492,7 +495,7 @@ class LogicalTieCollection(AbjadObject):
                 if node.start_offset < offset < node.stop_offset_high:
                     result.extend(recurse(node.left_child, offset, indent + 1))
                     for logical_tie in node.payload:
-                        if offset < inspect(logical_tie).timespan().stop_offset:
+                        if offset < abjad.inspect(logical_tie).timespan().stop_offset:
                             result.append(logical_tie)
                     result.extend(recurse(node.right_child, offset, indent + 1))
                 elif offset <= node.start_offset:
@@ -502,8 +505,8 @@ class LogicalTieCollection(AbjadObject):
         results = recurse(self._root_node, offset)
         results.sort(
             key=lambda x: (
-                inspect(x).timespan().start_offset,
-                inspect(x).timespan().stop_offset,
+                abjad.inspect(x).timespan().start_offset,
+                abjad.inspect(x).timespan().stop_offset,
             )
         )
         return tuple(results)
@@ -538,7 +541,7 @@ class LogicalTieCollection(AbjadObject):
                     result.extend(recurse(node.left_child, timespan))
                     for candidate_logical_tie in node.payload:
                         if (
-                            inspect(candidate_logical_tie)
+                            abjad.inspect(candidate_logical_tie)
                             .timespan()
                             .intersects_timespan(timespan)
                         ):
@@ -553,8 +556,8 @@ class LogicalTieCollection(AbjadObject):
         results = recurse(self._root_node, timespan)
         results.sort(
             key=lambda x: (
-                inspect(x).timespan().start_offset,
-                inspect(x).timespan().stop_offset,
+                abjad.inspect(x).timespan().start_offset,
+                abjad.inspect(x).timespan().stop_offset,
             )
         )
         return tuple(results)
@@ -563,7 +566,7 @@ class LogicalTieCollection(AbjadObject):
     def find_logical_ties_starting_during_timespan(self, timespan):  # still wrong...
         r = self.find_logical_ties_intersecting_timespan(timespan)
         return tuple(
-            _ for _ in r if inspect(_).timespan().starts_during_timespan(timespan)
+            _ for _ in r if abjad.inspect(_).timespan().starts_during_timespan(timespan)
         )
 
     def get_simultaneity_at(self, offset):  # does seem to work don't bother testing
@@ -701,7 +704,7 @@ class LogicalTieCollection(AbjadObject):
     def index(self, logical_tie):
         assert self._is_logical_tie(logical_tie)
         node = self._search(
-            self._root_node, inspect(logical_tie).timespan().start_offset
+            self._root_node, abjad.inspect(logical_tie).timespan().start_offset
         )
         if node is None or logical_tie not in node.payload:
             raise ValueError("{} not in logical_tie collection.".format(logical_tie))
@@ -891,22 +894,22 @@ class LogicalTieCollection(AbjadObject):
     def all_offsets(self):
         offsets = set()
         for logical_tie in self:
-            offsets.add(inspect(logical_tie).timespan().start_offset)
-            offsets.add(inspect(logical_tie).timespan().stop_offset)
+            offsets.add(abjad.inspect(logical_tie).timespan().start_offset)
+            offsets.add(abjad.inspect(logical_tie).timespan().stop_offset)
         return tuple(sorted(offsets))
 
     @property
     def all_start_offsets(self):
         start_offsets = set()
         for logical_tie in self:
-            start_offsets.add(inspect(logical_tie).timespan().start_offset)
+            start_offsets.add(abjad.inspect(logical_tie).timespan().start_offset)
         return tuple(sorted(start_offsets))
 
     @property
     def all_stop_offsets(self):
         stop_offsets = set()
         for logical_tie in self:
-            stop_offsets.add(inspect(logical_tie).timespan().stop_offset)
+            stop_offsets.add(abjad.inspect(logical_tie).timespan().stop_offset)
         return tuple(sorted(stop_offsets))
 
     @property

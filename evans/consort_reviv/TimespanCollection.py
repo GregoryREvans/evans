@@ -1,4 +1,4 @@
-from abjad import inspect, system
+import abjad
 from evans.consort_reviv.AbjadObject import AbjadObject
 
 
@@ -433,7 +433,7 @@ class TimespanCollection(AbjadObject):
         if timespans:
             values.append(timespans)
         names = []
-        return system.FormatSpecification(
+        return abjad.FormatSpecification(
             client=self,
             storage_format_args_values=values,
             storage_format_kwargs_names=names,
@@ -554,8 +554,8 @@ class TimespanCollection(AbjadObject):
         results = recurse(self._root_node, timespan)
         results.sort(
             key=lambda x: (
-                inspect(x).timespan().start_offset,
-                inspect(x).timespan().stop_offset,
+                abjad.inspect(x).timespan().start_offset,
+                abjad.inspect(x).timespan().stop_offset,
             )
         )
         return tuple(results)

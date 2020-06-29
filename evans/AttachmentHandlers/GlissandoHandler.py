@@ -135,7 +135,7 @@ class GlissandoHandler:
             values = self.boolean_vector(r=len(ties))
             for value, tie in zip(values, ties):
                 if value == 1:
-                    abjad.attach(abjad.GlissandoIndicator(), tie[-1])
+                    abjad.attach(abjad.Glissando(), tie[-1])
 
     def name(self):
         return self.name
