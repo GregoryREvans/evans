@@ -10,7 +10,7 @@ def build_segments():
         if score.name == "guerrero":
             continue
         print(f"Now building {score.name} ...")
-        segments_path = score / score.name / "Segments"
+        segments_path = score / score.name / "segments"
         for segment in sorted(segments_path.iterdir()):
             if segment.name.startswith("_"):
                 continue

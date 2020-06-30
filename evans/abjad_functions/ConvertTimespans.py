@@ -40,6 +40,7 @@ class ConvertTimespans:
         self.fill_gaps = fill_gaps
 
     def __call__(self):
+        time_1 = time.time()
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
     @staticmethod
@@ -177,27 +178,27 @@ class ConvertTimespans:
             )
 
         directory = (current_directory).resolve()
-        pdf_path = f"""{directory}/{segment_name}.pdf"""
-        path = pathlib.Path(f"""{segment_name}.pdf""")
-        if path.exists():
-            print(f"Removing {pdf_path} ...")
-            path.unlink()
+        pdf_path = abjad.Path(f"""{directory}/{segment_name}.pdf""")
+        if pdf_path.exists():
+            print(f"Removing {pdf_path.trim()} ...")
+            pdf_path.unlink()
         time_1 = time.time()
-        print(f"Persisting {pdf_path} ...")
+        print(f"Persisting {pdf_path.trim()} ...")
         result = abjad.persist(showable_list).as_pdf(
             pdf_path, scale=0.70, key="annotation", sort_callable=human_sorted_keys
         )
         print(result[0])
-        print(result[1])
-        print(result[2])
+        print(round(result[1]))
+        print(round(result[2]))
         success = result[3]
         if success is False:
             print("LilyPond failed!")
         time_2 = time.time()
-        total_time = time_2 - time_1
-        print(f"Total time: {total_time} seconds")
-        if path.exists():
-            print(f"Opening {pdf_path} ...")
-            os.system(f"open {pdf_path}")
+        total_time = round(time_2 - time_1)
+        unit = abjad.String("second").pluralize(total_time)
+        print(f"Total time: {total_time} {unit}")
+        if pdf_path.exists():
+            print(f"Opening {pdf_path.trim()} ...")
+            # os.system(f"open {pdf_path}")
 
         return final_timespan_dict
