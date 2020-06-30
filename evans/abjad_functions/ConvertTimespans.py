@@ -1,5 +1,3 @@
-import os
-import pathlib
 import time
 from collections import defaultdict
 
@@ -40,7 +38,6 @@ class ConvertTimespans:
         self.fill_gaps = fill_gaps
 
     def __call__(self):
-        time_1 = time.time()
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
     @staticmethod
@@ -55,6 +52,7 @@ class ConvertTimespans:
         split=False,
         is_global=False,
     ):
+        time_1 = time.time()
 
         cyclic_materials = CyclicList(materials, continuous=True)
 
@@ -182,7 +180,6 @@ class ConvertTimespans:
         if pdf_path.exists():
             print(f"Removing {pdf_path.trim()} ...")
             pdf_path.unlink()
-        time_1 = time.time()
         print(f"Persisting {pdf_path.trim()} ...")
         result = abjad.persist(showable_list).as_pdf(
             pdf_path, scale=0.70, key="annotation", sort_callable=human_sorted_keys
@@ -199,6 +196,5 @@ class ConvertTimespans:
         print(f"Total time: {total_time} {unit}")
         if pdf_path.exists():
             print(f"Opening {pdf_path.trim()} ...")
-            # os.system(f"open {pdf_path}")
 
         return final_timespan_dict
