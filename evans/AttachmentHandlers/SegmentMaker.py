@@ -20,6 +20,7 @@ class SegmentMaker:
         score_template=None,
         time_signatures=None,
         clef_handlers=None,
+        commands=None,
         voicewise_direct_detachments=None,
         global_direct_detachments=None,
         voicewise_direct_attachments=None,
@@ -55,6 +56,7 @@ class SegmentMaker:
         self.score_template = score_template
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
+        self.commands = commands
         self.voicewise_direct_detachments = voicewise_direct_detachments
         self.global_direct_detachments = global_direct_detachments
         self.voicewise_direct_attachments = voicewise_direct_attachments
@@ -103,6 +105,8 @@ class SegmentMaker:
         self._adding_attachments()
         if self.voicewise_persistent_indicators is not None:
             self._attach_previous_indicators()
+        if self.commands is not None:
+            self._commands()
         if self.voicewise_direct_detachments is not None:
             self._direct_detachments()
         if self.global_direct_detachments is not None:
@@ -439,6 +443,11 @@ class SegmentMaker:
                             target = split_voice[pair[0]]
                             container = pair[1][:]
                             abjad.mutate(target).replace(container)
+
+    def _commands(self):
+        print("Commands ...")
+        for command in self.commands:
+            command(score)
 
     def _direct_detachments(self):
         print("Detaching from list ...")

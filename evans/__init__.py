@@ -2,6 +2,7 @@ from .AttachmentHandlers.ArticulationHandler import ArticulationHandler
 from .AttachmentHandlers.BendHandler import BendHandler
 from .AttachmentHandlers.BisbigliandoHandler import BisbigliandoHandler
 from .AttachmentHandlers.ClefHandler import ClefHandler
+from .AttachmentHandlers.Command import Command
 from .AttachmentHandlers.CyclicList import CyclicList
 from .AttachmentHandlers.DynamicHandler import DynamicHandler
 from .AttachmentHandlers.GettatoHandler import GettatoHandler
@@ -81,6 +82,7 @@ __all__ = [
     "BendHandler",
     "BisbigliandoHandler",
     "ClefHandler",
+    "Command",
     "CyclicList",
     "DynamicHandler",
     "GettatoHandler",
