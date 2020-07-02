@@ -40,8 +40,8 @@ class Command:
         >>
 
         """
-        location = score[self.voice]
+        voice = score[self.voice]
         if self.command == "attach":
-            abjad.attach(self.indicator, self.selector(location))
+            abjad.attach(self.indicator, self.selector(voice))
         if self.command == "detach":
-            abjad.detach(self.indicator, self.selector(location))
+            abjad.detach(self.indicator, self.selector(voice))
