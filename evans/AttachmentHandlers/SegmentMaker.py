@@ -447,7 +447,7 @@ class SegmentMaker:
     def _commands(self):
         print("Commands ...")
         for command in self.commands:
-            command(score)
+            command(self.score_template)
 
     def _direct_detachments(self):
         print("Detaching from list ...")

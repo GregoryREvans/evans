@@ -3,11 +3,7 @@ import abjad
 
 class Command:
     def __init__(
-        self,
-        command=None,
-        indicator=None,
-        selector=None,
-        voice=None,
+        self, command=None, indicator=None, selector=None, voice=None,
     ):
         """
         Initializes Command.
@@ -18,7 +14,7 @@ class Command:
         self.voice = voice
 
     def __call__(self, score):
-        """
+        r"""
         Calls command on Score.
 
         >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])

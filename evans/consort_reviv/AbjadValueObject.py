@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import abjad
 from evans.consort_reviv.AbjadObject import AbjadObject
 
 
@@ -17,9 +18,8 @@ class AbjadValueObject(AbjadObject):
         r"""Copies Abjad value object.
         Returns new Abjad value object.
         """
-        from abjad.top import new
 
-        return new(self)
+        return abjad.new(self)
 
     def __eq__(self, argument):
         r"""Is true when all initialization values of Abjad value object equal
