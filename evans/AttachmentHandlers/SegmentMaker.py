@@ -1,7 +1,6 @@
 import datetime
 import itertools
 import os
-import pathlib
 import time
 
 import abjad
@@ -264,7 +263,7 @@ class SegmentMaker:
 
     def _multimeasure_rests_and_cutaway(self):
 
-        print("Adding Multimeasure Rests and cutaway...")
+        print("MM Rests and cutaway ...")
 
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
@@ -312,7 +311,7 @@ class SegmentMaker:
 
     def _adding_ending_skips(self):
 
-        print("Adding ending skips ...")
+        print("Ending skips ...")
 
         last_skip = abjad.select(self.score_template["Global Context"]).leaves()[-1]
         override_command = abjad.LilyPondLiteral(
@@ -541,7 +540,7 @@ class SegmentMaker:
 
     def _adding_attachments(self):
 
-        print("Adding attachments ...")
+        print("Attachments ...")
         last_voice = abjad.select(self.score_template).components(abjad.Voice)[-1]
         colophon_leaf = abjad.select(last_voice).leaves()[-2]
         if self.colophon is not None:
@@ -674,6 +673,7 @@ class SegmentMaker:
             )
 
     def _break_pages(self):
+        print("Breaking pages ...")
         if self.page_break_counts is not None:
             lit = abjad.LilyPondLiteral(r"\pageBreak", format_slot="absolute_after")
             result = abjad.select(self.score_template["Global Context"]).components(
@@ -707,29 +707,23 @@ class SegmentMaker:
         self.time_2 = time.time()
         # ###################
         directory = self.current_directory
-        print("directory")
-        print(directory)
-        pdf_path = f"{directory}/illustration.pdf"
-        print("path")
-        print(pdf_path)
-        path = pathlib.Path("illustration.pdf")
-        if path.exists():
-            print(f"Removing {pdf_path} ...")
-            path.unlink()
+        pdf_path = abjad.Path(f"{directory}/illustration.pdf")
+        if pdf_path.exists():
+            pdf_path.unlink()
         self.time_3 = time.time()
-        print(f"Persisting {pdf_path} ...")
-        result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)  # or ly
-        print(result[0])
-        print(result[1])
-        print(result[2])
+        print(f"Persisting {pdf_path.trim()} ...")
+        result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)
+        # print(result[0])
+        # print(result[1])
+        # print(result[2])
         success = result[3]
         if success is False:
             print("LilyPond failed!")
         self.time_4 = time.time()
-        abjad_time = self.time_4 - self.time_3
-        print(f"Total time: {abjad_time} seconds")
-        if path.exists():
-            print(f"Opening {pdf_path} ...")
+        abjad_time = round(self.time_4 - self.time_3)
+        print(f"Total persist time: {abjad_time} seconds")
+        if pdf_path.exists():
+            print(f"Opening {pdf_path.trim()} ...")
             os.system(f"open {pdf_path}")
         score_lines = open(f"{directory}/illustration.ly").readlines()
         build_path = (self.build_path / "score").resolve()

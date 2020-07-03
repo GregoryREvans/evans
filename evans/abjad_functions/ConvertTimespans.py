@@ -156,17 +156,6 @@ class ConvertTimespans:
         final_timespan_dict = {
             voice: timespan_list for voice, timespan_list in zip(voices, master_list)
         }
-        # if add_silence is True:
-        #     silence_specifier = timespan_functions.TimespanSpecifier(
-        #         handler=silence_maker
-        #     )
-        # else:
-        #     silence_specifier = timespan_functions.TimespanSpecifier(
-        #         handler=cyclic_materials(r=1)[0]
-        #     )
-        # timespan_functions.add_silences_to_timespan_dict(
-        #     final_timespan_dict, silence_specifier
-        # )
         if add_silence is True:
             silence_specifier = timespan_functions.TimespanSpecifier(
                 handler=silence_maker
@@ -178,23 +167,12 @@ class ConvertTimespans:
         directory = (current_directory).resolve()
         pdf_path = abjad.Path(f"""{directory}/{segment_name}.pdf""")
         if pdf_path.exists():
-            print(f"Removing {pdf_path.trim()} ...")
             pdf_path.unlink()
-        print(f"Persisting {pdf_path.trim()} ...")
         result = abjad.persist(showable_list).as_pdf(
             pdf_path, scale=0.70, key="annotation", sort_callable=human_sorted_keys
         )
-        print(result[0])
-        print(round(result[1]))
-        print(round(result[2]))
         success = result[3]
         if success is False:
             print("LilyPond failed!")
-        time_2 = time.time()
-        total_time = round(time_2 - time_1)
-        unit = abjad.String("second").pluralize(total_time)
-        print(f"Total time: {total_time} {unit}")
-        if pdf_path.exists():
-            print(f"Opening {pdf_path.trim()} ...")
 
         return final_timespan_dict
