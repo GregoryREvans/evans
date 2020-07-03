@@ -33,7 +33,6 @@ class SegmentMaker:
         add_final_grand_pause=True,
         fermata="scripts.ushortfermata",
         score_includes=None,
-        parts_includes=None,
         segment_name=None,
         current_directory=None,
         build_path=None,
@@ -45,7 +44,6 @@ class SegmentMaker:
         colophon=None,
         page_break_counts=None,
         barline="||",
-        midi=False,
     ):
         self.instruments = instruments
         self.names = names
@@ -69,7 +67,6 @@ class SegmentMaker:
         self.add_final_grand_pause = add_final_grand_pause
         self.fermata = fermata
         self.score_includes = score_includes
-        self.parts_includes = parts_includes
         self.segment_name = segment_name
         self.current_directory = current_directory
         self.build_path = build_path
@@ -81,7 +78,6 @@ class SegmentMaker:
         self.colophon = colophon
         self.page_break_counts = page_break_counts
         self.barline = barline
-        self.midi = midi
         self.time_1 = None
         self.time_2 = None
         self.time_3 = None
@@ -723,8 +719,6 @@ class SegmentMaker:
         self.time_3 = time.time()
         print(f"Persisting {pdf_path} ...")
         result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)  # or ly
-        if self.midi is True:
-            abjad.persist(score_file).as_midi(pdf_path)  # ?
         print(result[0])
         print(result[1])
         print(result[2])
@@ -745,7 +739,6 @@ class SegmentMaker:
 
     def _extracting_parts(self):
         print("Extracting parts ...")
-        # ###make parts###
         for count, voice in enumerate(
             abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
