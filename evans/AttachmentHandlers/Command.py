@@ -1,7 +1,8 @@
 import abjad
+import baca
 
 
-class Command:
+class Command(object):
     def __init__(
         self, command=None, indicator=None, selector=None, voice=None,
     ):
@@ -47,3 +48,19 @@ class Command:
             abjad.detach(self.indicator, self.selector(voice))
         else:
             raise Exception(f"Invalid command {self.command}")
+
+
+def attach(voice, indicator, selector=None):
+    if selector is None:
+        selector = baca.leaf(0)
+    return Command(
+        command="attach", indicator=indicator, selector=selector, voice=voice
+    )
+
+
+def detach(voice, indicator, selector=None):
+    if selector is None:
+        selector = baca.leaf(0)
+    return Command(
+        command="detach", indicator=indicator, selector=selector, voice=voice
+    )

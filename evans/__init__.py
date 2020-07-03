@@ -2,7 +2,7 @@ from .AttachmentHandlers.ArticulationHandler import ArticulationHandler
 from .AttachmentHandlers.BendHandler import BendHandler
 from .AttachmentHandlers.BisbigliandoHandler import BisbigliandoHandler
 from .AttachmentHandlers.ClefHandler import ClefHandler
-from .AttachmentHandlers.Command import Command
+from .AttachmentHandlers.Command import Command, attach, detach
 from .AttachmentHandlers.CyclicList import CyclicList
 from .AttachmentHandlers.DynamicHandler import DynamicHandler
 from .AttachmentHandlers.GettatoHandler import GettatoHandler
@@ -105,9 +105,11 @@ __all__ = [
     "add_silences_to_timespan_dict",
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
+    "attach",
     "beam_meter",
     "collect_offsets",
     "combination_tones",
+    "detach",
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
     "human_sorted_keys",
