@@ -52,8 +52,6 @@ class ConvertTimespans:
         split=False,
         is_global=False,
     ):
-        time_1 = time.time()
-
         cyclic_materials = CyclicList(materials, continuous=True)
 
         master_list = []
