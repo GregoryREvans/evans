@@ -7,7 +7,9 @@ isort \
     --multi-line=3 \
     --project=abjad \
     --project=abjadext \
-    --recursive \
+    --project=baca \
+    --project=evans \
+    --project=tsmakers \
     --skip=__metadata__.py \
     --skip=__persist__.py \
     --thirdparty=ply \

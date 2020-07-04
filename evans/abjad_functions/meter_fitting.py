@@ -1,8 +1,8 @@
 import collections
 
 import abjad
-import abjadext.rmakers as rmakers
 import tsmakers
+from abjadext import rmakers as rmakers
 
 music_specifiers = collections.OrderedDict(
     [
