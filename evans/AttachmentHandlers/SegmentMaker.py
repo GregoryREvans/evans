@@ -20,12 +20,6 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         commands=None,
-        voicewise_direct_detachments=None,
-        global_direct_detachments=None,
-        voicewise_direct_attachments=None,
-        global_direct_attachments=None,
-        voicewise_persistent_indicators=None,
-        voicewise_stem_directions=None,
         voicewise_measure_replacement=None,
         measure_replacement_timing=None,
         tuplet_bracket_noteheads=True,
@@ -54,12 +48,6 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.commands = commands
-        self.voicewise_direct_detachments = voicewise_direct_detachments
-        self.global_direct_detachments = global_direct_detachments
-        self.voicewise_direct_attachments = voicewise_direct_attachments
-        self.global_direct_attachments = global_direct_attachments
-        self.voicewise_persistent_indicators = voicewise_persistent_indicators
-        self.voicewise_stem_directions = voicewise_stem_directions
         self.voicewise_measure_replacement = voicewise_measure_replacement
         self.measure_replacement_timing = measure_replacement_timing
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
@@ -98,20 +86,8 @@ class SegmentMaker:
         self._multimeasure_rests_and_cutaway()
         self._beaming_runs()
         self._adding_attachments()
-        if self.voicewise_persistent_indicators is not None:
-            self._attach_previous_indicators()
         if self.commands is not None:
             self._commands()
-        if self.voicewise_direct_detachments is not None:
-            self._direct_detachments()
-        if self.global_direct_detachments is not None:
-            self._direct_global_detachments()
-        if self.voicewise_direct_attachments is not None:
-            self._direct_attachments()
-        if self.global_direct_attachments is not None:
-            self._direct_global_attachments()
-        if self.voicewise_stem_directions is not None:
-            self._direct_stems()
         # self._transposing_and_adding_clefs()
         self._cache_persistent_info()
         if self.add_final_grand_pause is False:
@@ -444,54 +420,6 @@ class SegmentMaker:
         for command in self.commands:
             command(self.score_template)
 
-    def _direct_detachments(self):
-        print("Detaching from list ...")
-        for i, detachment_list in enumerate(self.voicewise_direct_detachments):
-            if len(detachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(
-                    abjad.Voice
-                )
-                for pair in detachment_list:
-                    selector = pair[0]
-                    item = pair[1]
-                    abjad.detach(item, selector(voice)[0])
-
-    def _direct_attachments(self):
-        print("Attaching from list ...")
-        for i, attachment_list in enumerate(self.voicewise_direct_attachments):
-            if len(attachment_list) > 0:
-                voice = abjad.select(self.score_template[f"Voice {i + 1}"]).components(
-                    abjad.Voice
-                )
-                for pair in attachment_list:
-                    selector = pair[0]
-                    item = pair[1]
-                    abjad.attach(item, selector(voice)[0])
-
-    def _direct_global_detachments(self):
-        print("Detaching from global context ...")
-        for i, detachment_list in enumerate(self.global_direct_detachments):
-            if len(detachment_list) > 0:
-                voice = abjad.select(self.score_template["Global Context"]).components(
-                    abjad.Staff
-                )
-                for pair in detachment_list:
-                    selector = pair[0]
-                    item = pair[1]
-                    abjad.detach(item, selector(voice)[0])
-
-    def _direct_global_attachments(self):
-        print("Attaching from global context ...")
-        for i, attachment_list in enumerate(self.global_direct_attachments):
-            if len(attachment_list) > 0:
-                voice = abjad.select(self.score_template["Global Context"]).components(
-                    abjad.Staff
-                )
-                for pair in attachment_list:
-                    selector = pair[0]
-                    item = pair[1]
-                    abjad.attach(item, selector(voice)[0])
-
     def _beaming_runs(self):
         if self.beam_pattern == "runs":
             print("Beaming ...")
@@ -622,30 +550,6 @@ class SegmentMaker:
             )
             abjad.Instrument.transpose_from_sounding_pitch(voice)
             handler(voice)
-
-    def _attach_previous_indicators(self):
-        for voice, indicator_list in zip(
-            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
-            self.voicewise_persistent_indicators,
-        ):
-            first_leaf = abjad.select(voice).leaves()[0]
-            if len(indicator_list) < 1:
-                continue
-            else:
-                for ind in indicator_list:
-                    abjad.attach(
-                        ind,
-                        first_leaf,
-                        tag=abjad.Tag("attaching persistent indicators"),
-                    )
-
-    def _direct_stems(self):
-        for voice, direction in zip(
-            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
-            self.voicewise_stem_directions,
-        ):
-            if direction is not None:
-                abjad.override(voice).stem.direction = direction
 
     def _remove_final_grand_pause(self):
         for staff in abjad.select(self.score_template["Global Context"]).components(
