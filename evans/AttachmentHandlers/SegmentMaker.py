@@ -20,8 +20,6 @@ class SegmentMaker:
         time_signatures=None,
         clef_handlers=None,
         commands=None,
-        voicewise_measure_replacement=None,
-        measure_replacement_timing=None,
         tuplet_bracket_noteheads=True,
         add_final_grand_pause=True,
         fermata="scripts.ushortfermata",
@@ -48,8 +46,6 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.clef_handlers = clef_handlers
         self.commands = commands
-        self.voicewise_measure_replacement = voicewise_measure_replacement
-        self.measure_replacement_timing = measure_replacement_timing
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.add_final_grand_pause = add_final_grand_pause
         self.fermata = fermata
@@ -78,11 +74,7 @@ class SegmentMaker:
         self._transform_brackets()
         self._splitting_and_rewriting()
         self._adding_ending_skips()
-        if self.measure_replacement_timing == "pre-handlers":
-            self._replace_measures()
         self._handlers()
-        if self.measure_replacement_timing == "post-handlers":
-            self._replace_measures()
         self._multimeasure_rests_and_cutaway()
         self._beaming_runs()
         self._adding_attachments()
@@ -387,33 +379,6 @@ class SegmentMaker:
                     abjad.tweak(
                         tuplet
                     ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
-
-    def _replace_measures(self):
-        print("Replacing measures ...")
-        if self.voicewise_measure_replacement is not None:
-            for i, replacement_list in enumerate(self.voicewise_measure_replacement):
-                if len(replacement_list) > 0:
-                    split_voice = (
-                        abjad.select(self.score_template[f"Voice {i + 1}"])
-                        .components()
-                        .group_by_measure()
-                    )
-                    for pair in replacement_list:
-                        target = split_voice[pair[0]]
-                        for tuplet in abjad.select(target).components(abjad.Tuplet):
-                            maker = abjad.LeafMaker()
-                            abjad.mutate(tuplet).replace(
-                                maker([0], [abjad.inspect(tuplet).duration()])
-                            )
-                        split_voice = (
-                            abjad.select(self.score_template[f"Voice {i + 1}"])
-                            .components()
-                            .group_by_measure()
-                        )
-                        for pair in replacement_list:
-                            target = split_voice[pair[0]]
-                            container = pair[1][:]
-                            abjad.mutate(target).replace(container)
 
     def _commands(self):
         print("Commands ...")

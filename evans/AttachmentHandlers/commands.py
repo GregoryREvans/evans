@@ -4,12 +4,13 @@ import baca
 
 class Command(object):
     def __init__(
-        self, command=None, indicator=None, selector=None, voice=None,
+        self, command=None, contents=None, indicator=None, selector=None, voice=None,
     ):
         """
         Initializes Command.
         """
         self.command = command
+        self.contents = contents
         self.indicator = indicator
         self.selector = selector
         self.voice = voice
@@ -46,8 +47,18 @@ class Command(object):
             abjad.attach(self.indicator, self.selector(voice))
         elif self.command == "detach":
             abjad.detach(self.indicator, self.selector(voice))
+        elif self.command == "replace":
+            self._replace(voice, self.contents, self.selector)
         else:
             raise Exception(f"Invalid command {self.command}")
+
+    def _replace(self, voice, contents, selector):
+        target = selector(voice)
+        for tuplet in abjad.select(target).tuplets():
+            maker = abjad.LeafMaker()
+            abjad.mutate(tuplet).replace(maker([0], [abjad.inspect(tuplet).duration()]))
+        target = selector(voice)
+        abjad.mutate(abjad.select(target).leaves()).replace(contents[:])
 
 
 def attach(voice, indicator, selector=None):
@@ -64,3 +75,9 @@ def detach(voice, indicator, selector=None):
     return Command(
         command="detach", indicator=indicator, selector=selector, voice=voice
     )
+
+
+def replace(voice, contents, selector=None):
+    if selector is None:
+        selector = baca.leaf(0)
+    return Command(command="replace", contents=contents, selector=selector, voice=voice)

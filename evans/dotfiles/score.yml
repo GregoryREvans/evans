@@ -32,7 +32,7 @@ before_install:
 
   # clone & install abjad:
   - abjad=/tmp/abjad
-  - git clone -b master https://github.com/Abjad/abjad.git $abjad
+  - git clone -b trevor/dev https://github.com/Abjad/abjad.git $abjad
   - pip install -e $abjad
   - export MYPYPATH=$abjad
   - export PATH=$PATH:$abjad/abjad/scr

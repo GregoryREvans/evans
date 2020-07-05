@@ -7,8 +7,8 @@ from return_directories import return_directories
 def build_segments():
     print("Building Scores ...")
     for score in return_directories():
-        if score.name == ".mypy_cache":
-            continue
+        # if score.name == ".mypy_cache":
+        #     continue
         print(f"Now building {score.name} ...")
         segments_path = score / score.name / "segments"
         for segment in sorted(segments_path.iterdir()):

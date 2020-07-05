@@ -2,7 +2,7 @@ from .AttachmentHandlers.ArticulationHandler import ArticulationHandler
 from .AttachmentHandlers.BendHandler import BendHandler
 from .AttachmentHandlers.BisbigliandoHandler import BisbigliandoHandler
 from .AttachmentHandlers.ClefHandler import ClefHandler
-from .AttachmentHandlers.Command import Command, attach, detach
+from .AttachmentHandlers.commands import Command, attach, detach, replace
 from .AttachmentHandlers.CyclicList import CyclicList
 from .AttachmentHandlers.DynamicHandler import DynamicHandler
 from .AttachmentHandlers.GettatoHandler import GettatoHandler
@@ -119,6 +119,7 @@ __all__ = [
     "metric_modulation",
     "nested_list_to_rtm",
     "pitch_warp",
+    "replace",
     "rotate_tree",
     "talea_timespans",
     "to_digit",
