@@ -162,13 +162,15 @@ class SegmentMaker:
                     )
                 ]
                 if time_signature.denominator == 4:
-                    abjad.mutate(shard).rewrite_meter(
+                    abjad.Meter.rewrite_meter(
+                        shard,
                         time_signature,
                         boundary_depth=inventories[-1][0],
                         rewrite_tuplets=False,
                     )
                 else:
-                    abjad.mutate(shard).rewrite_meter(
+                    abjad.Meter.rewrite_meter(
+                        shard,
                         time_signature,
                         boundary_depth=inventories[-2][0],
                         rewrite_tuplets=False,
