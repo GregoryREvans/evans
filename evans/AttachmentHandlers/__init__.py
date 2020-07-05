@@ -2,7 +2,6 @@ from .ArticulationHandler import ArticulationHandler
 from .BendHandler import BendHandler
 from .BisbigliandoHandler import BisbigliandoHandler
 from .ClefHandler import ClefHandler
-from .commands import Command, attach, detach, replace
 from .CyclicList import CyclicList
 from .DynamicHandler import DynamicHandler
 from .GettatoHandler import GettatoHandler
@@ -16,6 +15,7 @@ from .SlurHandler import SlurHandler
 from .TempoSpannerHandler import TempoSpannerHandler
 from .TextSpanHandler import TextSpanHandler
 from .TrillHandler import TrillHandler
+from .commands import Command, attach, detach, replace
 
 __all__ = [
     "ArticulationHandler",

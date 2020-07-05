@@ -2,7 +2,6 @@ from .AttachmentHandlers.ArticulationHandler import ArticulationHandler
 from .AttachmentHandlers.BendHandler import BendHandler
 from .AttachmentHandlers.BisbigliandoHandler import BisbigliandoHandler
 from .AttachmentHandlers.ClefHandler import ClefHandler
-from .AttachmentHandlers.commands import Command, attach, detach, replace
 from .AttachmentHandlers.CyclicList import CyclicList
 from .AttachmentHandlers.DynamicHandler import DynamicHandler
 from .AttachmentHandlers.GettatoHandler import GettatoHandler
@@ -16,6 +15,7 @@ from .AttachmentHandlers.SlurHandler import SlurHandler
 from .AttachmentHandlers.TempoSpannerHandler import TempoSpannerHandler
 from .AttachmentHandlers.TextSpanHandler import TextSpanHandler
 from .AttachmentHandlers.TrillHandler import TrillHandler
+from .AttachmentHandlers.commands import Command, attach, detach, replace
 from .abjad_functions import (
     ConvertTimespans,
     NoteheadBracketMaker,
