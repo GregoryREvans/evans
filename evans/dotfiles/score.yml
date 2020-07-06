@@ -84,7 +84,9 @@ script:
   - isort-check $package
   - evans-doctest $package
   - mypy $package
+  - while sleep 5m; do echo "Stay Alive"
   - py.test -rf $package/test.py
+  - kill %1
   - echo "hello world" > /tmp/foo.log
   - ls -al /tmp
   - for name in `ls /tmp/*.log`; do cat $name; done
