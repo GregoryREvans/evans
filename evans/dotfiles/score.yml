@@ -56,13 +56,9 @@ before_install:
   - git clone https://github.com/trevorbaca/baca.git $baca
   - export PYTHONPATH=$baca/:$PYTHONPATH
 
-  # clone & install evans test:
-  - test=/tmp/test
-  - git clone https://github.com/GregoryREvans/test.git $test
-
   # symlink to evans test
   - unlink $package/test.py
-  - ln -s $test/test_segments.py $package/test.py
+  - ln -s $evans/evans/dotfiles/test_segments.py $package/test.py
 
   # clone & install tsmakers:
   - tsmakers=/tmp/tsmakers
