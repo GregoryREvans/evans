@@ -84,7 +84,7 @@ script:
   - isort-check $package
   - evans-doctest $package
   - mypy $package
-  - while sleep 5m; do echo "Stay Alive"
+  - while sleep 5m; do echo "Stay Alive"; done &
   - py.test -rf $package/test.py
   - kill %1
   - echo "hello world" > /tmp/foo.log
