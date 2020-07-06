@@ -14,6 +14,7 @@ isort \
     --skip=__persist__.py \
     --thirdparty=ply \
     --thirdparty=pytest \
+    --thirdparty=quicktions \
     --thirdparty=roman \
     --thirdparty=uqbar \
     --trailing-comma \
