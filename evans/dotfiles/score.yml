@@ -57,7 +57,7 @@ before_install:
   - export PYTHONPATH=$baca/:$PYTHONPATH
 
   # symlink to evans test
-  - unlink $package/test.py
+  # - unlink $package/test.py
   - ln -s $evans/evans/dotfiles/test_segments.py $package/test.py
 
   # clone & install tsmakers:
