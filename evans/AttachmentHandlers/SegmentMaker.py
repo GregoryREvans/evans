@@ -534,14 +534,17 @@ class SegmentMaker:
 
     def _cache_persistent_info(self):
         print("Caching persistent info ...")
+        info = abjad.OrderedDict()
         for i, voice in enumerate(
             abjad.select(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
             penultimate_rest = abjad.select(voice).leaves()[-2]
             persistent_attachments = abjad.inspect(penultimate_rest).indicators()
-            open(f"{self.current_directory}/.persistent_info_cache", "a").writelines(
-                f"{datetime.datetime.now()}\nvoice_{i}\n{persistent_attachments}\n\n"
-            )
+            info[f"Voice {i + 1}"] = persistent_attachments
+        with open(f"{self.current_directory}/.persistent.py", "w") as fp:
+            info_format = format(info)
+            string = f"info = {info_format}"
+            fp.writelines(string)
 
     def _break_pages(self):
         print("Breaking pages ...")
