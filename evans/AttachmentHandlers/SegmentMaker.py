@@ -145,7 +145,7 @@ class SegmentMaker:
                 handler_to_value[handler.name] = handler.return_state()
             with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
                 handler_to_value_format = format(handler_to_value)
-                string = f"handler_to_value = {handler_to_value_format}"
+                string = f"import abjad \n handler_to_value = {handler_to_value_format}"
                 fp.writelines(string)
 
     def _splitting_and_rewriting(self):
@@ -206,7 +206,7 @@ class SegmentMaker:
                     handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
             handler_to_value_format = format(handler_to_value)
-            string = f"handler_to_value = {handler_to_value_format}"
+            string = f"import abjad \n handler_to_value = {handler_to_value_format}"
             fp.writelines(string)
 
     def _multimeasure_rests_and_cutaway(self):
@@ -521,7 +521,7 @@ class SegmentMaker:
             info[f"Voice {i + 1}"] = persistent_attachments
         with open(f"{self.current_directory}/.persistent.py", "w") as fp:
             info_format = format(info)
-            string = f"info = {info_format}"
+            string = f"import abjad \n info = {info_format}"
             fp.writelines(string)
 
     def _break_pages(self):
