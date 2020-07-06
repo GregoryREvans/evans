@@ -1,3 +1,5 @@
+pip install --upgrade pip
+echo ""
 pip install --upgrade black
 echo ""
 pip install --upgrade flake8
