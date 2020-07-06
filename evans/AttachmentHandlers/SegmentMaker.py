@@ -74,7 +74,7 @@ class SegmentMaker:
         self._transform_brackets()
         self._splitting_and_rewriting()
         self._adding_ending_skips()
-        self._handlers()
+        self._apply_handlers()
         self._multimeasure_rests_and_cutaway()
         self._beaming_runs()
         self._adding_attachments()
@@ -136,14 +136,17 @@ class SegmentMaker:
             return container
 
         for voice_name, timespan_list in self.rhythm_timespans.items():
+            handler_to_value = abjad.OrderedDict()
             for handler, grouper in itertools.groupby(timespan_list, key=key_function):
                 durations = [timespan.duration for timespan in grouper]
                 container = make_container(handler, durations)
                 voice = self.score_template[voice_name]
                 voice.append(container[:])
-                open(f"{self.current_directory}/.rhythm_state_cache", "a").writelines(
-                    f"{datetime.datetime.now()}\n{handler.name}\n{handler.state}\n\n"
-                )
+                handler_to_value[handler.name] = handler.return_state()
+            with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
+                handler_to_value_format = format(handler_to_value)
+                string = f"handler_to_value = {handler_to_value_format}"
+                fp.writelines(string)
 
     def _splitting_and_rewriting(self):
 
@@ -176,34 +179,9 @@ class SegmentMaker:
                         rewrite_tuplets=False,
                     )
 
-    def _handlers(self):
+    def _apply_handlers(self):
         print("Handlers ...")
-        # for t_list in self.handler_timespans:
-        #     for voice_name, sub_timespan_list in t_list.items():
-        #         print(voice_name)
-        #         print(sub_timespan_list)
-        #         for target_timespan in sub_timespan_list:
-        #             for selection in (
-        #                 abjad.select(self.score_template[voice_name])
-        #                 .logical_ties()
-        #                 .group_by(
-        #                     predicate=lambda x: abjad.inspect(x)
-        #                     .timespan()
-        #                     .starts_during_timespan(target_timespan)
-        #                 )
-        #             ):
-        #                 if (
-        #                     abjad.inspect(selection).timespan().starts_during_timespan(target_timespan) is True
-        #                 ):
-        #                     if len(selection) < 1:
-        #                         continue
-        #                     else:
-        #                         target_timespan.annotation.handler(selection)
-        #                         open(
-        #                             f"{self.current_directory}/.handler_state_cache", "a"
-        #                         ).writelines(
-        #                             f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state()}\n\n"
-        #                         )
+        handler_to_value = abjad.OrderedDict()
         for t_list in self.handler_timespans:
             for voice_name, sub_timespan_list in t_list.items():
                 voice_tie_selection = abjad.select(
@@ -221,15 +199,15 @@ class SegmentMaker:
                             )
                         ]
                     )
-                    if len(selection) < 1:
+                    if not selection:
                         continue
-                    else:
-                        target_timespan.annotation.handler(selection)
-                        open(
-                            f"{self.current_directory}/.handler_state_cache", "a"
-                        ).writelines(
-                            f"{datetime.datetime.now()}\n{target_timespan.annotation.handler.name}\n{target_timespan.annotation.handler.state()}\n\n"
-                        )
+                    handler = target_timespan.annotation.handler
+                    handler(selection)
+                    handler_to_value[handler.name] = handler.state()
+        with open(f"{self.current_directory}/.handlers.py", "w") as fp:
+            handler_to_value_format = format(handler_to_value)
+            string = f"handler_to_value = {handler_to_value_format}"
+            fp.writelines(string)
 
     def _multimeasure_rests_and_cutaway(self):
 

@@ -126,19 +126,19 @@ class RTMMaker_4(object):
     def __init__(self, rtm, tie_across_divisions=False, continuous=False):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
-        self.state = {"last index used": -1}
+        self.state = -1
 
     def __call__(self, divisions, previous_state=None):
         starting_index = -1
 
         if previous_state is not None:
-            starting_index = previous_state["last index used"] + 1
+            starting_index = previous_state + 1
 
         selections = self._rtm_maker(divisions, starting_index=starting_index)
 
         if previous_state is not None:
-            self.state["last index used"] += len(selections)
-            self.state["last index used"] %= len(self.rtm)
+            self.state += len(selections)
+            self.state %= len(self.rtm)
 
         return selections
 

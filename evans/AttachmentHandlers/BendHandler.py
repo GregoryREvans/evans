@@ -65,4 +65,9 @@ class BendHandler:
         return self.name
 
     def state(self):
-        return f"""bend count\n{self.bend_amounts.state()}\nvector count\n{self.boolean_vector.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("bend_count", self.bend_amounts.state()),
+                ("vector_count", self.boolean_vector.state()),
+            ]
+        )

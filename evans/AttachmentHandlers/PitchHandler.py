@@ -73,4 +73,4 @@ class PitchHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self._cyc_pitches.state()}"""
+        return abjad.OrderedDict([("count", self._cyc_pitches.state())])

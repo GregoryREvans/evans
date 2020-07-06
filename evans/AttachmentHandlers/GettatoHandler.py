@@ -288,4 +288,10 @@ class GettatoHandler:
         return self.name
 
     def state(self):
-        return f"""attack count\n{self.attacks.state()}\naction count\n{self.actions.state()}\nvector count\n{self.boolean_vector.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("attack_count", self.attacks.state()),
+                ("action_count", self.actions.state()),
+                ("vector_count", self.boolean_vector.state()),
+            ]
+        )

@@ -56,4 +56,4 @@ class SlurHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self.boolean_vector.state()}"""
+        return abjad.OrderedDict([("count", self.boolean_vector.state())])

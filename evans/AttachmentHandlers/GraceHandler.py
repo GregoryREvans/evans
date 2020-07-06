@@ -144,4 +144,9 @@ class GraceHandler:
         return self.name
 
     def state(self):
-        return f"""vector count\n{self._cyc_boolean_vector.state()}\ngesture count\n{self._cyc_gesture_lengths.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("vector_count", self._cyc_boolean_vector.state()),
+                ("gesture_count", self._cyc_gesture_lengths.state()),
+            ]
+        )

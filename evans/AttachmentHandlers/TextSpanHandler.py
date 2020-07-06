@@ -294,4 +294,10 @@ class TextSpanHandler:
         return self.name
 
     def state(self):
-        return fr"""count 1\n{self._cyc_span_one_positions.state()}\ncount 2\n{self._cyc_span_two_positions.state()}\ncount 3\n{self._cyc_span_three_positions.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("count_1", self._cyc_span_one_positions.state()),
+                ("count_2", self._cyc_span_two_positions.state()),
+                ("count_3", self._cyc_span_three_positions.state()),
+            ]
+        )

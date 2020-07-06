@@ -1,3 +1,6 @@
+import abjad
+
+
 class RhythmHandler:
     def __init__(self, rmaker, continuous=False, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker
@@ -30,5 +33,5 @@ class RhythmHandler:
     def name(self):
         return self.name
 
-    def state(self):
-        return self.rmaker.state
+    def return_state(self):
+        return abjad.OrderedDict([("state", self.rmaker.state)])

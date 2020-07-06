@@ -90,4 +90,9 @@ class ArticulationHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self._cyc_articulations.state()}\nvector count\n{self.articulation_boolean_vector.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("count", self._cyc_articulations.state()),
+                ("vector_count", self.articulation_boolean_vector.state()),
+            ]
+        )

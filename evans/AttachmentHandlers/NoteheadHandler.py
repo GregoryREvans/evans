@@ -114,7 +114,13 @@ class NoteheadHandler:
         return self.name
 
     def state(self):
-        return f"""count\n{self._cyc_noteheads.state()}\nhead vector count\n{self.head_boolean_vector.state()}\ntransition vector count\n{self.transition_boolean_vector.state()}"""
+        return abjad.OrderedDict(
+            [
+                ("count", self._cyc_noteheads.state()),
+                ("head_vector_count", self.head_boolean_vector.state()),
+                ("transition_vector_count", self.transition_boolean_vector.state()),
+            ]
+        )
 
 
 # - \tweak arrow-length #2
