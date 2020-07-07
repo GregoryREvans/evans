@@ -8,7 +8,9 @@ import sys
 
 import abjad
 import abjadext
+import baca
 import evans
+import tsmakers
 
 try:
     from abjadext import tonality
@@ -30,8 +32,12 @@ def _get_globs():
     globs.update(abjad.__dict__)
     globs['abjadext'] = abjadext
     globs.update(abjadext.__dict__)
+    globs['baca'] = baca
+    globs.update(baca.__dict__)
     globs['evans'] = evans
     globs.update(evans.__dict__)
+    globs['tsmakers'] = tsmakers
+    globs.update(tsmakers.__dict__)
     return globs
 
 def _doctest_files(files, globs, report_only_first_failure=False):
