@@ -3,4 +3,5 @@ flake8 \
     --ignore=E203,E231,E266,E501,W503 \
     --max-line-length=88 \
     --statistics \
+    --exclude=.persistent.py,.rhythm.py,.handlers.py \
     $1

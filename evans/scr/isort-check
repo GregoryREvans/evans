@@ -10,8 +10,9 @@ isort \
     --project=baca \
     --project=evans \
     --project=tsmakers \
-    --skip=__metadata__.py \
-    --skip=__persist__.py \
+    --skip=.persistent.py \
+    --skip=.rhythm.py \
+    --skip=.handlers.py \
     --thirdparty=ply \
     --thirdparty=pytest \
     --thirdparty=quicktions \
