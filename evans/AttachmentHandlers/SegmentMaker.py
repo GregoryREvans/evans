@@ -597,13 +597,24 @@ class SegmentMaker:
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
-        abjad_time = self.time_4 - self.time_3
-        segment_time = self.time_2 - self.time_1
-        parts_time = self.time_6 - self.time_5
-        open(f"{self.current_directory}/.optimization", "a").writelines(
-            f"{datetime.datetime.now()}\nSegment runtime: {int(round(segment_time))} seconds \nAbjad/Lilypond runtime: {int(round(abjad_time))} seconds \nParts extraction runtime: {int(round(parts_time))} seconds \n\n"
-        )
-
+        abjad_time = int(round(self.time_4 - self.time_3))
+        segment_time = int(round(self.time_2 - self.time_1))
+        parts_time = int(round(self.time_6 - self.time_5))
+        with open(f"{self.current_directory}/.optimization", "a") as fp:
+            segment_time_string = f"Segment runtime: {segment_time} "
+            segment_time_string += abjad.String("second").pluralize(segment_time)
+            abjad_time_string = f"Abjad/Lilypond runtime: {abjad_time} "
+            abjad_time_string += abjad.String("second").pluralize(abjad_time)
+            part_time_string = f"Parts extraction runtime: {parts_time} "
+            part_time_string += abjad.String("second").pluralize(parts_time)
+            lines = []
+            lines.append("")
+            lines.append(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            lines.append(segment_time_string)
+            lines.append(abjad_time_string)
+            lines.append(part_time_string)
+            string = "\n".join(lines)
+            fp.write(string)
 
 # ###DEMO###
 # from passagenwerk.Materials.score_structure.instruments import instruments as insts
