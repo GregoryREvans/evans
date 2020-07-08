@@ -145,7 +145,7 @@ class SegmentMaker:
                 handler_to_value[handler.name] = handler.return_state()
             with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
                 handler_to_value_format = format(handler_to_value)
-                string = f"import abjad\nfrom abjad import *\nhandler_to_value = {handler_to_value_format}"
+                string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
                 fp.writelines(string)
 
     def _splitting_and_rewriting(self):
