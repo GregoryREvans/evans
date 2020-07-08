@@ -3,18 +3,18 @@ isort \
     --force-grid-wrap=0 \
     --line-width=88 \
     --multi-line=3 \
-    --project=abjad \
-    --project=abjadext \
-    --project=baca \
-    --project=evans \
-    --project=tsmakers \
     --skip=.persistent.py \
     --skip=.rhythm.py \
     --skip=.handlers.py \
+    --thirdparty=abjad \
+    --thirdparty=abjadext \
+    --thirdparty=baca \
+    --thirdparty=evans \
     --thirdparty=ply \
     --thirdparty=pytest \
     --thirdparty=quicktions \
     --thirdparty=roman \
+    --thirdparty=tsmakers \
     --thirdparty=uqbar \
     --trailing-comma \
     --use-parentheses \

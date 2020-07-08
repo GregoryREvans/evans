@@ -616,6 +616,7 @@ class SegmentMaker:
             string = "\n".join(lines)
             fp.write(string)
 
+
 # ###DEMO###
 # from passagenwerk.Materials.score_structure.instruments import instruments as insts
 # from passagenwerk.Materials.timespans.Segment_I.convert_timespans import (

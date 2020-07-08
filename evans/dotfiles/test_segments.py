@@ -5,9 +5,8 @@ import shutil
 import subprocess
 import sys
 
-import pytest
-
 import abjad
+import pytest
 
 test_path = pathlib.Path(__file__).parent
 travis_build_dir = os.environ.get("TRAVIS_BUILD_DIR")
