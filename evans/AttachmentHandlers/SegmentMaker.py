@@ -331,7 +331,7 @@ class SegmentMaker:
                 tuplet.trivialize()
             if tuplet.trivial() is True:
                 tuplet.hide = True
-            if tuplet.sustained() is True:
+            if abjad.inspect(tuplet).sustained() is True:
                 dur = abjad.inspect(tuplet).duration()
                 maker = abjad.NoteMaker()
                 donor_leaves = maker([0], [dur])
