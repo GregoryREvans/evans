@@ -319,7 +319,6 @@ class SegmentMaker(object):
 
     def _extract_parts(self):
         print("Extracting parts ...")
-        self.start_parts = time.time()
         for count, voice in enumerate(
             abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
@@ -330,8 +329,6 @@ class SegmentMaker(object):
             abjad.attach(post_lit, voice)
 
     def _interpret_file(self):
-
-        self.start_interpret_file = time.time()
 
         print("Interpreting file ...")
 
@@ -474,7 +471,6 @@ class SegmentMaker(object):
                 abjad.attach(literal, container, tag=None)
             literal = abjad.LilyPondLiteral("", "closing")
             abjad.attach(literal, container, tag=None)
-        self.stop_interpret_file = time.time()
         directory = self.current_directory
         pdf_path = abjad.Path(f"{directory}/illustration.pdf")
         if pdf_path.exists():
@@ -484,9 +480,6 @@ class SegmentMaker(object):
         success = result[3]
         if success is False:
             print("LilyPond failed!")
-        self.stop_persist = time.time()
-        abjad_time = round(self.stop_persist - self.stop_interpret_file)
-        print(f"Total persist time: {abjad_time} seconds")
         if pdf_path.exists():
             print(f"Opening {pdf_path.trim()} ...")
             os.system(f"open {pdf_path}")
@@ -494,8 +487,6 @@ class SegmentMaker(object):
         build_path = self.current_directory.parent.with_name("build")
         build_path /= "score"
         open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
-
-        self.stop_build = time.time()
 
     def _rewrite_meter(self):
 
@@ -573,32 +564,52 @@ class SegmentMaker(object):
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
-        abjad_time = int(round(self.stop_persist - self.stop_interpret_file))
-        segment_time = int(round(self.stop_interpret_file - self.start_interpret_file))
-        parts_time = int(round(self.stop_build - self.start_parts))
+        segment_time = int(round(self.stop_segment - self.start_segment))
+        pre_handlers_time = int(round(self.start_handlers - self.start_segment))
+        handlers_time = int(round(self.stop_handlers - self.start_handlers))
+        post_handlers_time = int(round(self.stop_segment - self.stop_handlers))
         with open(f"{self.current_directory}/.optimization", "a") as fp:
+
             segment_time_string = f"Segment runtime: {segment_time} "
             segment_time_string += abjad.String("second").pluralize(segment_time)
-            abjad_time_string = f"Abjad/Lilypond runtime: {abjad_time} "
-            abjad_time_string += abjad.String("second").pluralize(abjad_time)
-            part_time_string = f"Parts extraction runtime: {parts_time} "
-            part_time_string += abjad.String("second").pluralize(parts_time)
+
+            pre_handlers_time_string = f" Pre-handlers runtime: {pre_handlers_time} "
+            pre_handlers_time_string += abjad.String("second").pluralize(
+                pre_handlers_time
+            )
+
+            handlers_time_string = f" Handlers runtime: {handlers_time} "
+            handlers_time_string += abjad.String("second").pluralize(handlers_time)
+
+            post_handlers_time_string = f" Post-handlers runtime: {post_handlers_time} "
+            post_handlers_time_string += abjad.String("second").pluralize(
+                post_handlers_time
+            )
+
             lines = []
+            lines.append("")
             lines.append("")
             lines.append(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             lines.append(segment_time_string)
-            lines.append(abjad_time_string)
-            lines.append(part_time_string)
+            lines.append(pre_handlers_time_string)
+            lines.append(handlers_time_string)
+            lines.append(post_handlers_time_string)
             string = "\n".join(lines)
             fp.write(string)
 
     def build_segment(self):
+        self.start_segment = time.time()
+
         self._interpret_file()
         self._make_containers()
         self._transform_brackets()
         self._rewrite_meter()
         self._add_ending_skips()
+
+        self.start_handlers = time.time()
         self._call_handlers()
+        self.stop_handlers = time.time()
+
         self._make_mm_rests()
         self._beam_runs()
         self._add_attachments()
@@ -608,4 +619,5 @@ class SegmentMaker(object):
         self._extract_parts()
         self._break_pages()
         self._render_file()
+        self.stop_segment = time.time()
         self._write_optimization_log()
