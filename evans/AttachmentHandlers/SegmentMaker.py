@@ -1,7 +1,6 @@
 import datetime
 import itertools
 import os
-import time
 
 import abjad
 import evans
@@ -564,60 +563,57 @@ class SegmentMaker(object):
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
-        segment_time = int(round(self.stop_segment - self.start_segment))
-        pre_handlers_time = int(round(self.start_handlers - self.start_segment))
-        handlers_time = int(round(self.stop_handlers - self.start_handlers))
-        post_handlers_time = int(round(self.stop_segment - self.stop_handlers))
+        times = [self.pre_handlers_time + self.handlers_time + self.post_handlers_time]
+        segment_time = sum(times)
         with open(f"{self.current_directory}/.optimization", "a") as fp:
 
-            segment_time_string = f"Segment runtime: {segment_time} "
-            segment_time_string += abjad.String("second").pluralize(segment_time)
+            segment_time = f"Segment runtime: {segment_time} "
+            segment_time += abjad.String("second").pluralize(segment_time)
 
-            pre_handlers_time_string = f" Pre-handlers runtime: {pre_handlers_time} "
-            pre_handlers_time_string += abjad.String("second").pluralize(
-                pre_handlers_time
+            pre_handlers_time = f" Pre-handlers runtime: {self.pre_handlers_time} "
+            pre_handlers_time += abjad.String("second").pluralize(
+                self.pre_handlers_time
             )
 
-            handlers_time_string = f" Handlers runtime: {handlers_time} "
-            handlers_time_string += abjad.String("second").pluralize(handlers_time)
+            handlers_time = f" Handlers runtime: {self.handlers_time} "
+            handlers_time += abjad.String("second").pluralize(self.handlers_time)
 
-            post_handlers_time_string = f" Post-handlers runtime: {post_handlers_time} "
-            post_handlers_time_string += abjad.String("second").pluralize(
-                post_handlers_time
+            post_handlers_time = f" Post-handlers runtime: {self.post_handlers_time} "
+            post_handlers_time += abjad.String("second").pluralize(
+                self.post_handlers_time
             )
 
             lines = []
             lines.append("")
             lines.append("")
             lines.append(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            lines.append(segment_time_string)
-            lines.append(pre_handlers_time_string)
-            lines.append(handlers_time_string)
-            lines.append(post_handlers_time_string)
+            lines.append(segment_time)
+            lines.append(pre_handlers_time)
+            lines.append(handlers_time)
+            lines.append(post_handlers_time)
             string = "\n".join(lines)
             fp.write(string)
 
     def build_segment(self):
-        self.start_segment = time.time()
-
-        self._interpret_file()
-        self._make_containers()
-        self._transform_brackets()
-        self._rewrite_meter()
-        self._add_ending_skips()
-
-        self.start_handlers = time.time()
-        self._call_handlers()
-        self.stop_handlers = time.time()
-
-        self._make_mm_rests()
-        self._beam_runs()
-        self._add_attachments()
-        self._call_commands()
-        self._cache_persistent_info()
-        self._remove_final_grand_pause()
-        self._extract_parts()
-        self._break_pages()
-        self._render_file()
-        self.stop_segment = time.time()
+        with abjad.Timer() as timer:
+            self._interpret_file()
+            self._make_containers()
+            self._transform_brackets()
+            self._rewrite_meter()
+            self._add_ending_skips()
+        self.pre_handlers_time = int(timer.elapsed_time)
+        with abjad.Timer() as timer:
+            self._call_handlers()
+        self.handlers_time = int(timer.elapsed_time)
+        with abjad.Timer() as timer:
+            self._make_mm_rests()
+            self._beam_runs()
+            self._add_attachments()
+            self._call_commands()
+            self._cache_persistent_info()
+            self._remove_final_grand_pause()
+            self._extract_parts()
+            self._break_pages()
+            self._render_file()
+        self.post_handlers_time = int(timer.elapsed_time)
         self._write_optimization_log()
