@@ -27,7 +27,6 @@ class SegmentMaker(object):
         score_includes=None,
         segment_name=None,
         current_directory=None,
-        build_path=None,
         cutaway=True,
         beam_pattern="runs",
         beam_rests=True,
@@ -53,7 +52,6 @@ class SegmentMaker(object):
         self.score_includes = score_includes
         self.segment_name = segment_name
         self.current_directory = current_directory
-        self.build_path = build_path
         self.cutaway = cutaway
         self.beam_pattern = beam_pattern
         self.beam_rests = beam_rests
@@ -492,9 +490,6 @@ class SegmentMaker(object):
         self.time_3 = time.time()
         print(f"Persisting {pdf_path.trim()} ...")
         result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)
-        # print(result[0])
-        # print(result[1])
-        # print(result[2])
         success = result[3]
         if success is False:
             print("LilyPond failed!")
@@ -505,7 +500,8 @@ class SegmentMaker(object):
             print(f"Opening {pdf_path.trim()} ...")
             os.system(f"open {pdf_path}")
         score_lines = open(f"{directory}/illustration.ly").readlines()
-        build_path = (self.build_path / "score").resolve()
+        build_path = self.current_directory.parent.with_name("build")
+        build_path /= "score"
         open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
 
         self.time_5 = time.time()
