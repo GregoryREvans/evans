@@ -8,64 +8,57 @@ import evans
 
 
 class SegmentMaker(object):
-
     def __init__(
         self,
-        instruments=None,
-        names=None,
         abbreviations=None,
-        name_staves=True,
-        rhythm_timespans=None,
-        handler_timespans=None,
-        score_template=None,
-        time_signatures=None,
-        clef_handlers=None,
-        commands=None,
-        tuplet_bracket_noteheads=True,
         add_final_grand_pause=True,
-        fermata="scripts.ushortfermata",
-        score_includes=None,
-        segment_name=None,
-        current_directory=None,
-        cutaway=True,
+        barline="||",
         beam_pattern="runs",
         beam_rests=True,
-        tempo=((1, 4), 90),
-        rehearsal_mark=None,
+        clef_handlers=None,
         colophon=None,
+        commands=None,
+        current_directory=None,
+        cutaway=True,
+        fermata="scripts.ushortfermata",
+        handler_timespans=None,
+        instruments=None,
+        names=None,
+        name_staves=True,
         page_break_counts=None,
-        barline="||",
+        rehearsal_mark=None,
+        rhythm_timespans=None,
+        score_includes=None,
+        score_template=None,
+        segment_name=None,
+        tempo=((1, 4), 90),
+        time_signatures=None,
+        tuplet_bracket_noteheads=True,
     ):
-        self.instruments = instruments
-        self.names = names
         self.abbreviations = abbreviations
-        self.name_staves = name_staves
-        self.rhythm_timespans = rhythm_timespans
-        self.handler_timespans = handler_timespans
-        self.score_template = score_template
-        self.time_signatures = time_signatures
-        self.clef_handlers = clef_handlers
-        self.commands = commands
-        self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.add_final_grand_pause = add_final_grand_pause
-        self.fermata = fermata
-        self.score_includes = score_includes
-        self.segment_name = segment_name
-        self.current_directory = current_directory
-        self.cutaway = cutaway
+        self.barline = barline
         self.beam_pattern = beam_pattern
         self.beam_rests = beam_rests
-        self.tempo = tempo
-        self.rehearsal_mark = rehearsal_mark
+        self.clef_handlers = clef_handlers
         self.colophon = colophon
+        self.commands = commands
+        self.current_directory = current_directory
+        self.cutaway = cutaway
+        self.fermata = fermata
+        self.handler_timespans = handler_timespans
+        self.instruments = instruments
+        self.names = names
+        self.name_staves = name_staves
         self.page_break_counts = page_break_counts
-        self.barline = barline
-        self.time_1 = None
-        self.time_2 = None
-        self.time_3 = None
-        self.time_4 = None
-        self.time_5 = None
-        self.time_6 = None
+        self.rehearsal_mark = rehearsal_mark
+        self.rhythm_timespans = rhythm_timespans
+        self.score_includes = score_includes
+        self.score_template = score_template
+        self.segment_name = segment_name
+        self.tempo = tempo
+        self.time_signatures = time_signatures
+        self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
 
     def _add_attachments(self):
 
@@ -326,6 +319,7 @@ class SegmentMaker(object):
 
     def _extract_parts(self):
         print("Extracting parts ...")
+        self.start_parts = time.time()
         for count, voice in enumerate(
             abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
@@ -334,11 +328,10 @@ class SegmentMaker(object):
             post_lit = abjad.LilyPondLiteral(r"}", format_slot="absolute_after")
             abjad.attach(pre_lit, voice)
             abjad.attach(post_lit, voice)
-        self.time_6 = time.time()
 
     def _interpret_file(self):
 
-        self.time_1 = time.time()
+        self.start_interpret_file = time.time()
 
         print("Interpreting file ...")
 
@@ -481,20 +474,18 @@ class SegmentMaker(object):
                 abjad.attach(literal, container, tag=None)
             literal = abjad.LilyPondLiteral("", "closing")
             abjad.attach(literal, container, tag=None)
-        self.time_2 = time.time()
-        # ###################
+        self.stop_interpret_file = time.time()
         directory = self.current_directory
         pdf_path = abjad.Path(f"{directory}/illustration.pdf")
         if pdf_path.exists():
             pdf_path.unlink()
-        self.time_3 = time.time()
         print(f"Persisting {pdf_path.trim()} ...")
         result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)
         success = result[3]
         if success is False:
             print("LilyPond failed!")
-        self.time_4 = time.time()
-        abjad_time = round(self.time_4 - self.time_3)
+        self.stop_persist = time.time()
+        abjad_time = round(self.stop_persist - self.stop_interpret_file)
         print(f"Total persist time: {abjad_time} seconds")
         if pdf_path.exists():
             print(f"Opening {pdf_path.trim()} ...")
@@ -504,7 +495,7 @@ class SegmentMaker(object):
         build_path /= "score"
         open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
 
-        self.time_5 = time.time()
+        self.stop_build = time.time()
 
     def _rewrite_meter(self):
 
@@ -582,9 +573,9 @@ class SegmentMaker(object):
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
-        abjad_time = int(round(self.time_4 - self.time_3))
-        segment_time = int(round(self.time_2 - self.time_1))
-        parts_time = int(round(self.time_6 - self.time_5))
+        abjad_time = int(round(self.stop_persist - self.stop_interpret_file))
+        segment_time = int(round(self.stop_interpret_file - self.start_interpret_file))
+        parts_time = int(round(self.stop_build - self.start_parts))
         with open(f"{self.current_directory}/.optimization", "a") as fp:
             segment_time_string = f"Segment runtime: {segment_time} "
             segment_time_string += abjad.String("second").pluralize(segment_time)
