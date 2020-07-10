@@ -74,8 +74,8 @@ class SegmentMaker:
         self._transform_brackets()
         self._splitting_and_rewriting()
         self._adding_ending_skips()
-        self._apply_handlers()
-        self._multimeasure_rests_and_cutaway()
+        self._call_handlers()
+        self._make_mm_rests()
         self._beaming_runs()
         self._adding_attachments()
         if self.commands is not None:
@@ -179,8 +179,8 @@ class SegmentMaker:
                         rewrite_tuplets=False,
                     )
 
-    def _apply_handlers(self):
-        print("Handlers ...")
+    def _call_handlers(self):
+        print("Calling Handlers ...")
         handler_to_value = abjad.OrderedDict()
         for t_list in self.handler_timespans:
             for voice_name, sub_timespan_list in t_list.items():
@@ -209,9 +209,9 @@ class SegmentMaker:
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
             fp.writelines(string)
 
-    def _multimeasure_rests_and_cutaway(self):
+    def _make_mm_rests(self):
 
-        print("MM Rests and cutaway ...")
+        print("Making MM rests ...")
 
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
