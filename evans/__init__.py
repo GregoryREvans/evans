@@ -15,7 +15,6 @@ from .AttachmentHandlers.SlurHandler import SlurHandler
 from .AttachmentHandlers.TempoSpannerHandler import TempoSpannerHandler
 from .AttachmentHandlers.TextSpanHandler import TextSpanHandler
 from .AttachmentHandlers.TrillHandler import TrillHandler
-from .AttachmentHandlers.commands import Command, attach, detach, replace
 from .abjad_functions import (
     ConvertTimespans,
     NoteheadBracketMaker,
@@ -42,6 +41,7 @@ from .abjad_functions import (
     to_nearest_third_tone,
     to_nearest_twelfth_tone,
 )
+from .commands import Command, attach, detach, replace
 from .consort_reviv import (
     LogicalTieCollection,
     RatioPartsExpression,

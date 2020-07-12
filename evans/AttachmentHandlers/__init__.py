@@ -15,14 +15,12 @@ from .SlurHandler import SlurHandler
 from .TempoSpannerHandler import TempoSpannerHandler
 from .TextSpanHandler import TextSpanHandler
 from .TrillHandler import TrillHandler
-from .commands import Command, attach, detach, replace
 
 __all__ = [
     "ArticulationHandler",
     "BendHandler",
     "BisbigliandoHandler",
     "ClefHandler",
-    "Command",
     "CyclicList",
     "DynamicHandler",
     "GettatoHandler",
@@ -36,7 +34,4 @@ __all__ = [
     "TempoSpannerHandler",
     "TextSpanHandler",
     "TrillHandler",
-    "attach",
-    "detach",
-    "replace",
 ]
