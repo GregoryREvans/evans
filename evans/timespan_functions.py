@@ -2,7 +2,7 @@ import os
 
 import abjad
 
-env = os.path.expanduser('~')
+env = os.path.expanduser("~")
 
 assert isinstance(env, str)
 
