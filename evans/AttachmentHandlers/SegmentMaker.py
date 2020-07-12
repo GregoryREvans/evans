@@ -482,10 +482,13 @@ class SegmentMaker(object):
         if pdf_path.exists():
             print(f"Opening {pdf_path.trim()} ...")
             os.system(f"open {pdf_path}")
-        score_lines = open(f"{directory}/illustration.ly").readlines()
-        build_path = self.current_directory.parent.with_name("build")
-        build_path /= "score"
-        open(f"{build_path}/{self.segment_name}.ly", "w").writelines(score_lines[15:-1])
+        with open(f"{directory}/illustration.ly") as pointer_1:
+            score_lines = pointer_1.readlines()
+            build_path = self.current_directory.parent.with_name("build")
+            build_path /= "score"
+            lines = score_lines[15:-1]
+            with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
+                fp.writelines(lines)
 
     def _rewrite_meter(self):
 
