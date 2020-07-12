@@ -46,9 +46,9 @@ before_install:
   - evans=/tmp/evans
   - git clone https://github.com/GregoryREvans/evans.git $evans
   - export PYTHONPATH=$evans/:$PYTHONPATH
-  - export PATH=$evans/evans/scr/:$PATH
+  - export PATH=$evans/scr/:$PATH
   - export MYPYPATH=$MYPYPATH:$evans
-  - ln -s $evans/evans/dotfiles/.mypy.ini ~/.mypy.ini
+  - ln -s $evans/dotfiles/.mypy.ini ~/.mypy.ini
 
   # clone & install baca:
   - baca=/tmp/baca
@@ -57,7 +57,7 @@ before_install:
 
   # symlink to evans test
   # - unlink $package/test.py
-  - ln -s $evans/evans/dotfiles/test_segments.py $package/test.py
+  - ln -s $evans/dotfiles/test_segments.py $package/test.py
 
   # clone & install tsmakers:
   - tsmakers=/tmp/tsmakers
