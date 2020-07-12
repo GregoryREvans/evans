@@ -1,4 +1,13 @@
+import abjad
+
 def flatten(lst):
+    """
+    >>> nested_list = [1, 1, [1, [1, 1]], 1]
+    >>> flat = flatten(nested_list)
+    >>> print(flat)
+    [1, 1, 1, 1, 1, 1]
+
+    """
     out = []
     for i in lst:
         if isinstance(i, int):
@@ -9,6 +18,11 @@ def flatten(lst):
 
 
 def nested_list_to_rtm(nested_list):
+    """
+    >>> nested_list = [1, 1, [1, [1, 1]], 1]
+    >>> print(nested_list_to_rtm(nested_list))
+
+    """
     out_string = ""
     for item in str(nested_list):
         if item == "[":
@@ -25,6 +39,14 @@ def nested_list_to_rtm(nested_list):
 
 
 def rotate_tree(rtm_string, n=1):
+    """
+    >>> rtm = '(1 (2 1 (1 2) 1))'
+    >>> for x in range(6):
+    ...     new_rtm = rotate_tree(rtm, x)
+    ...     print(new_rtm)
+    ...
+
+    """
     opening = rtm_string[:3]
     middle = rtm_string[3:-1]
     closing = rtm_string[-1]
@@ -81,6 +103,13 @@ def funnel_tree_to_x(rtm, x):
 
 
 def funnel_inner_tree_to_x(rtm_string, x=1):
+    """
+    >>> rtm = '(1 (3 (2 (1 2 1 1)) 3))'
+    >>> for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
+    ...     print(x)
+    ...
+
+    """
     opening = rtm_string[:3]
     middle = rtm_string[3:-1]
     closing = rtm_string[-1]
@@ -90,18 +119,54 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
     return funnel_list
 
 
-# rtm = '(1 (3 (2 (1 2 1 1)) 3))'
-# for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
-#     print(x)
-#
-# nested_list = [1, 1, [1, [1, 1]], 1]
-# rtm = nested_list_to_rtm(nested_list)
-# flat = flatten(nested_list)
-# rtm = '(1 (2 1 (1 2) 1))'
-# rotations = []
-# for x in range(len(flatten(nested_list))):
-#     new_rtm = rotate_tree(rtm, x)
-#     rotations.append(new_rtm)
-# # new_rtm = rotate_tree(rtm, 2)
-# # print(new_rtm)
-# print(rotations)
+class RTMMaker(object):
+    """
+    >>> rtm = '(1 ((1 (1 1)) 1 (1 (1 1 1)) (1 (1 1)) 1))'
+    >>> maker = RTMMaker(rtm=rtm, continuous=True)
+    >>> divisions = [abjad.Duration(4, 4)]
+    >>> selections_1 = maker(divisions)
+    >>> selections_2 = maker(divisions, previous_state=maker.state)
+    >>> staff_1 = abjad.Staff(selections_1)
+    >>> staff_2 = abjad.Staff(selections_2)
+    abjad.f(staff_1)
+
+    abjad.f(staff_2)
+
+    """
+    def __init__(self, rtm, tie_across_divisions=False, continuous=False):
+        self.rtm = abjad.CyclicTuple(rtm)
+        self.tie_across_divisions = tie_across_divisions
+        self.state = -1
+
+    def __call__(self, divisions, previous_state=None):
+        starting_index = -1
+
+        if previous_state is not None:
+            starting_index = previous_state + 1
+
+        selections = self._rtm_maker(divisions, starting_index=starting_index)
+
+        if previous_state is not None:
+            self.state += len(selections)
+            self.state %= len(self.rtm)
+
+        return selections
+
+    @staticmethod
+    def _rhythm_cell(duration, rtm):
+        rtm_parser = abjad.rhythmtrees.RhythmTreeParser()
+        selection = abjad.select(rtm_parser(rtm)[0](duration))
+        return selection
+
+    def _rtm_maker(self, divisions, starting_index=0):
+        rtm = self.rtm[starting_index : starting_index + len(divisions)]
+
+        selections = []
+        for rtm_string, division in zip(rtm, divisions):
+            selection = self._rhythm_cell(division, rtm_string)
+            selections.append(selection)
+        for selection_ in selections[:-1]:
+            if self.tie_across_divisions is True:
+                last_leaf = abjad.select(selection_).leaves()[-1]
+                abjad.attach(abjad.Tie(), last_leaf)
+        return selections
