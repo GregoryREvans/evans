@@ -1,5 +1,6 @@
 import abjad
-from evans.AttachmentHandlers.DynamicHandler import DynamicHandler
+
+from ..handlers import DynamicHandler
 
 
 class AddSpannerAnchor:

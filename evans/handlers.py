@@ -1,6 +1,8 @@
 from fractions import Fraction
 from statistics import mean
+
 import abjad
+
 from .CyclicList import CyclicList
 
 

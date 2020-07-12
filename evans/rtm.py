@@ -1,5 +1,6 @@
 import abjad
 
+
 def flatten(lst):
     """
     >>> nested_list = [1, 1, [1, [1, 1]], 1]
@@ -133,6 +134,7 @@ class RTMMaker(object):
     abjad.f(staff_2)
 
     """
+
     def __init__(self, rtm, tie_across_divisions=False, continuous=False):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
