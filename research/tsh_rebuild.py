@@ -2,7 +2,7 @@ from fractions import Fraction
 
 import abjad
 
-# from evans.AttachmentHandlers.CyclicList import CyclicList
+# from evans import CyclicList
 
 
 def _apply_position_and_span_to_leaves(

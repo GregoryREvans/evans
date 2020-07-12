@@ -1,4 +1,4 @@
-class CyclicList:
+class CyclicList(object):
     r"""
     >>> _cyc_count = -1
     >>> _non_cyc_count = -1

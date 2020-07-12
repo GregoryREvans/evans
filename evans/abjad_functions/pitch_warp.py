@@ -1,4 +1,4 @@
-from evans.AttachmentHandlers.CyclicList import CyclicList
+from ..CyclicList import CyclicList
 
 
 def pitch_warp(

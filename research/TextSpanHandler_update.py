@@ -1,9 +1,12 @@
 from fractions import Fraction
 
 import abjad
-from evans.AttachmentHandlers.CyclicList import CyclicList
+from evans import CyclicList
+
+# from evans.abjad_functions.AddSpannerAnchor import AddSpannerAnchor
 
 
+# incorporate spanner anchors
 class TextSpanHandler:
     def __init__(
         self,
@@ -187,7 +190,8 @@ class TextSpanHandler:
     ):
         for run in abjad.select(selections).runs():
             ties = abjad.select(run).logical_ties(pitched=True)
-            following_leaf = abjad.inspect(ties[-1][-1]).leaf(1)
+            leaf_after_run = abjad.inspect(ties[-1][-1]).leaf(1)
+            following_leaf = abjad.Note("c'16")
             distance = len(ties) + 1
             start_strings = [positions(r=1)[0] for _ in range(distance)]
             for i, start_string in enumerate(start_strings[:-1]):
@@ -263,8 +267,9 @@ class TextSpanHandler:
             abjad.attach(final_indicator, following_leaf)
             abjad.attach(
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                abjad.inspect(following_leaf).leaf(1),
+                leaf_after_run,
             )
+            # add_spanner_anchor(leaf=ties[-1][-1], anchor_leaf=following_leaf) # new
 
     def _apply_position_and_span_to_left(
         self, selections, positions, style, span_command, span_padding
