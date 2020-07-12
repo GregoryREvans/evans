@@ -19,7 +19,6 @@ from .AttachmentHandlers.commands import Command, attach, detach, replace
 from .abjad_functions import (
     ConvertTimespans,
     NoteheadBracketMaker,
-    RTMMaker,
     SilentTimespan,
     TimespanMaker,
     TimespanSpecifier,
@@ -29,16 +28,12 @@ from .abjad_functions import (
     beam_meter,
     collect_offsets,
     combination_tones,
-    funnel_inner_tree_to_x,
-    funnel_tree_to_x,
     human_sorted_keys,
     josephus,
     make_showable_list,
     make_split_list,
     metric_modulation,
-    nested_list_to_rtm,
     pitch_warp,
-    rotate_tree,
     talea_timespans,
     to_digit,
     to_nearest_eighth_tone,
@@ -75,6 +70,13 @@ from .general_tools import (
     rotate,
     set_net,
     sorted_keys,
+)
+from .rtm import (
+    RTMMaker,
+    funnel_inner_tree_to_x,
+    funnel_tree_to_x,
+    nested_list_to_rtm,
+    rotate_tree,
 )
 
 __all__ = [

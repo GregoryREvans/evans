@@ -14,13 +14,6 @@ from .pitch_rounding import (
     to_nearest_twelfth_tone,
 )
 from .pitch_warp import pitch_warp
-from .rtm import (
-    RTMMaker,
-    funnel_inner_tree_to_x,
-    funnel_tree_to_x,
-    nested_list_to_rtm,
-    rotate_tree,
-)
 from .timespan_functions import (
     SilentTimespan,
     TimespanSpecifier,
@@ -48,11 +41,6 @@ __all__ = [
     "to_nearest_third_tone",
     "to_nearest_twelfth_tone",
     "pitch_warp",
-    "RTMMaker",
-    "funnel_inner_tree_to_x",
-    "funnel_tree_to_x",
-    "nested_list_to_rtm",
-    "rotate_tree",
     "SilentTimespan",
     "TimespanSpecifier",
     "add_silences_to_timespan_dict",
