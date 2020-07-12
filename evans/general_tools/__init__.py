@@ -12,13 +12,13 @@ from .perm import perm
 from .random_walk import random_walk
 from .reciprocal import reciprocal
 from .reduce_mod import reduce_mod
-from .rotate import rotate
-from .scale_reproportioning import (
+from .reproportion_scale import (
     reproportion_chord,
     reproportion_chromatic_decimals,
     reproportion_harmonics,
     reproportion_scale,
 )
+from .rotate import rotate
 from .set_net import set_net
 from .sorted_keys import sorted_keys
 
