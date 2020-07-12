@@ -2,6 +2,44 @@ import abjad
 
 
 def beam_meter(components, meter, offset_depth, include_rests=True):
+    r"""
+    >>> pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+    >>> tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
+    >>> post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+    >>> staff = abjad.Staff()
+    >>> for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
+    ...     staff.append(_)
+    ...
+    >>> beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        \override Staff.Stem.stemlet-length = 0.75
+        c'8
+        [
+        \revert Staff.Stem.stemlet-length
+        c'8
+        ]
+        c'8
+        \times 2/3 {
+            \override Staff.Stem.stemlet-length = 0.75
+            c'8
+            [
+            r8
+            \revert Staff.Stem.stemlet-length
+            c'8
+            ]
+        }
+        c'8
+        \override Staff.Stem.stemlet-length = 0.75
+        c'8
+        [
+        \revert Staff.Stem.stemlet-length
+        c'8
+        ]
+    }
+
+    """
     offsets = meter.depthwise_offset_inventory[offset_depth]
     offset_pairs = []
     for i, _ in enumerate(offsets[:-1]):
@@ -68,14 +106,3 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_lone_notes=False,
                 selector=abjad.select().leaves(grace=False),
             )
-
-
-# ###DEMO###
-# pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-# tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
-# post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-# staff = abjad.Staff()
-# for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
-#     staff.append(_)
-# beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
-# abjad.show(staff)

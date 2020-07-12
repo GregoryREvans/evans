@@ -1,4 +1,3 @@
-# from .AddSpannerAnchor import AddSpannerAnchor
 from .ConvertTimespans import ConvertTimespans
 from .NoteheadBracketMaker import NoteheadBracketMaker
 from .TimespanMaker import TimespanMaker

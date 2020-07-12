@@ -4,7 +4,7 @@ import abjad
 def flatten(lst):
     """
     >>> nested_list = [1, 1, [1, [1, 1]], 1]
-    >>> flat = flatten(nested_list)
+    >>> flat = evans.flatten(nested_list)
     >>> print(flat)
     [1, 1, 1, 1, 1, 1]
 
@@ -21,7 +21,8 @@ def flatten(lst):
 def nested_list_to_rtm(nested_list):
     """
     >>> nested_list = [1, 1, [1, [1, 1]], 1]
-    >>> print(nested_list_to_rtm(nested_list))
+    >>> print(evans.nested_list_to_rtm(nested_list))
+    (1 1 (1 (1 1)) 1)
 
     """
     out_string = ""
@@ -43,9 +44,15 @@ def rotate_tree(rtm_string, n=1):
     """
     >>> rtm = '(1 (2 1 (1 2) 1))'
     >>> for x in range(6):
-    ...     new_rtm = rotate_tree(rtm, x)
+    ...     new_rtm = evans.rotate_tree(rtm, x)
     ...     print(new_rtm)
     ...
+    (1 (2 1 (1 2) 1))
+    (1 (1 1 (2 1) 2))
+    (1 (1 2 (1 2) 1))
+    (1 (2 1 (2 1) 1))
+    (1 (1 2 (1 1) 2))
+    (1 (2 1 (1 2) 1))
 
     """
     opening = rtm_string[:3]
@@ -106,9 +113,14 @@ def funnel_tree_to_x(rtm, x):
 def funnel_inner_tree_to_x(rtm_string, x=1):
     """
     >>> rtm = '(1 (3 (2 (1 2 1 1)) 3))'
-    >>> for x in funnel_inner_tree_to_x(rtm_string=rtm, x=5):
+    >>> for x in evans.funnel_inner_tree_to_x(rtm_string=rtm, x=5):
     ...     print(x)
     ...
+    (1 (3 (2 (1 2 1 1)) 3))
+    (1 (4 (3 (2 3 2 2)) 4))
+    (1 (5 (4 (3 4 3 3)) 5))
+    (1 (5 (5 (4 5 4 4)) 5))
+    (1 (5 (5 (5 5 5 5)) 5))
 
     """
     opening = rtm_string[:3]
@@ -121,26 +133,37 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
 
 
 class RTMMaker(object):
+    r"""
+    >>> rtm = ['(1 (1 1))', '(1 (1 1 1))', '(1 (1 1 1 1))']
+    >>> maker = evans.RTMMaker(rtm=rtm)
+    >>> divisions = [abjad.Duration(1, 1), abjad.Duration(1, 1), abjad.Duration(1, 1)]
+    >>> selections = maker(divisions)
+    >>> staff = abjad.Staff()
+    >>> staff.extend(selections)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        c'2
+        c'2
+        \times 2/3 {
+            c'2
+            c'2
+            c'2
+        }
+        c'4
+        c'4
+        c'4
+        c'4
+    }
+
     """
-    >>> rtm = '(1 ((1 (1 1)) 1 (1 (1 1 1)) (1 (1 1)) 1))'
-    >>> maker = RTMMaker(rtm=rtm, continuous=True)
-    >>> divisions = [abjad.Duration(4, 4)]
-    >>> selections_1 = maker(divisions)
-    >>> selections_2 = maker(divisions, previous_state=maker.state)
-    >>> staff_1 = abjad.Staff(selections_1)
-    >>> staff_2 = abjad.Staff(selections_2)
-    abjad.f(staff_1)
 
-    abjad.f(staff_2)
-
-    """
-
-    def __init__(self, rtm, tie_across_divisions=False, continuous=False):
+    def __init__(self, rtm, tie_across_divisions=False):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
         self.state = -1
 
-    def __call__(self, divisions, previous_state=None):
+    def __call__(self, divisions, previous_state=-1):
         starting_index = -1
 
         if previous_state is not None:
