@@ -2,7 +2,8 @@ import itertools
 import re
 from random import randint, random, seed, uniform
 
-from .abjad_functions.pitch_rounding import to_nearest_eighth_tone
+from .CyclicList import CyclicList
+from .abjad_functions import to_nearest_eighth_tone
 
 
 def cyc(lst):
@@ -129,6 +130,25 @@ def grouper(lst1, lst2):
     return [next(lst1) if i == 1 else [next(lst1) for _ in range(i)] for i in lst2]
 
 
+def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
+    """
+    >>> print(harmonic_series(20, 5))
+    [20, 40, 60, 80, 100]
+
+    >>> print(harmonic_series(900, 5, True))
+    [900.0, 450.0, 300.0, 225.0, 180.0]
+
+    """
+    returned_list = []
+    for _ in range(number_of_partials):
+        multiplier = _ + 1
+        if invert is False:
+            returned_list.append(fundamental * multiplier)
+        else:
+            returned_list.append(fundamental / multiplier)
+    return returned_list
+
+
 def hexagonal_sequence(n_list=[1]):
     """
     >>> seq = evans.hexagonal_sequence(n_list=[_ for _ in range(8)])
@@ -141,6 +161,51 @@ def hexagonal_sequence(n_list=[1]):
         x = n * (2 * n - 1)
         seq.append(x)
     return seq
+
+
+def human_sorted_keys(pair):
+    key, timespan = pair
+    values = [to_digit(_) for _ in key.split()]
+    hashable_key = tuple(values)
+    return hashable_key
+
+
+def josephus(n, k):
+    """
+    >>> tone_row = [0, 1, 2, 3, 4]
+    >>> for i in range(16):
+    ...     print(
+    ...         josephus(len(tone_row), i + 2)
+    ...     )
+    ...
+    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 4], [2, 4], [2]]
+    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [1, 3, 4], [1, 3], [3]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 4], [0, 1], [0]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [1, 2, 3], [1, 3], [1]]
+    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 3, 4], [3, 4], [3]]
+    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 3], [2, 3], [3]]
+    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 3, 4], [0, 3], [0]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 2], [0, 1], [1]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 2, 3], [0, 3], [3]]
+    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4], [2, 4], [4]]
+    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [2, 3, 4], [2, 3], [2]]
+    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 1, 4], [0, 1], [1]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [1, 2, 4], [1, 4], [4]]
+    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 1, 3], [0, 3], [0]]
+    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [2, 3], [2]]
+    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 3, 4], [0, 3], [3]]
+
+    """
+    p, i, seq = list(range(n)), 0, []
+    while p:
+        i = (i + k - 1) % len(p)
+        seq.append(p.pop(i))
+    sequences = [list(range(n))]
+    for _ in seq:
+        next = [x for x in sequences[-1]]
+        next.remove(_)
+        sequences.append(next)
+    return sequences[:-1]
 
 
 def lindenmayer(seed, rules, iters):
@@ -206,6 +271,18 @@ def mod(sequence, modulus, indices=False):
         else:
             continue
     return new_seq
+
+
+def multiple_sequence(fundamental=20, number_of_partials=10, multiple=1.5):
+    """
+    >>> print(multiple_sequence(20, 10, 1.25))
+    [20.0, 25.0, 31.25, 39.0625, 48.828125, 61.03515625, 76.2939453125, 95.367431640625, 119.20928955078125, 149.01161193847656, 186.2645149230957]
+
+    """
+    returned_list = [float(fundamental)]
+    for _ in range(number_of_partials):
+        returned_list.append(returned_list[-1] * multiple)
+    return returned_list
 
 
 def n_bonacci_cycle(
@@ -296,6 +373,27 @@ def perm(lst):
             for p in perm(ba):
                 list_.append([x] + p)
         return list_
+
+
+def pitch_warp(
+    warp_values=[0.5, -0.5], pitch_list=[0, 1, 2, 3, 4], boolean_vector=[0, 1, 1]
+):
+    warp_count = -1
+    bool_count = -1
+    w = CyclicList(warp_values, count=warp_count, continuous=True)
+    b = CyclicList(boolean_vector, count=bool_count, continuous=True)
+    bool_values = b(r=len(pitch_list))
+    pairs = zip(bool_values, pitch_list)
+    for i, pair in enumerate(pairs):
+        if pair[0] == 1:
+            if isinstance(pair[1], list):
+                for p, _ in enumerate(pitch_list[i]):
+                    warp_value = w(r=1)[0]
+                    pitch_list[i][p] = pitch_list[i][p] + warp_value
+            else:
+                warp_value = w(r=1)[0]
+                pitch_list[i] = pitch_list[i] + warp_value
+    return pitch_list
 
 
 def prime_sequence(start, end):

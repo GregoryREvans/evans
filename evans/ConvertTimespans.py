@@ -2,13 +2,12 @@ from collections import defaultdict
 
 import abjad
 import abjadext.rmakers
-from evans.abjad_functions import timespan_functions
-from evans.abjad_functions.timespan_human_keys import human_sorted_keys
 from tsmakers.PerformedTimespan import PerformedTimespan
 
-from ..CyclicList import CyclicList
-from ..general_tools import sorted_keys
-from ..handlers import RhythmHandler
+from . import timespan_functions
+from .CyclicList import CyclicList
+from .general_tools import human_sorted_keys, sorted_keys
+from .handlers import RhythmHandler
 
 silence_maker_ = abjadext.rmakers.stack(
     abjadext.rmakers.NoteRhythmMaker(),

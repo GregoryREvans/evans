@@ -3,7 +3,10 @@ import itertools
 import os
 
 import abjad
-import evans
+
+from .abjad_functions import beam_meter
+from .consort_reviv import LogicalTieCollection
+from .timespan_functions import TimespanSpecifier
 
 
 class SegmentMaker(object):
@@ -228,14 +231,14 @@ class SegmentMaker(object):
                         )
                     ]
                     if self.time_signatures[i].denominator == 4:
-                        evans.beam_meter(
+                        beam_meter(
                             components=shard[:],
                             meter=met,
                             offset_depth=inventories[-1][0],
                             include_rests=self.beam_rests,
                         )
                     else:
-                        evans.beam_meter(
+                        beam_meter(
                             components=shard[:],
                             meter=met,
                             offset_depth=inventories[-2][0],
@@ -294,7 +297,7 @@ class SegmentMaker(object):
                 voice_tie_selection = abjad.select(
                     self.score_template[voice_name]
                 ).logical_ties()
-                voice_tie_collection = evans.LogicalTieCollection()
+                voice_tie_collection = LogicalTieCollection()
                 for tie in voice_tie_selection:
                     voice_tie_collection.insert(tie)
                 for target_timespan in sub_timespan_list:
@@ -346,7 +349,7 @@ class SegmentMaker(object):
                     abjad.AnnotatedTimespan(
                         start_offset=silence_timespan.start_offset,
                         stop_offset=silence_timespan.stop_offset,
-                        annotation=evans.TimespanSpecifier(
+                        annotation=TimespanSpecifier(
                             handler=None, voice_name=voice_name
                         ),
                     )

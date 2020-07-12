@@ -2,6 +2,30 @@ import abjad
 
 
 class NoteheadBracketMaker:
+    """
+    >>> tuplet = abjad.Tuplet((3, 2), "cs'8 d'8")
+    >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
+    >>> staff = abjad.Staff()
+    >>> staff.append(tuplet_2)
+    >>> new_brackets = NoteheadBracketMaker()
+    >>> b = new_brackets(staff)
+    >>> abjad.f(staff)
+    \new Staff
+    {
+        \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) "4")
+        \times 2/3 {
+            c'4.
+            \tweak text #tuplet-number::calc-fraction-text
+            \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "24")
+            \times 3/2 {
+                cs'8
+                d'8
+            }
+        }
+    }
+
+    """
+
     def __call__(self, selections):
         return self._transform_brackets(selections)
 
@@ -22,14 +46,3 @@ class NoteheadBracketMaker:
                 tuplet
             ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}")'
         return selections
-
-
-# ###DEMO###
-# tuplet = abjad.Tuplet((3, 2), "cs'8 d'8")
-# tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
-# staff = abjad.Staff()
-# staff.append(tuplet_2)
-# new_brackets = NoteheadBracketMaker()
-# new_brackets(staff)
-# abjad.f(staff)
-# abjad.show(staff)
