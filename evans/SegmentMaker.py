@@ -141,7 +141,7 @@ class SegmentMaker(object):
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
-            # abjad.Instrument.transpose_from_sounding_pitch(voice)
+            abjad.iterpitches.transpose_from_sounding_pitch(voice)
             handler(voice)
 
     def _add_ending_skips(self):

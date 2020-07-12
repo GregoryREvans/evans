@@ -12,13 +12,6 @@ dir_path = os.path.split(__file__)[0]
 rhythm_stylesheet = os.path.join(dir_path, "_rhythm_sketch_stylesheet.ily")
 
 
-def cyc(lst):
-    c = 0
-    while True:
-        yield lst[c % len(lst)]
-        c += 1
-
-
 class SilentTimespan(abjad.Timespan):
     """
     Silent Timespan

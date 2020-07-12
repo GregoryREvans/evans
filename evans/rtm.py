@@ -1,23 +1,6 @@
 import abjad
 
 
-def flatten(lst):
-    """
-    >>> nested_list = [1, 1, [1, [1, 1]], 1]
-    >>> flat = evans.flatten(nested_list)
-    >>> print(flat)
-    [1, 1, 1, 1, 1, 1]
-
-    """
-    out = []
-    for i in lst:
-        if isinstance(i, int):
-            out.append(i)
-        else:
-            out.extend(flatten(i))
-    return out
-
-
 def nested_list_to_rtm(nested_list):
     """
     >>> nested_list = [1, 1, [1, [1, 1]], 1]
