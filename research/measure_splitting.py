@@ -9,32 +9,12 @@ for sig, sk in zip(signatures, skips):
 sig_context = abjad.Staff(skips)
 maker = abjad.LeafMaker()
 selections = maker(pitches, durs)
-staff = abjad.Staff(
-    [
-        abjad.Voice(
-            selections,
-            name="Voice 1",
-        ),
-    ],
-    name="Staff 1",
-)
+staff = abjad.Staff([abjad.Voice(selections, name="Voice 1",),], name="Staff 1",)
 staff_2 = abjad.Staff(
-    [
-        abjad.Voice(
-            r"\times 4/5 {c'4 c'4 c'4 c'4 c'4} cs'2.",
-            name="Voice 2",
-        ),
-    ],
-    name="Staff 2"
+    [abjad.Voice(r"\times 4/5 {c'4 c'4 c'4 c'4 c'4} cs'2.", name="Voice 2",),],
+    name="Staff 2",
 )
-score = abjad.Score(
-    [
-        sig_context,
-        staff_2,
-        staff,
-    ],
-    name="score",
-)
+score = abjad.Score([sig_context, staff_2, staff,], name="score",)
 
 for voice in abjad.select(score).components(abjad.Voice):
     selection = []

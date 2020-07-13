@@ -554,12 +554,14 @@ class SegmentMaker(object):
                 selection.append(_)
             selection = abjad.select(selection)
             shards = abjad.mutate(selection).split(self.time_signatures)
-            # must partition exactly? 
+            # must partition exactly?
             # Conversion discrepancy?
             v = abjad.Voice(name=voice.name)
             v.extend(shards)
             abjad.mutate(self.score_template[voice.name]).replace(v)
-            new_shards = abjad.mutate(self.score_template[voice.name][:]).split(self.time_signatures)
+            new_shards = abjad.mutate(self.score_template[voice.name][:]).split(
+                self.time_signatures
+            )
             for i, shard in enumerate(new_shards):
                 time_signature = self.time_signatures[i]
                 inventories = [
