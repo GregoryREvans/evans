@@ -1,9 +1,9 @@
-from statistics import mean
+import statistics
 
 import abjad
 import quicktions
 
-from .sequence import CyclicList
+from . import sequence
 
 
 class ArticulationHandler(object):
@@ -56,10 +56,10 @@ class ArticulationHandler(object):
         self.continuous = continuous
         self._count = count
         self._vector_count = vector_count
-        self.articulation_boolean_vector = CyclicList(
+        self.articulation_boolean_vector = sequence.CyclicList(
             articulation_boolean_vector, self.vector_continuous, self._vector_count
         )
-        self._cyc_articulations = CyclicList(
+        self._cyc_articulations = sequence.CyclicList(
             lst=articulation_list, continuous=self.continuous, count=self._count
         )
         self.name = name
@@ -140,10 +140,10 @@ class BendHandler(object):
         self._vector_count = vector_count
         self.bend_continuous = bend_continuous
         self.vector_continuous = vector_continuous
-        self.bend_amounts = CyclicList(
+        self.bend_amounts = sequence.CyclicList(
             bend_amounts, self.bend_continuous, self._bend_count
         )
-        self.boolean_vector = CyclicList(
+        self.boolean_vector = sequence.CyclicList(
             boolean_vector, self.vector_continuous, self._vector_count
         )
         self.name = name
@@ -252,10 +252,10 @@ class BisbigliandoHandler(object):
         self.padding = padding
         self.staff_padding = staff_padding
         self.right_padding = right_padding
-        self.fingering_list = CyclicList(
+        self.fingering_list = sequence.CyclicList(
             fingering_list, self.continuous, self._bis_count
         )
-        self.boolean_vector = CyclicList(
+        self.boolean_vector = sequence.CyclicList(
             boolean_vector, self.continuous, self._bool_count
         )
         self.name = name
@@ -393,7 +393,7 @@ class ClefHandler(object):
                     pitches = []
                     for pitch in abjad.inspect(tie[0]).pitches():
                         pitches.append(pitch.number)
-                    pitch = mean(pitches)
+                    pitch = statistics.mean(pitches)
                     value = None
                     for count, allowed_clef in enumerate(allowable_clefs):
                         if clef_list[-1] == abjad.Clef(allowed_clef):
@@ -717,17 +717,19 @@ class DynamicHandler(object):
         self._count_3 = count_3
         self._count_4 = count_4
         self._count_5 = count_5
-        self._cyc_dynamics = CyclicList(dynamic_list, self.continuous, self._count_1)
-        self._cyc_flare_boolean_vector = CyclicList(
+        self._cyc_dynamics = sequence.CyclicList(
+            dynamic_list, self.continuous, self._count_1
+        )
+        self._cyc_flare_boolean_vector = sequence.CyclicList(
             flare_boolean_vector, self.flare_continuous, self._count_2
         )
-        self._cyc_hold_first_boolean_vector = CyclicList(
+        self._cyc_hold_first_boolean_vector = sequence.CyclicList(
             hold_first_boolean_vector, self.hold_first_continuous, self._count_3
         )
-        self._cyc_hold_last_boolean_vector = CyclicList(
+        self._cyc_hold_last_boolean_vector = sequence.CyclicList(
             hold_last_boolean_vector, self.hold_last_continuous, self._count_4
         )
-        self._cyc_effort_boolean_vector = CyclicList(
+        self._cyc_effort_boolean_vector = sequence.CyclicList(
             effort_boolean_vector, self.effort_continuous, self._count_5
         )
         self.name = name
@@ -1228,11 +1230,13 @@ class GettatoHandler(object):
         self.attack_number_continuous = attack_number_continuous
         self.action_continuous = action_continuous
         self.vector_continuous = vector_continuous
-        self.attacks = CyclicList(
+        self.attacks = sequence.CyclicList(
             number_of_attacks, self.attack_number_continuous, self._attack_count
         )
-        self.actions = CyclicList(actions, self.action_continuous, self._action_count)
-        self.boolean_vector = CyclicList(
+        self.actions = sequence.CyclicList(
+            actions, self.action_continuous, self._action_count
+        )
+        self.boolean_vector = sequence.CyclicList(
             boolean_vector, self.vector_continuous, self._vector_count
         )
         self.name = name
@@ -1351,7 +1355,9 @@ class GlissandoHandler(object):
         self._count = count
         self.continuous = continuous
         self.apply_to = apply_to
-        self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.boolean_vector = sequence.CyclicList(
+            boolean_vector, self.continuous, self._count
+        )
         self.name = name
 
     def __call__(self, selections):
@@ -1508,10 +1514,10 @@ class GraceHandler(object):
         self._gesture_count = gesture_count
         self.boolean_vector = boolean_vector
         self.gesture_lengths = gesture_lengths
-        self._cyc_boolean_vector = CyclicList(
+        self._cyc_boolean_vector = sequence.CyclicList(
             boolean_vector, self.continuous, self._vector_count
         )
-        self._cyc_gesture_lengths = CyclicList(
+        self._cyc_gesture_lengths = sequence.CyclicList(
             gesture_lengths, self.continuous, self._gesture_count
         )
         self.name = name
@@ -1651,19 +1657,21 @@ class NoteheadHandler(object):
         self.transition = transition
         self.head_vector_continuous = head_vector_continuous
         self._head_vector_count = -1
-        self.head_boolean_vector = CyclicList(
+        self.head_boolean_vector = sequence.CyclicList(
             head_boolean_vector, self.head_vector_continuous, self._head_vector_count
         )
         self.transition_vector_continuous = transition_vector_continuous
         self._transition_vector_count = -1
-        self.transition_boolean_vector = CyclicList(
+        self.transition_boolean_vector = sequence.CyclicList(
             transition_boolean_vector,
             self.transition_vector_continuous,
             self._transition_vector_count,
         )
         self.continuous = continuous
         self._count = count
-        self._cyc_noteheads = CyclicList(notehead_list, self.continuous, self._count)
+        self._cyc_noteheads = sequence.CyclicList(
+            notehead_list, self.continuous, self._count
+        )
         self.name = name
 
     def __call__(self, selections):
@@ -1748,7 +1756,9 @@ class PitchHandler(object):
         self.continuous = continuous
         self.name = name
         self._count = count
-        self._cyc_pitches = CyclicList(self.pitch_list, self.continuous, self._count)
+        self._cyc_pitches = sequence.CyclicList(
+            self.pitch_list, self.continuous, self._count
+        )
 
     def __call__(self, selections):
         self._apply_pitches(selections)
@@ -1861,7 +1871,9 @@ class SlurHandler(object):
         self.apply_slur_to = apply_slur_to
         self._count = count
         self.continuous = continuous
-        self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.boolean_vector = sequence.CyclicList(
+            boolean_vector, self.continuous, self._count
+        )
         self.name = name
 
     def __call__(self, selections):
@@ -1939,8 +1951,10 @@ class TempoSpannerHandler(object):
         self.padding = padding
         self.continuous = continuous
         self.staff_padding = staff_padding
-        self.tempo_list = CyclicList(tempo_list, self.continuous, self._tempo_count)
-        self.boolean_vector = CyclicList(
+        self.tempo_list = sequence.CyclicList(
+            tempo_list, self.continuous, self._tempo_count
+        )
+        self.boolean_vector = sequence.CyclicList(
             boolean_vector, self.continuous, self._bool_count
         )
         self.name = name
@@ -2028,13 +2042,13 @@ class TextSpanHandler(object):
         self._count_1 = count_1
         self._count_2 = count_2
         self._count_3 = count_3
-        self._cyc_span_one_positions = CyclicList(
+        self._cyc_span_one_positions = sequence.CyclicList(
             span_one_positions, self.continuous, self._count_1
         )
-        self._cyc_span_two_positions = CyclicList(
+        self._cyc_span_two_positions = sequence.CyclicList(
             span_two_positions, self.continuous, self._count_2
         )
-        self._cyc_span_three_positions = CyclicList(
+        self._cyc_span_three_positions = sequence.CyclicList(
             span_three_positions, self.continuous, self._count_3
         )
         self.name = name
@@ -2318,7 +2332,9 @@ class TrillHandler(object):
     ):
         self.continuous = continuous
         self._count = count
-        self.boolean_vector = CyclicList(boolean_vector, self.continuous, self._count)
+        self.boolean_vector = sequence.CyclicList(
+            boolean_vector, self.continuous, self._count
+        )
         self.name = name
 
     def __call__(self, selections):

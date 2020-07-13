@@ -35,7 +35,6 @@ class SilentTimespan(abjad.Timespan):
     def _as_postscript(
         self, postscript_x_offset, postscript_y_offset, postscript_scale
     ):
-        import abjad
 
         start = float(self._start_offset) * postscript_scale
         start -= postscript_x_offset
@@ -54,6 +53,125 @@ class SilentTimespan(abjad.Timespan):
         ps = ps.lineto(stop, postscript_y_offset - 0.75)
         ps = ps.stroke()
         return ps
+
+
+class TimespanMaker(object):
+    """
+    >>> timespan_maker = evans.TimespanMaker(
+    ...     denominator=8,
+    ...     total_duration=abjad.Duration(15, 2),
+    ... )
+    ...
+    >>> counts = [3, 5, -3, 4, 7, -1]
+    >>> timespan_list = timespan_maker(counts, max_duration=6)
+    >>> abjad.f(timespan_list)
+    abjad.TimespanList(
+        [
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((0, 1)),
+                stop_offset=abjad.Offset((3, 8)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((3, 8)),
+                stop_offset=abjad.Offset((1, 1)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((11, 8)),
+                stop_offset=abjad.Offset((15, 8)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((15, 8)),
+                stop_offset=abjad.Offset((21, 8)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((23, 8)),
+                stop_offset=abjad.Offset((13, 4)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((13, 4)),
+                stop_offset=abjad.Offset((31, 8)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((17, 4)),
+                stop_offset=abjad.Offset((19, 4)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((19, 4)),
+                stop_offset=abjad.Offset((11, 2)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((23, 4)),
+                stop_offset=abjad.Offset((49, 8)),
+                ),
+            abjad.AnnotatedTimespan(
+                start_offset=abjad.Offset((49, 8)),
+                stop_offset=abjad.Offset((27, 4)),
+                ),
+            ]
+        )
+
+    """
+
+    __slots__ = ["_denominator", "_total_duration"]
+
+    def __init__(self, denominator, total_duration):
+        self._denominator = denominator
+        self._total_duration = abjad.Duration(total_duration)
+
+    def __call__(self, counts, max_duration=None, translation=0, rotation=None):
+        """Call timespan maker on series of counts
+        """
+        if rotation:
+            counts = counts[rotation:] + counts[:rotation]
+        counts = self._ready_counts(counts, translation)
+        denominator = self.denominator
+        increment_total = 0 + translation
+        timespan_list = abjad.TimespanList([])
+        for count in counts:
+            if count < 0:
+                increment_total += abs(count)
+                continue
+            start = increment_total
+            stop = start + count
+            if max_duration is not None:
+                stop = (max_duration + start) if count > max_duration else stop
+            timespan_list.append(
+                abjad.AnnotatedTimespan(
+                    start_offset=(start, denominator),
+                    stop_offset=(stop, denominator),
+                    annotation=None,
+                )
+            )
+            increment_total += count
+        return timespan_list
+
+    def _ready_counts(self, counts, translation):
+        """Repeats counts to fill total duration
+        """
+        total_duration = self.total_duration
+        normalized_duration = total_duration.with_denominator(self.denominator)
+        total_numerator = normalized_duration.numerator - translation
+        counts = abjad.CyclicTuple(counts)
+        repeated_counts = []
+        increment = 0
+        previous_sum = 0
+        while previous_sum < total_numerator:
+            new_sum = sum(abs(_) for _ in repeated_counts)
+            count = counts[increment]
+            if new_sum + count <= total_numerator:
+                repeated_counts.append(count)
+                increment += 1
+                continue
+            break
+        return repeated_counts
+
+    @property
+    def denominator(self):
+        return self._denominator
+
+    @property
+    def total_duration(self):
+        return self._total_duration
 
 
 class TimespanSpecifier(object):

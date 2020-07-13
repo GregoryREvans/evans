@@ -1,7 +1,4 @@
 from .ConvertTimespans import ConvertTimespans
-from .NoteheadBracketMaker import NoteheadBracketMaker
-from .SegmentMaker import SegmentMaker, beam_meter
-from .TimespanMaker import TimespanMaker
 from .commands import Command, attach, detach, replace
 from .consort_reviv import (
     LogicalTieCollection,
@@ -48,6 +45,7 @@ from .rtm import (
     nested_list_to_rtm,
     rotate_tree,
 )
+from .segmentmaker import NoteheadBracketMaker, SegmentMaker, beam_meter
 from .sequence import (
     CyclicList,
     MarkovChain,
@@ -86,6 +84,7 @@ from .sequence import (
 )
 from .timespan import (
     SilentTimespan,
+    TimespanMaker,
     TimespanSpecifier,
     add_silences_to_timespan_dict,
     add_silences_to_timespan_lists,
