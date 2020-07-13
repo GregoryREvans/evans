@@ -1,9 +1,63 @@
 import itertools
-import re
 from random import randint, random, seed, uniform
 
-from .CyclicList import CyclicList
-from .abjad_functions import to_nearest_eighth_tone
+import numpy
+
+from .pitch import to_nearest_eighth_tone
+
+
+class CyclicList(object):
+    r"""
+    >>> _cyc_count = -1
+    >>> _non_cyc_count = -1
+    >>> cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
+    >>> non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
+
+    >>> cyc_generator(r=2)
+    [1, 2]
+
+    >>> cyc_generator(r=7)
+    [3, 1, 2, 3, 1, 2, 3]
+
+    >>> non_cyc_generator(r=2)
+    [1, 2]
+
+    >>> non_cyc_generator(r=7)
+    [1, 2, 3, 1, 2, 3, 1]
+
+    >>> print((cyc_generator.state(), non_cyc_generator.state()))
+    (8, 6)
+
+    """
+
+    def __init__(self, lst=None, continuous=False, count=-1):
+        self.lst = lst
+        self.continuous = continuous
+        self.count = count
+
+    def state_cyc(self, lst, r):
+        returned_material = []
+        for x in range(r):
+            self.count += 1
+            returned_material.append(lst[self.count % len(lst)])
+        return returned_material
+
+    def non_state_cyc(self, lst, r):
+        returned_material = []
+        self.count = -1
+        for x in range(r):
+            self.count += 1
+            returned_material.append(lst[self.count % len(lst)])
+        return returned_material
+
+    def __call__(self, r):
+        if self.continuous is True:
+            return self.state_cyc(self.lst, r)
+        else:
+            return self.non_state_cyc(self.lst, r)
+
+    def state(self):
+        return self.count
 
 
 def cyc(lst):
@@ -161,13 +215,6 @@ def hexagonal_sequence(n_list=[1]):
         x = n * (2 * n - 1)
         seq.append(x)
     return seq
-
-
-def human_sorted_keys(pair):
-    key, timespan = pair
-    values = [to_digit(_) for _ in key.split()]
-    hashable_key = tuple(values)
-    return hashable_key
 
 
 def josephus(n, k):
@@ -667,24 +714,6 @@ def set_net(set, group_size, filter_depth):
     return combination_sets
 
 
-def to_digit(string):
-    """
-    >>> evans.to_digit("2")
-    2
-
-    """
-    return int(string) if string.isdigit() else string
-
-
-def sorted_keys(text):
-    """
-    >>> evans.sorted_keys("Voice 1")
-    ['Voice ', 1, '']
-
-    """
-    return [to_digit(_) for _ in re.split(r"(\d+)", text)]
-
-
 def warp(min, max, random_seed, warped_list, by_integers=False):
     """
     >>> print(evans.warp(-0.5, 0.5, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
@@ -703,3 +732,45 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
     for x, y in zip(warped_list, perturbation_list):
         final_list.append(x + y)
     return final_list
+
+
+class MarkovChain(object):
+    """
+    >>> import numpy
+    >>> numpy.random.seed(7)
+    >>> prob = {
+    ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
+    ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
+    ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
+    ... }
+    >>> chain = evans.MarkovChain(transition_prob=prob)
+    >>> key_list = [
+    ...     x for x in chain.generate_states(
+    ...         current_state='one', no=14
+    ...         )
+    ...     ]
+    >>> key_list
+    ['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one']
+
+    """
+
+    def __init__(self, transition_prob):
+        self.transition_prob = transition_prob
+        self.states = list(transition_prob.keys())
+
+    def next_state(self, current_state):
+        return numpy.random.choice(
+            self.states,
+            p=[
+                self.transition_prob[current_state][next_state]
+                for next_state in self.states
+            ],
+        )
+
+    def generate_states(self, current_state, no=10):
+        future_states = []
+        for i in range(no):
+            next_state = self.next_state(current_state)
+            future_states.append(next_state)
+            current_state = next_state
+        return future_states

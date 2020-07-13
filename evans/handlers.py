@@ -1,9 +1,9 @@
-from fractions import Fraction
 from statistics import mean
 
 import abjad
+import quicktions
 
-from .CyclicList import CyclicList
+from .sequence import CyclicList
 
 
 class ArticulationHandler(object):
@@ -2179,17 +2179,17 @@ class TextSpanHandler(object):
             start_strings = [positions(r=1)[0] for _ in range(distance)]
             for i, start_string in enumerate(start_strings[:-1]):
                 if all(start_string[_].isdigit() for _ in (0, -1)):
-                    if Fraction(
+                    if quicktions.Fraction(
                         int(start_strings[i][0]), int(start_strings[i][-1])
-                    ) > Fraction(
+                    ) > quicktions.Fraction(
                         int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
                     ):
                         start_strings[
                             i
                         ] = fr"""\center-column {{ \center-align \vcenter \musicglyph \evans-upbow \vspace #0.2 \upright \fraction {start_string[0]} {start_string[-1]} }}"""
-                    elif Fraction(
+                    elif quicktions.Fraction(
                         int(start_strings[i][0]), int(start_strings[i][-1])
-                    ) < Fraction(
+                    ) < quicktions.Fraction(
                         int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
                     ):
                         start_strings[

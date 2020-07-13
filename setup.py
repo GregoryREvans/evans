@@ -1,6 +1,6 @@
 import setuptools
 
-install_requires = ["abjad"]
+install_requires = ["abjad", "numpy", "quicktions"]
 
 keywords = [
     "abjad",

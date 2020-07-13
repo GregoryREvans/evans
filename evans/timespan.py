@@ -1,4 +1,5 @@
 import os
+import re
 
 import abjad
 
@@ -55,7 +56,7 @@ class SilentTimespan(abjad.Timespan):
         return ps
 
 
-class TimespanSpecifier:
+class TimespanSpecifier(object):
     """Generic specifier for annotation
     """
 
@@ -222,3 +223,28 @@ def talea_timespans(talea, advancement=0):
         timespans.append(timespan)
         total_duration += abs(duration)
     return timespans
+
+
+def to_digit(string):
+    """
+    >>> evans.to_digit("2")
+    2
+
+    """
+    return int(string) if string.isdigit() else string
+
+
+def sorted_keys(text):
+    """
+    >>> evans.sorted_keys("Voice 1")
+    ['Voice ', 1, '']
+
+    """
+    return [to_digit(_) for _ in re.split(r"(\d+)", text)]
+
+
+def human_sorted_keys(pair):
+    key, timespan = pair
+    values = [to_digit(_) for _ in key.split()]
+    hashable_key = tuple(values)
+    return hashable_key

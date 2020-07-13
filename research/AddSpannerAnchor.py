@@ -3,7 +3,7 @@ import abjad
 from ..handlers import DynamicHandler
 
 
-class AddSpannerAnchor:
+class AddSpannerAnchor(object):
     def __init__(self, leaf, anchor_dur=None):
         self.leaf = leaf
         self.anchor_dur = anchor_dur

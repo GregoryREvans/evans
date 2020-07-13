@@ -1,7 +1,7 @@
 import abjad
 
 
-class NoteheadBracketMaker:
+class NoteheadBracketMaker(object):
     """
     >>> tuplet = abjad.Tuplet((3, 2), "cs'8 d'8")
     >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])

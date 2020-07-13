@@ -1,6 +1,5 @@
-from fractions import Fraction
-
 import abjad
+import quicktions
 
 # from evans import CyclicList
 
@@ -15,17 +14,17 @@ def _apply_position_and_span_to_leaves(
         start_strings = [positions(r=1)[0] for _ in range(distance)]
         for i, start_string in enumerate(start_strings[:-1]):
             if all(start_string[_].isdigit() for _ in (0, -1)):
-                if Fraction(
+                if quicktions.Fraction(
                     int(start_strings[i][0]), int(start_strings[i][-1])
-                ) > Fraction(
+                ) > quicktions.Fraction(
                     int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
                 ):
                     start_strings[
                         i
                     ] = fr"""\center-column {{ \center-align \vcenter \musicglyph \evans-upbow \upright \fraction {start_string[0]} {start_string[-1]} }}"""
-                elif Fraction(
+                elif quicktions.Fraction(
                     int(start_strings[i][0]), int(start_strings[i][-1])
-                ) < Fraction(
+                ) < quicktions.Fraction(
                     int(start_strings[i + 1][0]), int(start_strings[i + 1][-1])
                 ):
                     start_strings[

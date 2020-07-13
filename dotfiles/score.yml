@@ -45,7 +45,7 @@ before_install:
   # clone & install evans:
   - evans=/tmp/evans
   - git clone https://github.com/GregoryREvans/evans.git $evans
-  - export PYTHONPATH=$evans/:$PYTHONPATH
+  - pip install -e $evans
   - export PATH=$evans/scr/:$PATH
   - export MYPYPATH=$MYPYPATH:$evans
   - ln -s $evans/dotfiles/.mypy.ini ~/.mypy.ini
