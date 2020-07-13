@@ -1,14 +1,10 @@
 import abjad
-import baca
 
 
 class Command(object):
     def __init__(
         self, command=None, contents=None, indicator=None, selector=None, voice=None,
     ):
-        """
-        Initializes Command.
-        """
         self.command = command
         self.contents = contents
         self.indicator = indicator
@@ -63,7 +59,7 @@ class Command(object):
 
 def attach(voice, indicator, selector=None):
     if selector is None:
-        selector = baca.leaf(0)
+        selector = abjad.select().leaf(0)
     return Command(
         command="attach", indicator=indicator, selector=selector, voice=voice
     )
@@ -71,7 +67,7 @@ def attach(voice, indicator, selector=None):
 
 def detach(voice, indicator, selector=None):
     if selector is None:
-        selector = baca.leaf(0)
+        selector = abjad.select().leaf(0)
     return Command(
         command="detach", indicator=indicator, selector=selector, voice=voice
     )
@@ -79,5 +75,5 @@ def detach(voice, indicator, selector=None):
 
 def replace(voice, contents, selector=None):
     if selector is None:
-        selector = baca.leaf(0)
+        selector = abjad.select().leaf(0)
     return Command(command="replace", contents=contents, selector=selector, voice=voice)
