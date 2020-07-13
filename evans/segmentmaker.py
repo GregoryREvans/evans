@@ -554,6 +554,8 @@ class SegmentMaker(object):
                 selection.append(_)
             selection = abjad.select(selection)
             shards = abjad.mutate(selection).split(self.time_signatures)
+            # must partition exactly? 
+            # Conversion discrepancy?
             v = abjad.Voice(name=voice.name)
             v.extend(shards)
             abjad.mutate(self.score_template[voice.name]).replace(v)
