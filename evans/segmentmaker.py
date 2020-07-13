@@ -541,14 +541,24 @@ class SegmentMaker(object):
                 fp.writelines(lines)
 
     def _rewrite_meter(self):
+        # allow for barline-crossing keyword
+        # to either split and entire tuplet
+        # or just the barline-crossing leaf
 
         print("Rewriting meter ...")
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            for i, shard in enumerate(
-                abjad.mutate(voice[:]).split(self.time_signatures)
-            ):
+            selection = []
+            for _ in voice:
+                selection.append(_)
+            selection = abjad.select(selection)
+            shards = abjad.mutate(selection).split(self.time_signatures)
+            v = abjad.Voice(name=voice.name)
+            v.extend(shards)
+            abjad.mutate(self.score_template[voice.name]).replace(v)
+            new_shards = abjad.mutate(self.score_template[voice.name][:]).split(self.time_signatures)
+            for i, shard in enumerate(new_shards):
                 time_signature = self.time_signatures[i]
                 inventories = [
                     x

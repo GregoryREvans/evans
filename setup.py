@@ -1,6 +1,15 @@
 import setuptools
 
-install_requires = ["abjad", "numpy", "quicktions"]
+install_requires = [
+    "abjad",
+    "numpy",
+    "quicktions",
+]
+
+# dependency_links=[
+#     "https://github.com/GregoryREvans/tsmakers/tarball/master#egg=package-1.0"
+# ]
+
 
 keywords = [
     "abjad",
