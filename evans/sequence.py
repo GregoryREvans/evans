@@ -1,9 +1,7 @@
 import itertools
-from random import randint, random, seed, uniform
+import random
 
 import numpy
-
-from .pitch import to_nearest_eighth_tone
 
 
 class CyclicList(object):
@@ -58,6 +56,48 @@ class CyclicList(object):
 
     def state(self):
         return self.count
+
+
+class MarkovChain(object):
+    """
+    >>> import numpy
+    >>> numpy.random.seed(7)
+    >>> prob = {
+    ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
+    ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
+    ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
+    ... }
+    >>> chain = evans.MarkovChain(transition_prob=prob)
+    >>> key_list = [
+    ...     x for x in chain.generate_states(
+    ...         current_state='one', no=14
+    ...         )
+    ...     ]
+    >>> key_list
+    ['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one']
+
+    """
+
+    def __init__(self, transition_prob):
+        self.transition_prob = transition_prob
+        self.states = list(transition_prob.keys())
+
+    def next_state(self, current_state):
+        return numpy.random.choice(
+            self.states,
+            p=[
+                self.transition_prob[current_state][next_state]
+                for next_state in self.states
+            ],
+        )
+
+    def generate_states(self, current_state, no=10):
+        future_states = []
+        for i in range(no):
+            next_state = self.next_state(current_state)
+            future_states.append(next_state)
+            current_state = next_state
+        return future_states
 
 
 def cyc(lst):
@@ -491,17 +531,17 @@ def random_walk(random_seed, length, step_list, mapped_list):
     [0, 9, 0, 2, 1, 0]
 
     """
-    seed(random_seed)
+    random.seed(random_seed)
     if step_list is not None:
         step = cyc(step_list)
     walk = []
-    walk.append(-1 if random() < 0.5 else 1)
+    walk.append(-1 if random.random() < 0.5 else 1)
     for i in range(1, length):
         if step_list is not None:
             next_step = next(step)
-            movement = -next_step if random() < 0.5 else next_step
+            movement = -next_step if random.random() < 0.5 else next_step
         else:
-            movement = -1 if random() < 0.5 else 1
+            movement = -1 if random.random() < 0.5 else 1
         value = walk[i - 1] + movement
         walk.append(value)
     input_list = mapped_list
@@ -553,13 +593,14 @@ def reduce_mod(x, rw):
     return [(y % x) for y in rw]
 
 
-def reproportion_chord(base, chord, round=False):
+def reproportion_chord(base, chord, round=None):
     """
+    >>> rounder = evans.to_nearest_eighth_tone
     >>> print(
     ...     evans.reproportion_chord(
     ...         base=2,
     ...         chord=[-24, -20, -15, -14, -4, 5, 11, 19, 26, 37, 39, 42],
-    ...         round=True
+    ...         round=rounder,
     ...     )
     ... )
     ...
@@ -570,16 +611,17 @@ def reproportion_chord(base, chord, round=False):
     collection = []
     for _ in chord:
         collection.append(_ * base_converter)
-    if round is True:
-        collection = [to_nearest_eighth_tone(_) for _ in collection]
+    if round is not None:
+        collection = [round(_) for _ in collection]
     return collection
 
 
-def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
+def reproportion_chromatic_decimals(base, root_int, scale_range, round=None):
     """
+    >>> rounder = evans.to_nearest_eighth_tone
     >>> print(
     ...     evans.reproportion_chromatic_decimals(
-    ...         base=10, root_int=0, scale_range=12, round=True
+    ...         base=10, root_int=0, scale_range=12, round=rounder,
     ...     )
     ... )
     ...
@@ -593,8 +635,8 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=False):
     step = converted_octave / 12
     for _ in range(scale_range):
         collection.append(collection[-1] + step)
-    if round is True:
-        collection = [to_nearest_eighth_tone(_) for _ in collection]
+    if round is not None:
+        collection = [round(_) for _ in collection]
     return collection
 
 
@@ -723,54 +765,12 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
     [-1, 2, 3, 2, 4, 6, 6, 8, 9, 8]
 
     """
-    seed(random_seed)
+    random.seed(random_seed)
     final_list = []
     if by_integers is True:
-        perturbation_list = [randint(min, max) for _ in warped_list]
+        perturbation_list = [random.randint(min, max) for _ in warped_list]
     else:
-        perturbation_list = [uniform(min, max) for _ in warped_list]
+        perturbation_list = [random.uniform(min, max) for _ in warped_list]
     for x, y in zip(warped_list, perturbation_list):
         final_list.append(x + y)
     return final_list
-
-
-class MarkovChain(object):
-    """
-    >>> import numpy
-    >>> numpy.random.seed(7)
-    >>> prob = {
-    ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
-    ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
-    ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
-    ... }
-    >>> chain = evans.MarkovChain(transition_prob=prob)
-    >>> key_list = [
-    ...     x for x in chain.generate_states(
-    ...         current_state='one', no=14
-    ...         )
-    ...     ]
-    >>> key_list
-    ['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one']
-
-    """
-
-    def __init__(self, transition_prob):
-        self.transition_prob = transition_prob
-        self.states = list(transition_prob.keys())
-
-    def next_state(self, current_state):
-        return numpy.random.choice(
-            self.states,
-            p=[
-                self.transition_prob[current_state][next_state]
-                for next_state in self.states
-            ],
-        )
-
-    def generate_states(self, current_state, no=10):
-        future_states = []
-        for i in range(no):
-            next_state = self.next_state(current_state)
-            future_states.append(next_state)
-            current_state = next_state
-        return future_states
