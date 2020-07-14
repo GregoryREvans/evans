@@ -338,6 +338,42 @@ class SegmentMaker(object):
 
     def _call_handlers(self):
         print("Calling handlers ...")
+        # handler_to_value = abjad.OrderedDict()
+        # voice_collections = abjad.OrderedDict()
+        # global_collection = consort_reviv.LogicalTieCollection()
+        # for tie in abjad.select(self.score_template["Global Context"]).logical_ties():
+        #     global_collection.insert(tie)
+        # voice_collections["Global Context"] = global_collection
+        # for voice in abjad.select(self.score_template).components(abjad.Voice):
+        #     collection = consort_reviv.LogicalTieCollection()
+        #     for tie in abjad.select(voice).logical_ties():
+        #         collection.insert(tie)
+        #     voice_collections[voice.name] = collection
+        # for ts_list in self.handler_timespans:
+        #     for target_timespan in ts_list:
+        #         print(abjad.storage(target_timespan))
+        #         print(str(target_timespan.handler))
+        #         voice_tie_collection = voice_collections[target_timespan.voice_name]
+        #         selection = abjad.Selection(
+        #             [
+        #                 _
+        #                 for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
+        #                     target_timespan
+        #                 )
+        #             ]
+        #         )
+        #         if not selection:
+        #             continue
+        #         print(selection)
+        #         handler = target_timespan.handler
+        #         print(abjad.storage(handler))
+        #         handler(selection)
+        #         handler_to_value[handler.name] = handler.state()
+        # with open(f"{self.current_directory}/.handlers.py", "w") as fp:
+        #     handler_to_value_format = format(handler_to_value)
+        #     string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
+        #     fp.writelines(string)
+
         handler_to_value = abjad.OrderedDict()
         for t_list in self.handler_timespans:
             for voice_name, sub_timespan_list in t_list.items():
