@@ -1763,6 +1763,9 @@ class PitchHandler(object):
     def __call__(self, selections):
         self._apply_pitches(selections)
 
+    def __str__(self):
+        return "evans.PitchHandler()"
+
     def _collect_pitches_durations_leaves(self, logical_ties):
         pitches, durations, leaves = [[], [], []]
         for tie in logical_ties:

@@ -549,18 +549,8 @@ class SegmentMaker(object):
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            selection = [_ for _ in voice]
-            shards = abjad.mutate(selection).split(self.time_signatures)
-            # must partition exactly?
-            # Conversion discrepancy?
-            v = abjad.Voice(name=voice.name)
-            v.extend(shards)
-            abjad.mutate(self.score_template[voice.name]).replace(v)
-            # new_shards = abjad.mutate(self.score_template[voice.name][:]).split(
-            #     self.time_signatures
-            # )
-            new_shards = abjad.select(self.score_template[voice.name]).group_by_measure()
-            for i, shard in enumerate(new_shards):
+            shards = abjad.mutate(voice[:]).split(self.time_signatures)
+            for i, shard in enumerate(shards):
                 time_signature = self.time_signatures[i]
                 inventories = [
                     x
