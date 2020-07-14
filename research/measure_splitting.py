@@ -27,7 +27,9 @@ for voice in abjad.select(score).components(abjad.Voice):
     abjad.mutate(score[voice.name]).replace(v)
     shards_ = abjad.mutate(score[voice.name][:]).split(signatures)
     for i, shard_ in enumerate(shards_):
-        abjad.Meter.rewrite_meter(shard_, signatures[i], rewrite_tuplets=False,)
+        abjad.Meter.rewrite_meter(
+            shard_, signatures[i], rewrite_tuplets=False,
+        )
 
 abjad.show(score)
 # print(abjad.lilypond(score))
