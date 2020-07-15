@@ -11,6 +11,12 @@ class Command(object):
         self.selector = selector
         self.voice = voice
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     def __call__(self, score):
         r"""
         Calls command on Score.

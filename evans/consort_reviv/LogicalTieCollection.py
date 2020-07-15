@@ -13,7 +13,30 @@ class LogicalTieCollection(AbjadObject):
         >>> for tie in logical_ties:
         ...     logical_tie_collection.insert(tie)
         >>> logical_tie_collection
-        LogicalTieCollection([LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")]), LogicalTie([Note("c'4")])])
+        evans.LogicalTieCollection(
+            [
+                abjad.LogicalTie(
+                    [
+                        abjad.Note("c'4"),
+                        ]
+                    ),
+                abjad.LogicalTie(
+                    [
+                        abjad.Note("c'4"),
+                        ]
+                    ),
+                abjad.LogicalTie(
+                    [
+                        abjad.Note("c'4"),
+                        ]
+                    ),
+                abjad.LogicalTie(
+                    [
+                        abjad.Note("c'4"),
+                        ]
+                    ),
+                ]
+            )
 
     """
 

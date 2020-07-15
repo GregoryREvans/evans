@@ -32,6 +32,12 @@ class SilentTimespan(abjad.Timespan):
         abjad.Timespan.__init__(self, start_offset, stop_offset)
         self.annotation = annotation
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     def _as_postscript(
         self, postscript_x_offset, postscript_y_offset, postscript_scale
     ):
@@ -118,6 +124,12 @@ class TimespanMaker(object):
         self._denominator = denominator
         self._total_duration = abjad.Duration(total_duration)
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     def __call__(self, counts, max_duration=None, translation=0, rotation=None):
         """Call timespan maker on series of counts
         """
@@ -182,8 +194,11 @@ class TimespanSpecifier(object):
         self.voice_name = voice_name
         self.handler = handler
 
-        def __repr__(self):
-            return f"TimespanSpecifier(voice_name={self.voice_name})"
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
 
 
 def make_split_list(timespan_list, offsets):

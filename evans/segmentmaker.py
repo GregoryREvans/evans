@@ -39,6 +39,12 @@ class NoteheadBracketMaker(object):
     def __call__(self, selections):
         return self._transform_brackets(selections)
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     def _transform_brackets(self, selections):
         for tuplet in abjad.select(selections).components(abjad.Tuplet):
             # written_duration = abjad.inspect(tuplet).duration().equal_or_greater_assignable
@@ -110,6 +116,12 @@ class SegmentMaker(object):
         self.tempo = tempo
         self.time_signatures = time_signatures
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
+
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
 
     def _add_attachments(self):
 
@@ -580,10 +592,15 @@ class SegmentMaker(object):
         # or just the barline-crossing leaf
 
         print("Rewriting meter ...")
-        for voice in abjad.iterate(self.score_template["Staff Group"]).components(
+        for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            shards = abjad.mutate(voice[:]).split(self.time_signatures)
+            voice_dur = abjad.inspect(voice).duration()
+            time_signatures = self.time_signatures[:-1]
+            durations = [_.duration for _ in time_signatures]
+            sig_dur = sum(durations)
+            assert voice_dur == sig_dur, (voice_dur, sig_dur)
+            shards = abjad.mutate(voice[:]).split(durations)
             for i, shard in enumerate(shards):
                 time_signature = self.time_signatures[i]
                 inventories = [

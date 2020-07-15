@@ -23,7 +23,7 @@ class AbjadObject(object):
         """
 
         if format_specification in ("", "storage"):
-            return abjad.StorageFormatManager(self).get_storage_format()
+            return abjad.storage(self)
         return str(self)
 
     def __getstate__(self):
@@ -61,7 +61,10 @@ class AbjadObject(object):
         Returns string.
         """
 
-        return abjad.StorageFormatManager(self).get_repr_format()
+        return abjad.storage(self)
+
+    def __str__(self):
+        return abjad.storage(self)
 
     def __setstate__(self, state):
         r"""Sets state of Abjad object.

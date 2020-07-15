@@ -1,6 +1,7 @@
 import itertools
 import random
 
+import abjad
 import numpy
 
 
@@ -32,6 +33,12 @@ class CyclicList(object):
         self.lst = lst
         self.continuous = continuous
         self.count = count
+
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
 
     def state_cyc(self, lst, r):
         returned_material = []
@@ -81,6 +88,12 @@ class MarkovChain(object):
     def __init__(self, transition_prob):
         self.transition_prob = transition_prob
         self.states = list(transition_prob.keys())
+
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
 
     def next_state(self, current_state):
         return numpy.random.choice(

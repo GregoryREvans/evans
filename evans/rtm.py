@@ -146,6 +146,12 @@ class RTMMaker(object):
         self.tie_across_divisions = tie_across_divisions
         self.state = -1
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     def __call__(self, divisions, previous_state=-1):
         starting_index = -1
 

@@ -38,6 +38,12 @@ class ConvertTimespans(object):
     def __call__(self):
         self.convert_timespans(self.materials, self.ts_list, self.bounds)
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
     @staticmethod
     def convert_timespans(
         materials,

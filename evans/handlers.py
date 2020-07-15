@@ -6,7 +6,15 @@ import quicktions
 from . import sequence
 
 
-class ArticulationHandler(object):
+class Handler(object):
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
+
+class ArticulationHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
     >>> art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
@@ -102,7 +110,7 @@ class ArticulationHandler(object):
         )
 
 
-class BendHandler(object):
+class BendHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.BendHandler(
@@ -173,7 +181,7 @@ class BendHandler(object):
         )
 
 
-class BisbigliandoHandler(object):
+class BisbigliandoHandler(Handler):
     r"""
     >>> s = abjad.Staff("c''4 c''4 c''4 c''4")
     >>> m = [
@@ -322,7 +330,7 @@ class BisbigliandoHandler(object):
 
 
 # add shelf for ottava to ensure that no notes in the bracket are illegible
-class ClefHandler(object):
+class ClefHandler(Handler):
     def __init__(
         self,
         clef=None,
@@ -615,7 +623,7 @@ class ClefHandler(object):
 
 
 # incorporate spanner anchors
-class DynamicHandler(object):
+class DynamicHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
     >>> handler = evans.DynamicHandler(
@@ -1016,7 +1024,7 @@ class DynamicHandler(object):
         )
 
 
-class GettatoHandler(object):
+class GettatoHandler(Handler):
     r"""
     >>> staff = abjad.Voice("c'4 fs'4 c''4 gqs''4", name="Voice 1")
     >>> handler = evans.GettatoHandler(
@@ -1313,7 +1321,7 @@ class GettatoHandler(object):
         )
 
 
-class GlissandoHandler(object):
+class GlissandoHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.GlissandoHandler(
@@ -1457,7 +1465,7 @@ class GlissandoHandler(object):
         return abjad.OrderedDict([("count", self.boolean_vector.state())])
 
 
-class GraceHandler(object):
+class GraceHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = GraceHandler(
@@ -1607,7 +1615,7 @@ class GraceHandler(object):
         )
 
 
-class NoteheadHandler(object):
+class NoteheadHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.NoteheadHandler(
@@ -1730,7 +1738,7 @@ class NoteheadHandler(object):
         )
 
 
-class PitchHandler(object):
+class PitchHandler(Handler):
     r"""
     >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.PitchHandler(
@@ -1762,9 +1770,6 @@ class PitchHandler(object):
 
     def __call__(self, selections):
         self._apply_pitches(selections)
-
-    def __str__(self):
-        return "evans.PitchHandler()"
 
     def _collect_pitches_durations_leaves(self, logical_ties):
         pitches, durations, leaves = [[], [], []]
@@ -1809,7 +1814,7 @@ class PitchHandler(object):
         return abjad.OrderedDict([("count", self._cyc_pitches.state())])
 
 
-class RhythmHandler(object):
+class RhythmHandler(Handler):
     def __init__(self, rmaker, continuous=False, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker
         self.continuous = continuous
@@ -1845,7 +1850,7 @@ class RhythmHandler(object):
         return abjad.OrderedDict([("state", self.rmaker.state)])
 
 
-class SlurHandler(object):
+class SlurHandler(Handler):
     r"""
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.SlurHandler()
@@ -1904,7 +1909,7 @@ class SlurHandler(object):
         return abjad.OrderedDict([("count", self.boolean_vector.state())])
 
 
-class TempoSpannerHandler(object):
+class TempoSpannerHandler(Handler):
     r"""
     >>> s = abjad.Staff("s4 s4 s4 s4")
     >>> handler = TempoSpannerHandler(
@@ -2008,7 +2013,7 @@ class TempoSpannerHandler(object):
         return abjad.OrderedDict([("count", self.boolean_vector.state())])
 
 
-class TextSpanHandler(object):
+class TextSpanHandler(Handler):
     def __init__(
         self,
         span_one_positions=None,
@@ -2307,7 +2312,7 @@ class TextSpanHandler(object):
         )
 
 
-class TrillHandler(object):
+class TrillHandler(Handler):
     r"""
     >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
     >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
