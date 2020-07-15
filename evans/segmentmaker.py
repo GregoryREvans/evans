@@ -4,8 +4,9 @@ import os
 
 import abjad
 import tsmakers
+from abjadext import rmakers
 
-from . import consort_reviv
+from . import consort_reviv, handlers
 
 
 class NoteheadBracketMaker(object):
@@ -388,32 +389,46 @@ class SegmentMaker(object):
 
         print("Interpreting file ...")
 
-        global_timespan = abjad.Timespan(
+        global_timespan = tsmakers.SilentTimespan(
             start_offset=0,
             stop_offset=max(_.stop_offset for _ in self.rhythm_timespans),
+        )
+
+        silence_maker = handlers.RhythmHandler(
+            rmakers.stack(
+                rmakers.NoteRhythmMaker(),
+                rmakers.force_rest(abjad.select().leaves(pitched=True)),
+            ),
+            name="silence_maker",
         )
 
         def key_function(timespan):
             return timespan.voice_name
 
-        for voice_name, timespan_list in itertools.groupby(
-            self.rhythm_timespans, key=key_function
-        ):
-            timespan_list = abjad.TimespanList([_ for _ in timespan_list])
+        voice_names = set(span.voice_name for span in self.rhythm_timespans)
+
+        for voice_name in sorted(voice_names):
+            timespan_list = abjad.TimespanList(
+                [
+                    span
+                    for span in self.rhythm_timespans
+                    if span.voice_name == voice_name
+                ]
+            )
             silences = abjad.TimespanList([global_timespan])
-            silences.extend(timespan_list)
-            silences.sort()
-            silences.compute_logical_xor()
-            for silence_timespan in silences:
-                self.rhythm_timespans.append(
-                    tsmakers.PerformedTimespan(
-                        start_offset=silence_timespan.start_offset,
-                        stop_offset=silence_timespan.stop_offset,
-                        handler=None,
-                        voice_name=voice_name,
-                    )
+            for timespan in timespan_list:
+                silences -= timespan
+            silent_timespan_silences = abjad.TimespanList()
+            for _ in silences:
+                new_span = tsmakers.SilentTimespan(
+                    _.start_offset,
+                    _.stop_offset,
+                    voice_name=voice_name,
+                    handler=silence_maker,
                 )
-            timespan_list.sort()
+                silent_timespan_silences.append(new_span)
+            self.rhythm_timespans.extend(silent_timespan_silences)
+            self.rhythm_timespans.sort()
 
         for time_signature in self.time_signatures:
             skip = abjad.Skip(1, multiplier=(time_signature))
