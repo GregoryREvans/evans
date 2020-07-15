@@ -3,8 +3,9 @@ import itertools
 import os
 
 import abjad
+import tsmakers
 
-from . import consort_reviv, timespan
+from . import consort_reviv
 
 
 class NoteheadBracketMaker(object):
@@ -338,65 +339,35 @@ class SegmentMaker(object):
 
     def _call_handlers(self):
         print("Calling handlers ...")
-        # handler_to_value = abjad.OrderedDict()
-        # voice_collections = abjad.OrderedDict()
-        # global_collection = consort_reviv.LogicalTieCollection()
-        # for tie in abjad.select(self.score_template["Global Context"]).logical_ties():
-        #     global_collection.insert(tie)
-        # voice_collections["Global Context"] = global_collection
-        # for voice in abjad.select(self.score_template).components(abjad.Voice):
-        #     collection = consort_reviv.LogicalTieCollection()
-        #     for tie in abjad.select(voice).logical_ties():
-        #         collection.insert(tie)
-        #     voice_collections[voice.name] = collection
-        # for ts_list in self.handler_timespans:
-        #     for target_timespan in ts_list:
-        #         print(abjad.storage(target_timespan))
-        #         print(str(target_timespan.handler))
-        #         voice_tie_collection = voice_collections[target_timespan.voice_name]
-        #         selection = abjad.Selection(
-        #             [
-        #                 _
-        #                 for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-        #                     target_timespan
-        #                 )
-        #             ]
-        #         )
-        #         if not selection:
-        #             continue
-        #         print(selection)
-        #         handler = target_timespan.handler
-        #         print(abjad.storage(handler))
-        #         handler(selection)
-        #         handler_to_value[handler.name] = handler.state()
-        # with open(f"{self.current_directory}/.handlers.py", "w") as fp:
-        #     handler_to_value_format = format(handler_to_value)
-        #     string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
-        #     fp.writelines(string)
-
         handler_to_value = abjad.OrderedDict()
-        for t_list in self.handler_timespans:
-            for voice_name, sub_timespan_list in t_list.items():
-                voice_tie_selection = abjad.select(
-                    self.score_template[voice_name]
-                ).logical_ties()
-                voice_tie_collection = consort_reviv.LogicalTieCollection()
-                for tie in voice_tie_selection:
-                    voice_tie_collection.insert(tie)
-                for target_timespan in sub_timespan_list:
-                    selection = abjad.Selection(
-                        [
-                            _
-                            for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-                                target_timespan
-                            )
-                        ]
-                    )
-                    if not selection:
-                        continue
-                    handler = target_timespan.annotation.handler
-                    handler(selection)
-                    handler_to_value[handler.name] = handler.state()
+        for ts_list in self.handler_timespans:
+            voice_collections = abjad.OrderedDict()
+            global_collection = consort_reviv.LogicalTieCollection()
+            for tie in abjad.select(
+                self.score_template["Global Context"]
+            ).logical_ties():
+                global_collection.insert(tie)
+            voice_collections["Global Context"] = global_collection
+            for voice in abjad.select(self.score_template).components(abjad.Voice):
+                collection = consort_reviv.LogicalTieCollection()
+                for tie in abjad.select(voice).logical_ties():
+                    collection.insert(tie)
+                voice_collections[voice.name] = collection
+            for target_timespan in ts_list:
+                voice_tie_collection = voice_collections[target_timespan.voice_name]
+                selection = abjad.Selection(
+                    [
+                        _
+                        for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
+                            target_timespan
+                        )
+                    ]
+                )
+                if not selection:
+                    continue
+                handler = target_timespan.handler
+                handler(selection)
+                handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
             handler_to_value_format = format(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
@@ -419,22 +390,27 @@ class SegmentMaker(object):
 
         global_timespan = abjad.Timespan(
             start_offset=0,
-            stop_offset=max(_.stop_offset for _ in self.rhythm_timespans.values()),
+            stop_offset=max(_.stop_offset for _ in self.rhythm_timespans),
         )
 
-        for voice_name, timespan_list in self.rhythm_timespans.items():
+        def key_function(timespan):
+            return timespan.voice_name
+
+        for voice_name, timespan_list in itertools.groupby(
+            self.rhythm_timespans, key=key_function
+        ):
+            timespan_list = abjad.TimespanList([_ for _ in timespan_list])
             silences = abjad.TimespanList([global_timespan])
             silences.extend(timespan_list)
             silences.sort()
             silences.compute_logical_xor()
             for silence_timespan in silences:
-                timespan_list.append(
-                    abjad.AnnotatedTimespan(
+                self.rhythm_timespans.append(
+                    tsmakers.PerformedTimespan(
                         start_offset=silence_timespan.start_offset,
                         stop_offset=silence_timespan.stop_offset,
-                        annotation=timespan.TimespanSpecifier(
-                            handler=None, voice_name=voice_name
-                        ),
+                        handler=None,
+                        voice_name=voice_name,
                     )
                 )
             timespan_list.sort()
@@ -448,8 +424,11 @@ class SegmentMaker(object):
 
         print("Making containers ...")
 
-        def key_function(timespan):
-            return timespan.annotation.handler  # or silence_maker
+        def handler_key_function(timespan):
+            return timespan.handler
+
+        def voice_key_function(timespan):
+            return timespan.voice_name
 
         def make_container(handler, durations):
             selections = handler(durations)
@@ -457,18 +436,22 @@ class SegmentMaker(object):
             container.extend(selections)
             return container
 
-        for voice_name, timespan_list in self.rhythm_timespans.items():
-            handler_to_value = abjad.OrderedDict()
-            for handler, grouper in itertools.groupby(timespan_list, key=key_function):
-                durations = [timespan.duration for timespan in grouper]
+        handler_to_value = abjad.OrderedDict()
+        for voice_name, grouper in itertools.groupby(
+            self.rhythm_timespans, key=voice_key_function
+        ):
+            for handler, grouper_ in itertools.groupby(
+                grouper, key=handler_key_function
+            ):
+                durations = [timespan.duration for timespan in grouper_]
                 container = make_container(handler, durations)
                 voice = self.score_template[voice_name]
                 voice.append(container[:])
                 handler_to_value[handler.name] = handler.return_state()
-            with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
-                handler_to_value_format = format(handler_to_value)
-                string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
-                fp.writelines(string)
+        with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
+            handler_to_value_format = format(handler_to_value)
+            string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
+            fp.writelines(string)
 
     def _make_mm_rests(self):
 
