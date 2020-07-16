@@ -1,4 +1,3 @@
-from .ConvertTimespans import ConvertTimespans
 from .commands import Command, attach, detach, replace
 from .consort_reviv import (
     LogicalTieCollection,
@@ -104,7 +103,6 @@ __all__ = [
     "BisbigliandoHandler",
     "ClefHandler",
     "Command",
-    "ConvertTimespans",
     "CyclicList",
     "DynamicHandler",
     "GettatoHandler",
