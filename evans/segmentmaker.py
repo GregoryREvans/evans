@@ -352,8 +352,13 @@ class SegmentMaker(object):
 
     def _call_handlers(self):
         print("Calling handlers ...")
+
+        def voice_key_function(timespan):
+            return timespan.voice_name
+
         handler_to_value = abjad.OrderedDict()
         for ts_list in self.handler_timespans:
+            voice_names = sorted(set(voice_key_function(_) for _ in ts_list))
             voice_collections = abjad.OrderedDict()
             global_collection = consort_reviv.LogicalTieCollection()
             for tie in abjad.select(
@@ -366,21 +371,26 @@ class SegmentMaker(object):
                 for tie in abjad.select(voice).logical_ties():
                     collection.insert(tie)
                 voice_collections[voice.name] = collection
-            for target_timespan in ts_list:
-                voice_tie_collection = voice_collections[target_timespan.voice_name]
-                selection = abjad.Selection(
-                    [
-                        _
-                        for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-                            target_timespan
+            for v_name in voice_names:
+                print(v_name)
+                for target_timespan in ts_list:
+                    if target_timespan.voice_name == v_name:
+                        voice_tie_collection = voice_collections[
+                            target_timespan.voice_name
+                        ]
+                        selection = abjad.Selection(
+                            [
+                                _
+                                for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
+                                    target_timespan
+                                )
+                            ]
                         )
-                    ]
-                )
-                if not selection:
-                    continue
-                handler = target_timespan.handler
-                handler(selection)
-                handler_to_value[handler.name] = handler.state()
+                        if not selection:
+                            continue
+                        handler = target_timespan.handler
+                        handler(selection)
+                        handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
             handler_to_value_format = format(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
@@ -463,14 +473,18 @@ class SegmentMaker(object):
             container.extend(selections)
             return container
 
+        voice_names = sorted(set(voice_key_function(_) for _ in self.rhythm_timespans))
+
         handler_to_value = abjad.OrderedDict()
-        for voice_name, grouper in itertools.groupby(
-            self.rhythm_timespans, key=voice_key_function
-        ):
-            for handler, grouper_ in itertools.groupby(
-                grouper, key=handler_key_function
+        for voice_name in voice_names:
+            print(voice_name)
+            voice_spans = abjad.TimespanList(
+                [_ for _ in self.rhythm_timespans if _.voice_name == voice_name]
+            )
+            for handler, grouper in itertools.groupby(
+                voice_spans, key=handler_key_function
             ):
-                durations = [timespan.duration for timespan in grouper_]
+                durations = [timespan.duration for timespan in grouper]
                 container = make_container(handler, durations)
                 voice = self.score_template[voice_name]
                 voice.append(container[:])
