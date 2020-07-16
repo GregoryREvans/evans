@@ -30,7 +30,7 @@ class Command(object):
         ... )
         ...
         >>> command(score)
-        >>> abjad.f(score)
+        >>> print(abjad.lilypond(score))
         \new Score
         <<
             \context Staff = "staff one"

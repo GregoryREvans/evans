@@ -19,7 +19,7 @@ class NoteheadBracketMaker(object):
     >>> staff.append(tuplet_2)
     >>> new_brackets = NoteheadBracketMaker()
     >>> b = new_brackets(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) "4")
@@ -747,7 +747,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
     ...     staff.append(_)
     ...
     >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         \override Staff.Stem.stemlet-length = 0.75

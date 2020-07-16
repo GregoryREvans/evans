@@ -13,9 +13,9 @@ durations = [timespan.duration for timespan in ts_list]
 print(durations)
 
 staff = abjad.Staff("c'4")
-abjad.f(staff)
+print(abjad.lilypond(staff))
 leaves = staff[:]
 
 abjad.mutate(leaves).split(durations, tie_split_notes=False)
 
-abjad.f(staff)
+print(abjad.lilypond(staff))

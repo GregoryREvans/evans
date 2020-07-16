@@ -54,14 +54,14 @@ class AddSpannerAnchor(object):
 # anchor_maker1.add_spanner_anchor()
 # anchor_maker2 = AddSpannerAnchor(leaf=staff[0], anchor_dur=abjad.Duration(1, 16))
 # anchor_maker2.add_spanner_anchor()
-# abjad.f(staff)
+# print(abjad.lilypond(staff))
 #
 # #DEMO 2#
 # staff = abjad.Staff("cs'4")
 # a_leaf = abjad.Note("c'16")
 # maker = AddSpannerAnchor(leaf=staff[0], anchor_leaf=a_leaf)
 # maker.add_spanner_anchor()
-# abjad.f(staff)
+# print(abjad.lilypond(staff))
 #
 # DEMO 3#
 staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 r8 c'8 c'4 r1")
@@ -85,7 +85,7 @@ for run in abjad.select(selections).runs():
     print("TIE -1")
     print(new_ties[-1])
     handler(new_ties)
-abjad.f(staff)
+print(abjad.lilypond(staff))
 
 
 # WHY DOES THE SPANNER ANCHOR ONLY EXIST AS A NOTE WITH NO LOGICAL TIE?

@@ -70,7 +70,7 @@ class TimespanMaker(object):
     ...
     >>> counts = [3, 5, -3, 4, 7, -1]
     >>> timespan_list = timespan_maker(counts, max_duration=6)
-    >>> abjad.f(timespan_list)
+    >>> print(abjad.storage(timespan_list))
     abjad.TimespanList(
         [
             abjad.AnnotatedTimespan(

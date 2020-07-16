@@ -123,7 +123,7 @@ class RTMMaker(object):
     >>> selections = maker(divisions)
     >>> staff = abjad.Staff()
     >>> staff.extend(selections)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'2

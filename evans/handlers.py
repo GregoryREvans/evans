@@ -25,7 +25,7 @@ class ArticulationHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -120,7 +120,7 @@ class BendHandler(Handler):
     ...     vector_continuous=True,
     ... )
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -202,7 +202,7 @@ class BisbigliandoHandler(Handler):
     ... continuous=True,
     ... )
     >>> handler(s[:-1])
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
      \new Staff
     {
         c''4
@@ -642,7 +642,7 @@ class DynamicHandler(Handler):
     >>> second_group = staff[2:]
     >>> handler(first_group)
     >>> handler(second_group)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -1032,7 +1032,7 @@ class GettatoHandler(Handler):
     ...     actions=["throw", "drop"],
     ... )
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \context Voice = "Voice 1"
     {
         <<
@@ -1331,7 +1331,7 @@ class GlissandoHandler(Handler):
     ...     apply_to="runs",
     ... )
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -1474,7 +1474,7 @@ class GraceHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(staff[:])
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -1628,7 +1628,7 @@ class NoteheadHandler(Handler):
     ...     continuous=False,
     ... )
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         \tweak NoteHead.style #'default
@@ -1746,7 +1746,7 @@ class PitchHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(abjad.select(s).logical_ties())
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
     \new Staff
     {
         cs'4
@@ -1761,7 +1761,7 @@ class PitchHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(abjad.select(s).logical_ties())
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
     \new Staff
     {
         cs'4
@@ -1778,7 +1778,7 @@ class PitchHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(abjad.select(s).logical_ties())
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
     \new Staff
     {
         c'4
@@ -1796,7 +1796,7 @@ class PitchHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(abjad.select(s).logical_ties())
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
     \new Staff
     {
         c'4
@@ -1935,7 +1935,7 @@ class SlurHandler(Handler):
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.SlurHandler()
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'4
@@ -2000,7 +2000,7 @@ class TempoSpannerHandler(Handler):
     ...     continuous=True,
     ... )
     >>> handler(s[:-1])
-    >>> abjad.f(s)
+    >>> print(abjad.lilypond(s))
     \new Staff
     {
         s4
@@ -2397,7 +2397,7 @@ class TrillHandler(Handler):
     >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
     >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
     >>> handler(staff)
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         <c' d'>4

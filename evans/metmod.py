@@ -43,7 +43,7 @@ def metric_modulation(
     ...
     >>> staff = abjad.Staff("c'1")
     >>> abjad.attach(m, staff[0])
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'1
@@ -69,7 +69,7 @@ def metric_modulation(
     ...
     >>> staff = abjad.Staff("c'1")
     >>> abjad.attach(m, staff[0])
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'1
@@ -95,7 +95,7 @@ def metric_modulation(
     ...
     >>> staff = abjad.Staff("c'1")
     >>> abjad.attach(m, staff[0])
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'1
@@ -121,7 +121,7 @@ def metric_modulation(
     ...
     >>> staff = abjad.Staff("c'1")
     >>> abjad.attach(m, staff[0])
-    >>> abjad.f(staff)
+    >>> print(abjad.lilypond(staff))
     \new Staff
     {
         c'1

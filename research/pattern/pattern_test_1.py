@@ -17,7 +17,7 @@ import abjad
 # pattern_1 = abjad.index_first(3)
 # pattern_2 = abjad.index_last(3)
 # pattern = pattern_1 & pattern_2
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -25,7 +25,7 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 & pattern_2 & pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -33,29 +33,29 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 & pattern_2 | pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
 # pattern = abjad.index_first(3)
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # pattern = ~pattern
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
 # pattern_1 = abjad.index_first(3)
 # pattern_2 = abjad.index_last(3)
 # pattern = pattern_1 | pattern_2
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
 # pattern_1 = abjad.index_first(3)
 # pattern_2 = abjad.index_last(3)
 # pattern = pattern_1 | pattern_2
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -63,7 +63,7 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 | pattern_2 | pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -71,14 +71,14 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 | pattern_2 & pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
 # pattern_1 = abjad.index_first(3)
 # pattern_2 = abjad.index_last(3)
 # pattern = pattern_1 ^ pattern_2
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -86,7 +86,7 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 ^ pattern_2 ^ pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -94,7 +94,7 @@ import abjad
 # pattern_2 = abjad.index_last(3)
 # pattern_3 = abjad.index([0], 2)
 # pattern = pattern_1 ^ pattern_2 & pattern_3
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
@@ -117,13 +117,13 @@ import abjad
 #     period=8,
 #     )
 # pattern = pattern.rotate(n=2)
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
 # pattern = [1, 0, 0, 1, 1]
 # pattern = abjad.Pattern.from_vector(pattern)
-# abjad.f(pattern)
+# abjad.lilypond(pattern)
 #
 # ###
 #
