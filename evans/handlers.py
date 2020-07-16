@@ -1755,17 +1755,87 @@ class PitchHandler(Handler):
         e'4
     }
 
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[1, [2, 3], 4],
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> abjad.f(s)
+    \new Staff
+    {
+        cs'4
+        <d' ef'>4
+        e'4
+        cs'4
+    }
+
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[0, 1, 2.5, 3, 4, 5.5],
+    ...     chord_boolean_vector=[0, 1, 1],
+    ...     chord_groups=[2, 4],
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> abjad.f(s)
+    \new Staff
+    {
+        c'4
+        <cs' dqs'>4
+        <c' ef' e' fqs'>4
+        cs'4
+    }
+
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[0, 1, 1, 3, 4, 5.5],
+    ...     allow_chord_duplicates=True,
+    ...     chord_boolean_vector=[0, 1, 1],
+    ...     chord_groups=[2, 4],
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> abjad.f(s)
+    \new Staff
+    {
+        c'4
+        <cs' cs'>4
+        <c' ef' e' fqs'>4
+        cs'4
+    }
+
     """
 
     def __init__(
-        self, pitch_list=None, continuous=False, count=-1, name="Pitch Handler"
+        self,
+        pitch_list=None,
+        allow_chord_duplicates=False,
+        chord_boolean_vector=[0],
+        chord_groups=None,
+        continuous=False,
+        pitch_count=-1,
+        chord_boolean_count=-1,
+        chord_groups_count=-1,
+        name="Pitch Handler",
     ):
         self.pitch_list = pitch_list
+        self.allow_chord_duplicates = allow_chord_duplicates
+        self.chord_boolean_vector = chord_boolean_vector
+        self.chord_groups = chord_groups
         self.continuous = continuous
         self.name = name
-        self._count = count
+        self._pitch_count = pitch_count
+        self._chord_boolean_count = chord_boolean_count
+        self._chord_groups_count = chord_groups_count
         self._cyc_pitches = sequence.CyclicList(
-            self.pitch_list, self.continuous, self._count
+            self.pitch_list, self.continuous, self._pitch_count
+        )
+        self._cyc_chord_boolean_vector = sequence.CyclicList(
+            self.chord_boolean_vector, self.continuous, self._chord_boolean_count
+        )
+        self._cyc_chord_groups = sequence.CyclicList(
+            self.chord_groups, self.continuous, self._chord_groups_count
         )
 
     def __call__(self, selections):
@@ -1773,26 +1843,30 @@ class PitchHandler(Handler):
 
     def _collect_pitches_durations_leaves(self, logical_ties):
         pitches, durations, leaves = [[], [], []]
-        for tie in logical_ties:
-            if isinstance(tie[0], abjad.Note):
-                pitch = self._cyc_pitches(r=1)[0]
-                for leaf in tie:
-                    if isinstance(pitch, list):
+        ties_ = logical_ties
+        if self.chord_groups is not None:
+            pitches_ = []
+            bools = self._cyc_chord_boolean_vector(r=len(ties_))
+            for tie, bool in zip(ties_, bools):
+                if 0 < bool:
+                    pitches_.append(self._cyc_pitches(r=self._cyc_chord_groups(r=1)[0]))
+                else:
+                    pitches_.append(self._cyc_pitches(r=1)[0])
+        else:
+            pitches_ = self._cyc_pitches(r=len(ties_))
+        for tie, pitch in zip(ties_, pitches_):
+            for leaf in tie:
+                if isinstance(pitch, list):
+                    if self.allow_chord_duplicates is False:
                         pitch = list(set(pitch))
-                    pitches.append(pitch)
-                    durations.append(leaf.written_duration)
-                    leaves.append(leaf)
-            else:
-                continue
+                pitches.append(pitch)
+                durations.append(leaf.written_duration)
+                leaves.append(leaf)
         return pitches, durations, leaves
 
     def _apply_pitches(self, selections):
         leaf_maker = abjad.LeafMaker()
-        old_ties = [
-            tie
-            for tie in abjad.iterate(selections).logical_ties()
-            if isinstance(tie[0], abjad.Note)
-        ]
+        old_ties = [tie for tie in abjad.iterate(selections).logical_ties(pitched=True)]
         if len(old_ties) > 0:
             pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
                 old_ties
@@ -1811,7 +1885,13 @@ class PitchHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict([("count", self._cyc_pitches.state())])
+        return abjad.OrderedDict(
+            [
+                ("pitch_count", self._cyc_pitches.state()),
+                ("chord_boolean_count", self._cyc_chord_boolean_vector.state()),
+                ("chord_groups_count", self._cyc_chord_groups.state()),
+            ]
+        )
 
 
 class RhythmHandler(Handler):

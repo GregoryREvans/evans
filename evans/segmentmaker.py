@@ -339,7 +339,7 @@ class SegmentMaker(object):
             persistent_attachments = abjad.inspect(penultimate_rest).indicators()
             info[f"Voice {i + 1}"] = persistent_attachments
         with open(f"{self.current_directory}/.persistent.py", "w") as fp:
-            info_format = format(info)
+            info_format = abjad.storage(info)
             string = f"import abjad\ninfo = {info_format}"
             fp.writelines(string)
 
@@ -391,7 +391,7 @@ class SegmentMaker(object):
                         handler(selection)
                         handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
-            handler_to_value_format = format(handler_to_value)
+            handler_to_value_format = abjad.storage(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
             fp.writelines(string)
 
@@ -488,7 +488,7 @@ class SegmentMaker(object):
                 voice.append(container[:])
                 handler_to_value[handler.name] = handler.return_state()
         with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
-            handler_to_value_format = format(handler_to_value)
+            handler_to_value_format = abjad.storage(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
             fp.writelines(string)
 
