@@ -372,7 +372,6 @@ class SegmentMaker(object):
                     collection.insert(tie)
                 voice_collections[voice.name] = collection
             for v_name in voice_names:
-                print(v_name)
                 for target_timespan in ts_list:
                     if target_timespan.voice_name == v_name:
                         voice_tie_collection = voice_collections[
@@ -477,7 +476,6 @@ class SegmentMaker(object):
 
         handler_to_value = abjad.OrderedDict()
         for voice_name in voice_names:
-            print(voice_name)
             voice_spans = abjad.TimespanList(
                 [_ for _ in self.rhythm_timespans if _.voice_name == voice_name]
             )
