@@ -3,13 +3,13 @@ import abjad
 
 class Command(object):
     def __init__(
-        self, command=None, contents=None, indicator=None, selector=None, voice=None,
+        self, command=None, contents=None, indicator=None, selector=None, voice_name=None,
     ):
         self.command = command
         self.contents = contents
         self.indicator = indicator
         self.selector = selector
-        self.voice = voice
+        self.voice_name = voice_name
 
     def __str__(self):
         return abjad.storage(self)
@@ -44,7 +44,7 @@ class Command(object):
         >>
 
         """
-        voice = score[self.voice]
+        voice = score[self.voice_name]
         if self.command == "attach":
             abjad.attach(self.indicator, self.selector(voice))
         elif self.command == "detach":
@@ -63,23 +63,47 @@ class Command(object):
         abjad.mutate(abjad.select(target).leaves()).replace(contents[:])
 
 
-def attach(voice, indicator, selector=None):
+def attach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="attach", indicator=indicator, selector=selector, voice=voice
+        command="attach",
+        indicator=indicator,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 
-def detach(voice, indicator, selector=None):
+def detach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="detach", indicator=indicator, selector=selector, voice=voice
+        command="detach",
+        indicator=indicator,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 
-def replace(voice, contents, selector=None):
+def replace(voice_name, contents, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
-    return Command(command="replace", contents=contents, selector=selector, voice=voice)
+    return Command(
+        command="replace",
+        contents=contents,
+        selector=selector,
+        voice_name=voice_name,
+    )
+
+
+class HandlerCommand(object):
+    def __init__(self, voice_name, timespan, handler):
+        self.voice_name = voice_name
+        self.timespan = timespan
+        self.handler = handler
+
+class RhythmCommand(object):
+    def __init__(self, voice_name, timespan, handler):
+        self.voice_name = voice_name
+        self.timespan = timespan
+        self.handler = handler

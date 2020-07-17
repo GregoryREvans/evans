@@ -1,4 +1,4 @@
-from .commands import Command, attach, detach, replace
+from .commands import Command, HandlerCommand, RhythmCommand, attach, detach, replace
 from .consort_reviv import (
     LogicalTieCollection,
     RatioPartsExpression,
@@ -98,6 +98,8 @@ from .timespan import (
 )
 
 __all__ = [
+    "RhythmCommand",
+    "HandlerCommand",
     "ArticulationHandler",
     "BendHandler",
     "BisbigliandoHandler",
