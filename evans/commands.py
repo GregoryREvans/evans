@@ -3,7 +3,12 @@ import abjad
 
 class Command(object):
     def __init__(
-        self, command=None, contents=None, indicator=None, selector=None, voice_name=None,
+        self,
+        command=None,
+        contents=None,
+        indicator=None,
+        selector=None,
+        voice_name=None,
     ):
         self.command = command
         self.contents = contents
@@ -26,7 +31,7 @@ class Command(object):
         ...     command="attach",
         ...     indicator=abjad.Markup("*", direction="up"),
         ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
-        ...     voice="staff one"
+        ...     voice_name="staff one"
         ... )
         ...
         >>> command(score)
@@ -67,10 +72,7 @@ def attach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="attach",
-        indicator=indicator,
-        selector=selector,
-        voice_name=voice_name,
+        command="attach", indicator=indicator, selector=selector, voice_name=voice_name,
     )
 
 
@@ -78,10 +80,7 @@ def detach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="detach",
-        indicator=indicator,
-        selector=selector,
-        voice_name=voice_name,
+        command="detach", indicator=indicator, selector=selector, voice_name=voice_name,
     )
 
 
@@ -89,10 +88,7 @@ def replace(voice_name, contents, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="replace",
-        contents=contents,
-        selector=selector,
-        voice_name=voice_name,
+        command="replace", contents=contents, selector=selector, voice_name=voice_name,
     )
 
 
@@ -101,6 +97,7 @@ class HandlerCommand(object):
         self.voice_name = voice_name
         self.timespan = timespan
         self.handler = handler
+
 
 class RhythmCommand(object):
     def __init__(self, voice_name, timespan, handler):

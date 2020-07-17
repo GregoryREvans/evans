@@ -3,7 +3,6 @@ import itertools
 import os
 
 import abjad
-import tsmakers
 from abjadext import rmakers
 
 from . import consort_reviv, handlers
@@ -80,14 +79,12 @@ class SegmentMaker(object):
         cutaway=True,
         fermata="scripts.ushortfermata",
         handler_commands=None,
-        handler_timespans=None,
         instruments=None,
         names=None,
         name_staves=True,
         page_break_counts=None,
         rehearsal_mark=None,
         rhythm_commands=None,
-        rhythm_timespans=None,
         score_includes=None,
         score_template=None,
         segment_name=None,
@@ -107,14 +104,12 @@ class SegmentMaker(object):
         self.cutaway = cutaway
         self.fermata = fermata
         self.handler_commands = handler_commands
-        self.handler_timespans = handler_timespans
         self.instruments = instruments
         self.names = names
         self.name_staves = name_staves
         self.page_break_counts = page_break_counts
         self.rehearsal_mark = rehearsal_mark
         self.rhythm_commands = rhythm_commands
-        self.rhythm_timespans = rhythm_timespans
         self.score_includes = score_includes
         self.score_template = score_template
         self.segment_name = segment_name
@@ -129,7 +124,6 @@ class SegmentMaker(object):
         return abjad.storage(self)
 
     def _add_attachments(self):
-
         print("Adding attachments ...")
         last_voice = abjad.select(self.score_template).components(abjad.Voice)[-1]
         colophon_leaf = abjad.select(last_voice).leaves()[-2]
@@ -214,9 +208,7 @@ class SegmentMaker(object):
             handler(voice)
 
     def _add_ending_skips(self):
-
         print("Adding ending skips ...")
-
         last_skip = abjad.select(self.score_template["Global Context"]).leaves()[-1]
         override_command = abjad.LilyPondLiteral(
             r"\once \override TimeSignature.color = #white", format_slot="before"
@@ -357,52 +349,6 @@ class SegmentMaker(object):
 
     def _call_handlers(self):
         print("Calling handlers ...")
-
-        def voice_key_function(timespan):
-            return timespan.voice_name
-
-        handler_to_value = abjad.OrderedDict()
-        for ts_list in self.handler_timespans:
-            voice_names = sorted(set(voice_key_function(_) for _ in ts_list))
-            voice_collections = abjad.OrderedDict()
-            global_collection = consort_reviv.LogicalTieCollection()
-            for tie in abjad.select(
-                self.score_template["Global Context"]
-            ).logical_ties():
-                global_collection.insert(tie)
-            voice_collections["Global Context"] = global_collection
-            for voice in abjad.select(self.score_template).components(abjad.Voice):
-                collection = consort_reviv.LogicalTieCollection()
-                for tie in abjad.select(voice).logical_ties():
-                    collection.insert(tie)
-                voice_collections[voice.name] = collection
-            for v_name in voice_names:
-                for target_timespan in ts_list:
-                    if target_timespan.voice_name == v_name:
-                        voice_tie_collection = voice_collections[
-                            target_timespan.voice_name
-                        ]
-                        selection = abjad.Selection(
-                            [
-                                _
-                                for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-                                    target_timespan
-                                )
-                            ]
-                        )
-                        if not selection:
-                            continue
-                        handler = target_timespan.handler
-                        handler(selection)
-                        handler_to_value[handler.name] = handler.state()
-        with open(f"{self.current_directory}/.handlers.py", "w") as fp:
-            handler_to_value_format = abjad.storage(handler_to_value)
-            string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
-            fp.writelines(string)
-
-    def _call_handler_commands(self):
-
-        print("Calling handlers ...")
         handler_to_value = abjad.OrderedDict()
         for command_list in self.handler_commands:
             voice_names = sorted(set(_.voice_name for _ in command_list))
@@ -420,8 +366,7 @@ class SegmentMaker(object):
                 voice_collections[voice.name] = collection
             for v_name in voice_names:
                 voice_command_list = [
-                    command
-                    for command in command_list if command.voice_name == v_name
+                    command for command in command_list if command.voice_name == v_name
                 ]
                 voice_command_list.sort(key=lambda _: _.timespan)
                 for command in voice_command_list:
@@ -457,64 +402,11 @@ class SegmentMaker(object):
             abjad.attach(post_lit, voice)
 
     def _interpret_file(self):
-
         print("Interpreting file ...")
-
-        global_timespan = tsmakers.SilentTimespan(
-            start_offset=0,
-            stop_offset=max(_.stop_offset for _ in self.rhythm_timespans),
-        )
-
-        silence_maker = handlers.RhythmHandler(
-            rmakers.stack(
-                rmakers.NoteRhythmMaker(),
-                rmakers.force_rest(abjad.select().leaves(pitched=True)),
-            ),
-            name="silence_maker",
-        )
-
-        def key_function(timespan):
-            return timespan.voice_name
-
-        voice_names = set(span.voice_name for span in self.rhythm_timespans)
-
-        for voice_name in sorted(voice_names):
-            timespan_list = abjad.TimespanList(
-                [
-                    span
-                    for span in self.rhythm_timespans
-                    if span.voice_name == voice_name
-                ]
-            )
-            silences = abjad.TimespanList([global_timespan])
-            for timespan in timespan_list:
-                silences -= timespan
-            silent_timespan_silences = abjad.TimespanList()
-            for _ in silences:
-                new_span = tsmakers.SilentTimespan(
-                    _.start_offset,
-                    _.stop_offset,
-                    voice_name=voice_name,
-                    handler=silence_maker,
-                )
-                silent_timespan_silences.append(new_span)
-            self.rhythm_timespans.extend(silent_timespan_silences)
-            self.rhythm_timespans.sort()
-
-        for time_signature in self.time_signatures:
-            skip = abjad.Skip(1, multiplier=(time_signature))
-            abjad.attach(time_signature, skip, tag=abjad.Tag("scaling time signatures"))
-            self.score_template["Global Context"].append(skip)
-
-    def _interpret_file_from_rhythm_commands(self):
-
-        print("Interpreting file ...")
-
         global_timespan = abjad.Timespan(
             start_offset=0,
             stop_offset=max(_.timespan.stop_offset for _ in self.rhythm_commands),
         )
-
         silence_maker = handlers.RhythmHandler(
             rmakers.stack(
                 rmakers.NoteRhythmMaker(),
@@ -522,71 +414,23 @@ class SegmentMaker(object):
             ),
             name="silence_maker",
         )
-
         voice_names = sorted(set(_.voice_name for _ in self.rhythm_commands))
-
         for voice_name in voice_names:
             timespan_list = abjad.TimespanList(
-                [
-                    _.timespan
-                    for _ in self.rhythm_commands
-                    if _.voice_name == voice_name
-                ]
+                [_.timespan for _ in self.rhythm_commands if _.voice_name == voice_name]
             )
             silences = abjad.TimespanList([global_timespan])
             for timespan in timespan_list:
                 silences -= timespan
             for timespan in silences:
-                new_command = RhythmCommand(
-                    voice_name,
-                    timespan,
-                    silence_maker,
-                )
+                new_command = RhythmCommand(voice_name, timespan, silence_maker,)
                 self.rhythm_commands.append(new_command)
-
         for time_signature in self.time_signatures:
             skip = abjad.Skip(1, multiplier=(time_signature))
             abjad.attach(time_signature, skip, tag=abjad.Tag("scaling time signatures"))
             self.score_template["Global Context"].append(skip)
 
     def _make_containers(self):
-
-        print("Making containers ...")
-
-        def handler_key_function(timespan):
-            return timespan.handler
-
-        def voice_key_function(timespan):
-            return timespan.voice_name
-
-        def make_container(handler, durations):
-            selections = handler(durations)
-            container = abjad.Container([])
-            container.extend(selections)
-            return container
-
-        voice_names = sorted(set(voice_key_function(_) for _ in self.rhythm_timespans))
-
-        handler_to_value = abjad.OrderedDict()
-        for voice_name in voice_names:
-            voice_spans = abjad.TimespanList(
-                [_ for _ in self.rhythm_timespans if _.voice_name == voice_name]
-            )
-            for handler, grouper in itertools.groupby(
-                voice_spans, key=handler_key_function
-            ):
-                durations = [timespan.duration for timespan in grouper]
-                container = make_container(handler, durations)
-                voice = self.score_template[voice_name]
-                voice.append(container[:])
-                handler_to_value[handler.name] = handler.return_state()
-        with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
-            handler_to_value_format = abjad.storage(handler_to_value)
-            string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
-            fp.writelines(string)
-
-    def _make_containers_from_rhythm_commands(self):
-
         print("Making containers ...")
 
         def make_container(handler, durations):
@@ -596,10 +440,11 @@ class SegmentMaker(object):
             return container
 
         voice_names = sorted(set(_.voice_name for _ in self.rhythm_commands))
-
         handler_to_value = abjad.OrderedDict()
         for voice_name in voice_names:
-            voice_commands = [_ for _ in self.rhythm_commands if _.voice_name == voice_name]
+            voice_commands = [
+                _ for _ in self.rhythm_commands if _.voice_name == voice_name
+            ]
             voice_commands.sort(key=lambda _: _.timespan)
             for handler, grouper in itertools.groupby(
                 voice_commands, key=lambda _: _.handler
@@ -615,9 +460,7 @@ class SegmentMaker(object):
             fp.writelines(string)
 
     def _make_mm_rests(self):
-
         print("Making MM rests ...")
-
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
@@ -663,12 +506,9 @@ class SegmentMaker(object):
                     abjad.mutate(shard).replace(both_rests[:])
 
     def _remove_final_grand_pause(self):
-
         if self.add_final_grand_pause is True:
             return
-
         print("Removing final grand pause ...")
-
         for staff in abjad.select(self.score_template["Global Context"]).components(
             abjad.Staff
         ):
@@ -721,10 +561,6 @@ class SegmentMaker(object):
                 fp.writelines(lines)
 
     def _rewrite_meter(self):
-        # allow for barline-crossing keyword
-        # to either split and entire tuplet
-        # or just the barline-crossing leaf
-
         print("Rewriting meter ...")
         for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
@@ -836,17 +672,14 @@ class SegmentMaker(object):
 
     def build_segment(self):
         with abjad.Timer() as timer:
-            self._interpret_file_from_rhythm_commands()
-            # self._interpret_file()
-            self._make_containers_from_rhythm_commands()
-            # self._make_containers()
+            self._interpret_file()
+            self._make_containers()
             self._transform_brackets()
             self._rewrite_meter()
             self._add_ending_skips()
         self.pre_handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
-            self._call_handler_commands()
-            # self._call_handlers()
+            self._call_handlers()
         self.handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
             self._make_mm_rests()
