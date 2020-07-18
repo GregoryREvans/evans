@@ -388,7 +388,6 @@ class SegmentMaker(object):
                     handler = command.handler
                     handler(selection)
                     handler_to_value[handler.name] = handler.state()
-                abjad.f(self.score_template[v_name])
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
             handler_to_value_format = abjad.storage(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
