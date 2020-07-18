@@ -1,4 +1,12 @@
-from .commands import Command, HandlerCommand, RhythmCommand, attach, detach, replace, call
+from .commands import (
+    Command,
+    HandlerCommand,
+    RhythmCommand,
+    attach,
+    call,
+    detach,
+    replace,
+)
 from .consort_reviv import (
     LogicalTieCollection,
     RatioPartsExpression,
@@ -90,16 +98,17 @@ from .timespan import (
     add_silent_timespans,
     collect_offsets,
     human_sorted_keys,
+    intercalate_silences,
     make_showable_list,
     make_split_list,
     sorted_keys,
     talea_timespans,
     to_digit,
-    intercalate_silences,
 )
 
 __all__ = [
-    "call"
+    "intercalate_silences",
+    "call",
     "RhythmCommand",
     "HandlerCommand",
     "ArticulationHandler",

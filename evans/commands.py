@@ -100,6 +100,7 @@ def replace(voice_name, contents, selector=None):
         command="replace", contents=contents, selector=selector, voice_name=voice_name,
     )
 
+
 def call(voice_name, callable, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)

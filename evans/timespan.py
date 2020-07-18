@@ -3,6 +3,7 @@ import re
 
 import abjad
 from abjadext import rmakers
+
 from . import handlers
 from .commands import RhythmCommand
 
@@ -384,6 +385,7 @@ def human_sorted_keys(pair):
     values = [to_digit(_) for _ in key.split()]
     hashable_key = tuple(values)
     return hashable_key
+
 
 def intercalate_silences(rhythm_command_list):
     global_timespan = abjad.Timespan(
