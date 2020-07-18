@@ -387,7 +387,7 @@ def human_sorted_keys(pair):
     return hashable_key
 
 
-def intercalate_silences(rhythm_command_list):
+def intercalate_silences(rhythm_command_list, voice_names=None):
     global_timespan = abjad.Timespan(
         start_offset=0,
         stop_offset=max(_.timespan.stop_offset for _ in rhythm_command_list),
@@ -399,7 +399,8 @@ def intercalate_silences(rhythm_command_list):
         ),
         name="silence_maker",
     )
-    voice_names = sorted(set(_.voice_name for _ in rhythm_command_list))
+    if voice_names is None:
+        voice_names = sorted(set(_.voice_name for _ in rhythm_command_list))
     for voice_name in voice_names:
         timespan_list = abjad.TimespanList(
             [_.timespan for _ in rhythm_command_list if _.voice_name == voice_name]

@@ -58,11 +58,11 @@ class Command(object):
             voice = score[self.voice_name]
             selection = self.selector(voice)
         if self.command == "attach":
-            abjad.attach(self.indicator, self.selector(voice))
+            abjad.attach(self.indicator, selection)
         elif self.command == "call":
             self.callable(selection)
         elif self.command == "detach":
-            abjad.detach(self.indicator, self.selector(voice))
+            abjad.detach(self.indicator, selection)
         elif self.command == "replace":
             self._replace(voice, self.contents, self.selector)
         else:

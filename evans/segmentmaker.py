@@ -340,6 +340,10 @@ class SegmentMaker(object):
             elif group_type == HandlerCommand:
                 handler_group = [_ for _ in group]
                 self.call_handlers(handler_group)
+            elif group_type == str:
+                for s in group:
+                    if s == "skips":
+                        self._add_ending_skips()
             else:
                 for command in group:
                     command(self.score_template)
@@ -660,7 +664,6 @@ class SegmentMaker(object):
         self.pre_handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
             self._call_commands()
-            self._add_ending_skips()
         self.handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
             self._make_mm_rests()
