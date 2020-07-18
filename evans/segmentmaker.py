@@ -353,7 +353,7 @@ class SegmentMaker(object):
                 for command in group:
                     command(self.score_template)
 
-    def call_handlers(self, commands):
+    def call_handlers(self, commands): #bypasses grace notes?
         print("Calling handlers ...")
         handler_to_value = abjad.OrderedDict()
         voice_names = sorted(set(_.voice_name for _ in commands))

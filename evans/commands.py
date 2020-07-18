@@ -114,9 +114,21 @@ class HandlerCommand(object):
         self.timespan = timespan
         self.handler = handler
 
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
 
 class RhythmCommand(object):
     def __init__(self, voice_name, timespan, handler):
         self.voice_name = voice_name
         self.timespan = timespan
         self.handler = handler
+
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
