@@ -79,13 +79,11 @@ class SegmentMaker(object):
         current_directory=None,
         cutaway=True,
         fermata="scripts.ushortfermata",
-        handler_commands=None,
         instruments=None,
         names=None,
         name_staves=True,
         page_break_counts=None,
         rehearsal_mark=None,
-        rhythm_commands=None,
         score_includes=None,
         score_template=None,
         segment_name=None,
@@ -104,13 +102,11 @@ class SegmentMaker(object):
         self.current_directory = current_directory
         self.cutaway = cutaway
         self.fermata = fermata
-        self.handler_commands = handler_commands
         self.instruments = instruments
         self.names = names
         self.name_staves = name_staves
         self.page_break_counts = page_break_counts
         self.rehearsal_mark = rehearsal_mark
-        self.rhythm_commands = rhythm_commands
         self.score_includes = score_includes
         self.score_template = score_template
         self.segment_name = segment_name
