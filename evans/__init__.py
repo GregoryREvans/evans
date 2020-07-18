@@ -107,10 +107,6 @@ from .timespan import (
 )
 
 __all__ = [
-    "intercalate_silences",
-    "call",
-    "RhythmCommand",
-    "HandlerCommand",
     "ArticulationHandler",
     "BendHandler",
     "BisbigliandoHandler",
@@ -121,6 +117,7 @@ __all__ = [
     "GettatoHandler",
     "GlissandoHandler",
     "GraceHandler",
+    "HandlerCommand",
     "LogicalTieCollection",
     "MarkovChain",
     "NoteheadBracketMaker",
@@ -128,6 +125,7 @@ __all__ = [
     "PitchHandler",
     "RTMMaker",
     "RatioPartsExpression",
+    "RhythmCommand",
     "RhythmHandler",
     "SegmentMaker",
     "SilentTimespan",
@@ -145,6 +143,7 @@ __all__ = [
     "attach",
     "beam_meter",
     "calculate_metric_modulation",
+    "call",
     "collect_offsets",
     "combination_tones",
     "compare_speed",
@@ -161,6 +160,7 @@ __all__ = [
     "herz_combination_tone_ratios",
     "hexagonal_sequence",
     "human_sorted_keys",
+    "intercalate_silences",
     "josephus",
     "lindenmayer",
     "make_showable_list",

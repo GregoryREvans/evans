@@ -49,6 +49,14 @@ before_install:
     - cd $LOCATION
     - export MYPYPATH=$MYPYPATH:$RMAKERS
 
+    # clone & install microtones:
+    - MICROTONES=/tmp/abjad-ext-microtones
+    - git clone https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES
+    - cd $MICROTONES
+    - pip install -e $MICROTONES
+    - cd $LOCATION
+    - export MYPYPATH=$MYPYPATH:$MICROTONES
+
     # clone & install baca:
     - BACA=/tmp/baca
     - git clone https://github.com/trevorbaca/baca.git $BACA

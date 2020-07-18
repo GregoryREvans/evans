@@ -2,6 +2,7 @@ import statistics
 
 import abjad
 import quicktions
+from abjadext import microtones
 
 from . import sequence
 
@@ -1740,6 +1741,8 @@ class NoteheadHandler(Handler):
 
 class PitchHandler(Handler):
     r"""
+    >>> import fractions
+
     >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.PitchHandler(
     ...     pitch_list=[1, 2, 3, 4],
@@ -1803,6 +1806,46 @@ class PitchHandler(Handler):
         <cs' cs'>4
         <c' ef' e' fqs'>4
         cs'4
+    }
+
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[1, fractions.Fraction(9, 4), 3, 4],
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> print(abjad.lilypond(s))
+    \new Staff
+    {
+        cs'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-eighth-sharp-markup
+        d'4
+        ef'4
+        e'4
+    }
+
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[1, [fractions.Fraction(4, 3), 4], 5, fractions.Fraction(37, 6)],
+    ...     allow_chord_duplicates=True,
+    ...     continuous=True,
+    ... )
+    >>> handler(abjad.select(s).logical_ties())
+    >>> print(abjad.lilypond(s))
+    \new Staff
+    {
+        cs'4
+        <
+            \tweak Accidental.stencil #ly:text-interface::print
+            \tweak Accidental.text \one-third-flat-markup
+            df'
+            e'
+        >4
+        f'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \five-twelfths-flat-markup
+        gf'4
     }
 
     """
@@ -1871,7 +1914,35 @@ class PitchHandler(Handler):
             pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
                 old_ties
             )
+            microtonal_indices_to_pitch = abjad.OrderedDict()
+            for i, _ in enumerate(pitches):
+                if isinstance(_, list):
+                    for i_, sub_ in enumerate(_):
+                        nested_indices_to_pitch = abjad.OrderedDict()
+                        if 0 < sub_ % quicktions.Fraction(1, 2):
+                            nested_indices_to_pitch[str(i_)] = sub_
+                            pitches[i][i_] = 0
+                            microtonal_indices_to_pitch[
+                                str(i)
+                            ] = nested_indices_to_pitch
+                else:
+                    if 0 < _ % quicktions.Fraction(1, 2):
+                        microtonal_indices_to_pitch[str(i)] = _
+                        pitches[i] = 0
             new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+            for index in microtonal_indices_to_pitch:
+                for leaf in abjad.select(new_leaves[int(index)]).leaves():
+                    if isinstance(leaf, abjad.Chord):
+                        heads = leaf.note_heads
+                        for sub_index in microtonal_indices_to_pitch[index]:
+                            head = heads[int(sub_index)]
+                            microtones.apply_alteration(
+                                head, microtonal_indices_to_pitch[index][sub_index]
+                            )
+                    else:
+                        microtones.apply_alteration(
+                            leaf.note_head, microtonal_indices_to_pitch[index]
+                        )
             for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                 indicators = abjad.inspect(old_leaf).indicators()
                 before_grace = abjad.inspect(old_leaf).before_grace_container()
