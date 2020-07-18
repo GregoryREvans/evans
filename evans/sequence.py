@@ -787,3 +787,125 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
     for x, y in zip(warped_list, perturbation_list):
         final_list.append(x + y)
     return final_list
+
+
+def add_sequences(x, y):
+    """
+    >>> seq_1 = [0, 1, 2, 3]
+    >>> seq_2 = [4, 5, 6, 7, 8]
+    >>> evans.add_sequences(seq_1, seq_2)
+    [4, 6, 8, 10]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> evans.add_sequences(seq_1, seq_2)
+    [5, 7, 9, 11, 9]
+
+    """
+    returned_sequence = []
+    cyc_y = CyclicList(y, continuous=True)
+    for _ in x:
+        y_val = cyc_y(r=1)[0]
+        returned_sequence.append(_ + y_val)
+    return returned_sequence
+
+
+def multiply_sequences(x, y):
+    """
+    >>> seq_1 = [0, 1, 2, 3]
+    >>> seq_2 = [4, 5, 6, 7, 8]
+    >>> evans.multiply_sequences(seq_1, seq_2)
+    [0, 5, 12, 21]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> evans.multiply_sequences(seq_1, seq_2)
+    [0, 6, 14, 24, 20]
+
+    """
+    returned_sequence = []
+    cyc_y = CyclicList(y, continuous=True)
+    for _ in x:
+        y_val = cyc_y(r=1)[0]
+        returned_sequence.append(_ * y_val)
+    return returned_sequence
+
+
+def derive_added_sequences(x, y, flat=False):
+    """
+    >>> seq_1 = [0, 1, 2, 3]
+    >>> seq_2 = [4, 5, 6, 7, 8]
+    >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+    ...     _
+    ...
+    [4, 5, 6, 7]
+    [5, 6, 7, 8]
+    [6, 7, 8, 9]
+    [7, 8, 9, 10]
+    [8, 9, 10, 11]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+    ...     _
+    ...
+    [5, 6, 7, 8, 9]
+    [6, 7, 8, 9, 10]
+    [7, 8, 9, 10, 11]
+    [8, 9, 10, 11, 12]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> evans.derive_added_sequences(seq_1, seq_2, flat=True)
+    [5, 6, 7, 8, 9, 6, 7, 8, 9, 10, 7, 8, 9, 10, 11, 8, 9, 10, 11, 12]
+
+    """
+    returned_sequence = []
+    for val in y:
+        transposition = []
+        for val_ in x:
+            transposition.append(val + val_)
+        returned_sequence.append(transposition)
+    if flat is True:
+        returned_sequence = flatten(returned_sequence)
+    return returned_sequence
+
+
+def derive_multiplied_sequences(x, y, flat=False):
+    """
+    >>> seq_1 = [0, 1, 2, 3]
+    >>> seq_2 = [4, 5, 6, 7, 8]
+    >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+    ...     _
+    ...
+    [0, 4, 8, 12]
+    [0, 5, 10, 15]
+    [0, 6, 12, 18]
+    [0, 7, 14, 21]
+    [0, 8, 16, 24]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+    ...     _
+    ...
+    [0, 5, 10, 15, 20]
+    [0, 6, 12, 18, 24]
+    [0, 7, 14, 21, 28]
+    [0, 8, 16, 24, 32]
+
+    >>> seq_1 = [0, 1, 2, 3, 4]
+    >>> seq_2 = [5, 6, 7, 8]
+    >>> evans.derive_multiplied_sequences(seq_1, seq_2, flat=True)
+    [0, 5, 10, 15, 20, 0, 6, 12, 18, 24, 0, 7, 14, 21, 28, 0, 8, 16, 24, 32]
+
+    """
+    returned_sequence = []
+    for val in y:
+        transposition = []
+        for val_ in x:
+            transposition.append(val * val_)
+        returned_sequence.append(transposition)
+    if flat is True:
+        returned_sequence = flatten(returned_sequence)
+    return returned_sequence
