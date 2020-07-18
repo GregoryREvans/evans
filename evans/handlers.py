@@ -1929,15 +1929,90 @@ class PitchHandler(Handler):
         aqs'4
     }
 
+    >>> pitch_set = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
+    >>> pitch_set = pitch_set + pitch_set.invert(2).multiply(Fraction(5, 4))
+    >>> pitch_set = pitch_set + pitch_set.retrograde().rotate(3).transpose(Fraction(13, 2))
+    >>> pitch_set = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_set])
+    >>> notes = [abjad.Note() for _ in pitch_set]
+    >>> staff = abjad.Staff(notes)
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[_ for _ in pitch_set],
+    ...     apply_all=True,
+    ...     continuous=True,
+    ... )
+    >>> handler(staff)
+    >>> file = abjad.LilyPondFile.new(
+    ...     staff,
+    ...     includes=[
+    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
+    ...     ],
+    ... )
+    >>> style = '"dodecaphonic"'
+    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+    >>> print(abjad.lilypond(staff))
+    \new Staff
+    {
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-markup
+        c'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-flat-markup
+        df'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-markup
+        g'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        e'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-markup
+        f'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \flat-markup
+        ef'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-flat-markup
+        a4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-markup
+        b4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-sharp-markup
+        b'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-eighth-sharp-markup
+        b'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-flat-markup
+        df''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \flat-markup
+        af'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-flat-markup
+        gf'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-sharp-markup
+        f'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        d'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-quarter-sharp-markup
+        a'4
+    }
+
     """
 
     def __init__(
         self,
         pitch_list=None,
         allow_chord_duplicates=False,
+        apply_all=False,
         chord_boolean_vector=[0],
         chord_groups=None,
         continuous=False,
+        to_ties=False,
         pitch_count=-1,
         chord_boolean_count=-1,
         chord_groups_count=-1,
@@ -1945,9 +2020,11 @@ class PitchHandler(Handler):
     ):
         self.pitch_list = pitch_list
         self.allow_chord_duplicates = allow_chord_duplicates
+        self.apply_all = apply_all
         self.chord_boolean_vector = chord_boolean_vector
         self.chord_groups = chord_groups
         self.continuous = continuous
+        self.to_ties = to_ties
         self.name = name
         self._pitch_count = pitch_count
         self._chord_boolean_count = chord_boolean_count
@@ -1963,7 +2040,11 @@ class PitchHandler(Handler):
         )
 
     def __call__(self, selections):
-        self._apply_pitches(selections)
+        if self.to_ties is True:
+            for tie in abjad.select(selections).logical_ties():
+                self._apply_pitches(tie)
+        else:
+            self._apply_pitches(selections)
 
     def _collect_pitches_durations_leaves(self, logical_ties):
         pitches, durations, leaves = [[], [], []]
@@ -2001,14 +2082,25 @@ class PitchHandler(Handler):
                     _.sort()
                     for i_, sub_ in enumerate(_):
                         nested_indices_to_pitch = abjad.OrderedDict()
-                        if 0 < sub_ % quicktions.Fraction(1, 2):
+                        if self.apply_all is False:
+                            if 0 < sub_ % quicktions.Fraction(1, 2):
+                                nested_indices_to_pitch[str(i_)] = sub_
+                                pitches[i][i_] = 0
+                                microtonal_indices_to_pitch[
+                                    str(i)
+                                ] = nested_indices_to_pitch
+                        else:
                             nested_indices_to_pitch[str(i_)] = sub_
                             pitches[i][i_] = 0
                             microtonal_indices_to_pitch[
                                 str(i)
                             ] = nested_indices_to_pitch
                 else:
-                    if 0 < _ % quicktions.Fraction(1, 2):
+                    if self.apply_all is False:
+                        if 0 < _ % quicktions.Fraction(1, 2):
+                            microtonal_indices_to_pitch[str(i)] = _
+                            pitches[i] = 0
+                    else:
                         microtonal_indices_to_pitch[str(i)] = _
                         pitches[i] = 0
             new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]

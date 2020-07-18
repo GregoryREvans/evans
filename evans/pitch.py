@@ -164,12 +164,17 @@ def return_vertical_moment_ties(score):
     ...         staff_3,
     ...     ]
     ... )
-    >>> handler = evans.PitchHandler(pitch_list=[0, 1, 2, 3, 4], continuous=True)
-    >>> for i, tie in enumerate(evans.return_vertical_moment_ties(score)):
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[0, 1, 2, 3, 4],
+    ...     continuous=True,
+    ...     to_ties=True,
+    ... )
+    >>> vm_ties = evans.return_vertical_moment_ties(score)
+    >>> for i, tie in enumerate(vm_ties):
     ...     string = f"{i}"
     ...     markup = abjad.Markup(string, direction=abjad.Up)
     ...     abjad.attach(markup, tie[0])
-    ...     handler(tie)
+    >>> handler(vm_ties)
     >>> print(abjad.lilypond(score))
     \new Score
     <<
