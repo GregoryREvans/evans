@@ -2,6 +2,9 @@ import os
 import re
 
 import abjad
+from abjadext import rmakers
+from . import handlers
+from .commands import RhythmCommand
 
 env = os.path.expanduser("~")
 
@@ -381,3 +384,27 @@ def human_sorted_keys(pair):
     values = [to_digit(_) for _ in key.split()]
     hashable_key = tuple(values)
     return hashable_key
+
+def intercalate_silences(rhythm_command_list):
+    global_timespan = abjad.Timespan(
+        start_offset=0,
+        stop_offset=max(_.timespan.stop_offset for _ in rhythm_command_list),
+    )
+    silence_maker = handlers.RhythmHandler(
+        rmakers.stack(
+            rmakers.NoteRhythmMaker(),
+            rmakers.force_rest(abjad.select().leaves(pitched=True)),
+        ),
+        name="silence_maker",
+    )
+    voice_names = sorted(set(_.voice_name for _ in rhythm_command_list))
+    for voice_name in voice_names:
+        timespan_list = abjad.TimespanList(
+            [_.timespan for _ in rhythm_command_list if _.voice_name == voice_name]
+        )
+        silences = abjad.TimespanList([global_timespan])
+        for timespan in timespan_list:
+            silences -= timespan
+        for timespan in silences:
+            new_command = RhythmCommand(voice_name, timespan, silence_maker,)
+            rhythm_command_list.append(new_command)

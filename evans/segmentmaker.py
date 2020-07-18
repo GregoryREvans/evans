@@ -6,7 +6,8 @@ import abjad
 from abjadext import rmakers
 
 from . import consort_reviv, handlers
-from .commands import RhythmCommand
+from .commands import RhythmCommand, HandlerCommand
+from .sequence import flatten
 
 
 class NoteheadBracketMaker(object):
@@ -265,46 +266,46 @@ class SegmentMaker(object):
             )
             voice.append(container[:])
 
-    def _beam_runs(self):
-        if self.beam_pattern == "runs":
-            print("Beaming runs ...")
-            for voice in abjad.select(self.score_template).components(abjad.Voice):
-                for shard in abjad.mutate(voice[:]).split(self.time_signatures):
-                    abjad.beam(shard[:], beam_lone_notes=False, beam_rests=False)
-        elif self.beam_pattern == "meter":
-            print("Beaming meter ...")
-            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Voice
+    def beam_score(target):
+        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        sigs = []
+        for skip in global_skips:
+            for indicator in abjad.inspect(skip).indicators():
+                if isinstance(indicator, abjad.TimeSignature):
+                    sigs.append(indicator)
+        print("Beaming meter ...")
+        for voice in abjad.iterate(target["Staff Group"]).components(
+            abjad.Voice
+        ):
+            for i, shard in enumerate(
+                abjad.mutate(voice[:]).split(sigs)
             ):
-                for i, shard in enumerate(
-                    abjad.mutate(voice[:]).split(self.time_signatures)
-                ):
-                    met = abjad.Meter(self.time_signatures[i].pair)
-                    inventories = [
-                        x
-                        for x in enumerate(
-                            abjad.Meter(
-                                self.time_signatures[i].pair
-                            ).depthwise_offset_inventory
-                        )
-                    ]
-                    if self.time_signatures[i].denominator == 4:
-                        beam_meter(
-                            components=shard[:],
-                            meter=met,
-                            offset_depth=inventories[-1][0],
-                            include_rests=self.beam_rests,
-                        )
-                    else:
-                        beam_meter(
-                            components=shard[:],
-                            meter=met,
-                            offset_depth=inventories[-2][0],
-                            include_rests=self.beam_rests,
-                        )
-        else:
-            pass
-        for trem in abjad.select(self.score_template).components(
+                met = abjad.Meter(sigs[i].pair)
+                inventories = [
+                    x
+                    for x in enumerate(
+                        abjad.Meter(
+                            sigs[i].pair
+                        ).depthwise_offset_inventory
+                    )
+                ]
+                if sigs[i].denominator == 4:
+                    beam_meter(
+                        components=shard[:],
+                        meter=met,
+                        offset_depth=inventories[-1][0],
+                        # include_rests=self.beam_rests,
+                        include_rests=False,
+                    )
+                else:
+                    beam_meter(
+                        components=shard[:],
+                        meter=met,
+                        offset_depth=inventories[-2][0],
+                        # include_rests=self.beam_rests,
+                        include_rests=False,
+                    )
+        for trem in abjad.select(target).components(
             abjad.TremoloContainer
         ):
             if abjad.StartBeam() in abjad.inspect(trem[0]).indicators():
@@ -344,47 +345,55 @@ class SegmentMaker(object):
         if self.commands is None:
             return
         print("Calling commands ...")
-        for command in self.commands:
-            command(self.score_template)
+        self.commands = flatten(self.commands)
+        for group_type, group in itertools.groupby(self.commands, lambda _: type(_)):
+            if group_type == RhythmCommand:
+                rhythm_group = [_ for _ in group]
+                self._make_containers(rhythm_group)
+            elif group_type == HandlerCommand:
+                handler_group = [_ for _ in group]
+                self.call_handlers(handler_group)
+            else:
+                for command in group:
+                    command(self.score_template)
 
-    def _call_handlers(self):
+    def call_handlers(self, commands):
         print("Calling handlers ...")
         handler_to_value = abjad.OrderedDict()
-        for command_list in self.handler_commands:
-            voice_names = sorted(set(_.voice_name for _ in command_list))
-            voice_collections = abjad.OrderedDict()
-            global_collection = consort_reviv.LogicalTieCollection()
-            for tie in abjad.select(
-                self.score_template["Global Context"]
-            ).logical_ties():
-                global_collection.insert(tie)
-            voice_collections["Global Context"] = global_collection
-            for voice in abjad.select(self.score_template).components(abjad.Voice):
-                collection = consort_reviv.LogicalTieCollection()
-                for tie in abjad.select(voice).logical_ties():
-                    collection.insert(tie)
-                voice_collections[voice.name] = collection
-            for v_name in voice_names:
-                voice_command_list = [
-                    command for command in command_list if command.voice_name == v_name
-                ]
-                voice_command_list.sort(key=lambda _: _.timespan)
-                for command in voice_command_list:
-                    voice_tie_collection = voice_collections[command.voice_name]
-                    target_timespan = command.timespan
-                    selection = abjad.Selection(
-                        [
-                            _
-                            for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-                                target_timespan
-                            )
-                        ]
-                    )
-                    if not selection:
-                        continue
-                    handler = command.handler
-                    handler(selection)
-                    handler_to_value[handler.name] = handler.state()
+        voice_names = sorted(set(_.voice_name for _ in commands))
+        voice_collections = abjad.OrderedDict()
+        global_collection = consort_reviv.LogicalTieCollection()
+        for tie in abjad.select(
+            self.score_template["Global Context"]
+        ).logical_ties():
+            global_collection.insert(tie)
+        voice_collections["Global Context"] = global_collection
+        for voice in abjad.select(self.score_template).components(abjad.Voice):
+            collection = consort_reviv.LogicalTieCollection()
+            for tie in abjad.select(voice).logical_ties():
+                collection.insert(tie)
+            voice_collections[voice.name] = collection
+        for v_name in voice_names:
+            voice_command_list = [
+                command for command in commands if command.voice_name == v_name
+            ]
+            voice_command_list.sort(key=lambda _: _.timespan)
+            for command in voice_command_list:
+                voice_tie_collection = voice_collections[command.voice_name]
+                target_timespan = command.timespan
+                selection = abjad.Selection(
+                    [
+                        _
+                        for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
+                            target_timespan
+                        )
+                    ]
+                )
+                if not selection:
+                    continue
+                handler = command.handler
+                handler(selection)
+                handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
             handler_to_value_format = abjad.storage(handler_to_value)
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
@@ -401,36 +410,15 @@ class SegmentMaker(object):
             abjad.attach(pre_lit, voice)
             abjad.attach(post_lit, voice)
 
-    def _interpret_file(self):
-        print("Interpreting file ...")
-        global_timespan = abjad.Timespan(
-            start_offset=0,
-            stop_offset=max(_.timespan.stop_offset for _ in self.rhythm_commands),
-        )
-        silence_maker = handlers.RhythmHandler(
-            rmakers.stack(
-                rmakers.NoteRhythmMaker(),
-                rmakers.force_rest(abjad.select().leaves(pitched=True)),
-            ),
-            name="silence_maker",
-        )
-        voice_names = sorted(set(_.voice_name for _ in self.rhythm_commands))
-        for voice_name in voice_names:
-            timespan_list = abjad.TimespanList(
-                [_.timespan for _ in self.rhythm_commands if _.voice_name == voice_name]
-            )
-            silences = abjad.TimespanList([global_timespan])
-            for timespan in timespan_list:
-                silences -= timespan
-            for timespan in silences:
-                new_command = RhythmCommand(voice_name, timespan, silence_maker,)
-                self.rhythm_commands.append(new_command)
+    def _make_global_context(self):
+        print("Making global context ...")
+
         for time_signature in self.time_signatures:
             skip = abjad.Skip(1, multiplier=(time_signature))
             abjad.attach(time_signature, skip, tag=abjad.Tag("scaling time signatures"))
             self.score_template["Global Context"].append(skip)
 
-    def _make_containers(self):
+    def _make_containers(self, commands):
         print("Making containers ...")
 
         def make_container(handler, durations):
@@ -439,11 +427,11 @@ class SegmentMaker(object):
             container.extend(selections)
             return container
 
-        voice_names = sorted(set(_.voice_name for _ in self.rhythm_commands))
+        voice_names = sorted(set(_.voice_name for _ in commands))
         handler_to_value = abjad.OrderedDict()
         for voice_name in voice_names:
             voice_commands = [
-                _ for _ in self.rhythm_commands if _.voice_name == voice_name
+                _ for _ in commands if _.voice_name == voice_name
             ]
             voice_commands.sort(key=lambda _: _.timespan)
             for handler, grouper in itertools.groupby(
@@ -560,19 +548,25 @@ class SegmentMaker(object):
             with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                 fp.writelines(lines)
 
-    def _rewrite_meter(self):
+    def rewrite_meter(target):
         print("Rewriting meter ...")
-        for voice in abjad.select(self.score_template["Staff Group"]).components(
+        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        sigs = []
+        for skip in global_skips:
+            for indicator in abjad.inspect(skip).indicators():
+                if isinstance(indicator, abjad.TimeSignature):
+                    sigs.append(indicator)
+        for voice in abjad.select(target["Staff Group"]).components(
             abjad.Voice
         ):
             voice_dur = abjad.inspect(voice).duration()
-            time_signatures = self.time_signatures[:-1]
+            time_signatures = sigs[:-1]
             durations = [_.duration for _ in time_signatures]
             sig_dur = sum(durations)
             assert voice_dur == sig_dur, (voice_dur, sig_dur)
             shards = abjad.mutate(voice[:]).split(durations)
             for i, shard in enumerate(shards):
-                time_signature = self.time_signatures[i]
+                time_signature = sigs[i]
                 inventories = [
                     x
                     for x in enumerate(
@@ -594,9 +588,9 @@ class SegmentMaker(object):
                         rewrite_tuplets=False,
                     )
 
-    def _transform_brackets(self):
+    def transform_brackets(target):
         print("Transforming brackets ...")
-        for tuplet in abjad.select(self.score_template).components(abjad.Tuplet):
+        for tuplet in abjad.select(target).components(abjad.Tuplet):
             if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
                 if tuplet.diminution() is True:
                     tuplet.toggle_prolation()
@@ -632,10 +626,10 @@ class SegmentMaker(object):
                     notehead_wrapper = wrapper_pair[1]
                     dots = ""
                 multiplier = 1
-                if self.tuplet_bracket_noteheads is True:
-                    abjad.tweak(
-                        tuplet
-                    ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
+                # if self.tuplet_bracket_noteheads is True:
+                abjad.tweak(
+                    tuplet
+                ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
@@ -672,20 +666,15 @@ class SegmentMaker(object):
 
     def build_segment(self):
         with abjad.Timer() as timer:
-            self._interpret_file()
-            self._make_containers()
-            self._transform_brackets()
-            self._rewrite_meter()
-            self._add_ending_skips()
+            self._make_global_context()
         self.pre_handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
-            self._call_handlers()
+            self._call_commands()
+            self._add_ending_skips()
         self.handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
             self._make_mm_rests()
-            self._beam_runs()
             self._add_attachments()
-            self._call_commands()
             self._cache_persistent_info()
             self._remove_final_grand_pause()
             self._extract_parts()

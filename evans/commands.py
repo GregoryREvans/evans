@@ -4,12 +4,14 @@ import abjad
 class Command(object):
     def __init__(
         self,
+        callable=None,
         command=None,
         contents=None,
         indicator=None,
         selector=None,
         voice_name=None,
     ):
+        self.callable = callable
         self.command = command
         self.contents = contents
         self.indicator = indicator
@@ -49,9 +51,16 @@ class Command(object):
         >>
 
         """
-        voice = score[self.voice_name]
+        if self.voice_name == "score":
+            voice = score
+            selection = score
+        else:
+            voice = score[self.voice_name]
+            selection = self.selector(voice)
         if self.command == "attach":
             abjad.attach(self.indicator, self.selector(voice))
+        elif self.command == "call":
+            self.callable(selection)
         elif self.command == "detach":
             abjad.detach(self.indicator, self.selector(voice))
         elif self.command == "replace":
@@ -89,6 +98,13 @@ def replace(voice_name, contents, selector=None):
         selector = abjad.select().leaf(0)
     return Command(
         command="replace", contents=contents, selector=selector, voice_name=voice_name,
+    )
+
+def call(voice_name, callable, selector=None):
+    if selector is None:
+        selector = abjad.select().leaf(0)
+    return Command(
+        command="call", callable=callable, selector=selector, voice_name=voice_name,
     )
 
 
