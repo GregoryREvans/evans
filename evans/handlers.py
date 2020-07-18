@@ -1848,6 +1848,39 @@ class PitchHandler(Handler):
         gf'4
     }
 
+    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+    >>> handler = evans.PitchHandler(
+    ...      pitch_list=[
+    ...         fractions.Fraction(3, 4),
+    ...         [
+    ...             fractions.Fraction(25, 2),
+    ...             fractions.Fraction(4, 3),
+    ...         ],
+    ...         2,
+    ...         fractions.Fraction(23, 4),
+    ...     ],
+    ...     continuous=True,
+    ...     allow_chord_duplicates=True,
+    ... )
+    >>> handler(s)
+    >>> print(abjad.lilypond(s))
+    \new Staff
+    {
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        c'4
+        <
+            \tweak Accidental.stencil #ly:text-interface::print
+            \tweak Accidental.text \one-third-flat-markup
+            df'
+            cqs''
+        >4
+        d'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        f'4
+    }
+
     """
 
     def __init__(
@@ -1917,6 +1950,7 @@ class PitchHandler(Handler):
             microtonal_indices_to_pitch = abjad.OrderedDict()
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
+                    _.sort()
                     for i_, sub_ in enumerate(_):
                         nested_indices_to_pitch = abjad.OrderedDict()
                         if 0 < sub_ % quicktions.Fraction(1, 2):
