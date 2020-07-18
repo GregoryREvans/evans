@@ -1881,6 +1881,54 @@ class PitchHandler(Handler):
         f'4
     }
 
+    >>> pitch_set = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
+    >>> pitch_set = pitch_set + pitch_set.invert(2).multiply(Fraction(5, 4))
+    >>> pitch_set = pitch_set + pitch_set.retrograde().rotate(3).transpose(Fraction(13, 2))
+    >>> pitch_set = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_set])
+    >>> notes = [abjad.Note() for _ in pitch_set]
+    >>> staff = abjad.Staff(notes)
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[_ for _ in pitch_set],
+    ...     continuous=True,
+    ... )
+    >>> handler(staff)
+    >>> file = abjad.LilyPondFile.new(
+    ...     staff,
+    ...     includes=[
+    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
+    ...     ],
+    ... )
+    >>> style = '"dodecaphonic"'
+    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+    >>> print(abjad.lilypond(staff))
+    \new Staff
+    {
+        c'4
+        dqf'4
+        g'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        e'4
+        f'4
+        ef'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-flat-markup
+        a4
+        b4
+        bqs'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \one-eighth-sharp-markup
+        b'4
+        dqf''4
+        af'4
+        gqf'4
+        fqs'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \three-eighths-sharp-markup
+        d'4
+        aqs'4
+    }
+
     """
 
     def __init__(

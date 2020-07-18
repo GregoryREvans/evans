@@ -44,7 +44,7 @@ before_install:
 
   # clone & install microtones:
   - microtones=/tmp/abjad-ext-microtones
-  - git clone https://github.com/GregoryREvans/abjad-ext-microtones.git $microtones
+  - git clone -b greg/dev https://github.com/GregoryREvans/abjad-ext-microtones.git $microtones
   - pip install -e $microtones
   - export MYPYPATH=$MYPYPATH:$microtones
 
