@@ -121,6 +121,32 @@ class MarkovChain(object):
         return future_states
 
 
+def add_sequences(x, y):
+    """
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> evans.add_sequences(seq_1, seq_2)
+        [4, 6, 8, 10]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.add_sequences(seq_1, seq_2)
+        [5, 7, 9, 11, 9]
+
+    """
+    returned_sequence = []
+    cyc_y = CyclicList(y, continuous=True)
+    for _ in x:
+        y_val = cyc_y(r=1)[0]
+        returned_sequence.append(_ + y_val)
+    return returned_sequence
+
+
 def cyc(lst):
     """
 
@@ -141,6 +167,100 @@ def cyc(lst):
     while True:
         count += 1
         yield lst[count % len(lst)]
+
+
+def derive_added_sequences(x, y, flat=False):
+    """
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [4, 5, 6, 7]
+        [5, 6, 7, 8]
+        [6, 7, 8, 9]
+        [7, 8, 9, 10]
+        [8, 9, 10, 11]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [5, 6, 7, 8, 9]
+        [6, 7, 8, 9, 10]
+        [7, 8, 9, 10, 11]
+        [8, 9, 10, 11, 12]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.derive_added_sequences(seq_1, seq_2, flat=True)
+        [5, 6, 7, 8, 9, 6, 7, 8, 9, 10, 7, 8, 9, 10, 11, 8, 9, 10, 11, 12]
+
+    """
+    returned_sequence = []
+    for val in y:
+        transposition = []
+        for val_ in x:
+            transposition.append(val + val_)
+        returned_sequence.append(transposition)
+    if flat is True:
+        returned_sequence = flatten(returned_sequence)
+    return returned_sequence
+
+
+def derive_multiplied_sequences(x, y, flat=False):
+    """
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [0, 4, 8, 12]
+        [0, 5, 10, 15]
+        [0, 6, 12, 18]
+        [0, 7, 14, 21]
+        [0, 8, 16, 24]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [0, 5, 10, 15, 20]
+        [0, 6, 12, 18, 24]
+        [0, 7, 14, 21, 28]
+        [0, 8, 16, 24, 32]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.derive_multiplied_sequences(seq_1, seq_2, flat=True)
+        [0, 5, 10, 15, 20, 0, 6, 12, 18, 24, 0, 7, 14, 21, 28, 0, 8, 16, 24, 32]
+
+    """
+    returned_sequence = []
+    for val in y:
+        transposition = []
+        for val_ in x:
+            transposition.append(val * val_)
+        returned_sequence.append(transposition)
+    if flat is True:
+        returned_sequence = flatten(returned_sequence)
+    return returned_sequence
 
 
 def e_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
@@ -261,6 +381,114 @@ def grouper(lst1, lst2):
 
     lst1 = cyc(lst1)
     return [next(lst1) if i == 1 else [next(lst1) for _ in range(i)] for i in lst2]
+
+
+def guerrero_morales(terms=None, set_size=None):
+    """
+
+    .. container:: example
+
+        >>> g_m = evans.guerrero_morales(
+        ...     [
+        ...         "A",
+        ...         "B",
+        ...         "C",
+        ...         "D",
+        ...         "E",
+        ...         "F",
+        ...         "G",
+        ...     ],
+        ...     3,
+        ... )
+        >>> for _ in g_m:
+        ...     _
+        ['A', 'B', 'C']
+        ['B', 'D', 'E']
+        ['C', 'D', 'F']
+        ['A', 'D', 'G']
+        ['A', 'E', 'F']
+        ['B', 'F', 'G']
+        ['C', 'E', 'G']
+
+    .. container:: example
+
+        >>> g_m = evans.guerrero_morales(
+        ...     [
+        ...         "A",
+        ...         "B",
+        ...         "C",
+        ...         "D",
+        ...         "E",
+        ...         "F",
+        ...         "G",
+        ...         "H",
+        ...         "I",
+        ...     ],
+        ...     5,
+        ... )
+        >>> for _ in g_m:
+        ...     _
+        ['A', 'B', 'C', 'D', 'E']
+        ['B', 'F', 'G', 'H', 'I']
+
+    .. container:: example
+
+        >>> g_m = evans.guerrero_morales(
+        ...     [
+        ...         "A",
+        ...         "B",
+        ...         "C",
+        ...         "D",
+        ...         "E",
+        ...         "F",
+        ...         "G",
+        ...         "H",
+        ...         "I",
+        ...         "J",
+        ...         "K",
+        ...         "L",
+        ...         "M",
+        ...         "N",
+        ...         "O",
+        ...     ],
+        ...     4,
+        ... )
+        >>> for _ in g_m:
+        ...     _
+        ['A', 'B', 'C', 'D']
+        ['B', 'E', 'F', 'G']
+        ['C', 'E', 'H', 'I']
+        ['D', 'E', 'J', 'K']
+        ['A', 'E', 'L', 'M']
+        ['A', 'F', 'H', 'J']
+        ['A', 'G', 'I', 'K']
+        ['B', 'H', 'K', 'L']
+        ['B', 'I', 'J', 'M']
+        ['C', 'G', 'J', 'L']
+        ['C', 'F', 'K', 'M']
+        ['D', 'F', 'I', 'L']
+        ['D', 'G', 'H', 'M']
+
+
+    """
+    returned_list = []
+    combinations = [_ for _ in itertools.combinations(terms, set_size)]
+    pairs_list = []
+    for term in terms:
+        temp_pairs_list = []
+        temp_returned_list = []
+        term_relevant_sets = [s for s in combinations if term in s]
+        for term_relevant_set in term_relevant_sets:
+            pairs = [x + y for x, y in itertools.combinations(term_relevant_set, 2)]
+            val = [_ in pairs_list for _ in pairs]
+            if not any(val):
+                temp_pairs_list.append(pairs)
+                temp_returned_list.append(term_relevant_set)
+        if 0 < len(temp_pairs_list):
+            pairs_list.extend(temp_pairs_list[0])
+            returned_list.append(list(temp_returned_list[0]))
+
+    return returned_list
 
 
 def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
@@ -434,6 +662,32 @@ def multiple_sequence(fundamental=20, number_of_partials=10, multiple=1.5):
     for _ in range(number_of_partials):
         returned_list.append(returned_list[-1] * multiple)
     return returned_list
+
+
+def multiply_sequences(x, y):
+    """
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> evans.multiply_sequences(seq_1, seq_2)
+        [0, 5, 12, 21]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.multiply_sequences(seq_1, seq_2)
+        [0, 6, 14, 24, 20]
+
+    """
+    returned_sequence = []
+    cyc_y = CyclicList(y, continuous=True)
+    for _ in x:
+        y_val = cyc_y(r=1)[0]
+        returned_sequence.append(_ * y_val)
+    return returned_sequence
 
 
 def n_bonacci_cycle(
@@ -827,58 +1081,6 @@ def rotate(lst, n):
     return lst[n:] + lst[:n]
 
 
-def set_net(set, group_size, filter_depth):
-    r"""
-
-    .. container:: example
-
-        >>> filter_depth_ = 7
-        >>> set_ = "ABCDEFG"
-        >>> group_size_ = 3
-        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-        >>> print(net)
-        [('A', 'B', 'C'), ('A', 'D', 'E'), ('A', 'F', 'G'), ('B', 'D', 'F'), ('B', 'E', 'G'), ('C', 'D', 'G'), ('C', 'E', 'F')]
-
-    .. container:: example
-
-        >>> filter_depth_ = 3
-        >>> set_ = "ABCDEFGHI"
-        >>> group_size_ = 4
-        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-        >>> print(net)
-        [('A', 'B', 'C', 'D'), ('A', 'E', 'F', 'G'), ('B', 'E', 'H', 'I')]
-
-    .. container:: example
-
-        >>> filter_depth_ = 2
-        >>> set_ = "ABCDE"
-        >>> group_size_ = 3
-        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-        >>> print(net)
-        [('A', 'B', 'C'), ('A', 'D', 'E')]
-
-    """
-    combination_sets = [_ for _ in itertools.combinations(set, group_size)]
-    for i, letter in enumerate(range(filter_depth)):
-        reference_set = combination_sets[i]
-        for index, item in enumerate(reference_set):
-            for set_class in combination_sets[i + 1 :]:
-                if item in set_class:
-                    checkable_set = [_ for _ in reference_set]
-                    checkable_set.remove(item)
-                    for check in checkable_set:
-                        if set_class in combination_sets:
-                            if check in set_class:
-                                combination_sets.remove(set_class)
-                            else:
-                                continue
-                        else:
-                            continue
-                else:
-                    continue
-    return combination_sets
-
-
 def warp(min, max, random_seed, warped_list, by_integers=False):
     """
 
@@ -902,149 +1104,3 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
     for x, y in zip(warped_list, perturbation_list):
         final_list.append(x + y)
     return final_list
-
-
-def add_sequences(x, y):
-    """
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3]
-        >>> seq_2 = [4, 5, 6, 7, 8]
-        >>> evans.add_sequences(seq_1, seq_2)
-        [4, 6, 8, 10]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> evans.add_sequences(seq_1, seq_2)
-        [5, 7, 9, 11, 9]
-
-    """
-    returned_sequence = []
-    cyc_y = CyclicList(y, continuous=True)
-    for _ in x:
-        y_val = cyc_y(r=1)[0]
-        returned_sequence.append(_ + y_val)
-    return returned_sequence
-
-
-def multiply_sequences(x, y):
-    """
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3]
-        >>> seq_2 = [4, 5, 6, 7, 8]
-        >>> evans.multiply_sequences(seq_1, seq_2)
-        [0, 5, 12, 21]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> evans.multiply_sequences(seq_1, seq_2)
-        [0, 6, 14, 24, 20]
-
-    """
-    returned_sequence = []
-    cyc_y = CyclicList(y, continuous=True)
-    for _ in x:
-        y_val = cyc_y(r=1)[0]
-        returned_sequence.append(_ * y_val)
-    return returned_sequence
-
-
-def derive_added_sequences(x, y, flat=False):
-    """
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3]
-        >>> seq_2 = [4, 5, 6, 7, 8]
-        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
-        ...     _
-        ...
-        [4, 5, 6, 7]
-        [5, 6, 7, 8]
-        [6, 7, 8, 9]
-        [7, 8, 9, 10]
-        [8, 9, 10, 11]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
-        ...     _
-        ...
-        [5, 6, 7, 8, 9]
-        [6, 7, 8, 9, 10]
-        [7, 8, 9, 10, 11]
-        [8, 9, 10, 11, 12]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> evans.derive_added_sequences(seq_1, seq_2, flat=True)
-        [5, 6, 7, 8, 9, 6, 7, 8, 9, 10, 7, 8, 9, 10, 11, 8, 9, 10, 11, 12]
-
-    """
-    returned_sequence = []
-    for val in y:
-        transposition = []
-        for val_ in x:
-            transposition.append(val + val_)
-        returned_sequence.append(transposition)
-    if flat is True:
-        returned_sequence = flatten(returned_sequence)
-    return returned_sequence
-
-
-def derive_multiplied_sequences(x, y, flat=False):
-    """
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3]
-        >>> seq_2 = [4, 5, 6, 7, 8]
-        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
-        ...     _
-        ...
-        [0, 4, 8, 12]
-        [0, 5, 10, 15]
-        [0, 6, 12, 18]
-        [0, 7, 14, 21]
-        [0, 8, 16, 24]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
-        ...     _
-        ...
-        [0, 5, 10, 15, 20]
-        [0, 6, 12, 18, 24]
-        [0, 7, 14, 21, 28]
-        [0, 8, 16, 24, 32]
-
-    .. container:: example
-
-        >>> seq_1 = [0, 1, 2, 3, 4]
-        >>> seq_2 = [5, 6, 7, 8]
-        >>> evans.derive_multiplied_sequences(seq_1, seq_2, flat=True)
-        [0, 5, 10, 15, 20, 0, 6, 12, 18, 24, 0, 7, 14, 21, 28, 0, 8, 16, 24, 32]
-
-    """
-    returned_sequence = []
-    for val in y:
-        transposition = []
-        for val_ in x:
-            transposition.append(val * val_)
-        returned_sequence.append(transposition)
-    if flat is True:
-        returned_sequence = flatten(returned_sequence)
-    return returned_sequence

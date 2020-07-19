@@ -66,6 +66,7 @@ from .sequence import (
     feigenbaum_bifurcations,
     flatten,
     grouper,
+    guerrero_morales,
     harmonic_series,
     hexagonal_sequence,
     josephus,
@@ -91,7 +92,6 @@ from .sequence import (
     reproportion_harmonics,
     reproportion_scale,
     rotate,
-    set_net,
     warp,
 )
 from .timespan import (
@@ -164,6 +164,7 @@ __all__ = [
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
     "grouper",
+    "guerrero_morales",
     "harmonic_series",
     "herz_combination_tone_ratios",
     "hexagonal_sequence",
@@ -200,7 +201,6 @@ __all__ = [
     "return_vertical_moment_ties",
     "rotate",
     "rotate_tree",
-    "set_net",
     "sorted_keys",
     "talea_timespans",
     "to_digit",
