@@ -2105,9 +2105,7 @@ class PitchHandler(Handler):
                             val = abjad.NumberedPitch(_).number
                         else:
                             val = _
-                        if 0 < val % quicktions.Fraction(
-                            1, 2
-                        ):
+                        if 0 < val % quicktions.Fraction(1, 2):
                             microtonal_indices_to_pitch[str(i)] = _
                             pitches[i] = 0
                     else:
