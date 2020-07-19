@@ -2041,7 +2041,7 @@ class PitchHandler(Handler):
 
     def __call__(self, selections):
         if self.to_ties is True:
-            for tie in abjad.select(selections).logical_ties():
+            for tie in selections:
                 self._apply_pitches(tie)
         else:
             self._apply_pitches(selections)
@@ -2103,7 +2103,10 @@ class PitchHandler(Handler):
                     else:
                         microtonal_indices_to_pitch[str(i)] = _
                         pitches[i] = 0
-            new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+            if self.apply_all is False:
+                new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+            else:
+                new_leaves = old_leaves
             for index in microtonal_indices_to_pitch:
                 for leaf in abjad.select(new_leaves[int(index)]).leaves():
                     if isinstance(leaf, abjad.Chord):
@@ -2117,14 +2120,15 @@ class PitchHandler(Handler):
                         microtones.apply_alteration(
                             leaf.note_head, microtonal_indices_to_pitch[index]
                         )
-            for old_leaf, new_leaf in zip(old_leaves, new_leaves):
-                indicators = abjad.inspect(old_leaf).indicators()
-                before_grace = abjad.inspect(old_leaf).before_grace_container()
-                for indicator in indicators:
-                    abjad.attach(indicator, new_leaf)
-                if before_grace is not None:
-                    abjad.attach(before_grace, new_leaf)
-                abjad.mutate(old_leaf).replace(new_leaf)
+            if self.apply_all is False:
+                for old_leaf, new_leaf in zip(old_leaves, new_leaves):
+                    indicators = abjad.inspect(old_leaf).indicators()
+                    before_grace = abjad.inspect(old_leaf).before_grace_container()
+                    for indicator in indicators:
+                        abjad.attach(indicator, new_leaf)
+                    if before_grace is not None:
+                        abjad.attach(before_grace, new_leaf)
+                    abjad.mutate(old_leaf).replace(new_leaf)
 
     def name(self):
         return self.name

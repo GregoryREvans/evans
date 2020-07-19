@@ -54,6 +54,8 @@ class Command(object):
         if self.voice_name == "score":
             voice = score
             selection = score
+        elif self.voice_name == "vertical":
+            selection = self.selector(score["Staff Group"])
         else:
             voice = score[self.voice_name]
             selection = self.selector(voice)
