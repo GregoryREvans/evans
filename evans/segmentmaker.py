@@ -10,29 +10,35 @@ from .sequence import flatten
 
 
 class NoteheadBracketMaker(object):
-    """
+    r"""
     Writes tuplet brackets with inserte note head.
 
-    >>> tuplet = abjad.Tuplet((3, 2), "cs'8 d'8")
-    >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
-    >>> staff = abjad.Staff()
-    >>> staff.append(tuplet_2)
-    >>> new_brackets = NoteheadBracketMaker()
-    >>> b = new_brackets(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) "4")
-        \times 2/3 {
-            c'4.
-            \tweak text #tuplet-number::calc-fraction-text
-            \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "24")
-            \times 3/2 {
-                cs'8
-                d'8
+    .. container:: example
+
+        >>> tuplet = abjad.Tuplet((3, 2), "cs'8 d'8")
+        >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
+        >>> staff = abjad.Staff()
+        >>> staff.append(tuplet_2)
+        >>> new_brackets = NoteheadBracketMaker()
+        >>> b = new_brackets(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) "4")
+                \times 2/3 {
+                    c'4.
+                    \tweak text #tuplet-number::calc-fraction-text
+                    \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "24")
+                    \times 3/2 {
+                        cs'8
+                        d'8
+                    }
+                }
             }
-        }
-    }
 
     """
 
@@ -679,41 +685,48 @@ class SegmentMaker(object):
 
 def beam_meter(components, meter, offset_depth, include_rests=True):
     r"""
-    >>> pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-    >>> tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
-    >>> post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
-    >>> staff = abjad.Staff()
-    >>> for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
-    ...     staff.append(_)
-    ...
-    >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        \override Staff.Stem.stemlet-length = 0.75
-        c'8
-        [
-        \revert Staff.Stem.stemlet-length
-        c'8
-        ]
-        c'8
-        \times 2/3 {
-            \override Staff.Stem.stemlet-length = 0.75
-            c'8
-            [
-            r8
-            \revert Staff.Stem.stemlet-length
-            c'8
-            ]
-        }
-        c'8
-        \override Staff.Stem.stemlet-length = 0.75
-        c'8
-        [
-        \revert Staff.Stem.stemlet-length
-        c'8
-        ]
-    }
+
+    .. container:: example
+
+        >>> pre_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+        >>> tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
+        >>> post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
+        >>> staff = abjad.Staff()
+        >>> for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
+        ...     staff.append(_)
+        ...
+        >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \override Staff.Stem.stemlet-length = 0.75
+                c'8
+                [
+                \revert Staff.Stem.stemlet-length
+                c'8
+                ]
+                c'8
+                \times 2/3 {
+                    \override Staff.Stem.stemlet-length = 0.75
+                    c'8
+                    [
+                    r8
+                    \revert Staff.Stem.stemlet-length
+                    c'8
+                    ]
+                }
+                c'8
+                \override Staff.Stem.stemlet-length = 0.75
+                c'8
+                [
+                \revert Staff.Stem.stemlet-length
+                c'8
+                ]
+            }
 
     """
     offsets = meter.depthwise_offset_inventory[offset_depth]

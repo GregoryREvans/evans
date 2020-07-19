@@ -8,6 +8,10 @@ from . import sequence
 
 
 class Handler(object):
+    """
+    Handler Base Class
+    """
+
     def __str__(self):
         return abjad.storage(self)
 
@@ -17,36 +21,44 @@ class Handler(object):
 
 class ArticulationHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
-    >>> art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
-    >>> handler = evans.ArticulationHandler(
-    ...     articulation_list=art_lst,
-    ...     articulation_boolean_vector=[0],
-    ...     vector_continuous=True,
-    ...     continuous=True,
-    ... )
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        - \staccato
-        c'4
-        - \tenuto
-        c'4
-        - \staccatissimo
-        r4
-        c'4
-        - \open
-        c'4
-        - \halfopen
-        c'4
-        - \stopped
-        c'4
-        - \portato
-        c'4
-        :32
-    }
+    Articulation Handler
+
+    ..  container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
+        >>> art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
+        >>> handler = evans.ArticulationHandler(
+        ...     articulation_list=art_lst,
+        ...     articulation_boolean_vector=[0],
+        ...     vector_continuous=True,
+        ...     continuous=True,
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                - \staccato
+                c'4
+                - \tenuto
+                c'4
+                - \staccatissimo
+                r4
+                c'4
+                - \open
+                c'4
+                - \halfopen
+                c'4
+                - \stopped
+                c'4
+                - \portato
+                c'4
+                :32
+            }
 
     """
 
@@ -113,25 +125,33 @@ class ArticulationHandler(Handler):
 
 class BendHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.BendHandler(
-    ...     bend_amounts=[1, 1.5],
-    ...     bend_continuous=True,
-    ...     boolean_vector=[1, 1, 0, 1],
-    ...     vector_continuous=True,
-    ... )
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        - \bendAfter #'1
-        c'4
-        - \bendAfter #'1.5
-        c'4
-        c'4
-        - \bendAfter #'1.5
-    }
+    Bend Handler
+
+    ..  container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.BendHandler(
+        ...     bend_amounts=[1, 1.5],
+        ...     bend_continuous=True,
+        ...     boolean_vector=[1, 1, 0, 1],
+        ...     vector_continuous=True,
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                - \bendAfter #'1
+                c'4
+                - \bendAfter #'1.5
+                c'4
+                c'4
+                - \bendAfter #'1.5
+            }
 
     """
 
@@ -184,62 +204,70 @@ class BendHandler(Handler):
 
 class BisbigliandoHandler(Handler):
     r"""
-    >>> s = abjad.Staff("c''4 c''4 c''4 c''4")
-    >>> m = [
-    ...     r"\markup {",
-    ...     r"\lower #1.5",
-    ...     r"\override #'(graphical . #t)",
-    ...     r"\override #'(size . 0.4)",
-    ...     r"\override #'(thickness . 0.25)",
-    ...     r"\woodwind-diagram",
-    ...     r"#'flute",
-    ...     r"#'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))",
-    ...     r"}",
-    ... ]
-    >>> handler = evans.BisbigliandoHandler(
-    ...     fingering_list=[None, m],
-    ...     boolean_vector=[1],
-    ...     staff_padding=2,
-    ... continuous=True,
-    ... )
-    >>> handler(s[:-1])
-    >>> print(abjad.lilypond(s))
-     \new Staff
-    {
-        c''4
-        - \tweak padding #2
-        - \tweak staff-padding #2
-        - \tweak bound-details.right.padding #2
-        - \tweak bound-details.left.text
-        \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
-        \startTrillSpan
-        c''4
-        \stopTrillSpan
-        - \tweak padding #2
-        - \tweak staff-padding #2
-        - \tweak bound-details.right.padding #2
-        - \tweak bound-details.left.text
-        \markup {
-        \lower #1.5
-        \override #'(graphical . #t)
-        \override #'(size . 0.4)
-        \override #'(thickness . 0.25)
-        \woodwind-diagram
-        #'flute
-        #'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))
-        }
-        \startTrillSpan
-        c''4
-        \stopTrillSpan
-        - \tweak padding #2
-        - \tweak staff-padding #2
-        - \tweak bound-details.right.padding #2
-        - \tweak bound-details.left.text
-        \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
-        \startTrillSpan
-        c''4
-        \stopTrillSpan
-    }
+    Bisbigliando Handler
+
+    ..  container:: example
+
+        >>> s = abjad.Staff("c''4 c''4 c''4 c''4")
+        >>> m = [
+        ...     r"\markup {",
+        ...     r"\lower #1.5",
+        ...     r"\override #'(graphical . #t)",
+        ...     r"\override #'(size . 0.4)",
+        ...     r"\override #'(thickness . 0.25)",
+        ...     r"\woodwind-diagram",
+        ...     r"#'flute",
+        ...     r"#'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))",
+        ...     r"}",
+        ... ]
+        >>> handler = evans.BisbigliandoHandler(
+        ...     fingering_list=[None, m],
+        ...     boolean_vector=[1],
+        ...     staff_padding=2,
+        ... continuous=True,
+        ... )
+        >>> handler(s[:-1])
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+             \new Staff
+            {
+                c''4
+                - \tweak padding #2
+                - \tweak staff-padding #2
+                - \tweak bound-details.right.padding #2
+                - \tweak bound-details.left.text
+                \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+                \startTrillSpan
+                c''4
+                \stopTrillSpan
+                - \tweak padding #2
+                - \tweak staff-padding #2
+                - \tweak bound-details.right.padding #2
+                - \tweak bound-details.left.text
+                \markup {
+                \lower #1.5
+                \override #'(graphical . #t)
+                \override #'(size . 0.4)
+                \override #'(thickness . 0.25)
+                \woodwind-diagram
+                #'flute
+                #'((cc . (one two three four five six)) (lh . (bes b gis)) (rh . (bes d dis ees cis c gz)))
+                }
+                \startTrillSpan
+                c''4
+                \stopTrillSpan
+                - \tweak padding #2
+                - \tweak staff-padding #2
+                - \tweak bound-details.right.padding #2
+                - \tweak bound-details.left.text
+                \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+                \startTrillSpan
+                c''4
+                \stopTrillSpan
+            }
 
     """
 
@@ -332,6 +360,40 @@ class BisbigliandoHandler(Handler):
 
 # add shelf for ottava to ensure that no notes in the bracket are illegible
 class ClefHandler(Handler):
+    r"""
+    Clef Handler
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c,4 c'4 c4 c''4 c''''8 r8")
+        >>> handler = evans.ClefHandler(
+        ...     clef="bass",
+        ...     add_extended_clefs=True,
+        ...     add_ottavas=True,
+        ... )
+        >>> handler(s)
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                \clef "bass"
+                c,4
+                c'4
+                c4
+                \clef "tenorvarC"
+                c''4
+                \ottava 1
+                \clef "treble"
+                c''''8
+                \ottava 0
+                r8
+            }
+
+    """
+
     def __init__(
         self,
         clef=None,
@@ -626,67 +688,75 @@ class ClefHandler(Handler):
 # incorporate spanner anchors
 class DynamicHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
-    >>> handler = evans.DynamicHandler(
-    ...     dynamic_list=['f', 'niente', 'p', 'mf'],
-    ...     flare_boolean_vector=[0, 0, 0, 1],
-    ...     flare_continuous=True,
-    ...     hold_first_boolean_vector=[1, 0, 0,],
-    ...     hold_first_continuous=True,
-    ...     hold_last_boolean_vector=[0, 1],
-    ...     hold_last_continuous=True,
-    ...     effort_boolean_vector=[1, 0],
-    ...     effort_continuous=True,
-    ...     continuous=True,
-    ... )
-    >>> first_group = staff[0:3]
-    >>> second_group = staff[2:]
-    >>> handler(first_group)
-    >>> handler(second_group)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        _ #(make-dynamic-script
-            (markup
-                #:whiteout
-                #:line (
-                    #:general-align Y -2 #:normal-text #:larger "“"
-                    #:hspace -0.4
-                    #:dynamic "f"
-                    #:hspace -0.2
-                    #:general-align Y -2 #:normal-text #:larger "”"
+    Dynamic Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("c'4 d'4 e'4 f'4 r4 g'4 r2")
+        >>> handler = evans.DynamicHandler(
+        ...     dynamic_list=['f', 'niente', 'p', 'mf'],
+        ...     flare_boolean_vector=[0, 0, 0, 1],
+        ...     flare_continuous=True,
+        ...     hold_first_boolean_vector=[1, 0, 0,],
+        ...     hold_first_continuous=True,
+        ...     hold_last_boolean_vector=[0, 1],
+        ...     hold_last_continuous=True,
+        ...     effort_boolean_vector=[1, 0],
+        ...     effort_continuous=True,
+        ...     continuous=True,
+        ... )
+        >>> first_group = staff[0:3]
+        >>> second_group = staff[2:]
+        >>> handler(first_group)
+        >>> handler(second_group)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                _ #(make-dynamic-script
+                    (markup
+                        #:whiteout
+                        #:line (
+                            #:general-align Y -2 #:normal-text #:larger "“"
+                            #:hspace -0.4
+                            #:dynamic "f"
+                            #:hspace -0.2
+                            #:general-align Y -2 #:normal-text #:larger "”"
+                            )
+                        )
                     )
-                )
-            )
-        - \tweak stencil #constante-hairpin
-        \<
-        d'4
-        e'4
-        - \tweak circled-tip ##t
-        \<
-        f'4
-        <>
-        _ #(make-dynamic-script
-            (markup
-                #:whiteout
-                #:line (
-                    #:general-align Y -2 #:normal-text #:larger "“"
-                    #:hspace -0.1
-                    #:dynamic "p"
-                    #:hspace -0.25
-                    #:general-align Y -2 #:normal-text #:larger "”"
+                - \tweak stencil #constante-hairpin
+                \<
+                d'4
+                e'4
+                - \tweak circled-tip ##t
+                \<
+                f'4
+                <>
+                _ #(make-dynamic-script
+                    (markup
+                        #:whiteout
+                        #:line (
+                            #:general-align Y -2 #:normal-text #:larger "“"
+                            #:hspace -0.1
+                            #:dynamic "p"
+                            #:hspace -0.25
+                            #:general-align Y -2 #:normal-text #:larger "”"
+                            )
+                        )
                     )
-                )
-            )
-        r4
-        g'4
-        \mf
-        - \tweak stencil #constante-hairpin
-        \<
-        r2
-        \!
-    }
+                r4
+                g'4
+                \mf
+                - \tweak stencil #constante-hairpin
+                \<
+                r2
+                \!
+            }
 
     """
 
@@ -1027,196 +1097,204 @@ class DynamicHandler(Handler):
 
 class GettatoHandler(Handler):
     r"""
-    >>> staff = abjad.Voice("c'4 fs'4 c''4 gqs''4", name="Voice 1")
-    >>> handler = evans.GettatoHandler(
-    ...     number_of_attacks=[4, 5, 6],
-    ...     actions=["throw", "drop"],
-    ... )
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \context Voice = "Voice 1"
-    {
-        <<
-            \context Voice = "On_Beat_Grace_Container"
-            {
-                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                \once \override Beam.grow-direction = #left
-                \slash %! abjad.on_beat_grace_container(2)
-                \voiceOne %! abjad.on_beat_grace_container(3)
-                <
-                    \tweak font-size #0
-                    \tweak transparent ##t
-                    c'
-                >32 * 4/3
-                ^ \markup {
-                    \hspace
-                        #1
-                    throw
-                    (4)
-                    }
-                [
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c'32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c'32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c'32 * 4/3
-                ]
-            }
+    Gettato Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Voice("c'4 fs'4 c''4 gqs''4", name="Voice 1")
+        >>> handler = evans.GettatoHandler(
+        ...     number_of_attacks=[4, 5, 6],
+        ...     actions=["throw", "drop"],
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
             \context Voice = "Voice 1"
             {
-                \voiceTwo %! abjad.on_beat_grace_container(4)
-                c'4
-            }
-        >>
-        <<
-            \context Voice = "On_Beat_Grace_Container"
-            {
-                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                \once \override Beam.grow-direction = #right
-                \slash %! abjad.on_beat_grace_container(2)
-                \voiceOne %! abjad.on_beat_grace_container(3)
-                <
-                    \tweak font-size #0
-                    \tweak transparent ##t
-                    fs'
-                >32 * 4/3
-                ^ \markup {
-                    \hspace
-                        #1
-                    drop
-                    (5)
+                <<
+                    \context Voice = "On_Beat_Grace_Container"
+                    {
+                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        \once \override Beam.grow-direction = #left
+                        \slash %! abjad.on_beat_grace_container(2)
+                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        <
+                            \tweak font-size #0
+                            \tweak transparent ##t
+                            c'
+                        >32 * 4/3
+                        ^ \markup {
+                            \hspace
+                                #1
+                            throw
+                            (4)
+                            }
+                        [
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c'32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c'32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c'32 * 4/3
+                        ]
                     }
-                [
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                fs'32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                fs'32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                fs'32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                fs'32 * 4/3
-                ]
-            }
-            \context Voice = "Voice 1"
-            {
-                \voiceTwo %! abjad.on_beat_grace_container(4)
-                fs'4
-            }
-        >>
-        <<
-            \context Voice = "On_Beat_Grace_Container"
-            {
-                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                \once \override Beam.grow-direction = #left
-                \slash %! abjad.on_beat_grace_container(2)
-                \voiceOne %! abjad.on_beat_grace_container(3)
-                <
-                    \tweak font-size #0
-                    \tweak transparent ##t
-                    c''
-                >32 * 4/3
-                ^ \markup {
-                    \hspace
-                        #1
-                    throw
-                    (6)
+                    \context Voice = "Voice 1"
+                    {
+                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        c'4
                     }
-                [
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                c''32 * 4/3
-                ]
-            }
-            \context Voice = "Voice 1"
-            {
-                \voiceTwo %! abjad.on_beat_grace_container(4)
-                c''4
-            }
-        >>
-        <<
-            \context Voice = "On_Beat_Grace_Container"
-            {
-                \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                \once \override Beam.grow-direction = #right
-                \slash %! abjad.on_beat_grace_container(2)
-                \voiceOne %! abjad.on_beat_grace_container(3)
-                <
-                    \tweak font-size #0
-                    \tweak transparent ##t
-                    gqs''
-                >32 * 4/3
-                ^ \markup {
-                    \hspace
-                        #1
-                    drop
-                    (4)
+                >>
+                <<
+                    \context Voice = "On_Beat_Grace_Container"
+                    {
+                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        \once \override Beam.grow-direction = #right
+                        \slash %! abjad.on_beat_grace_container(2)
+                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        <
+                            \tweak font-size #0
+                            \tweak transparent ##t
+                            fs'
+                        >32 * 4/3
+                        ^ \markup {
+                            \hspace
+                                #1
+                            drop
+                            (5)
+                            }
+                        [
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        fs'32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        fs'32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        fs'32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        fs'32 * 4/3
+                        ]
                     }
-                [
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                gqs''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                gqs''32 * 4/3
-                \once \override NoteHead.no-ledgers = ##t
-                \once \override Accidental.transparent = ##t
-                \tweak transparent ##t
-                gqs''32 * 4/3
-                ]
+                    \context Voice = "Voice 1"
+                    {
+                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        fs'4
+                    }
+                >>
+                <<
+                    \context Voice = "On_Beat_Grace_Container"
+                    {
+                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        \once \override Beam.grow-direction = #left
+                        \slash %! abjad.on_beat_grace_container(2)
+                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        <
+                            \tweak font-size #0
+                            \tweak transparent ##t
+                            c''
+                        >32 * 4/3
+                        ^ \markup {
+                            \hspace
+                                #1
+                            throw
+                            (6)
+                            }
+                        [
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        c''32 * 4/3
+                        ]
+                    }
+                    \context Voice = "Voice 1"
+                    {
+                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        c''4
+                    }
+                >>
+                <<
+                    \context Voice = "On_Beat_Grace_Container"
+                    {
+                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        \once \override Beam.grow-direction = #right
+                        \slash %! abjad.on_beat_grace_container(2)
+                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        <
+                            \tweak font-size #0
+                            \tweak transparent ##t
+                            gqs''
+                        >32 * 4/3
+                        ^ \markup {
+                            \hspace
+                                #1
+                            drop
+                            (4)
+                            }
+                        [
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        gqs''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        gqs''32 * 4/3
+                        \once \override NoteHead.no-ledgers = ##t
+                        \once \override Accidental.transparent = ##t
+                        \tweak transparent ##t
+                        gqs''32 * 4/3
+                        ]
+                    }
+                    \context Voice = "Voice 1"
+                    {
+                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        gqs''4
+                    }
+                >>
             }
-            \context Voice = "Voice 1"
-            {
-                \voiceTwo %! abjad.on_beat_grace_container(4)
-                gqs''4
-            }
-        >>
-    }
 
     """
 
@@ -1324,6 +1402,10 @@ class GettatoHandler(Handler):
 
 class GlissandoHandler(Handler):
     r"""
+    Glissando Handler
+
+    .. container:: example
+
     >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
     >>> handler = evans.GlissandoHandler(
     ...     line_style="dotted-line",
@@ -1332,20 +1414,24 @@ class GlissandoHandler(Handler):
     ...     apply_to="runs",
     ... )
     >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        - \tweak style #'dotted-line %! abjad.glissando(7)
-        \glissando                   %! abjad.glissando(7)
-        c'4
-        - \tweak style #'dotted-line %! abjad.glissando(7)
-        \glissando                   %! abjad.glissando(7)
-        c'4
-        - \tweak style #'dotted-line %! abjad.glissando(7)
-        \glissando                   %! abjad.glissando(7)
-        c'4
-    }
+    >>> abjad.show(staff) # doctest: +SKIP
+
+    .. docs::
+
+        >>> print(abjad.lilypond(staff))
+        \new Staff
+        {
+            c'4
+            - \tweak style #'dotted-line %! abjad.glissando(7)
+            \glissando                   %! abjad.glissando(7)
+            c'4
+            - \tweak style #'dotted-line %! abjad.glissando(7)
+            \glissando                   %! abjad.glissando(7)
+            c'4
+            - \tweak style #'dotted-line %! abjad.glissando(7)
+            \glissando                   %! abjad.glissando(7)
+            c'4
+        }
 
     """
 
@@ -1468,44 +1554,52 @@ class GlissandoHandler(Handler):
 
 class GraceHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = GraceHandler(
-    ...     boolean_vector=[0, 1, 0, 1],
-    ...     gesture_lengths=[1, 2],
-    ...     continuous=True,
-    ... )
-    >>> handler(staff[:])
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        \scaleDurations #'(1 . 1) {
-        \slashedGrace {
-            c'16
-            s8..
-            s2
-        }
-        }
-        c'4
-        c'4
-        \scaleDurations #'(1 . 1) {
-        \slashedGrace {
-            \slash
-            \override Stem.direction = #UP
-            \override Staff.Stem.stemlet-length = 0
-            c'16
-            [
-            s8..
-            c'16
-            \revert Stem.direction
-            s8..
-            \revert Staff.Stem.stemlet-length
-            s2
-            ]
-        }
-        }
-        c'4
-    }
+    Grace Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = GraceHandler(
+        ...     boolean_vector=[0, 1, 0, 1],
+        ...     gesture_lengths=[1, 2],
+        ...     continuous=True,
+        ... )
+        >>> handler(staff[:])
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                \scaleDurations #'(1 . 1) {
+                \slashedGrace {
+                    c'16
+                    s8..
+                    s2
+                }
+                }
+                c'4
+                c'4
+                \scaleDurations #'(1 . 1) {
+                \slashedGrace {
+                    \slash
+                    \override Stem.direction = #UP
+                    \override Staff.Stem.stemlet-length = 0
+                    c'16
+                    [
+                    s8..
+                    c'16
+                    \revert Stem.direction
+                    s8..
+                    \revert Staff.Stem.stemlet-length
+                    s2
+                    ]
+                }
+                }
+                c'4
+            }
 
     """
 
@@ -1618,34 +1712,42 @@ class GraceHandler(Handler):
 
 class NoteheadHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.NoteheadHandler(
-    ...     notehead_list=["default", "harmonic", "triangle", "slash"],
-    ...     transition=True,
-    ...     head_boolean_vector=[1],
-    ...     head_vector_continuous=True,
-    ...     transition_boolean_vector=[0, 1],
-    ...     transition_vector_continuous=True,
-    ...     continuous=False,
-    ... )
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        \tweak NoteHead.style #'default
-        c'4
-        \tweak NoteHead.style #'harmonic
-        c'4
-        - \tweak arrow-length #2
-        - \tweak arrow-width #0.5
-        - \tweak bound-details.right.arrow ##t
-        - \tweak thickness #2.5
-        \glissando
-        \tweak NoteHead.style #'triangle
-        c'4
-        \tweak NoteHead.style #'slash
-        c'4
-    }
+    Notehead Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.NoteheadHandler(
+        ...     notehead_list=["default", "harmonic", "triangle", "slash"],
+        ...     transition=True,
+        ...     head_boolean_vector=[1],
+        ...     head_vector_continuous=True,
+        ...     transition_boolean_vector=[0, 1],
+        ...     transition_vector_continuous=True,
+        ...     continuous=False,
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \tweak NoteHead.style #'default
+                c'4
+                \tweak NoteHead.style #'harmonic
+                c'4
+                - \tweak arrow-length #2
+                - \tweak arrow-width #0.5
+                - \tweak bound-details.right.arrow ##t
+                - \tweak thickness #2.5
+                \glissando
+                \tweak NoteHead.style #'triangle
+                c'4
+                \tweak NoteHead.style #'slash
+                c'4
+            }
 
 
     """
@@ -1741,333 +1843,387 @@ class NoteheadHandler(Handler):
 
 class PitchHandler(Handler):
     r"""
-    >>> import fractions
+    Clad Handler
 
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[1, 2, 3, 4],
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        cs'4
-        d'4
-        ef'4
-        e'4
-    }
+    .. container:: example
 
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[1, [2, 3], 4],
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        cs'4
-        <d' ef'>4
-        e'4
-        cs'4
-    }
+        >>> import fractions
 
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[0, 1, 2.5, 3, 4, 5.5],
-    ...     chord_boolean_vector=[0, 1, 1],
-    ...     chord_groups=[2, 4],
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        c'4
-        <cs' dqs'>4
-        <c' ef' e' fqs'>4
-        cs'4
-    }
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[1, 2, 3, 4],
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> abjad.show(s) # doctest: +SKIP
 
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[0, 1, 1, 3, 4, 5.5],
-    ...     allow_chord_duplicates=True,
-    ...     chord_boolean_vector=[0, 1, 1],
-    ...     chord_groups=[2, 4],
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        c'4
-        <cs' cs'>4
-        <c' ef' e' fqs'>4
-        cs'4
-    }
+        .. docs::
 
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[1, fractions.Fraction(9, 4), 3, 4],
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        cs'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-eighth-sharp-markup
-        d'4
-        ef'4
-        e'4
-    }
-
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[1, [fractions.Fraction(4, 3), 4], 5, fractions.Fraction(37, 6)],
-    ...     allow_chord_duplicates=True,
-    ...     continuous=True,
-    ... )
-    >>> handler(abjad.select(s).logical_ties())
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        cs'4
-        <
-            \tweak Accidental.stencil #ly:text-interface::print
-            \tweak Accidental.text \one-third-flat-markup
-            df'
-            e'
-        >4
-        f'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \five-twelfths-flat-markup
-        gf'4
-    }
-
-    >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.PitchHandler(
-    ...      pitch_list=[
-    ...         fractions.Fraction(3, 4),
-    ...         [
-    ...             fractions.Fraction(25, 2),
-    ...             fractions.Fraction(4, 3),
-    ...         ],
-    ...         2,
-    ...         fractions.Fraction(23, 4),
-    ...     ],
-    ...     continuous=True,
-    ...     allow_chord_duplicates=True,
-    ... )
-    >>> handler(s)
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        c'4
-        <
-            \tweak Accidental.stencil #ly:text-interface::print
-            \tweak Accidental.text \one-third-flat-markup
-            df'
-            cqs''
-        >4
-        d'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        f'4
-    }
-
-    >>> pitch_set = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
-    >>> pitch_set = pitch_set + pitch_set.invert(2).multiply(Fraction(5, 4))
-    >>> pitch_set = pitch_set + pitch_set.retrograde().rotate(3).transpose(Fraction(13, 2))
-    >>> pitch_set = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_set])
-    >>> notes = [abjad.Note() for _ in pitch_set]
-    >>> staff = abjad.Staff(notes)
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[_ for _ in pitch_set],
-    ...     continuous=True,
-    ... )
-    >>> handler(staff)
-    >>> file = abjad.LilyPondFile.new(
-    ...     staff,
-    ...     includes=[
-    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
-    ...     ],
-    ... )
-    >>> style = '"dodecaphonic"'
-    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        dqf'4
-        g'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        e'4
-        f'4
-        ef'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-flat-markup
-        a4
-        b4
-        bqs'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-eighth-sharp-markup
-        b'4
-        dqf''4
-        af'4
-        gqf'4
-        fqs'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        d'4
-        aqs'4
-    }
-
-    >>> pitch_segment = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
-    >>> pitch_segment = pitch_segment + pitch_segment.invert(2).multiply(Fraction(5, 4))
-    >>> pitch_segment = pitch_segment + pitch_segment.retrograde().rotate(3).transpose(Fraction(13, 2))
-    >>> pitch_segment = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_segment])
-    >>> notes = [abjad.Note() for _ in pitch_segment]
-    >>> staff = abjad.Staff(notes)
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[_ for _ in pitch_set],
-    ...     apply_all=True,
-    ...     continuous=True,
-    ... )
-    >>> handler(staff)
-    >>> file = abjad.LilyPondFile.new(
-    ...     staff,
-    ...     includes=[
-    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
-    ...     ],
-    ... )
-    >>> style = '"dodecaphonic"'
-    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-markup
-        c'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-flat-markup
-        df'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-markup
-        g'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        e'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-markup
-        f'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \flat-markup
-        ef'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-flat-markup
-        a4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-markup
-        b4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-sharp-markup
-        b'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-eighth-sharp-markup
-        b'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-flat-markup
-        df''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \flat-markup
-        af'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-flat-markup
-        gf'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-sharp-markup
-        f'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \three-eighths-sharp-markup
-        d'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \one-quarter-sharp-markup
-        a'4
-    }
-
-    >>> ratio_segment = microtones.RatioSegment([1, Fraction(3, 2), Fraction(5, 4)])
-    >>> ratio_segment = ratio_segment + ratio_segment.invert(2).multiply(Fraction(5, 4))
-    >>> ratio_segment = ratio_segment + ratio_segment.retrograde().rotate(3).transpose(1)
-    >>> notes = [abjad.Note() for _ in ratio_segment]
-    >>> staff = abjad.Staff(notes)
-    >>> handler = evans.PitchHandler(
-    ...     pitch_list=[_ for _ in ratio_segment],
-    ...     as_ratios=True,
-    ...     continuous=True,
-    ... )
-    >>> handler(staff)
-    >>> file = abjad.LilyPondFile.new(
-    ...     staff,
-    ...     includes=[
-    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/ekmelos-ji-accidental-markups.ily"
-    ...     ],
-    ... )
-    >>> style = '"dodecaphonic"'
-    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        c'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        g'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-one-syntonic-comma-down
-        e'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-one-syntonic-comma-down
-        e''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-one-syntonic-comma-down
-        a'4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        c''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        d''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural-one-syntonic-comma-down
-        e''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        c''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        g''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \natural
-        f''4
-        \tweak Accidental.stencil #ly:text-interface::print
-        \tweak Accidental.text \markup {
-            \concat
-                {
-                    \one-septimal-comma-down
-                    \hspace #0.125
-                    \flat
-                }
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                cs'4
+                d'4
+                ef'4
+                e'4
             }
-        bf''4
-    }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[1, [2, 3], 4],
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                cs'4
+                <d' ef'>4
+                e'4
+                cs'4
+            }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[0, 1, 2.5, 3, 4, 5.5],
+        ...     chord_boolean_vector=[0, 1, 1],
+        ...     chord_groups=[2, 4],
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                c'4
+                <cs' dqs'>4
+                <c' ef' e' fqs'>4
+                cs'4
+            }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[0, 1, 1, 3, 4, 5.5],
+        ...     allow_chord_duplicates=True,
+        ...     chord_boolean_vector=[0, 1, 1],
+        ...     chord_groups=[2, 4],
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                c'4
+                <cs' cs'>4
+                <c' ef' e' fqs'>4
+                cs'4
+            }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[1, fractions.Fraction(9, 4), 3, 4],
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                cs'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-eighth-sharp-markup
+                d'4
+                ef'4
+                e'4
+            }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[1, [fractions.Fraction(4, 3), 4], 5, fractions.Fraction(37, 6)],
+        ...     allow_chord_duplicates=True,
+        ...     continuous=True,
+        ... )
+        >>> handler(abjad.select(s).logical_ties())
+        >>> print(abjad.lilypond(s))
+        \new Staff
+        {
+            cs'4
+            <
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-third-flat-markup
+                df'
+                e'
+            >4
+            f'4
+            \tweak Accidental.stencil #ly:text-interface::print
+            \tweak Accidental.text \five-twelfths-flat-markup
+            gf'4
+        }
+
+    .. container:: example
+
+        >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.PitchHandler(
+        ...      pitch_list=[
+        ...         fractions.Fraction(3, 4),
+        ...         [
+        ...             fractions.Fraction(25, 2),
+        ...             fractions.Fraction(4, 3),
+        ...         ],
+        ...         2,
+        ...         fractions.Fraction(23, 4),
+        ...     ],
+        ...     continuous=True,
+        ...     allow_chord_duplicates=True,
+        ... )
+        >>> handler(s)
+        >>> print(abjad.lilypond(s))
+        \new Staff
+        {
+            \tweak Accidental.stencil #ly:text-interface::print
+            \tweak Accidental.text \three-eighths-sharp-markup
+            c'4
+            <
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-third-flat-markup
+                df'
+                cqs''
+            >4
+            d'4
+            \tweak Accidental.stencil #ly:text-interface::print
+            \tweak Accidental.text \three-eighths-sharp-markup
+            f'4
+        }
+
+    .. container:: example
+
+        >>> pitch_set = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
+        >>> pitch_set = pitch_set + pitch_set.invert(2).multiply(Fraction(5, 4))
+        >>> pitch_set = pitch_set + pitch_set.retrograde().rotate(3).transpose(Fraction(13, 2))
+        >>> pitch_set = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_set])
+        >>> notes = [abjad.Note() for _ in pitch_set]
+        >>> staff = abjad.Staff(notes)
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[_ for _ in pitch_set],
+        ...     continuous=True,
+        ... )
+        >>> handler(staff)
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
+        ...     ],
+        ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                dqf'4
+                g'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-sharp-markup
+                e'4
+                f'4
+                ef'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-flat-markup
+                a4
+                b4
+                bqs'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-eighth-sharp-markup
+                b'4
+                dqf''4
+                af'4
+                gqf'4
+                fqs'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-sharp-markup
+                d'4
+                aqs'4
+            }
+
+    .. container:: example
+
+        >>> pitch_segment = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
+        >>> pitch_segment = pitch_segment + pitch_segment.invert(2).multiply(Fraction(5, 4))
+        >>> pitch_segment = pitch_segment + pitch_segment.retrograde().rotate(3).transpose(Fraction(13, 2))
+        >>> pitch_segment = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_segment])
+        >>> notes = [abjad.Note() for _ in pitch_segment]
+        >>> staff = abjad.Staff(notes)
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[_ for _ in pitch_set],
+        ...     apply_all=True,
+        ...     continuous=True,
+        ... )
+        >>> handler(staff)
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
+        ...     ],
+        ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-markup
+                c'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-flat-markup
+                df'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-markup
+                g'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-sharp-markup
+                e'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-markup
+                f'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \flat-markup
+                ef'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-flat-markup
+                a4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-markup
+                b4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-sharp-markup
+                b'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-eighth-sharp-markup
+                b'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-flat-markup
+                df''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \flat-markup
+                af'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-flat-markup
+                gf'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-sharp-markup
+                f'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-sharp-markup
+                d'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-quarter-sharp-markup
+                a'4
+            }
+
+    .. container:: example
+
+        >>> ratio_segment = microtones.RatioSegment([1, Fraction(3, 2), Fraction(5, 4)])
+        >>> ratio_segment = ratio_segment + ratio_segment.invert(2).multiply(Fraction(5, 4))
+        >>> ratio_segment = ratio_segment + ratio_segment.retrograde().rotate(3).transpose(1)
+        >>> notes = [abjad.Note() for _ in ratio_segment]
+        >>> staff = abjad.Staff(notes)
+        >>> handler = evans.PitchHandler(
+        ...     pitch_list=[_ for _ in ratio_segment],
+        ...     as_ratios=True,
+        ...     continuous=True,
+        ... )
+        >>> handler(staff)
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/ekmelos-ji-accidental-markups.ily"
+        ...     ],
+        ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                c'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                g'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-one-syntonic-comma-down
+                e'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-one-syntonic-comma-down
+                e''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-one-syntonic-comma-down
+                a'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                c''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                d''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural-one-syntonic-comma-down
+                e''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                c''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                g''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \natural
+                f''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \markup {
+                    \concat
+                        {
+                            \one-septimal-comma-down
+                            \hspace #0.125
+                            \flat
+                        }
+                    }
+                bf''4
+            }
 
     """
 
@@ -2233,6 +2389,39 @@ class PitchHandler(Handler):
 
 
 class RhythmHandler(Handler):
+    r"""
+    Rhythm Handler
+
+    .. container:: example
+
+        >>> spans = abjad.TimespanList(
+        ...     [
+        ...         abjad.Timespan(0, 1),
+        ...         abjad.Timespan(1, 2),
+        ...     ]
+        ... )
+        >>> maker = rmakers.stack(
+        ...     rmakers.NoteRhythmMaker()
+        ... )
+        >>> handler = evans.RhythmHandler(rmaker=maker)
+        >>> staff = abjad.Staff()
+        >>> for span in spans:
+        ...     selections = maker([span.duration])
+        ...     staff.extend(selections)
+        ...
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'1
+                c'1
+            }
+
+    """
+
     def __init__(self, rmaker, continuous=False, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker
         self.continuous = continuous
@@ -2270,19 +2459,27 @@ class RhythmHandler(Handler):
 
 class SlurHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.SlurHandler()
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'4
-        (
-        c'4
-        c'4
-        c'4
-        )
-    }
+    Slur Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.SlurHandler()
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                (
+                c'4
+                c'4
+                c'4
+                )
+            }
 
     """
 
@@ -2329,35 +2526,43 @@ class SlurHandler(Handler):
 
 class TempoSpannerHandler(Handler):
     r"""
-    >>> s = abjad.Staff("s4 s4 s4 s4")
-    >>> handler = TempoSpannerHandler(
-    ...     tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
-    ...     boolean_vector=[1],
-    ...     padding=4,
-    ...     staff_padding=2,
-    ...     continuous=True,
-    ... )
-    >>> handler(s[:-1])
-    >>> print(abjad.lilypond(s))
-    \new Staff
-    {
-        s4
-        - \abjad-dashed-line-with-arrow
-        - \baca-metronome-mark-spanner-left-text 3 0 1 "87"
-        - \tweak padding #4
-        - \tweak staff-padding #2
-        \bacaStartTextSpanMM
-        s4
-        s4
-        \bacaStopTextSpanMM
-        - \abjad-invisible-line
-        - \baca-metronome-mark-spanner-left-text 3 0 1 "95"
-        - \tweak padding #4
-        - \tweak staff-padding #2
-        \bacaStartTextSpanMM
-        s4
-        \bacaStopTextSpanMM
-    }
+    Tempo Spanner Handler
+
+    .. container:: example
+
+        >>> s = abjad.Staff("s4 s4 s4 s4")
+        >>> handler = TempoSpannerHandler(
+        ...     tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
+        ...     boolean_vector=[1],
+        ...     padding=4,
+        ...     staff_padding=2,
+        ...     continuous=True,
+        ... )
+        >>> handler(s[:-1])
+        >>> abjad.show(s) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                s4
+                - \abjad-dashed-line-with-arrow
+                - \baca-metronome-mark-spanner-left-text 3 0 1 "87"
+                - \tweak padding #4
+                - \tweak staff-padding #2
+                \bacaStartTextSpanMM
+                s4
+                s4
+                \bacaStopTextSpanMM
+                - \abjad-invisible-line
+                - \baca-metronome-mark-spanner-left-text 3 0 1 "95"
+                - \tweak padding #4
+                - \tweak staff-padding #2
+                \bacaStartTextSpanMM
+                s4
+                \bacaStopTextSpanMM
+            }
 
     """
 
@@ -2432,6 +2637,62 @@ class TempoSpannerHandler(Handler):
 
 
 class TextSpanHandler(Handler):
+    r"""
+    Text Span Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("c'4 c'4 c'4 r4")
+        >>> handler = evans.TextSpanHandler(
+        ...     span_one_positions=["pont.", "tast."],
+        ...     span_one_style="dashed-line",
+        ...     span_one_padding=1.5,
+        ...     attach_span_one_to="bounds",
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                - \abjad-dashed-line-with-arrow
+                - \tweak bound-details.left.text \markup {
+                    \concat
+                        {
+                            \upright
+                                pont.
+                            \hspace
+                                #0.5
+                        }
+                    }
+                - \tweak bound-details.right.padding 1.4
+                - \tweak staff-padding #1.5
+                \startTextSpanOne
+                c'4
+                c'4
+                \stopTextSpanOne
+                - \abjad-dashed-line-with-hook
+                - \tweak bound-details.left.text \markup {
+                    \concat
+                        {
+                            \upright
+                                pont.
+                            \hspace
+                                #0.5
+                        }
+                    }
+                - \tweak bound-details.right.padding 3
+                - \tweak staff-padding #1.5
+                \startTextSpanOne
+                r4
+                \stopTextSpanOne
+            }
+
+    """
+
     def __init__(
         self,
         span_one_positions=None,
@@ -2732,24 +2993,32 @@ class TextSpanHandler(Handler):
 
 class TrillHandler(Handler):
     r"""
-    >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
-    >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
-    >>> handler(staff)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        <c' d'>4
-        c'4
-        c'4
-        \pitchedTrill
-        c'4
-        \startTrillSpan d'
-        c'4
-        \stopTrillSpan
-        c'4
-        c'4
-        c'4
-    }
+    Trill Handler
+
+    .. container:: example
+
+        >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
+        >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                <c' d'>4
+                c'4
+                c'4
+                \pitchedTrill
+                c'4
+                \startTrillSpan d'
+                c'4
+                \stopTrillSpan
+                c'4
+                c'4
+                c'4
+            }
 
     """
 

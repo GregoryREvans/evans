@@ -34,109 +34,135 @@ def metric_modulation(
     modulated_beat=(abjad.Note("c'4")),
 ):
     r"""
-    >>> m = evans.metric_modulation(
-    ...     metronome_mark=((1, 4), 96),
-    ...     left_note=(abjad.Tuplet(multiplier=(5, 3), components=[abjad.Note()])),
-    ...     right_note=(abjad.Note("c'4")),
-    ...     modulated_beat=(abjad.Note("c'4")),
-    ... )
-    ...
-    >>> staff = abjad.Staff("c'1")
-    >>> abjad.attach(m, staff[0])
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'1
-        ^ \markup {
-          \huge
-          \concat {
-              \abjad-metronome-mark-mixed-number-markup #2 #0 #1 #"57" #"3" #"5"
-              \hspace #1
-              \upright [
-              \abjad-metric-modulation-tuplet-lhs #2 #0 #5 #3 #2 #0 #'(0.6 . 0.6)
-              \hspace #0.5
-              \upright ]
-          }
-        }
-    }
+    Makes metric modulation markup.
 
-    >>> m = evans.metric_modulation(
-    ...     metronome_mark=((1, 4), 96),
-    ...     left_note=(abjad.Note("c'4.")),
-    ...     right_note=(abjad.Note("c'4")),
-    ...     modulated_beat=(abjad.Note("c'4")),
-    ... )
-    ...
-    >>> staff = abjad.Staff("c'1")
-    >>> abjad.attach(m, staff[0])
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'1
-        ^ \markup {
-          \huge
-          \concat {
-              \abjad-metronome-mark-markup #2 #0 #1 #"64"
-              \hspace #1
-              \upright [
-              \abjad-metric-modulation #2 #1 #2 #0 #'(0.6 . 0.6)
-              \hspace #0.5
-              \upright ]
-          }
-        }
-    }
+    .. container:: example
 
-    >>> m = evans.metric_modulation(
-    ...     metronome_mark=((1, 4), 71),
-    ...     left_note=(abjad.Tuplet(multiplier=(10, 9), components=[abjad.Note("c'16")])),
-    ...     right_note=(abjad.Note("c'16")),
-    ...     modulated_beat=(abjad.Note("c'4")),
-    ... )
-    ...
-    >>> staff = abjad.Staff("c'1")
-    >>> abjad.attach(m, staff[0])
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'1
-        ^ \markup {
-          \huge
-          \concat {
-              \abjad-metronome-mark-mixed-number-markup #2 #0 #1 #"63" #"9" #"10"
-              \hspace #1
-              \upright [
-              \abjad-metric-modulation-tuplet-lhs #4 #0 #10 #9 #4 #0 #'(0.6 . 0.6)
-              \hspace #0.5
-              \upright ]
-          }
-        }
-    }
+        >>> m = evans.metric_modulation(
+        ...     metronome_mark=((1, 4), 96),
+        ...     left_note=(abjad.Tuplet(multiplier=(5, 3), components=[abjad.Note()])),
+        ...     right_note=(abjad.Note("c'4")),
+        ...     modulated_beat=(abjad.Note("c'4")),
+        ... )
+        ...
+        >>> staff = abjad.Staff("c'1")
+        >>> abjad.attach(m, staff[0])
+        >>> abjad.show(staff) # doctest: +SKIP
 
-    >>> m = evans.metric_modulation(
-    ...     metronome_mark=((1, 4), 40),
-    ...     left_note=(abjad.Tuplet(multiplier=(2, 3), components=[abjad.Note("c'2")])),
-    ...     right_note=(abjad.Note("c'2")),
-    ...     modulated_beat=(abjad.Note("c'4")),
-    ... )
-    ...
-    >>> staff = abjad.Staff("c'1")
-    >>> abjad.attach(m, staff[0])
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'1
-        ^ \markup {
-          \huge
-          \concat {
-              \abjad-metronome-mark-markup #2 #0 #1 #"60"
-              \hspace #1
-              \upright [
-              \abjad-metric-modulation-tuplet-lhs #1 #0 #2 #3 #1 #0 #'(0.6 . 0.6)
-              \hspace #0.5
-              \upright ]
-          }
-        }
-    }
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'1
+                ^ \markup {
+                  \huge
+                  \concat {
+                      \abjad-metronome-mark-mixed-number-markup #2 #0 #1 #"57" #"3" #"5"
+                      \hspace #1
+                      \upright [
+                      \abjad-metric-modulation-tuplet-lhs #2 #0 #5 #3 #2 #0 #'(0.6 . 0.6)
+                      \hspace #0.5
+                      \upright ]
+                  }
+                }
+            }
+
+    .. container:: example
+
+        >>> m = evans.metric_modulation(
+        ...     metronome_mark=((1, 4), 96),
+        ...     left_note=(abjad.Note("c'4.")),
+        ...     right_note=(abjad.Note("c'4")),
+        ...     modulated_beat=(abjad.Note("c'4")),
+        ... )
+        ...
+        >>> staff = abjad.Staff("c'1")
+        >>> abjad.attach(m, staff[0])
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'1
+                ^ \markup {
+                  \huge
+                  \concat {
+                      \abjad-metronome-mark-markup #2 #0 #1 #"64"
+                      \hspace #1
+                      \upright [
+                      \abjad-metric-modulation #2 #1 #2 #0 #'(0.6 . 0.6)
+                      \hspace #0.5
+                      \upright ]
+                  }
+                }
+            }
+
+    .. container:: example
+
+        >>> m = evans.metric_modulation(
+        ...     metronome_mark=((1, 4), 71),
+        ...     left_note=(abjad.Tuplet(multiplier=(10, 9), components=[abjad.Note("c'16")])),
+        ...     right_note=(abjad.Note("c'16")),
+        ...     modulated_beat=(abjad.Note("c'4")),
+        ... )
+        ...
+        >>> staff = abjad.Staff("c'1")
+        >>> abjad.attach(m, staff[0])
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'1
+                ^ \markup {
+                  \huge
+                  \concat {
+                      \abjad-metronome-mark-mixed-number-markup #2 #0 #1 #"63" #"9" #"10"
+                      \hspace #1
+                      \upright [
+                      \abjad-metric-modulation-tuplet-lhs #4 #0 #10 #9 #4 #0 #'(0.6 . 0.6)
+                      \hspace #0.5
+                      \upright ]
+                  }
+                }
+            }
+
+    .. container:: example
+
+        >>> m = evans.metric_modulation(
+        ...     metronome_mark=((1, 4), 40),
+        ...     left_note=(abjad.Tuplet(multiplier=(2, 3), components=[abjad.Note("c'2")])),
+        ...     right_note=(abjad.Note("c'2")),
+        ...     modulated_beat=(abjad.Note("c'4")),
+        ... )
+        ...
+        >>> staff = abjad.Staff("c'1")
+        >>> abjad.attach(m, staff[0])
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'1
+                ^ \markup {
+                  \huge
+                  \concat {
+                      \abjad-metronome-mark-markup #2 #0 #1 #"60"
+                      \hspace #1
+                      \upright [
+                      \abjad-metric-modulation-tuplet-lhs #1 #0 #2 #3 #1 #0 #'(0.6 . 0.6)
+                      \hspace #0.5
+                      \upright ]
+                  }
+                }
+            }
 
     """
     tempo_note = abjad.Note()

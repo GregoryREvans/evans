@@ -67,58 +67,61 @@ class SilentTimespan(abjad.Timespan):
 
 class TimespanMaker(object):
     """
-    >>> timespan_maker = evans.TimespanMaker(
-    ...     denominator=8,
-    ...     total_duration=abjad.Duration(15, 2),
-    ... )
-    ...
-    >>> counts = [3, 5, -3, 4, 7, -1]
-    >>> timespan_list = timespan_maker(counts, max_duration=6)
-    >>> print(abjad.storage(timespan_list))
-    abjad.TimespanList(
-        [
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((0, 1)),
-                stop_offset=abjad.Offset((3, 8)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((3, 8)),
-                stop_offset=abjad.Offset((1, 1)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((11, 8)),
-                stop_offset=abjad.Offset((15, 8)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((15, 8)),
-                stop_offset=abjad.Offset((21, 8)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((23, 8)),
-                stop_offset=abjad.Offset((13, 4)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((13, 4)),
-                stop_offset=abjad.Offset((31, 8)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((17, 4)),
-                stop_offset=abjad.Offset((19, 4)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((19, 4)),
-                stop_offset=abjad.Offset((11, 2)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((23, 4)),
-                stop_offset=abjad.Offset((49, 8)),
-                ),
-            abjad.AnnotatedTimespan(
-                start_offset=abjad.Offset((49, 8)),
-                stop_offset=abjad.Offset((27, 4)),
-                ),
-            ]
-        )
+
+    .. container:: example
+
+        >>> timespan_maker = evans.TimespanMaker(
+        ...     denominator=8,
+        ...     total_duration=abjad.Duration(15, 2),
+        ... )
+        ...
+        >>> counts = [3, 5, -3, 4, 7, -1]
+        >>> timespan_list = timespan_maker(counts, max_duration=6)
+        >>> print(abjad.storage(timespan_list))
+        abjad.TimespanList(
+            [
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((0, 1)),
+                    stop_offset=abjad.Offset((3, 8)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((3, 8)),
+                    stop_offset=abjad.Offset((1, 1)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((11, 8)),
+                    stop_offset=abjad.Offset((15, 8)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((15, 8)),
+                    stop_offset=abjad.Offset((21, 8)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((23, 8)),
+                    stop_offset=abjad.Offset((13, 4)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((13, 4)),
+                    stop_offset=abjad.Offset((31, 8)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((17, 4)),
+                    stop_offset=abjad.Offset((19, 4)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((19, 4)),
+                    stop_offset=abjad.Offset((11, 2)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((23, 4)),
+                    stop_offset=abjad.Offset((49, 8)),
+                    ),
+                abjad.AnnotatedTimespan(
+                    start_offset=abjad.Offset((49, 8)),
+                    stop_offset=abjad.Offset((27, 4)),
+                    ),
+                ]
+            )
 
     """
 
@@ -364,8 +367,11 @@ def talea_timespans(talea, advancement=0):
 
 def to_digit(string):
     """
-    >>> evans.to_digit("2")
-    2
+
+    .. container:: example
+
+        >>> evans.to_digit("2")
+        2
 
     """
     return int(string) if string.isdigit() else string
@@ -373,8 +379,11 @@ def to_digit(string):
 
 def sorted_keys(text):
     """
-    >>> evans.sorted_keys("Voice 1")
-    ['Voice ', 1, '']
+
+    .. container:: example
+
+        >>> evans.sorted_keys("Voice 1")
+        ['Voice ', 1, '']
 
     """
     return [to_digit(_) for _ in re.split(r"(\d+)", text)]

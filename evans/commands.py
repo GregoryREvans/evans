@@ -28,27 +28,33 @@ class Command(object):
         r"""
         Calls command on Score.
 
-        >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])
-        >>> command = evans.Command(
-        ...     command="attach",
-        ...     indicator=abjad.Markup("*", direction="up"),
-        ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
-        ...     voice_name="staff one"
-        ... )
-        ...
-        >>> command(score)
-        >>> print(abjad.lilypond(score))
-        \new Score
-        <<
-            \context Staff = "staff one"
-            {
-                c'4
-                c'4
-                ^ \markup { * }
-                c'4
-                c'4
-            }
-        >>
+        .. container:: example
+
+            >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])
+            >>> command = evans.Command(
+            ...     command="attach",
+            ...     indicator=abjad.Markup("*", direction="up"),
+            ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
+            ...     voice_name="staff one"
+            ... )
+            ...
+            >>> command(score)
+            >>> abjad.show(score) # doctest: +SKIP
+
+            .. docs::
+
+                >>> print(abjad.lilypond(score))
+                \new Score
+                <<
+                    \context Staff = "staff one"
+                    {
+                        c'4
+                        c'4
+                        ^ \markup { * }
+                        c'4
+                        c'4
+                    }
+                >>
 
         """
         if self.voice_name == "score":

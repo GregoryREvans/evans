@@ -7,25 +7,29 @@ import numpy
 
 class CyclicList(object):
     r"""
-    >>> _cyc_count = -1
-    >>> _non_cyc_count = -1
-    >>> cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
-    >>> non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
+    Cyclic List
 
-    >>> cyc_generator(r=2)
-    [1, 2]
+    .. container:: example
 
-    >>> cyc_generator(r=7)
-    [3, 1, 2, 3, 1, 2, 3]
+        >>> _cyc_count = -1
+        >>> _non_cyc_count = -1
+        >>> cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
+        >>> non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
 
-    >>> non_cyc_generator(r=2)
-    [1, 2]
+        >>> cyc_generator(r=2)
+        [1, 2]
 
-    >>> non_cyc_generator(r=7)
-    [1, 2, 3, 1, 2, 3, 1]
+        >>> cyc_generator(r=7)
+        [3, 1, 2, 3, 1, 2, 3]
 
-    >>> print((cyc_generator.state(), non_cyc_generator.state()))
-    (8, 6)
+        >>> non_cyc_generator(r=2)
+        [1, 2]
+
+        >>> non_cyc_generator(r=7)
+        [1, 2, 3, 1, 2, 3, 1]
+
+        >>> print((cyc_generator.state(), non_cyc_generator.state()))
+        (8, 6)
 
     """
 
@@ -67,21 +71,25 @@ class CyclicList(object):
 
 class MarkovChain(object):
     """
-    >>> import numpy
-    >>> numpy.random.seed(7)
-    >>> prob = {
-    ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
-    ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
-    ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
-    ... }
-    >>> chain = evans.MarkovChain(transition_prob=prob)
-    >>> key_list = [
-    ...     x for x in chain.generate_states(
-    ...         current_state='one', no=14
-    ...         )
-    ...     ]
-    >>> key_list
-    ['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one']
+    Markov Chain
+
+    .. container:: example
+
+        >>> import numpy
+        >>> numpy.random.seed(7)
+        >>> prob = {
+        ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
+        ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
+        ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
+        ... }
+        >>> chain = evans.MarkovChain(transition_prob=prob)
+        >>> key_list = [
+        ...     x for x in chain.generate_states(
+        ...         current_state='one', no=14
+        ...         )
+        ...     ]
+        >>> key_list
+        ['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one']
 
     """
 
@@ -115,15 +123,18 @@ class MarkovChain(object):
 
 def cyc(lst):
     """
-    >>> cyc_list = evans.cyc([0, 1, 2])
-    >>> for _ in range(5):
-    ...     print(next(cyc_list))
-    ...
-    0
-    1
-    2
-    0
-    1
+
+    .. container:: example
+
+        >>> cyc_list = evans.cyc([0, 1, 2])
+        >>> for _ in range(5):
+        ...     print(next(cyc_list))
+        ...
+        0
+        1
+        2
+        0
+        1
 
     """
     count = -1
@@ -134,8 +145,11 @@ def cyc(lst):
 
 def e_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
     """
-    >>> print(evans.e_bonacci_cycle(n=3, iters=15, first=1, second=1, modulus=7))
-    [1, 1, 2, 4, 7, 6, 3, 2, 4, 2, 1, 7, 3]
+
+    .. container:: example
+
+        >>> print(evans.e_bonacci_cycle(n=3, iters=15, first=1, second=1, modulus=7))
+        [1, 1, 2, 4, 7, 6, 3, 2, 4, 2, 1, 7, 3]
 
     """
     final = [0] * iters
@@ -161,8 +175,11 @@ def e_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
 
 def e_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
     """
-    >>> print(evans.e_dovan_cycle(n=3, iters=15, first=1, second=1, modulus=7))
-    [1, 1, 1, 2, 3, 4, 6, 2, 6, 5, 7, 6, 4]
+
+    .. container:: example
+
+        >>> print(evans.e_dovan_cycle(n=3, iters=15, first=1, second=1, modulus=7))
+        [1, 1, 1, 2, 3, 4, 6, 2, 6, 5, 7, 6, 4]
 
     """
     iters = iters + 1
@@ -189,8 +206,11 @@ def e_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
 
 def feigenbaum_bifurcations(fertility=3.59785, initial_state=0.5, iterations=10):
     """
-    >>> print(evans.feigenbaum_bifurcations(fertility= 2.3, initial_state=0.5, iterations=4))
-    [0.5, 0.575, 0.5620625, 0.5661409660156249, 0.5649383570133959]
+
+    .. container:: example
+
+        >>> print(evans.feigenbaum_bifurcations(fertility= 2.3, initial_state=0.5, iterations=4))
+        [0.5, 0.575, 0.5620625, 0.5661409660156249, 0.5649383570133959]
 
     """
     list_ = [initial_state]
@@ -205,10 +225,13 @@ def feigenbaum_bifurcations(fertility=3.59785, initial_state=0.5, iterations=10)
 
 def flatten(lst):
     """
-    >>> nested_list = [1, 1, [1, [1, 1]], 1]
-    >>> flat = evans.flatten(nested_list)
-    >>> print(flat)
-    [1, 1, 1, 1, 1, 1]
+
+    .. container:: example
+
+        >>> nested_list = [1, 1, [1, [1, 1]], 1]
+        >>> flat = evans.flatten(nested_list)
+        >>> print(flat)
+        [1, 1, 1, 1, 1, 1]
 
     """
     out = []
@@ -222,8 +245,11 @@ def flatten(lst):
 
 def grouper(lst1, lst2):
     """
-    >>> print(evans.grouper([0, 1, 2, 3, 4, 5, 6, 7], [1, 1, 2, 1, 3]))
-    [0, 1, [2, 3], 4, [5, 6, 7]]
+
+    .. container:: example
+
+        >>> print(evans.grouper([0, 1, 2, 3, 4, 5, 6, 7], [1, 1, 2, 1, 3]))
+        [0, 1, [2, 3], 4, [5, 6, 7]]
 
     """
 
@@ -239,11 +265,16 @@ def grouper(lst1, lst2):
 
 def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
     """
-    >>> print(harmonic_series(20, 5))
-    [20, 40, 60, 80, 100]
 
-    >>> print(harmonic_series(900, 5, True))
-    [900.0, 450.0, 300.0, 225.0, 180.0]
+    .. container:: example
+
+        >>> print(harmonic_series(20, 5))
+        [20, 40, 60, 80, 100]
+
+    .. container:: example
+
+        >>> print(harmonic_series(900, 5, True))
+        [900.0, 450.0, 300.0, 225.0, 180.0]
 
     """
     returned_list = []
@@ -258,9 +289,12 @@ def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
 
 def hexagonal_sequence(n_list=[1]):
     """
-    >>> seq = evans.hexagonal_sequence(n_list=[_ for _ in range(8)])
-    >>> print(seq)
-    [0, 1, 6, 15, 28, 45, 66, 91]
+
+    .. container:: example
+
+        >>> seq = evans.hexagonal_sequence(n_list=[_ for _ in range(8)])
+        >>> print(seq)
+        [0, 1, 6, 15, 28, 45, 66, 91]
 
     """
     seq = []
@@ -272,28 +306,31 @@ def hexagonal_sequence(n_list=[1]):
 
 def josephus(n, k):
     """
-    >>> tone_row = [0, 1, 2, 3, 4]
-    >>> for i in range(16):
-    ...     print(
-    ...         josephus(len(tone_row), i + 2)
-    ...     )
-    ...
-    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 4], [2, 4], [2]]
-    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [1, 3, 4], [1, 3], [3]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 4], [0, 1], [0]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [1, 2, 3], [1, 3], [1]]
-    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 3, 4], [3, 4], [3]]
-    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 3], [2, 3], [3]]
-    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 3, 4], [0, 3], [0]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 2], [0, 1], [1]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 2, 3], [0, 3], [3]]
-    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4], [2, 4], [4]]
-    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [2, 3, 4], [2, 3], [2]]
-    [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 1, 4], [0, 1], [1]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 4], [1, 2, 4], [1, 4], [4]]
-    [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 1, 3], [0, 3], [0]]
-    [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [2, 3], [2]]
-    [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 3, 4], [0, 3], [3]]
+
+    .. container:: example
+
+        >>> tone_row = [0, 1, 2, 3, 4]
+        >>> for i in range(16):
+        ...     print(
+        ...         josephus(len(tone_row), i + 2)
+        ...     )
+        ...
+        [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 4], [2, 4], [2]]
+        [[0, 1, 2, 3, 4], [0, 1, 3, 4], [1, 3, 4], [1, 3], [3]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 4], [0, 1], [0]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 3], [1, 2, 3], [1, 3], [1]]
+        [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 3, 4], [3, 4], [3]]
+        [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 3], [2, 3], [3]]
+        [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 3, 4], [0, 3], [0]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 4], [0, 1, 2], [0, 1], [1]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 2, 3], [0, 3], [3]]
+        [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4], [2, 4], [4]]
+        [[0, 1, 2, 3, 4], [0, 2, 3, 4], [2, 3, 4], [2, 3], [2]]
+        [[0, 1, 2, 3, 4], [0, 1, 3, 4], [0, 1, 4], [0, 1], [1]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 4], [1, 2, 4], [1, 4], [4]]
+        [[0, 1, 2, 3, 4], [0, 1, 2, 3], [0, 1, 3], [0, 3], [0]]
+        [[0, 1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [2, 3], [2]]
+        [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 3, 4], [0, 3], [3]]
 
     """
     p, i, seq = list(range(n)), 0, []
@@ -310,10 +347,13 @@ def josephus(n, k):
 
 def lindenmayer(seed, rules, iters):
     """
-    >>> rule_dict = { "A": "ABA" , "B": "BC", "C": "BAC"}
-    >>> lind_list = [_ for _ in evans.lindenmayer(seed='AB', rules=rule_dict, iters=2)]
-    >>> print(lind_list)
-    ['A', 'B', 'A', 'B', 'C', 'A', 'B', 'A', 'B', 'C', 'B', 'A', 'C']
+
+    .. container:: example
+
+        >>> rule_dict = { "A": "ABA" , "B": "BC", "C": "BAC"}
+        >>> lind_list = [_ for _ in evans.lindenmayer(seed='AB', rules=rule_dict, iters=2)]
+        >>> print(lind_list)
+        ['A', 'B', 'A', 'B', 'C', 'A', 'B', 'A', 'B', 'C', 'B', 'A', 'C']
 
     """
     for _ in range(iters):
@@ -329,23 +369,28 @@ def lindenmayer(seed, rules, iters):
 
 def mirror(lst, sequential_duplicates):
     """
-    >>> print(
-    ...     evans.mirror(
-    ...         [0, 1, 2, 3],
-    ...         sequential_duplicates=True,
-    ...     )
-    ... )
-    ...
-    [0, 1, 2, 3, 3, 2, 1, 0]
 
-    >>> print(
-    ...     evans.mirror(
-    ...         [0, 1, 2, 3],
-    ...         sequential_duplicates=False,
-    ...     )
-    ... )
-    ...
-    [0, 1, 2, 3, 2, 1]
+    .. container:: example
+
+        >>> print(
+        ...     evans.mirror(
+        ...         [0, 1, 2, 3],
+        ...         sequential_duplicates=True,
+        ...     )
+        ... )
+        ...
+        [0, 1, 2, 3, 3, 2, 1, 0]
+
+    .. container:: example
+
+        >>> print(
+        ...     evans.mirror(
+        ...         [0, 1, 2, 3],
+        ...         sequential_duplicates=False,
+        ...     )
+        ... )
+        ...
+        [0, 1, 2, 3, 2, 1]
 
     """
     if sequential_duplicates is False:
@@ -356,9 +401,12 @@ def mirror(lst, sequential_duplicates):
 
 def mod(sequence, modulus, indices=False):
     """
-    >>> mod_seq = evans.mod(sequence=[7, 8, 9, 10], modulus=7)
-    >>> print(mod_seq)
-    [7, 1, 2, 3]
+
+    .. container:: example
+
+        >>> mod_seq = evans.mod(sequence=[7, 8, 9, 10], modulus=7)
+        >>> print(mod_seq)
+        [7, 1, 2, 3]
 
     """
     new_seq = [(_ % modulus) for _ in sequence]
@@ -375,8 +423,11 @@ def mod(sequence, modulus, indices=False):
 
 def multiple_sequence(fundamental=20, number_of_partials=10, multiple=1.5):
     """
-    >>> print(multiple_sequence(20, 10, 1.25))
-    [20.0, 25.0, 31.25, 39.0625, 48.828125, 61.03515625, 76.2939453125, 95.367431640625, 119.20928955078125, 149.01161193847656, 186.2645149230957]
+
+    .. container:: example
+
+        >>> print(multiple_sequence(20, 10, 1.25))
+        [20.0, 25.0, 31.25, 39.0625, 48.828125, 61.03515625, 76.2939453125, 95.367431640625, 119.20928955078125, 149.01161193847656, 186.2645149230957]
 
     """
     returned_list = [float(fundamental)]
@@ -389,8 +440,11 @@ def n_bonacci_cycle(
     n, first_number, second_number, length, modulus, wrap_to_zero=False
 ):
     """
-    >>> print(evans.n_bonacci_cycle(n=3, first_number=1, second_number=3, length=8, modulus=7))
-    [1, 3, 3, 5, 4, 3, 6, 7, 6, 4]
+
+    .. container:: example
+
+        >>> print(evans.n_bonacci_cycle(n=3, first_number=1, second_number=3, length=8, modulus=7))
+        [1, 3, 3, 5, 4, 3, 6, 7, 6, 4]
 
     """
     sequence = [first_number, second_number]
@@ -406,9 +460,12 @@ def n_bonacci_cycle(
 
 def normalize_sum(integer_list, desired_sum=1):
     """
-    >>> weights = [15, 6, 14, 4, 16, 6, 14, 4, 16, 5]
-    >>> print(evans.normalize_sum(integer_list=weights, desired_sum=1))
-    [0.15, 0.06, 0.14, 0.04, 0.16, 0.06, 0.14, 0.04, 0.16, 0.05]
+
+    .. container:: example
+
+        >>> weights = [15, 6, 14, 4, 16, 6, 14, 4, 16, 5]
+        >>> print(evans.normalize_sum(integer_list=weights, desired_sum=1))
+        [0.15, 0.06, 0.14, 0.04, 0.16, 0.06, 0.14, 0.04, 0.16, 0.05]
 
     """
     sum = 0
@@ -422,8 +479,11 @@ def normalize_sum(integer_list, desired_sum=1):
 
 def normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]):
     """
-    >>> print(evans.normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]))
-    [4, 1, -50, [-5, 1], -2]
+
+    .. container:: example
+
+        >>> print(evans.normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]))
+        [4, 1, -50, [-5, 1], -2]
 
     """
     out = []
@@ -441,8 +501,11 @@ def normalize_to_indices(raw_list=[1, 0.24, -12, [-4, 0.7], -0.5]):
 
 def orbits(initial_state=0.4, iterations=10):
     """
-    >>> print(evans.orbits(initial_state=0.4, iterations=5))
-    [0.96, 0.15360000000000013, 0.5200281600000003, 0.9983954912280576, 0.006407737294172653]
+
+    .. container:: example
+
+        >>> print(evans.orbits(initial_state=0.4, iterations=5))
+        [0.96, 0.15360000000000013, 0.5200281600000003, 0.9983954912280576, 0.006407737294172653]
 
     """
     list_ = []
@@ -457,8 +520,11 @@ def orbits(initial_state=0.4, iterations=10):
 
 def perm(lst):
     """
-    >>> print(evans.perm([0, 1, 2]))
-    [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
+
+    .. container:: example
+
+        >>> print(evans.perm([0, 1, 2]))
+        [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
 
     """
     if len(lst) == 0:
@@ -498,9 +564,12 @@ def pitch_warp(
 
 def prime_sequence(start, end):
     """
-    >>> primes = evans.prime_sequence(start=11, end=25)
-    >>> print(primes)
-    [11, 13, 15, 17, 19, 21, 23, 25]
+
+    .. container:: example
+
+        >>> primes = evans.prime_sequence(start=11, end=25)
+        >>> print(primes)
+        [11, 13, 15, 17, 19, 21, 23, 25]
 
     """
     seq = []
@@ -519,9 +588,12 @@ def prime_sequence(start, end):
 
 def prism_sequence(n_list=[1]):
     """
-    >>> seq = evans.prism_sequence(n_list=[_ for _ in range(8)])
-    >>> print(seq)
-    [1, 14, 57, 148, 305, 546, 889, 1352]
+
+    .. container:: example
+
+        >>> seq = evans.prism_sequence(n_list=[_ for _ in range(8)])
+        >>> print(seq)
+        [1, 14, 57, 148, 305, 546, 889, 1352]
 
     """
     seq = []
@@ -533,15 +605,18 @@ def prism_sequence(n_list=[1]):
 
 def random_walk(random_seed, length, step_list, mapped_list):
     """
-    >>> walk = evans.random_walk(
-    ...     random_seed=1,
-    ...     length=5,
-    ...     step_list=[1, 2, 1],
-    ...     mapped_list=[_ for _ in range(10)],
-    ... )
-    ...
-    >>> print(walk)
-    [0, 9, 0, 2, 1, 0]
+
+    .. container:: example
+
+        >>> walk = evans.random_walk(
+        ...     random_seed=1,
+        ...     length=5,
+        ...     step_list=[1, 2, 1],
+        ...     mapped_list=[_ for _ in range(10)],
+        ... )
+        ...
+        >>> print(walk)
+        [0, 9, 0, 2, 1, 0]
 
     """
     random.seed(random_seed)
@@ -566,9 +641,12 @@ def random_walk(random_seed, length, step_list, mapped_list):
 
 def recaman_sequence(number):
     """
-    >>> rec_seq = [evans.recaman_sequence(number=_ + 1) for _ in range(10)]
-    >>> print(rec_seq)
-    [1, 3, 6, 2, 7, 1, 8, 16, 7, 17]
+
+    .. container:: example
+
+        >>> rec_seq = [evans.recaman_sequence(number=_ + 1) for _ in range(10)]
+        >>> print(rec_seq)
+        [1, 3, 6, 2, 7, 1, 8, 16, 7, 17]
 
     """
     temp_list = []
@@ -589,8 +667,11 @@ def recaman_sequence(number):
 
 def reciprocal(value):
     """
-    >>> print(reciprocal(0.5))
-    2.0
+
+    .. container:: example
+
+        >>> print(reciprocal(0.5))
+        2.0
 
     """
     return 1 / value
@@ -598,9 +679,12 @@ def reciprocal(value):
 
 def reduce_mod(x, rw):
     """
-    >>> mod_list = evans.reduce_mod(5, [0, 1, 2, 3, 4, 5, 6, 7, 8])
-    >>> print(mod_list)
-    [0, 1, 2, 3, 4, 0, 1, 2, 3]
+
+    .. container:: example
+
+        >>> mod_list = evans.reduce_mod(5, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        >>> print(mod_list)
+        [0, 1, 2, 3, 4, 0, 1, 2, 3]
 
     """
     return [(y % x) for y in rw]
@@ -608,16 +692,19 @@ def reduce_mod(x, rw):
 
 def reproportion_chord(base, chord, round=None):
     """
-    >>> rounder = evans.to_nearest_eighth_tone
-    >>> print(
-    ...     evans.reproportion_chord(
-    ...         base=2,
-    ...         chord=[-24, -20, -15, -14, -4, 5, 11, 19, 26, 37, 39, 42],
-    ...         round=rounder,
-    ...     )
-    ... )
-    ...
-    [-4.75, -4, -3, -2.75, -0.75, 1, 2.25, 3.75, 5.25, 7.5, 7.75, 8.5]
+
+    .. container:: example
+
+        >>> rounder = evans.to_nearest_eighth_tone
+        >>> print(
+        ...     evans.reproportion_chord(
+        ...         base=2,
+        ...         chord=[-24, -20, -15, -14, -4, 5, 11, 19, 26, 37, 39, 42],
+        ...         round=rounder,
+        ...     )
+        ... )
+        ...
+        [-4.75, -4, -3, -2.75, -0.75, 1, 2.25, 3.75, 5.25, 7.5, 7.75, 8.5]
 
     """
     base_converter = base / 10.0
@@ -631,14 +718,17 @@ def reproportion_chord(base, chord, round=None):
 
 def reproportion_chromatic_decimals(base, root_int, scale_range, round=None):
     """
-    >>> rounder = evans.to_nearest_eighth_tone
-    >>> print(
-    ...     evans.reproportion_chromatic_decimals(
-    ...         base=10, root_int=0, scale_range=12, round=rounder,
-    ...     )
-    ... )
-    ...
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+    .. container:: example
+
+        >>> rounder = evans.to_nearest_eighth_tone
+        >>> print(
+        ...     evans.reproportion_chromatic_decimals(
+        ...         base=10, root_int=0, scale_range=12, round=rounder,
+        ...     )
+        ... )
+        ...
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
     """
     base_converter = base / 10.0
@@ -655,29 +745,36 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=None):
 
 def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
     """
-    >>> print(
-    ...     reproportion_harmonics(
-    ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_tuples'
-    ...     )
-    ... )
-    ...
-    [(20, 1), (20, 1.0), (40, 0.5), (60, 0.3333333333333333), (80, 0.25), (100, 0.2)]
 
-    >>> print(
-    ...     reproportion_harmonics(
-    ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_lists'
-    ...     )
-    ... )
-    ...
-    ([20, 20, 40, 60, 80, 100], [1, 1.0, 0.5, 0.3333333333333333, 0.25, 0.2])
+    .. container:: example
 
-    >>> print(
-    ...     reproportion_harmonics(
-    ...         fund=20, scale=[(_ + 1) for _ in range(5)],
-    ...     )
-    ... )
-    ...
-    [20, 20, 40, 60, 80, 100]
+        >>> print(
+        ...     reproportion_harmonics(
+        ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_tuples'
+        ...     )
+        ... )
+        ...
+        [(20, 1), (20, 1.0), (40, 0.5), (60, 0.3333333333333333), (80, 0.25), (100, 0.2)]
+
+    .. container:: example
+
+        >>> print(
+        ...     reproportion_harmonics(
+        ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_lists'
+        ...     )
+        ... )
+        ...
+        ([20, 20, 40, 60, 80, 100], [1, 1.0, 0.5, 0.3333333333333333, 0.25, 0.2])
+
+    .. container:: example
+
+        >>> print(
+        ...     reproportion_harmonics(
+        ...         fund=20, scale=[(_ + 1) for _ in range(5)],
+        ...     )
+        ... )
+        ...
+        [20, 20, 40, 60, 80, 100]
 
     """
     calculated_series = [_ * fund for _ in scale]
@@ -696,9 +793,12 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
 
 def reproportion_scale(base, limit):
     """
-    >>> insert_scale = (evans.reproportion_scale(base=15, limit=17))
-    >>> print(insert_scale)
-    [3.0, 4.5, 6.0, 7.5, 9.0, 10.5, 12.0, 13.5, 15.0, 16.5, 18.0, 19.5, 21.0, 22.5, 24.0, 25.5]
+
+    .. container:: example
+
+        >>> insert_scale = (evans.reproportion_scale(base=15, limit=17))
+        >>> print(insert_scale)
+        [3.0, 4.5, 6.0, 7.5, 9.0, 10.5, 12.0, 13.5, 15.0, 16.5, 18.0, 19.5, 21.0, 22.5, 24.0, 25.5]
 
     """
     step = base / 10.0
@@ -717,8 +817,11 @@ def _return_amplitude_reciprocals(rescaled_scale):
 
 def rotate(lst, n):
     """
-    >>> print(evans.rotate([0, 1, 2, 3], 2))
-    [2, 3, 0, 1]
+
+    .. container:: example
+
+        >>> print(evans.rotate([0, 1, 2, 3], 2))
+        [2, 3, 0, 1]
 
     """
     return lst[n:] + lst[:n]
@@ -726,26 +829,33 @@ def rotate(lst, n):
 
 def set_net(set, group_size, filter_depth):
     r"""
-    >>> filter_depth_ = 7
-    >>> set_ = "ABCDEFG"
-    >>> group_size_ = 3
-    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-    >>> print(net)
-    [('A', 'B', 'C'), ('A', 'D', 'E'), ('A', 'F', 'G'), ('B', 'D', 'F'), ('B', 'E', 'G'), ('C', 'D', 'G'), ('C', 'E', 'F')]
 
-    >>> filter_depth_ = 3
-    >>> set_ = "ABCDEFGHI"
-    >>> group_size_ = 4
-    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-    >>> print(net)
-    [('A', 'B', 'C', 'D'), ('A', 'E', 'F', 'G'), ('B', 'E', 'H', 'I')]
+    .. container:: example
 
-    >>> filter_depth_ = 2
-    >>> set_ = "ABCDE"
-    >>> group_size_ = 3
-    >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
-    >>> print(net)
-    [('A', 'B', 'C'), ('A', 'D', 'E')]
+        >>> filter_depth_ = 7
+        >>> set_ = "ABCDEFG"
+        >>> group_size_ = 3
+        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+        >>> print(net)
+        [('A', 'B', 'C'), ('A', 'D', 'E'), ('A', 'F', 'G'), ('B', 'D', 'F'), ('B', 'E', 'G'), ('C', 'D', 'G'), ('C', 'E', 'F')]
+
+    .. container:: example
+
+        >>> filter_depth_ = 3
+        >>> set_ = "ABCDEFGHI"
+        >>> group_size_ = 4
+        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+        >>> print(net)
+        [('A', 'B', 'C', 'D'), ('A', 'E', 'F', 'G'), ('B', 'E', 'H', 'I')]
+
+    .. container:: example
+
+        >>> filter_depth_ = 2
+        >>> set_ = "ABCDE"
+        >>> group_size_ = 3
+        >>> net = evans.set_net(set=set_, group_size=group_size_, filter_depth=filter_depth_)
+        >>> print(net)
+        [('A', 'B', 'C'), ('A', 'D', 'E')]
 
     """
     combination_sets = [_ for _ in itertools.combinations(set, group_size)]
@@ -771,11 +881,16 @@ def set_net(set, group_size, filter_depth):
 
 def warp(min, max, random_seed, warped_list, by_integers=False):
     """
-    >>> print(evans.warp(-0.5, 0.5, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
-    [-0.26203537290810863, 1.0442292252959517, 1.8699551665480794, 3.1039200385961943, 4.125720304108054, 4.565528859239813, 5.513167991554874, 7.33746908209646, 7.759354014328007, 8.734330961046696]
 
-    >>> print(evans.warp(-1, 1, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], by_integers=True))
-    [-1, 2, 3, 2, 4, 6, 6, 8, 9, 8]
+    .. container:: example
+
+        >>> print(evans.warp(-0.5, 0.5, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        [-0.26203537290810863, 1.0442292252959517, 1.8699551665480794, 3.1039200385961943, 4.125720304108054, 4.565528859239813, 5.513167991554874, 7.33746908209646, 7.759354014328007, 8.734330961046696]
+
+    .. container:: example
+
+        >>> print(evans.warp(-1, 1, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], by_integers=True))
+        [-1, 2, 3, 2, 4, 6, 6, 8, 9, 8]
 
     """
     random.seed(random_seed)
@@ -791,15 +906,20 @@ def warp(min, max, random_seed, warped_list, by_integers=False):
 
 def add_sequences(x, y):
     """
-    >>> seq_1 = [0, 1, 2, 3]
-    >>> seq_2 = [4, 5, 6, 7, 8]
-    >>> evans.add_sequences(seq_1, seq_2)
-    [4, 6, 8, 10]
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> evans.add_sequences(seq_1, seq_2)
-    [5, 7, 9, 11, 9]
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> evans.add_sequences(seq_1, seq_2)
+        [4, 6, 8, 10]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.add_sequences(seq_1, seq_2)
+        [5, 7, 9, 11, 9]
 
     """
     returned_sequence = []
@@ -812,15 +932,20 @@ def add_sequences(x, y):
 
 def multiply_sequences(x, y):
     """
-    >>> seq_1 = [0, 1, 2, 3]
-    >>> seq_2 = [4, 5, 6, 7, 8]
-    >>> evans.multiply_sequences(seq_1, seq_2)
-    [0, 5, 12, 21]
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> evans.multiply_sequences(seq_1, seq_2)
-    [0, 6, 14, 24, 20]
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> evans.multiply_sequences(seq_1, seq_2)
+        [0, 5, 12, 21]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.multiply_sequences(seq_1, seq_2)
+        [0, 6, 14, 24, 20]
 
     """
     returned_sequence = []
@@ -833,31 +958,38 @@ def multiply_sequences(x, y):
 
 def derive_added_sequences(x, y, flat=False):
     """
-    >>> seq_1 = [0, 1, 2, 3]
-    >>> seq_2 = [4, 5, 6, 7, 8]
-    >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
-    ...     _
-    ...
-    [4, 5, 6, 7]
-    [5, 6, 7, 8]
-    [6, 7, 8, 9]
-    [7, 8, 9, 10]
-    [8, 9, 10, 11]
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
-    ...     _
-    ...
-    [5, 6, 7, 8, 9]
-    [6, 7, 8, 9, 10]
-    [7, 8, 9, 10, 11]
-    [8, 9, 10, 11, 12]
+    .. container:: example
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> evans.derive_added_sequences(seq_1, seq_2, flat=True)
-    [5, 6, 7, 8, 9, 6, 7, 8, 9, 10, 7, 8, 9, 10, 11, 8, 9, 10, 11, 12]
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [4, 5, 6, 7]
+        [5, 6, 7, 8]
+        [6, 7, 8, 9]
+        [7, 8, 9, 10]
+        [8, 9, 10, 11]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> for _ in evans.derive_added_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [5, 6, 7, 8, 9]
+        [6, 7, 8, 9, 10]
+        [7, 8, 9, 10, 11]
+        [8, 9, 10, 11, 12]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.derive_added_sequences(seq_1, seq_2, flat=True)
+        [5, 6, 7, 8, 9, 6, 7, 8, 9, 10, 7, 8, 9, 10, 11, 8, 9, 10, 11, 12]
 
     """
     returned_sequence = []
@@ -873,31 +1005,38 @@ def derive_added_sequences(x, y, flat=False):
 
 def derive_multiplied_sequences(x, y, flat=False):
     """
-    >>> seq_1 = [0, 1, 2, 3]
-    >>> seq_2 = [4, 5, 6, 7, 8]
-    >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
-    ...     _
-    ...
-    [0, 4, 8, 12]
-    [0, 5, 10, 15]
-    [0, 6, 12, 18]
-    [0, 7, 14, 21]
-    [0, 8, 16, 24]
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
-    ...     _
-    ...
-    [0, 5, 10, 15, 20]
-    [0, 6, 12, 18, 24]
-    [0, 7, 14, 21, 28]
-    [0, 8, 16, 24, 32]
+    .. container:: example
 
-    >>> seq_1 = [0, 1, 2, 3, 4]
-    >>> seq_2 = [5, 6, 7, 8]
-    >>> evans.derive_multiplied_sequences(seq_1, seq_2, flat=True)
-    [0, 5, 10, 15, 20, 0, 6, 12, 18, 24, 0, 7, 14, 21, 28, 0, 8, 16, 24, 32]
+        >>> seq_1 = [0, 1, 2, 3]
+        >>> seq_2 = [4, 5, 6, 7, 8]
+        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [0, 4, 8, 12]
+        [0, 5, 10, 15]
+        [0, 6, 12, 18]
+        [0, 7, 14, 21]
+        [0, 8, 16, 24]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> for _ in evans.derive_multiplied_sequences(seq_1, seq_2):
+        ...     _
+        ...
+        [0, 5, 10, 15, 20]
+        [0, 6, 12, 18, 24]
+        [0, 7, 14, 21, 28]
+        [0, 8, 16, 24, 32]
+
+    .. container:: example
+
+        >>> seq_1 = [0, 1, 2, 3, 4]
+        >>> seq_2 = [5, 6, 7, 8]
+        >>> evans.derive_multiplied_sequences(seq_1, seq_2, flat=True)
+        [0, 5, 10, 15, 20, 0, 6, 12, 18, 24, 0, 7, 14, 21, 28, 0, 8, 16, 24, 32]
 
     """
     returned_sequence = []

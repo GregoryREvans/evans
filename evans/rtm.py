@@ -3,9 +3,12 @@ import abjad
 
 def nested_list_to_rtm(nested_list):
     """
-    >>> nested_list = [1, 1, [1, [1, 1]], 1]
-    >>> print(evans.nested_list_to_rtm(nested_list))
-    (1 1 (1 (1 1)) 1)
+
+    .. container:: example
+
+        >>> nested_list = [1, 1, [1, [1, 1]], 1]
+        >>> print(evans.nested_list_to_rtm(nested_list))
+        (1 1 (1 (1 1)) 1)
 
     """
     out_string = ""
@@ -25,17 +28,20 @@ def nested_list_to_rtm(nested_list):
 
 def rotate_tree(rtm_string, n=1):
     """
-    >>> rtm = '(1 (2 1 (1 2) 1))'
-    >>> for x in range(6):
-    ...     new_rtm = evans.rotate_tree(rtm, x)
-    ...     print(new_rtm)
-    ...
-    (1 (2 1 (1 2) 1))
-    (1 (1 1 (2 1) 2))
-    (1 (1 2 (1 2) 1))
-    (1 (2 1 (2 1) 1))
-    (1 (1 2 (1 1) 2))
-    (1 (2 1 (1 2) 1))
+
+    .. container:: example
+
+        >>> rtm = '(1 (2 1 (1 2) 1))'
+        >>> for x in range(6):
+        ...     new_rtm = evans.rotate_tree(rtm, x)
+        ...     print(new_rtm)
+        ...
+        (1 (2 1 (1 2) 1))
+        (1 (1 1 (2 1) 2))
+        (1 (1 2 (1 2) 1))
+        (1 (2 1 (2 1) 1))
+        (1 (1 2 (1 1) 2))
+        (1 (2 1 (1 2) 1))
 
     """
     opening = rtm_string[:3]
@@ -95,15 +101,18 @@ def funnel_tree_to_x(rtm, x):
 
 def funnel_inner_tree_to_x(rtm_string, x=1):
     """
-    >>> rtm = '(1 (3 (2 (1 2 1 1)) 3))'
-    >>> for x in evans.funnel_inner_tree_to_x(rtm_string=rtm, x=5):
-    ...     print(x)
-    ...
-    (1 (3 (2 (1 2 1 1)) 3))
-    (1 (4 (3 (2 3 2 2)) 4))
-    (1 (5 (4 (3 4 3 3)) 5))
-    (1 (5 (5 (4 5 4 4)) 5))
-    (1 (5 (5 (5 5 5 5)) 5))
+
+    .. container:: example
+
+        >>> rtm = '(1 (3 (2 (1 2 1 1)) 3))'
+        >>> for x in evans.funnel_inner_tree_to_x(rtm_string=rtm, x=5):
+        ...     print(x)
+        ...
+        (1 (3 (2 (1 2 1 1)) 3))
+        (1 (4 (3 (2 3 2 2)) 4))
+        (1 (5 (4 (3 4 3 3)) 5))
+        (1 (5 (5 (4 5 4 4)) 5))
+        (1 (5 (5 (5 5 5 5)) 5))
 
     """
     opening = rtm_string[:3]
@@ -117,27 +126,34 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
 
 class RTMMaker(object):
     r"""
-    >>> rtm = ['(1 (1 1))', '(1 (1 1 1))', '(1 (1 1 1 1))']
-    >>> maker = evans.RTMMaker(rtm=rtm)
-    >>> divisions = [abjad.Duration(1, 1), abjad.Duration(1, 1), abjad.Duration(1, 1)]
-    >>> selections = maker(divisions)
-    >>> staff = abjad.Staff()
-    >>> staff.extend(selections)
-    >>> print(abjad.lilypond(staff))
-    \new Staff
-    {
-        c'2
-        c'2
-        \times 2/3 {
-            c'2
-            c'2
-            c'2
-        }
-        c'4
-        c'4
-        c'4
-        c'4
-    }
+
+    .. container:: example
+
+        >>> rtm = ['(1 (1 1))', '(1 (1 1 1))', '(1 (1 1 1 1))']
+        >>> maker = evans.RTMMaker(rtm=rtm)
+        >>> divisions = [abjad.Duration(1, 1), abjad.Duration(1, 1), abjad.Duration(1, 1)]
+        >>> selections = maker(divisions)
+        >>> staff = abjad.Staff()
+        >>> staff.extend(selections)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'2
+                c'2
+                \times 2/3 {
+                    c'2
+                    c'2
+                    c'2
+                }
+                c'4
+                c'4
+                c'4
+                c'4
+            }
 
     """
 
