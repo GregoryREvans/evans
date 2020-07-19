@@ -1929,11 +1929,11 @@ class PitchHandler(Handler):
         aqs'4
     }
 
-    >>> pitch_set = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
-    >>> pitch_set = pitch_set + pitch_set.invert(2).multiply(Fraction(5, 4))
-    >>> pitch_set = pitch_set + pitch_set.retrograde().rotate(3).transpose(Fraction(13, 2))
-    >>> pitch_set = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_set])
-    >>> notes = [abjad.Note() for _ in pitch_set]
+    >>> pitch_segment = microtones.PitchSegment([0, Fraction(3, 2), 7, Fraction(19, 4)])
+    >>> pitch_segment = pitch_segment + pitch_segment.invert(2).multiply(Fraction(5, 4))
+    >>> pitch_segment = pitch_segment + pitch_segment.retrograde().rotate(3).transpose(Fraction(13, 2))
+    >>> pitch_segment = microtones.PitchSegment([evans.to_nearest_eighth_tone(_) for _ in pitch_segment])
+    >>> notes = [abjad.Note() for _ in pitch_segment]
     >>> staff = abjad.Staff(notes)
     >>> handler = evans.PitchHandler(
     ...     pitch_list=[_ for _ in pitch_set],
@@ -2002,6 +2002,73 @@ class PitchHandler(Handler):
         a'4
     }
 
+    >>> ratio_segment = microtones.RatioSegment([1, Fraction(3, 2), Fraction(5, 4)])
+    >>> ratio_segment = ratio_segment + ratio_segment.invert(2).multiply(Fraction(5, 4))
+    >>> ratio_segment = ratio_segment + ratio_segment.retrograde().rotate(3).transpose(1)
+    >>> notes = [abjad.Note() for _ in ratio_segment]
+    >>> staff = abjad.Staff(notes)
+    >>> handler = evans.PitchHandler(
+    ...     pitch_list=[_ for _ in ratio_segment],
+    ...     as_ratios=True,
+    ...     continuous=True,
+    ... )
+    >>> handler(staff)
+    >>> file = abjad.LilyPondFile.new(
+    ...     staff,
+    ...     includes=[
+    ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/ekmelos-ji-accidental-markups.ily"
+    ...     ],
+    ... )
+    >>> style = '"dodecaphonic"'
+    >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
+    >>> print(abjad.lilypond(staff))
+    \new Staff
+    {
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        c'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        g'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-one-syntonic-comma-down
+        e'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-one-syntonic-comma-down
+        e''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-one-syntonic-comma-down
+        a'4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        c''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        d''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural-one-syntonic-comma-down
+        e''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        c''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        g''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \natural
+        f''4
+        \tweak Accidental.stencil #ly:text-interface::print
+        \tweak Accidental.text \markup {
+            \concat
+                {
+                    \one-septimal-comma-down
+                    \hspace #0.125
+                    \flat
+                }
+            }
+        bf''4
+    }
+
     """
 
     def __init__(
@@ -2009,6 +2076,7 @@ class PitchHandler(Handler):
         pitch_list=None,
         allow_chord_duplicates=False,
         apply_all=False,
+        as_ratios=False,
         chord_boolean_vector=[0],
         chord_groups=None,
         continuous=False,
@@ -2021,6 +2089,7 @@ class PitchHandler(Handler):
         self.pitch_list = pitch_list
         self.allow_chord_duplicates = allow_chord_duplicates
         self.apply_all = apply_all
+        self.as_ratios = as_ratios
         self.chord_boolean_vector = chord_boolean_vector
         self.chord_groups = chord_groups
         self.continuous = continuous
@@ -2070,6 +2139,8 @@ class PitchHandler(Handler):
         return pitches, durations, leaves
 
     def _apply_pitches(self, selections):
+        if self.as_ratios is True:
+            self.apply_all = True
         leaf_maker = abjad.LeafMaker()
         old_ties = [tie for tie in abjad.iterate(selections).logical_ties(pitched=True)]
         if len(old_ties) > 0:
@@ -2121,13 +2192,23 @@ class PitchHandler(Handler):
                         heads = leaf.note_heads
                         for sub_index in microtonal_indices_to_pitch[index]:
                             head = heads[int(sub_index)]
-                            microtones.apply_alteration(
-                                head, microtonal_indices_to_pitch[index][sub_index]
-                            )
+                            if self.as_ratios is False:
+                                microtones.apply_alteration(
+                                    head, microtonal_indices_to_pitch[index][sub_index]
+                                )
+                            else:
+                                microtones.tune_to_ratio(
+                                    head, microtonal_indices_to_pitch[index][sub_index]
+                                )
                     else:
-                        microtones.apply_alteration(
-                            leaf.note_head, microtonal_indices_to_pitch[index]
-                        )
+                        if self.as_ratios is False:
+                            microtones.apply_alteration(
+                                leaf.note_head, microtonal_indices_to_pitch[index]
+                            )
+                        else:
+                            microtones.tune_to_ratio(
+                                leaf.note_head, microtonal_indices_to_pitch[index]
+                            )
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.inspect(old_leaf).indicators()
