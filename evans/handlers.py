@@ -2083,7 +2083,11 @@ class PitchHandler(Handler):
                     for i_, sub_ in enumerate(_):
                         nested_indices_to_pitch = abjad.OrderedDict()
                         if self.apply_all is False:
-                            if 0 < sub_ % quicktions.Fraction(1, 2):
+                            if isinstance(sub_, str):
+                                val = abjad.NumberedPitch(sub_).number
+                            else:
+                                val = sub_
+                            if 0 < val % quicktions.Fraction(1, 2):
                                 nested_indices_to_pitch[str(i_)] = sub_
                                 pitches[i][i_] = 0
                                 microtonal_indices_to_pitch[
@@ -2097,7 +2101,13 @@ class PitchHandler(Handler):
                             ] = nested_indices_to_pitch
                 else:
                     if self.apply_all is False:
-                        if 0 < _ % quicktions.Fraction(1, 2):
+                        if isinstance(_, str):
+                            val = abjad.NumberedPitch(_).number
+                        else:
+                            val = _
+                        if 0 < val % quicktions.Fraction(
+                            1, 2
+                        ):
                             microtonal_indices_to_pitch[str(i)] = _
                             pitches[i] = 0
                     else:
