@@ -1,11 +1,13 @@
 import abjad
-from evans.consort_reviv.AbjadObject import AbjadObject
+
+from .AbjadObject import AbjadObject
 
 
 class TimespanCollection(AbjadObject):
-    r"""A mutable always-sorted collection of timespans.
+    r"""
+    A mutable always-sorted collection of timespans.
 
-    ::
+    ..  container:: example
 
         >>> timespans = (
         ...     abjad.Timespan(0, 3),
@@ -32,10 +34,11 @@ class TimespanCollection(AbjadObject):
     ### SPECIAL METHODS ###
 
     def __contains__(self, timespan):
-        r"""Is true if this timespan collection contains `timespan`. Otherwise
+        r"""
+        Is true if this timespan collection contains `timespan`. Otherwise
         false.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -45,13 +48,8 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespans[0] in timespan_collection
             True
-
-        ::
 
             >>> abjad.Timespan(-1, 100) in timespan_collection
             False
@@ -64,9 +62,10 @@ class TimespanCollection(AbjadObject):
         return result
 
     def __getitem__(self, i):
-        r"""Gets timespan at index `i`.
+        r"""
+        Gets timespan at index `i`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -76,13 +75,8 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection[-1]
             Timespan(Offset((6, 1)), Offset((9, 1)))
-
-        ::
 
             >>> for timespan in timespan_collection[:3]:
             ...     timespan
@@ -136,9 +130,10 @@ class TimespanCollection(AbjadObject):
         raise TypeError("Indices must be integers or slices, got {}".format(i))
 
     def __iter__(self):
-        r"""Iterates timespans in this timespan collection.
+        r"""
+        Iterates timespans in this timespan collection.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -148,9 +143,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> for timespan in timespan_collection:
             ...     timespan
             ...
@@ -177,9 +169,10 @@ class TimespanCollection(AbjadObject):
         return recurse(self._root_node)
 
     def __len__(self):
-        r"""Gets length of this timespan collection.
+        r"""
+        Gets length of this timespan collection.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -189,9 +182,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> len(timespan_collection)
             5
 
@@ -202,9 +192,10 @@ class TimespanCollection(AbjadObject):
         return self._root_node.subtree_stop_index
 
     def __setitem__(self, i, new):
-        r"""Sets timespans at index `i` to `new`.
+        r"""
+        Sets timespans at index `i` to `new`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -214,9 +205,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection[:3] = [abjad.Timespan(100, 200)]
 
         Returns none.
@@ -230,47 +218,42 @@ class TimespanCollection(AbjadObject):
             raise TypeError(message)
 
     def __sub__(self, timespan):  # doesn't work
-        # r"""Delete material that intersects `timespan`:
-        #
-        # ::
-        #
-        #     >>> timespan_collection = evans.TimespanCollection([
-        #     ...     abjad.Timespan(0, 16),
-        #     ...     abjad.Timespan(5, 12),
-        #     ...     abjad.Timespan(-2, 8),
-        #     ...     ])
-        #
-        # ::
-        #
-        #     >>> timespan = abjad.Timespan(5, 10)
-        #     >>> result = timespan_collection - timespan
-        #
-        # ::
-        #
-        #     >>> print(format(timespan_collection))
-        #     consort.tools.TimespanCollection(
-        #         [
-        #             abjad.Timespan(
-        #                 start_offset=abjad.Offset(-2, 1),
-        #                 stop_offset=abjad.Offset(5, 1),
-        #                 ),
-        #             abjad.Timespan(
-        #                 start_offset=abjad.Offset(0, 1),
-        #                 stop_offset=abjad.Offset(5, 1),
-        #                 ),
-        #             abjad.Timespan(
-        #                 start_offset=abjad.Offset(10, 1),
-        #                 stop_offset=abjad.Offset(12, 1),
-        #                 ),
-        #             abjad.Timespan(
-        #                 start_offset=abjad.Offset(10, 1),
-        #                 stop_offset=abjad.Offset(16, 1),
-        #                 ),
-        #             ]
-        #         )
-        #
-        # Operates in place and returns timespan collection.
-        # """
+        r"""
+        Delete material that intersects `timespan`:
+
+        ..  container:: example
+
+            >>> timespan_collection = evans.TimespanCollection([
+            ...     abjad.Timespan(0, 16),
+            ...     abjad.Timespan(5, 12),
+            ...     abjad.Timespan(-2, 8),
+            ...     ])
+            >>> timespan = abjad.Timespan(5, 10)
+            >>> result = timespan_collection - timespan
+            >>> print(format(timespan_collection))
+            evans.TimespanCollection(
+                [
+                    abjad.Timespan(
+                        start_offset=abjad.Offset((-2, 1)),
+                        stop_offset=abjad.Offset((5, 1)),
+                        ),
+                    abjad.Timespan(
+                        start_offset=abjad.Offset((0, 1)),
+                        stop_offset=abjad.Offset((5, 1)),
+                        ),
+                    abjad.Timespan(
+                        start_offset=abjad.Offset((10, 1)),
+                        stop_offset=abjad.Offset((12, 1)),
+                        ),
+                    abjad.Timespan(
+                        start_offset=abjad.Offset((10, 1)),
+                        stop_offset=abjad.Offset((16, 1)),
+                        ),
+                    ]
+                )
+
+        Operates in place and returns timespan collection.
+        """
         intersecting_timespans = self.find_timespans_intersecting_timespan(timespan)
         self.remove(intersecting_timespans)
         for intersecting_timespan in intersecting_timespans:
@@ -281,7 +264,7 @@ class TimespanCollection(AbjadObject):
     ### PRIVATE METHODS ###
 
     def _insert_node(self, node, start_offset):
-        from evans.consort_reviv.TimespanCollectionNode import TimespanCollectionNode
+        from .TimespanCollectionNode import TimespanCollectionNode
 
         if node is None:
             return TimespanCollectionNode(start_offset)
@@ -467,9 +450,10 @@ class TimespanCollection(AbjadObject):
         return tuple(results)
 
     def find_timespans_overlapping_offset(self, offset):
-        r"""Finds timespans overlapping `offset`.
+        r"""
+        Finds timespans overlapping `offset`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -479,9 +463,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> for x in timespan_collection.find_timespans_overlapping_offset(1.5):
             ...     x
             ...
@@ -510,31 +491,29 @@ class TimespanCollection(AbjadObject):
         return tuple(results)
 
     def find_timespans_intersecting_timespan(self, timespan):  # doesn't work
-        # r"""Finds timespans overlapping `timespan`.
-        #
-        # ::
-        #
-        #     >>> timespans = (
-        #     ...     abjad.Timespan(0, 3),
-        #     ...     abjad.Timespan(1, 3),
-        #     ...     abjad.Timespan(1, 2),
-        #     ...     abjad.Timespan(2, 5),
-        #     ...     abjad.Timespan(6, 9),
-        #     ...     )
-        #     >>> timespan_collection = evans.TimespanCollection(timespans)
-        #
-        # ::
-        #
-        #     >>> timespan = abjad.Timespan(2, 4)
-        #     >>> for x in timespan_collection.find_timespans_intersecting_timespan(timespan):
-        #     ...     x
-        #     ...
-        #     Timespan(start_offset=Offset(0, 1), stop_offset=Offset(3, 1))
-        #     Timespan(start_offset=Offset(1, 1), stop_offset=Offset(3, 1))
-        #     Timespan(start_offset=Offset(2, 1), stop_offset=Offset(5, 1))
-        #
-        # Returns tuple of 0 or more timespans.
-        # """
+        r"""
+        Finds timespans overlapping `timespan`.
+
+        ..  container:: example
+
+            >>> timespans = (
+            ...     abjad.Timespan(0, 3),
+            ...     abjad.Timespan(1, 3),
+            ...     abjad.Timespan(1, 2),
+            ...     abjad.Timespan(2, 5),
+            ...     abjad.Timespan(6, 9),
+            ...     )
+            >>> timespan_collection = evans.TimespanCollection(timespans)
+            >>> timespan = abjad.Timespan(2, 4)
+            >>> for x in timespan_collection.find_timespans_intersecting_timespan(timespan):
+            ...     x
+            ...
+            Timespan(Offset((0, 1)), Offset((3, 1)))
+            Timespan(Offset((1, 1)), Offset((3, 1)))
+            Timespan(Offset((2, 1)), Offset((5, 1)))
+
+        Returns tuple of 0 or more timespans.
+        """
 
         def recurse(node, timespan):
             result = []
@@ -552,18 +531,14 @@ class TimespanCollection(AbjadObject):
             return result
 
         results = recurse(self._root_node, timespan)
-        results.sort(
-            key=lambda x: (
-                abjad.inspect(x).timespan().start_offset,
-                abjad.inspect(x).timespan().stop_offset,
-            )
-        )
+        results.sort(key=lambda x: (x.start_offset, x.stop_offset,))
         return tuple(results)
 
     def get_simultaneity_at(self, offset):
-        r"""Gets simultaneity at `offset`.
+        r"""
+        Gets simultaneity at `offset`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -573,24 +548,19 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection.get_simultaneity_at(1)
             <TimespanSimultaneity(1 <<3>>)>
-
-        ::
 
             >>> timespan_collection.get_simultaneity_at(6.5)
             <TimespanSimultaneity(6.5 <<1>>)>
 
         """
-        import evans.consort_reviv
+        from .TimespanSimultaneity import TimespanSimultaneity
 
         start_timespans = self.find_timespans_starting_at(offset)
         stop_timespans = self.find_timespans_stopping_at(offset)
         overlap_timespans = self.find_timespans_overlapping_offset(offset)
-        simultaneity = evans.consort_reviv.TimespanSimultaneity(
+        simultaneity = TimespanSimultaneity(
             timespan_collection=self,
             overlap_timespans=overlap_timespans,
             start_timespans=start_timespans,
@@ -600,9 +570,10 @@ class TimespanCollection(AbjadObject):
         return simultaneity
 
     def get_start_offset_after(self, offset):
-        r"""Gets start offst in this timespan collection after `offset`.
+        r"""
+        Gets start offst in this timespan collection after `offset`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -612,28 +583,17 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection.get_start_offset_after(-1)
             Offset((0, 1))
-
-        ::
 
             >>> timespan_collection.get_start_offset_after(0)
             Offset((1, 1))
 
-        ::
-
             >>> timespan_collection.get_start_offset_after(1)
             Offset((2, 1))
 
-        ::
-
             >>> timespan_collection.get_start_offset_after(2)
             Offset((6, 1))
-
-        ::
 
             >>> timespan_collection.get_start_offset_after(6) is None
             True
@@ -656,9 +616,10 @@ class TimespanCollection(AbjadObject):
         return result.start_offset
 
     def get_start_offset_before(self, offset):
-        r"""Gets start offst in this timespan collection before `offset`.
+        r"""
+        Gets start offst in this timespan collection before `offset`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -668,28 +629,17 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection.get_start_offset_before(7)
             Offset((6, 1))
-
-        ::
 
             >>> timespan_collection.get_start_offset_before(6)
             Offset((2, 1))
 
-        ::
-
             >>> timespan_collection.get_start_offset_before(2)
             Offset((1, 1))
 
-        ::
-
             >>> timespan_collection.get_start_offset_before(1)
             Offset((0, 1))
-
-        ::
 
             >>> timespan_collection.get_start_offset_before(0) is None
             True
@@ -720,9 +670,10 @@ class TimespanCollection(AbjadObject):
         return index
 
     def insert(self, timespans):
-        r"""Inserts `timespans` into this timespan collection.
+        r"""
+        Inserts `timespans` into this timespan collection.
 
-        ::
+        ..  container:: example
 
             >>> timespan_collection = evans.TimespanCollection()
             >>> timespan_collection.insert(abjad.Timespan(1, 3))
@@ -730,9 +681,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(0, 4),
             ...     abjad.Timespan(2, 6),
             ...     ))
-
-        ::
-
             >>> for x in timespan_collection:
             ...     x
             ...
@@ -754,9 +702,10 @@ class TimespanCollection(AbjadObject):
         self._update_offsets(self._root_node)
 
     def iterate_simultaneities(self, reverse=False):
-        r"""Iterates simultaneities in this timespan collection.
+        r"""
+        Iterates simultaneities in this timespan collection.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -766,9 +715,6 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> for x in timespan_collection.iterate_simultaneities():
             ...     x
             ...
@@ -776,8 +722,6 @@ class TimespanCollection(AbjadObject):
             <TimespanSimultaneity(1 <<3>>)>
             <TimespanSimultaneity(2 <<3>>)>
             <TimespanSimultaneity(6 <<1>>)>
-
-        ::
 
             >>> for x in timespan_collection.iterate_simultaneities(
             ...     reverse=True):
@@ -809,10 +753,11 @@ class TimespanCollection(AbjadObject):
                 simultaneity = simultaneity.next_simultaneity
 
     def iterate_simultaneities_nwise(self, n=3, reverse=False):
-        r"""Iterates simultaneities in this timespan collection in groups of
+        r"""
+        Iterates simultaneities in this timespan collection in groups of
         `n`.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -822,17 +767,12 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> for x in timespan_collection.iterate_simultaneities_nwise(n=2):
             ...     x
             ...
             (<TimespanSimultaneity(0 <<1>>)>, <TimespanSimultaneity(1 <<3>>)>)
             (<TimespanSimultaneity(1 <<3>>)>, <TimespanSimultaneity(2 <<3>>)>)
             (<TimespanSimultaneity(2 <<3>>)>, <TimespanSimultaneity(6 <<1>>)>)
-
-        ::
 
             >>> for x in timespan_collection.iterate_simultaneities_nwise(
             ...     n=2, reverse=True):
@@ -868,9 +808,10 @@ class TimespanCollection(AbjadObject):
                     yield tuple(reversed(simultaneities))
 
     def remove(self, timespans):
-        r"""Removes timespans from this timespan collection.
+        r"""
+        Removes timespans from this timespan collection.
 
-        ::
+        ..  container:: example
 
             >>> timespans = (
             ...     abjad.Timespan(0, 3),
@@ -880,12 +821,7 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(6, 9),
             ...     )
             >>> timespan_collection = evans.TimespanCollection(timespans)
-
-        ::
-
             >>> timespan_collection.remove(timespans[1:-1])
-
-        ::
 
             >>> for timespan in timespan_collection:
             ...     timespan

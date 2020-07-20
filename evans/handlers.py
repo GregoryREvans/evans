@@ -709,7 +709,13 @@ class DynamicHandler(Handler):
         >>> second_group = staff[2:]
         >>> handler(first_group)
         >>> handler(second_group)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -1107,7 +1113,13 @@ class GettatoHandler(Handler):
         ...     actions=["throw", "drop"],
         ... )
         >>> handler(staff)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -1565,7 +1577,13 @@ class GraceHandler(Handler):
         ...     continuous=True,
         ... )
         >>> handler(staff[:])
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -1944,7 +1962,13 @@ class PitchHandler(Handler):
         ...     continuous=True,
         ... )
         >>> handler(abjad.select(s).logical_ties())
-        >>> abjad.show(s) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     s,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -1968,21 +1992,31 @@ class PitchHandler(Handler):
         ...     continuous=True,
         ... )
         >>> handler(abjad.select(s).logical_ties())
-        >>> print(abjad.lilypond(s))
-        \new Staff
-        {
-            cs'4
-            <
+        >>> file = abjad.LilyPondFile.new(
+        ...     s,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                cs'4
+                <
+                    \tweak Accidental.stencil #ly:text-interface::print
+                    \tweak Accidental.text \one-third-flat-markup
+                    df'
+                    e'
+                >4
+                f'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \one-third-flat-markup
-                df'
-                e'
-            >4
-            f'4
-            \tweak Accidental.stencil #ly:text-interface::print
-            \tweak Accidental.text \five-twelfths-flat-markup
-            gf'4
-        }
+                \tweak Accidental.text \five-twelfths-flat-markup
+                gf'4
+            }
 
     .. container:: example
 
@@ -2001,23 +2035,33 @@ class PitchHandler(Handler):
         ...     allow_chord_duplicates=True,
         ... )
         >>> handler(s)
-        >>> print(abjad.lilypond(s))
-        \new Staff
-        {
-            \tweak Accidental.stencil #ly:text-interface::print
-            \tweak Accidental.text \three-eighths-sharp-markup
-            c'4
-            <
+        >>> file = abjad.LilyPondFile.new(
+        ...     s,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \one-third-flat-markup
-                df'
-                cqs''
-            >4
-            d'4
-            \tweak Accidental.stencil #ly:text-interface::print
-            \tweak Accidental.text \three-eighths-sharp-markup
-            f'4
-        }
+                \tweak Accidental.text \three-eighths-sharp-markup
+                c'4
+                <
+                    \tweak Accidental.stencil #ly:text-interface::print
+                    \tweak Accidental.text \one-third-flat-markup
+                    df'
+                    cqs''
+                >4
+                d'4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \three-eighths-sharp-markup
+                f'4
+            }
 
     .. container:: example
 
@@ -2090,8 +2134,8 @@ class PitchHandler(Handler):
         >>> file = abjad.LilyPondFile.new(
         ...     staff,
         ...     includes=[
-        ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
-        ...     ],
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2541,7 +2585,14 @@ class TempoSpannerHandler(Handler):
         ...     continuous=True,
         ... )
         >>> handler(s[:-1])
-        >>> abjad.show(s) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        ...         "/Users/evansdsg2/evans/lilypond/evans-spanners.ily",
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -2652,7 +2703,13 @@ class TextSpanHandler(Handler):
         ...     attach_span_one_to="bounds",
         ... )
         >>> handler(staff)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 

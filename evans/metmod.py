@@ -47,7 +47,13 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -79,7 +85,13 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -111,7 +123,13 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -143,7 +161,13 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> file = abjad.LilyPondFile.new(
+        ...     staff,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     ]
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 

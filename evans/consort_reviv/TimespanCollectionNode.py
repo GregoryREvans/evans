@@ -1,9 +1,11 @@
 import abjad
-from evans.consort_reviv.AbjadObject import AbjadObject
+
+from .AbjadObject import AbjadObject
 
 
 class TimespanCollectionNode(AbjadObject):
-    r"""A node in a timespan collection.
+    r"""
+    A node in a timespan collection.
     """
 
     ### CLASS VARIABLES ###
@@ -42,7 +44,8 @@ class TimespanCollectionNode(AbjadObject):
     ### SPECIAL METHODS ###
 
     def __repr__(self):
-        r"""Gets the repr of this timespan collection node.
+        r"""
+        Gets the repr of this timespan collection node.
         """
         return "<Node: Start:{} Indices:({}:{}:{}:{}) Length:{{{}}}>".format(
             self.start_offset,
@@ -86,19 +89,22 @@ class TimespanCollectionNode(AbjadObject):
 
     @property
     def balance(self):
-        r"""Gets the balance of this timespan collection node.
+        r"""
+        Gets the balance of this timespan collection node.
         """
         return self._balance
 
     @property
     def height(self):
-        r"""Gets the height of this timespan collection node.
+        r"""
+        Gets the height of this timespan collection node.
         """
         return self._height
 
     @property
     def left_child(self):
-        r"""Gets and sets the left child of this timespan collection node.
+        r"""
+        Gets and sets the left child of this timespan collection node.
         """
         return self._left_child
 
@@ -109,25 +115,29 @@ class TimespanCollectionNode(AbjadObject):
 
     @property
     def node_start_index(self):
-        r"""Gets the node start index of this timespan collection node.
+        r"""
+        Gets the node start index of this timespan collection node.
         """
         return self._node_start_index
 
     @property
     def node_stop_index(self):
-        r"""Gets the node stop index of this timespan collection node.
+        r"""
+        Gets the node stop index of this timespan collection node.
         """
         return self._node_stop_index
 
     @property
     def payload(self):
-        r"""Gets the payload of this timespan collection node.
+        r"""
+        Gets the payload of this timespan collection node.
         """
         return self._payload
 
     @property
     def right_child(self):
-        r"""Gets and sets the right child of this timespan collection node.
+        r"""
+        Gets and sets the right child of this timespan collection node.
         """
         return self._right_child
 
@@ -138,34 +148,39 @@ class TimespanCollectionNode(AbjadObject):
 
     @property
     def start_offset(self):
-        r"""Gets the start offset of this timespan collection node.
+        r"""
+        Gets the start offset of this timespan collection node.
         """
         return self._start_offset
 
     @property
     def stop_offset_high(self):
-        r"""Gets the highest stop offset of the subtree rooted on this timespan
+        r"""
+        Gets the highest stop offset of the subtree rooted on this timespan
         collection node.
         """
         return self._stop_offset_high
 
     @property
     def stop_offset_low(self):
-        r"""Gets the lowest stop offset of the subtree rooted on this timespan
+        r"""
+        Gets the lowest stop offset of the subtree rooted on this timespan
         collection node.
         """
         return self._stop_offset_low
 
     @property
     def subtree_start_index(self):
-        r"""Gets the start index of the subtree rooted on this timespan
+        r"""
+        Gets the start index of the subtree rooted on this timespan
         collection node.
         """
         return self._subtree_start_index
 
     @property
     def subtree_stop_index(self):
-        r"""Gets the stop index of the subtree rooted on this timespan
+        r"""
+        Gets the stop index of the subtree rooted on this timespan
         collection node.
         """
         return self._subtree_stop_index

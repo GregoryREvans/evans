@@ -1,8 +1,9 @@
-from evans.consort_reviv.AbjadObject import AbjadObject
+from .AbjadObject import AbjadObject
 
 
 class TimespanSimultaneity(AbjadObject):
-    r"""A simultaneity of timespans in a timespan collection.
+    r"""
+    A simultaneity of timespans in a timespan collection.
     """
 
     ### CLASS VARIABLES ###
@@ -25,10 +26,10 @@ class TimespanSimultaneity(AbjadObject):
         start_offset=None,
         stop_timespans=None,
     ):
-        import evans.consort_reviv
+        from .TimespanCollection import TimespanCollection
 
         if timespan_collection is not None:
-            prototype = evans.consort_reviv.TimespanCollection
+            prototype = TimespanCollection
             assert isinstance(timespan_collection, prototype)
         self._timespan_collection = timespan_collection
         self._start_offset = start_offset
@@ -42,7 +43,8 @@ class TimespanSimultaneity(AbjadObject):
     ### SPECIAL METHODS ###
 
     def __repr__(self):
-        r"""Gets the repr of this simultaneity.
+        r"""
+        Gets the repr of this simultaneity.
         """
         return "<{}({} <<{}>>)>".format(
             type(self).__name__,
@@ -54,7 +56,8 @@ class TimespanSimultaneity(AbjadObject):
 
     @property
     def next_simultaneity(self):
-        r"""Gets the next simultaneity in this simultaneity's timespan
+        r"""
+        Gets the next simultaneity in this simultaneity's timespan
         collection.
         """
         tree = self._timespan_collection
@@ -67,7 +70,8 @@ class TimespanSimultaneity(AbjadObject):
 
     @property
     def next_start_offset(self):
-        r"""Gets the next simultaneity start offset in this simultaneity's
+        r"""
+        Gets the next simultaneity start offset in this simultaneity's
         timespan collection.
         """
         tree = self._timespan_collection
@@ -78,14 +82,16 @@ class TimespanSimultaneity(AbjadObject):
 
     @property
     def overlap_timespans(self):
-        r"""Gets the timespans in this simultaneity which overlap this
+        r"""
+        Gets the timespans in this simultaneity which overlap this
         simultaneity's start offset.
         """
         return self._overlap_timespans
 
     @property
     def previous_simultaneity(self):
-        r"""Gets the previous simultaneity in this simultaneity's timespan
+        r"""
+        Gets the previous simultaneity in this simultaneity's timespan
         collection.
         """
         tree = self._timespan_collection
@@ -98,7 +104,8 @@ class TimespanSimultaneity(AbjadObject):
 
     @property
     def previous_start_offset(self):
-        r"""Gets the previous simultaneity start offset in this simultaneity's
+        r"""
+        Gets the previous simultaneity start offset in this simultaneity's
         timespan collection.
         """
         tree = self._timespan_collection
@@ -109,26 +116,30 @@ class TimespanSimultaneity(AbjadObject):
 
     @property
     def start_offset(self):
-        r"""Gets this simultaneity's start offset.
+        r"""
+        Gets this simultaneity's start offset.
         """
         return self._start_offset
 
     @property
     def start_timespans(self):
-        r"""Gets the timespans in this simultaneity which start at this
+        r"""
+        Gets the timespans in this simultaneity which start at this
         simultaneity's start offset.
         """
         return self._start_timespans
 
     @property
     def stop_timespans(self):
-        r"""Gets the timespans in this simultaneity which stop at this
+        r"""
+        Gets the timespans in this simultaneity which stop at this
         simultaneity's start offset.
         """
         return self._stop_timespans
 
     @property
     def timespan_collection(self):
-        r"""Gets this simultaneity's timespan collection.
+        r"""
+        Gets this simultaneity's timespan collection.
         """
         return self._timespan_collection

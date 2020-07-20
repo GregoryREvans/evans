@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import abjad
-from evans.consort_reviv.AbjadObject import AbjadObject
+
+from .AbjadObject import AbjadObject
 
 
 class AbjadValueObject(AbjadObject):

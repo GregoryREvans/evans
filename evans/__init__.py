@@ -1,3 +1,6 @@
+"""
+Evans API
+"""
 from .commands import (
     Command,
     HandlerCommand,
