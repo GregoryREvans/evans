@@ -7,14 +7,33 @@ from .sequence import flatten
 def combination_tones(pitches=[0, 5, 7], depth=1):
     """
 
-    .. container:: example
+    ..  container:: example
 
-        >>> print(evans.combination_tones(pitches=[8.25, 18.75, 23.5], depth=1))
+        >>> print(
+        ...     evans.combination_tones(
+        ...         pitches=[
+        ...             8.25,
+        ...             18.75,
+        ...             23.5,
+        ...         ],
+        ...         depth=1,
+        ...     )
+        ... )
         [-2.0, 6.0, 8.0, 14.5, 19.0, 23.5, 26.0, 29.5, 33.5]
 
-    .. container:: example
+    ..  container:: example
 
-        >>> print(evans.combination_tones(pitches=[7.75, 19, 25.25, 28.5], depth=1))
+        >>> print(
+        ...     evans.combination_tones(
+        ...         pitches=[
+        ...             7.75,
+        ...             19,
+        ...             25.25,
+        ...             28.5
+        ...         ],
+        ...         depth=1,
+        ...     )
+        ... )
         [-1.0, 4.0, 6.0, 8.0, 13.5, 17.0, 19.0, 22.0, 25.0, 26.0, 28.5, 30.5, 33.0, 34.0, 36.5, 39.0]
 
     """
@@ -48,10 +67,10 @@ def herz_combination_tone_ratios(
 ):
     """
 
-    .. container:: example
+    ..  container:: example
 
         >>> print(
-        ...     herz_combination_tone_ratios(
+        ...     evans.herz_combination_tone_ratios(
         ...     fundamental=261.625565,
         ...     pitches=[
         ...         327.03195625,
@@ -60,7 +79,6 @@ def herz_combination_tone_ratios(
         ...     depth=1,
         ...     )
         ... )
-        ...
         ['4503599627370493/18014398509481984', '5/4', '3/2', '11/4']
 
     """
@@ -136,7 +154,7 @@ def to_nearest_twelfth_tone(number):
 def return_vertical_moment_ties(score):
     r"""
 
-    .. container:: example
+    ..  container:: example
 
         >>> staff_1 = abjad.Staff("c'4 c'2 c'4")
         >>> staff_2 = abjad.Staff("cs'4 cs'4 cs'2")
@@ -150,6 +168,7 @@ def return_vertical_moment_ties(score):
         ... )
         >>> for tie in evans.return_vertical_moment_ties(score):
         ...     tie
+        ...
         LogicalTie([Note("d'8")])
         LogicalTie([Note("c'4")])
         LogicalTie([Note("cs'4")])
@@ -165,7 +184,7 @@ def return_vertical_moment_ties(score):
         LogicalTie([Note("c'4")])
         LogicalTie([Note("d'8")])
 
-    .. container:: example
+    ..  container:: example
 
         >>> staff_1 = abjad.Staff("c'4 c'2 c'4")
         >>> staff_2 = abjad.Staff("cs'4 cs'4 cs'2")
@@ -187,6 +206,7 @@ def return_vertical_moment_ties(score):
         ...     string = f"{i}"
         ...     markup = abjad.Markup(string, direction=abjad.Up)
         ...     abjad.attach(markup, tie[0])
+        ...
         >>> handler(vm_ties)
         >>> abjad.show(score) # doctest: +SKIP
 
@@ -234,7 +254,7 @@ def return_vertical_moment_ties(score):
                 }
             >>
 
-    .. container:: example
+    ..  container:: example
 
         >>> staff_1 = abjad.Staff("c'4 ~ c'2 c'4")
         >>> staff_2 = abjad.Staff("cs'4 cs'4 cs'2")
@@ -252,6 +272,7 @@ def return_vertical_moment_ties(score):
         ...     markup = abjad.Markup(string, direction=abjad.Up)
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
+        ...
         >>> abjad.show(score) # doctest: +SKIP
 
         .. docs::

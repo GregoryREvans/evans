@@ -14,6 +14,7 @@ class LogicalTieCollection(AbjadObject):
         >>> logical_tie_collection = evans.LogicalTieCollection()
         >>> for tie in logical_ties:
         ...     logical_tie_collection.insert(tie)
+        ...
         >>> logical_tie_collection
         evans.LogicalTieCollection(
             [
@@ -67,6 +68,7 @@ class LogicalTieCollection(AbjadObject):
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
+            ...
             >>> new_staff = abjad.Staff("c'4. c'8 c'4 c'4")
             >>> logical_ties[0] in logical_tie_collection
             True
@@ -485,8 +487,7 @@ class LogicalTieCollection(AbjadObject):
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
-
-        ::
+            ...
 
             >>> timespan = abjad.Timespan((3, 8), 1)
             >>> for x in logical_tie_collection.find_logical_ties_intersecting_timespan(timespan):

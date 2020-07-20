@@ -10,7 +10,7 @@ from .commands import (
     detach,
     replace,
 )
-from .consort_reviv import (
+from .consort import (
     LogicalTieCollection,
     RatioPartsExpression,
     TimespanCollection,

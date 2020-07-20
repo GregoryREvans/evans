@@ -15,7 +15,7 @@ class TimespanCollection(AbjadObject):
         ...     abjad.Timespan(1, 2),
         ...     abjad.Timespan(2, 5),
         ...     abjad.Timespan(6, 9),
-        ...     )
+        ... )
         >>> timespan_collection = evans.TimespanCollection(timespans)
 
     """
@@ -46,7 +46,7 @@ class TimespanCollection(AbjadObject):
             ...     abjad.Timespan(1, 2),
             ...     abjad.Timespan(2, 5),
             ...     abjad.Timespan(6, 9),
-            ...     )
+            ... )
             >>> timespan_collection = evans.TimespanCollection(timespans)
             >>> timespans[0] in timespan_collection
             True

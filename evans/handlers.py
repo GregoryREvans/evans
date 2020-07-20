@@ -1416,34 +1416,34 @@ class GlissandoHandler(Handler):
     r"""
     Glissando Handler
 
-    .. container:: example
+    ..  container:: example
 
-    >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-    >>> handler = evans.GlissandoHandler(
-    ...     line_style="dotted-line",
-    ...     boolean_vector=[1],
-    ...     continuous=True,
-    ...     apply_to="runs",
-    ... )
-    >>> handler(staff)
-    >>> abjad.show(staff) # doctest: +SKIP
+        >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
+        >>> handler = evans.GlissandoHandler(
+        ...     line_style="dotted-line",
+        ...     boolean_vector=[1],
+        ...     continuous=True,
+        ...     apply_to="runs",
+        ... )
+        >>> handler(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
 
-    .. docs::
+        .. docs::
 
-        >>> print(abjad.lilypond(staff))
-        \new Staff
-        {
-            c'4
-            - \tweak style #'dotted-line %! abjad.glissando(7)
-            \glissando                   %! abjad.glissando(7)
-            c'4
-            - \tweak style #'dotted-line %! abjad.glissando(7)
-            \glissando                   %! abjad.glissando(7)
-            c'4
-            - \tweak style #'dotted-line %! abjad.glissando(7)
-            \glissando                   %! abjad.glissando(7)
-            c'4
-        }
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                - \tweak style #'dotted-line %! abjad.glissando(7)
+                \glissando                   %! abjad.glissando(7)
+                c'4
+                - \tweak style #'dotted-line %! abjad.glissando(7)
+                \glissando                   %! abjad.glissando(7)
+                c'4
+                - \tweak style #'dotted-line %! abjad.glissando(7)
+                \glissando                   %! abjad.glissando(7)
+                c'4
+            }
 
     """
 
@@ -1571,7 +1571,7 @@ class GraceHandler(Handler):
     .. container:: example
 
         >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-        >>> handler = GraceHandler(
+        >>> handler = evans.GraceHandler(
         ...     boolean_vector=[0, 1, 0, 1],
         ...     gesture_lengths=[1, 2],
         ...     continuous=True,
@@ -1861,7 +1861,7 @@ class NoteheadHandler(Handler):
 
 class PitchHandler(Handler):
     r"""
-    Clad Handler
+    Pitch Handler
 
     .. container:: example
 
@@ -1968,6 +1968,8 @@ class PitchHandler(Handler):
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
         ...     ]
         ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
         >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
@@ -1998,6 +2000,8 @@ class PitchHandler(Handler):
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
         ...     ]
         ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
         >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
@@ -2041,6 +2045,8 @@ class PitchHandler(Handler):
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
         ...     ]
         ... )
+        >>> style = '"dodecaphonic"'
+        >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
         >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
@@ -2079,7 +2085,7 @@ class PitchHandler(Handler):
         >>> file = abjad.LilyPondFile.new(
         ...     staff,
         ...     includes=[
-        ...         "/Users/evansdsg2/abjad-ext-microtones/abjadext/microtones/lilypond/default-edo-accidental-markups.ily"
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
         ...     ],
         ... )
         >>> style = '"dodecaphonic"'
@@ -2574,10 +2580,10 @@ class TempoSpannerHandler(Handler):
     r"""
     Tempo Spanner Handler
 
-    .. container:: example
+    ..  container:: example
 
         >>> s = abjad.Staff("s4 s4 s4 s4")
-        >>> handler = TempoSpannerHandler(
+        >>> handler = evans.TempoSpannerHandler(
         ...     tempo_list=[(3, 0, 1, "87"), (3, 0, 1, "95")],
         ...     boolean_vector=[1],
         ...     padding=4,
@@ -2586,7 +2592,7 @@ class TempoSpannerHandler(Handler):
         ... )
         >>> handler(s[:-1])
         >>> file = abjad.LilyPondFile.new(
-        ...     staff,
+        ...     s,
         ...     includes=[
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
         ...         "/Users/evansdsg2/evans/lilypond/evans-spanners.ily",
@@ -3057,7 +3063,7 @@ class TrillHandler(Handler):
     .. container:: example
 
         >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
-        >>> handler = TrillHandler(boolean_vector=[0, 1], continuous=True)
+        >>> handler = evans.TrillHandler(boolean_vector=[0, 1], continuous=True)
         >>> handler(staff)
         >>> abjad.show(staff) # doctest: +SKIP
 

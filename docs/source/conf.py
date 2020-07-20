@@ -104,12 +104,43 @@ uqbar_api_member_documenter_classes = [
 
 uqbar_book_console_setup = [
     "import abjad",
-    "import baca",
-    "import evans",
-    "import tsmakers",
-    "from abjadext import rmakers",
-    "from abjadext import microtones",
+    "from abjad import *",
 ]
+try:
+    from abjadext import rmakers  # noqa
+
+    uqbar_book_console_setup.append("from abjadext import rmakers")
+except ImportError:
+    raise Exception("Could not import rmakers from abjadext")
+
+try:
+    from abjadext import microtones  # noqa
+
+    uqbar_book_console_setup.append("from abjadext import microtones")
+except ImportError:
+    raise Exception("Could not import microtones from abjadext")
+
+try:
+    import baca  # noqa
+
+    uqbar_book_console_setup.append("import baca")
+except ImportError:
+    raise Exception("Could not import baca")
+
+try:
+    import evans  # noqa
+
+    uqbar_book_console_setup.append("import evans")
+except ImportError:
+    raise Exception("Could not import evans")
+
+try:
+    import tsmakers  # noqa
+
+    uqbar_book_console_setup.append("import tsmakers")
+except ImportError:
+    raise Exception("Could not import tsmakers")
+
 uqbar_book_console_teardown = []
 uqbar_book_extensions = [
     "uqbar.book.extensions.GraphExtension",

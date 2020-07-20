@@ -12,7 +12,7 @@ class RatioPartsExpression(AbjadObject):
         >>> expression = evans.RatioPartsExpression(
         ...     ratio=(1, 2, 1),
         ...     parts=(0, 2),
-        ...     )
+        ... )
         >>> print(repr(expression))
         evans.RatioPartsExpression(
             parts=(0, 2),
@@ -22,7 +22,7 @@ class RatioPartsExpression(AbjadObject):
         >>> timespan = abjad.Timespan(
         ...     start_offset=abjad.Duration(1, 2),
         ...     stop_offset=abjad.Duration(3, 2),
-        ...     )
+        ... )
         >>> for x in expression(timespan):
         ...     x
         ...
@@ -36,8 +36,8 @@ class RatioPartsExpression(AbjadObject):
         ...     parts=(0, 2),
         ...     mask_timespan=abjad.Timespan(
         ...          start_offset=(1, 4),
-        ...          ),
-        ...     )
+        ...     ),
+        ... )
         >>> timespan = abjad.Timespan(0, 4)
         >>> for x in expression(timespan):
         ...     x

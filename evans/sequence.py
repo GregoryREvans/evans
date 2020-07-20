@@ -402,6 +402,7 @@ def guerrero_morales(terms=None, set_size=None):
         ... )
         >>> for _ in g_m:
         ...     _
+        ...
         ['A', 'B', 'C']
         ['B', 'D', 'E']
         ['C', 'D', 'F']
@@ -414,6 +415,7 @@ def guerrero_morales(terms=None, set_size=None):
 
         >>> for _ in evans.guerrero_morales("ABCDEFGHI", 5):
         ...     _
+        ...
         ['A', 'B', 'C', 'D', 'E']
         ['B', 'F', 'G', 'H', 'I']
 
@@ -421,6 +423,7 @@ def guerrero_morales(terms=None, set_size=None):
 
         >>> for _ in evans.guerrero_morales("ABCDEFGHIJKLMNO", 4):
         ...     _
+        ...
         ['A', 'B', 'C', 'D']
         ['B', 'E', 'F', 'G']
         ['C', 'E', 'H', 'I']
@@ -439,6 +442,7 @@ def guerrero_morales(terms=None, set_size=None):
 
         >>> for _ in evans.guerrero_morales("ABCDEFGHI", 3):
         ...     _
+        ...
         ['A', 'B', 'C']
         ['B', 'D', 'E']
         ['C', 'D', 'F']
@@ -583,7 +587,6 @@ def mirror(lst, sequential_duplicates):
         ...         sequential_duplicates=True,
         ...     )
         ... )
-        ...
         [0, 1, 2, 3, 3, 2, 1, 0]
 
     .. container:: example
@@ -594,7 +597,6 @@ def mirror(lst, sequential_duplicates):
         ...         sequential_duplicates=False,
         ...     )
         ... )
-        ...
         [0, 1, 2, 3, 2, 1]
 
     """
@@ -845,7 +847,6 @@ def random_walk(random_seed, length, step_list, mapped_list):
         ...     step_list=[1, 2, 1],
         ...     mapped_list=[_ for _ in range(10)],
         ... )
-        ...
         >>> print(walk)
         [0, 9, 0, 2, 1, 0]
 
@@ -934,7 +935,6 @@ def reproportion_chord(base, chord, round=None):
         ...         round=rounder,
         ...     )
         ... )
-        ...
         [-4.75, -4, -3, -2.75, -0.75, 1, 2.25, 3.75, 5.25, 7.5, 7.75, 8.5]
 
     """
@@ -958,7 +958,6 @@ def reproportion_chromatic_decimals(base, root_int, scale_range, round=None):
         ...         base=10, root_int=0, scale_range=12, round=rounder,
         ...     )
         ... )
-        ...
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
     """
@@ -984,7 +983,6 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
         ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_tuples'
         ...     )
         ... )
-        ...
         [(20, 1), (20, 1.0), (40, 0.5), (60, 0.3333333333333333), (80, 0.25), (100, 0.2)]
 
     .. container:: example
@@ -994,7 +992,6 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
         ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_lists'
         ...     )
         ... )
-        ...
         ([20, 20, 40, 60, 80, 100], [1, 1.0, 0.5, 0.3333333333333333, 0.25, 0.2])
 
     .. container:: example
@@ -1004,7 +1001,6 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
         ...         fund=20, scale=[(_ + 1) for _ in range(5)],
         ...     )
         ... )
-        ...
         [20, 20, 40, 60, 80, 100]
 
     """

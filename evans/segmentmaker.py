@@ -4,14 +4,14 @@ import os
 
 import abjad
 
-from . import consort_reviv
+from . import consort
 from .commands import HandlerCommand, RhythmCommand
 from .sequence import flatten
 
 
 class NoteheadBracketMaker(object):
     r"""
-    Writes tuplet brackets with inserte note head.
+    Writes tuplet brackets with inserted note head.
 
     .. container:: example
 
@@ -19,7 +19,7 @@ class NoteheadBracketMaker(object):
         >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
         >>> staff = abjad.Staff()
         >>> staff.append(tuplet_2)
-        >>> new_brackets = NoteheadBracketMaker()
+        >>> new_brackets = evans.NoteheadBracketMaker()
         >>> b = new_brackets(staff)
         >>> abjad.show(staff) # doctest: +SKIP
 
@@ -366,14 +366,14 @@ class SegmentMaker(object):
             command_groups.append(group)
         for group in command_groups:
             voice_collections = abjad.OrderedDict()
-            global_collection = consort_reviv.LogicalTieCollection()
+            global_collection = consort.LogicalTieCollection()
             for tie in abjad.select(
                 self.score_template["Global Context"]
             ).logical_ties():
                 global_collection.insert(tie)
             voice_collections["Global Context"] = global_collection
             for voice in abjad.select(self.score_template).components(abjad.Voice):
-                collection = consort_reviv.LogicalTieCollection()
+                collection = consort.LogicalTieCollection()
                 for tie in abjad.select(voice).logical_ties():
                     collection.insert(tie)
                 voice_collections[voice.name] = collection
