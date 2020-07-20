@@ -22,6 +22,8 @@ Evans API
 .. rubric:: :ref:`evans.commands <evans--commands>`
    :class: section-header
 
+Command classes.
+
 .. raw:: html
 
    <hr/>
@@ -99,6 +101,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 .. rubric:: :ref:`evans.handlers <evans--handlers>`
    :class: section-header
 
+Handler classes.
+
 .. raw:: html
 
    <hr/>
@@ -133,6 +137,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 .. rubric:: :ref:`evans.metmod <evans--metmod>`
    :class: section-header
 
+Metric modulation.
+
 .. raw:: html
 
    <hr/>
@@ -154,6 +160,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 
 .. rubric:: :ref:`evans.pitch <evans--pitch>`
    :class: section-header
+
+Pitch functions.
 
 .. raw:: html
 
@@ -180,6 +188,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 
 .. rubric:: :ref:`evans.rtm <evans--rtm>`
    :class: section-header
+
+Rhythm tree functions.
 
 .. raw:: html
 
@@ -215,6 +225,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 .. rubric:: :ref:`evans.segmentmaker <evans--segmentmaker>`
    :class: section-header
 
+SegmentMaker with supporting classes and functions.
+
 .. raw:: html
 
    <hr/>
@@ -246,6 +258,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 
 .. rubric:: :ref:`evans.sequence <evans--sequence>`
    :class: section-header
+
+Sequence classes and functions.
 
 .. raw:: html
 
@@ -313,6 +327,8 @@ A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
 
 .. rubric:: :ref:`evans.timespan <evans--timespan>`
    :class: section-header
+
+Timespan classes and functions.
 
 .. raw:: html
 

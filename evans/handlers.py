@@ -1,3 +1,6 @@
+"""
+Handler classes.
+"""
 import statistics
 
 import abjad

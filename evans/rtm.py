@@ -1,3 +1,6 @@
+"""
+Rhythm tree functions.
+"""
 import abjad
 
 

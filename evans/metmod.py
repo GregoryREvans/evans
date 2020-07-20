@@ -1,3 +1,6 @@
+"""
+Metric modulation.
+"""
 import abjad
 import quicktions
 

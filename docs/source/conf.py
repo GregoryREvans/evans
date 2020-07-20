@@ -148,4 +148,4 @@ uqbar_book_extensions = [
 ]
 uqbar_book_strict = False
 uqbar_book_use_black = True
-uqbar_book_use_cache = False
+uqbar_book_use_cache = True

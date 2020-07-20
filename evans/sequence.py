@@ -1,3 +1,6 @@
+"""
+Sequence classes and functions.
+"""
 import itertools
 import random
 

@@ -1,3 +1,6 @@
+"""
+Pitch functions.
+"""
 import abjad
 import quicktions
 

@@ -1,3 +1,6 @@
+"""
+SegmentMaker with supporting classes and functions.
+"""
 import datetime
 import itertools
 import os
