@@ -412,48 +412,14 @@ def guerrero_morales(terms=None, set_size=None):
 
     .. container:: example
 
-        >>> g_m = evans.guerrero_morales(
-        ...     [
-        ...         "A",
-        ...         "B",
-        ...         "C",
-        ...         "D",
-        ...         "E",
-        ...         "F",
-        ...         "G",
-        ...         "H",
-        ...         "I",
-        ...     ],
-        ...     5,
-        ... )
-        >>> for _ in g_m:
+        >>> for _ in evans.guerrero_morales("ABCDEFGHI", 5):
         ...     _
         ['A', 'B', 'C', 'D', 'E']
         ['B', 'F', 'G', 'H', 'I']
 
     .. container:: example
 
-        >>> g_m = evans.guerrero_morales(
-        ...     [
-        ...         "A",
-        ...         "B",
-        ...         "C",
-        ...         "D",
-        ...         "E",
-        ...         "F",
-        ...         "G",
-        ...         "H",
-        ...         "I",
-        ...         "J",
-        ...         "K",
-        ...         "L",
-        ...         "M",
-        ...         "N",
-        ...         "O",
-        ...     ],
-        ...     4,
-        ... )
-        >>> for _ in g_m:
+        >>> for _ in evans.guerrero_morales("ABCDEFGHIJKLMNO", 4):
         ...     _
         ['A', 'B', 'C', 'D']
         ['B', 'E', 'F', 'G']
@@ -469,6 +435,18 @@ def guerrero_morales(terms=None, set_size=None):
         ['D', 'F', 'I', 'L']
         ['D', 'G', 'H', 'M']
 
+    .. container:: example
+
+        >>> for _ in evans.guerrero_morales("ABCDEFGHI", 3):
+        ...     _
+        ['A', 'B', 'C']
+        ['B', 'D', 'E']
+        ['C', 'D', 'F']
+        ['A', 'D', 'G']
+        ['A', 'E', 'F']
+        ['B', 'F', 'G']
+        ['C', 'E', 'G']
+        ['A', 'H', 'I']
 
     """
     returned_list = []
@@ -487,7 +465,6 @@ def guerrero_morales(terms=None, set_size=None):
         if 0 < len(temp_pairs_list):
             pairs_list.extend(temp_pairs_list[0])
             returned_list.append(list(temp_returned_list[0]))
-
     return returned_list
 
 

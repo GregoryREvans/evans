@@ -2457,7 +2457,9 @@ class RhythmHandler(Handler):
         return abjad.OrderedDict([("state", self.rmaker.state)])
 
 
-class SlurHandler(Handler):
+class SlurHandler(
+    Handler
+):  # add style option for \slurDotted and \slurDashed and \slurSolid
     r"""
     Slur Handler
 
