@@ -33,6 +33,7 @@ class SilentTimespan(abjad.Timespan):
                 abjad.Offset((0, 1)),
                 abjad.Offset((1, 1))
                 )
+
     """
 
     def __init__(self, start_offset, stop_offset, annotation=None):
