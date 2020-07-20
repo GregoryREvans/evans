@@ -18,8 +18,21 @@ rhythm_stylesheet = os.path.join(dir_path, "_rhythm_sketch_stylesheet.ily")
 
 
 class SilentTimespan(abjad.Timespan):
-    """
+    r"""
     Silent Timespan
+
+    ..  container:: example
+
+        >>> span = evans.SilentTimespan(0, 1)
+        >>> abjad.show(span) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> print(abjad.storage(span))
+            evans.SilentTimespan(
+                abjad.Offset((0, 1)),
+                abjad.Offset((1, 1))
+                )
     """
 
     def __init__(self, start_offset, stop_offset, annotation=None):
@@ -45,7 +58,6 @@ class SilentTimespan(abjad.Timespan):
     def _as_postscript(
         self, postscript_x_offset, postscript_y_offset, postscript_scale
     ):
-
         start = float(self._start_offset) * postscript_scale
         start -= postscript_x_offset
         stop = float(self._stop_offset) * postscript_scale
@@ -66,9 +78,9 @@ class SilentTimespan(abjad.Timespan):
 
 
 class TimespanMaker(object):
-    """
+    r"""
 
-    .. container:: example
+    ..  container:: example
 
         >>> timespan_maker = evans.TimespanMaker(
         ...     denominator=8,
@@ -77,51 +89,55 @@ class TimespanMaker(object):
         ...
         >>> counts = [3, 5, -3, 4, 7, -1]
         >>> timespan_list = timespan_maker(counts, max_duration=6)
-        >>> print(abjad.storage(timespan_list))
-        abjad.TimespanList(
-            [
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((0, 1)),
-                    stop_offset=abjad.Offset((3, 8)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((3, 8)),
-                    stop_offset=abjad.Offset((1, 1)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((11, 8)),
-                    stop_offset=abjad.Offset((15, 8)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((15, 8)),
-                    stop_offset=abjad.Offset((21, 8)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((23, 8)),
-                    stop_offset=abjad.Offset((13, 4)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((13, 4)),
-                    stop_offset=abjad.Offset((31, 8)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((17, 4)),
-                    stop_offset=abjad.Offset((19, 4)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((19, 4)),
-                    stop_offset=abjad.Offset((11, 2)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((23, 4)),
-                    stop_offset=abjad.Offset((49, 8)),
-                    ),
-                abjad.AnnotatedTimespan(
-                    start_offset=abjad.Offset((49, 8)),
-                    stop_offset=abjad.Offset((27, 4)),
-                    ),
-                ]
-            )
+        >>> abjad.show(timespan_list, scale=0.5) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> print(abjad.storage(timespan_list))
+            abjad.TimespanList(
+                [
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((0, 1)),
+                        stop_offset=abjad.Offset((3, 8)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((3, 8)),
+                        stop_offset=abjad.Offset((1, 1)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((11, 8)),
+                        stop_offset=abjad.Offset((15, 8)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((15, 8)),
+                        stop_offset=abjad.Offset((21, 8)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((23, 8)),
+                        stop_offset=abjad.Offset((13, 4)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((13, 4)),
+                        stop_offset=abjad.Offset((31, 8)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((17, 4)),
+                        stop_offset=abjad.Offset((19, 4)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((19, 4)),
+                        stop_offset=abjad.Offset((11, 2)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((23, 4)),
+                        stop_offset=abjad.Offset((49, 8)),
+                        ),
+                    abjad.AnnotatedTimespan(
+                        start_offset=abjad.Offset((49, 8)),
+                        stop_offset=abjad.Offset((27, 4)),
+                        ),
+                    ]
+                )
 
     """
 
