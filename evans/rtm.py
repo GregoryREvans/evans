@@ -5,13 +5,34 @@ import abjad
 
 
 def nested_list_to_rtm(nested_list):
-    """
+    r"""
 
-    .. container:: example
+    ..  container:: example
 
-        >>> nested_list = [1, 1, [1, [1, 1]], 1]
-        >>> print(evans.nested_list_to_rtm(nested_list))
-        (1 1 (1 (1 1)) 1)
+        >>> nested_list = [1, [1, 1, [1, [1, 1]], 1]]
+        >>> rtm_string = evans.nested_list_to_rtm(nested_list)
+        >>> print(rtm_string)
+        (1 (1 1 (1 (1 1)) 1))
+
+        >>> rtm_list = [rtm_string]
+        >>> maker = evans.RTMMaker(rtm=rtm_list)
+        >>> divisions = [abjad.Duration(1, 1)]
+        >>> selections = maker(divisions)
+        >>> staff = abjad.Staff()
+        >>> staff.extend(selections)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4
+                c'4
+                c'8
+                c'8
+                c'4
+            }
 
     """
     out_string = ""
@@ -30,21 +51,72 @@ def nested_list_to_rtm(nested_list):
 
 
 def rotate_tree(rtm_string, n=1):
-    """
+    r"""
 
-    .. container:: example
+    ..  container:: example
 
-        >>> rtm = '(1 (2 1 (1 2) 1))'
+        >>> rtm = "(1 (2 (1 (1 2)) 1))"
         >>> for x in range(6):
         ...     new_rtm = evans.rotate_tree(rtm, x)
         ...     print(new_rtm)
         ...
-        (1 (2 1 (1 2) 1))
-        (1 (1 1 (2 1) 2))
-        (1 (1 2 (1 2) 1))
-        (1 (2 1 (2 1) 1))
-        (1 (1 2 (1 1) 2))
-        (1 (2 1 (1 2) 1))
+        (1 (2 (1 (1 2)) 1))
+        (1 (1 (1 (2 1)) 2))
+        (1 (1 (2 (1 2)) 1))
+        (1 (2 (1 (2 1)) 1))
+        (1 (1 (2 (1 1)) 2))
+        (1 (2 (1 (1 2)) 1))
+
+        >>> rtm_list = [evans.rotate_tree(rtm, x) for x in range(6)]
+        >>> maker = evans.RTMMaker(rtm=rtm_list)
+        >>> divisions = [abjad.Duration(1, 1) for _ in rtm_list]
+        >>> selections = maker(divisions)
+        >>> staff = abjad.Staff()
+        >>> staff.extend(selections)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'2
+                \times 2/3 {
+                    c'8
+                    c'4
+                }
+                c'4
+                c'4
+                \times 2/3 {
+                    c'4
+                    c'8
+                }
+                c'2
+                c'4
+                \times 2/3 {
+                    c'4
+                    c'2
+                }
+                c'4
+                c'2
+                \times 2/3 {
+                    c'4
+                    c'8
+                }
+                c'4
+                \times 4/5 {
+                    c'4
+                    c'4
+                    c'4
+                    c'2
+                }
+                c'2
+                \times 2/3 {
+                    c'8
+                    c'4
+                }
+                c'4
+            }
 
     """
     opening = rtm_string[:3]
@@ -103,9 +175,9 @@ def funnel_tree_to_x(rtm, x):
 
 
 def funnel_inner_tree_to_x(rtm_string, x=1):
-    """
+    r"""
 
-    .. container:: example
+    ..  container:: example
 
         >>> rtm = '(1 (3 (2 (1 2 1 1)) 3))'
         >>> for x in evans.funnel_inner_tree_to_x(rtm_string=rtm, x=5):
@@ -116,6 +188,137 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         (1 (5 (4 (3 4 3 3)) 5))
         (1 (5 (5 (4 5 4 4)) 5))
         (1 (5 (5 (5 5 5 5)) 5))
+
+        >>> rtm_list = evans.funnel_inner_tree_to_x(rtm_string=rtm, x=5)
+        >>> maker = evans.RTMMaker(rtm=rtm_list)
+        >>> divisions = [abjad.Duration(1, 1) for _ in rtm_list]
+        >>> selections = maker(divisions)
+        >>> staff = abjad.Staff()
+        >>> staff.extend(selections)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                c'4.
+                \times 4/5 {
+                    c'16
+                    c'8
+                    c'16
+                    c'16
+                }
+                c'4.
+                \times 8/11 {
+                    c'2
+                    \times 2/3 {
+                        c'8
+                        c'8.
+                        c'8
+                        c'8
+                    }
+                    c'2
+                }
+                \times 4/7 {
+                    c'2
+                    ~
+                    c'8
+                    \times 8/13 {
+                        c'8.
+                        c'4
+                        c'8.
+                        c'8.
+                    }
+                    c'2
+                    ~
+                    c'8
+                }
+                \times 8/15 {
+                    c'2
+                    ~
+                    c'8
+                    \tweak text #tuplet-number::calc-fraction-text
+                    \times 10/17 {
+                        c'4
+                        c'4
+                        ~
+                        c'16
+                        c'4
+                        c'4
+                    }
+                    c'2
+                    ~
+                    c'8
+                }
+                \times 8/15 {
+                    c'2
+                    ~
+                    c'8
+                    c'8
+                    ~
+                    c'32
+                    c'8
+                    ~
+                    c'32
+                    c'8
+                    ~
+                    c'32
+                    c'8
+                    ~
+                    c'32
+                    c'2
+                    ~
+                    c'8
+                }
+            }
+
+    ..  container:: example
+
+            >>> rtm_list = evans.funnel_inner_tree_to_x(rtm_string="(1 ((4 (1 1 (2 (3 1)))) 1))", x=1)
+            >>> maker = evans.RTMMaker(rtm=rtm_list)
+            >>> divisions = [abjad.Duration(1, 1) for _ in rtm_list]
+            >>> selections = maker(divisions)
+            >>> staff = abjad.Staff()
+            >>> staff.extend(selections)
+            >>> abjad.show(staff) # doctest: +SKIP
+
+            ..  docs::
+
+                >>> print(abjad.lilypond(staff))
+                \new Staff
+                {
+                    \times 4/5 {
+                        c'4
+                        c'4
+                        c'4.
+                        c'8
+                        c'4
+                    }
+                    c'4
+                    c'4
+                    \times 2/3 {
+                        c'4
+                        c'8
+                    }
+                    c'4
+                    \times 2/3 {
+                        \times 2/3 {
+                            c'2
+                            c'2
+                            c'4
+                            c'4
+                        }
+                        c'2
+                    }
+                    \times 2/3 {
+                        c'4
+                        c'4
+                        c'8
+                        c'8
+                    }
+                    c'2
+                }
 
     """
     opening = rtm_string[:3]
