@@ -118,6 +118,92 @@ def rotate_tree(rtm_string, n=1):
                 c'4
             }
 
+    >>> divisions = [
+    ...     abjad.Duration(1, 2),
+    ...     abjad.Duration(1, 4),
+    ...     abjad.Duration(1, 4),
+    ...     abjad.Duration(1, 1),
+    ...     abjad.Duration(1, 4),
+    ...     abjad.Duration(3, 4),
+    ...     abjad.Duration(2, 1),
+    ...     abjad.Duration(5, 8),
+    ...     abjad.Duration(3, 8),
+    ... ]
+    >>> selections = maker(divisions)
+    >>> staff = abjad.Staff()
+    >>> staff.extend(selections)
+    >>> abjad.show(staff) # doctest: +SKIP
+
+    .. docs::
+
+        >>> print(abjad.lilypond(staff))
+        \new Staff
+        {
+            c'4
+            \times 2/3 {
+                c'16
+                c'8
+            }
+            c'8
+            c'16
+            \times 2/3 {
+                c'16
+                c'32
+            }
+            c'8
+            c'16
+            \times 2/3 {
+                c'16
+                c'8
+            }
+            c'16
+            c'2
+            \times 2/3 {
+                c'4
+                c'8
+            }
+            c'4
+            \times 4/5 {
+                c'16
+                c'16
+                c'16
+                c'8
+            }
+            \tweak text #tuplet-number::calc-fraction-text
+            \times 3/4 {
+                c'2
+                \times 2/3 {
+                    c'8
+                    c'4
+                }
+                c'4
+            }
+            c'1
+            \times 2/3 {
+                c'4
+                c'2
+            }
+            c'2
+            \tweak text #tuplet-number::calc-fraction-text
+            \times 5/8 {
+                c'4
+                \times 2/3 {
+                    c'4
+                    c'8
+                }
+                c'2
+            }
+            \tweak text #tuplet-number::calc-fraction-text
+            \times 3/4 {
+                c'8
+                \times 2/3 {
+                    c'8
+                    c'4
+                }
+                c'8
+            }
+        }
+
     """
     opening = rtm_string[:3]
     middle = rtm_string[3:-1]

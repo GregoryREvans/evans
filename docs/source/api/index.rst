@@ -4,7 +4,140 @@ Evans API
 .. toctree::
    :hidden:
 
+   abjadext/index
    evans/index
+   tsmakers/index
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext <abjadext>`
+   :class: section-header
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext.microtones <abjadext--microtones>`
+   :class: section-header
+
+Abjad's microtonal extension.
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext.microtones.et <abjadext--microtones--et>`
+   :class: section-header
+
+Package for equal tempered microtones.
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.et.ETBundle
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Functions
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.et.apply_alteration
+   ~abjadext.microtones.et.get_accidental_value
+   ~abjadext.microtones.et.get_alteration
+   ~abjadext.microtones.et.get_value_sum
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext.microtones.et_utilities <abjadext--microtones--et-utilities>`
+   :class: section-header
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.et_utilities.PitchClassSegment
+   ~abjadext.microtones.et_utilities.PitchClassSet
+   ~abjadext.microtones.et_utilities.PitchSegment
+   ~abjadext.microtones.et_utilities.PitchSet
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext.microtones.ji <abjadext--microtones--ji>`
+   :class: section-header
+
+Package for Just Intonation.
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.ji.JIBundle
+   ~abjadext.microtones.ji.JIVector
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Functions
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.ji.make_ji_bundle
+   ~abjadext.microtones.ji.tune_to_ratio
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`abjadext.microtones.ji_utilities <abjadext--microtones--ji-utilities>`
+   :class: section-header
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~abjadext.microtones.ji_utilities.RatioClassSegment
+   ~abjadext.microtones.ji_utilities.RatioClassSet
+   ~abjadext.microtones.ji_utilities.RatioSegment
+   ~abjadext.microtones.ji_utilities.RatioSet
 
 .. raw:: html
 
@@ -60,7 +193,7 @@ Command classes.
 .. rubric:: :ref:`evans.consort <evans--consort>`
    :class: section-header
 
-A port of a variety of tools from ``Consort`` by Josiah Wolf Oberholtzer to
+A port of a variety of tools from Josiah Wolf Oberholtzer's ``Consort`` to
 `Abjad 3.1`.
 
 .. raw:: html
@@ -376,3 +509,84 @@ Timespan classes and functions.
    :nosignatures:
 
    ~evans.timespan.SilentTimespan
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`tsmakers <tsmakers>`
+   :class: section-header
+
+Timespan Makers
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~tsmakers.BoundaryTimespanMaker.BoundaryTimespanMaker
+   ~tsmakers.CascadingTimespanMaker.CascadingTimespanMaker
+   ~tsmakers.CompositeMusicSpecifier.CompositeMusicSpecifier
+   ~tsmakers.Cursor.Cursor
+   ~tsmakers.DependentTimespanMaker.DependentTimespanMaker
+   ~tsmakers.FloodedTimespanMaker.FloodedTimespanMaker
+   ~tsmakers.HashCachingObject.HashCachingObject
+   ~tsmakers.MusicSpecifier.MusicSpecifier
+   ~tsmakers.MusicSpecifierSequence.MusicSpecifierSequence
+   ~tsmakers.TaleaTimespanMaker.TaleaTimespanMaker
+   ~tsmakers.TimespanMaker.TimespanMaker
+   ~tsmakers.TimespanSpecifier.TimespanSpecifier
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Timespans
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~tsmakers.PerformedTimespan.PerformedTimespan
+   ~tsmakers.SilentTimespan.SilentTimespan
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`tsmakers.tree <tsmakers--tree>`
+   :class: section-header
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~tsmakers.tree.TimespanTree
+   ~tsmakers.tree.TimespanTreeNode
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Functions
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~tsmakers.tree.divrewrite
+   ~tsmakers.tree.flatten
+   ~tsmakers.tree.levelbylevel
+   ~tsmakers.tree.levelorder
+   ~tsmakers.tree.tally

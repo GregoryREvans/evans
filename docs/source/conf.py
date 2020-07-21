@@ -94,7 +94,7 @@ intersphinx_mapping = {
 todo_include_todos = True
 
 uqbar_api_title = "Evans API"
-uqbar_api_source_paths = ["evans"]
+uqbar_api_source_paths = ["evans", "abjadext.microtones", "tsmakers"]
 uqbar_api_root_documenter_class = "uqbar.apis.SummarizingRootDocumenter"
 uqbar_api_module_documenter_class = "uqbar.apis.SummarizingModuleDocumenter"
 uqbar_api_member_documenter_classes = [

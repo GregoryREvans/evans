@@ -1,5 +1,7 @@
 """
 Evans API
+
+The personal Abjad library of Gregory Rowland Evans.
 """
 from .commands import (
     Command,
