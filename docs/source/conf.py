@@ -105,6 +105,8 @@ uqbar_api_member_documenter_classes = [
 uqbar_book_console_setup = [
     "import abjad",
     "from abjad import *",
+    "import abjadext",
+    "import fractions",
 ]
 try:
     from abjadext import rmakers  # noqa

@@ -16,8 +16,8 @@ class CyclicList(object):
 
         >>> _cyc_count = -1
         >>> _non_cyc_count = -1
-        >>> cyc_generator = CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
-        >>> non_cyc_generator = CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
+        >>> cyc_generator = evans.CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
+        >>> non_cyc_generator = evans.CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
 
         >>> cyc_generator(r=2)
         [1, 2]
@@ -480,12 +480,12 @@ def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
 
     .. container:: example
 
-        >>> print(harmonic_series(20, 5))
+        >>> print(evans.harmonic_series(20, 5))
         [20, 40, 60, 80, 100]
 
     .. container:: example
 
-        >>> print(harmonic_series(900, 5, True))
+        >>> print(evans.harmonic_series(900, 5, True))
         [900.0, 450.0, 300.0, 225.0, 180.0]
 
     """
@@ -524,7 +524,7 @@ def josephus(n, k):
         >>> tone_row = [0, 1, 2, 3, 4]
         >>> for i in range(16):
         ...     print(
-        ...         josephus(len(tone_row), i + 2)
+        ...         evans.josephus(len(tone_row), i + 2)
         ...     )
         ...
         [[0, 1, 2, 3, 4], [0, 2, 3, 4], [0, 2, 4], [2, 4], [2]]
@@ -636,7 +636,7 @@ def multiple_sequence(fundamental=20, number_of_partials=10, multiple=1.5):
 
     .. container:: example
 
-        >>> print(multiple_sequence(20, 10, 1.25))
+        >>> print(evans.multiple_sequence(20, 10, 1.25))
         [20.0, 25.0, 31.25, 39.0625, 48.828125, 61.03515625, 76.2939453125, 95.367431640625, 119.20928955078125, 149.01161193847656, 186.2645149230957]
 
     """
@@ -905,7 +905,7 @@ def reciprocal(value):
 
     .. container:: example
 
-        >>> print(reciprocal(0.5))
+        >>> print(evans.reciprocal(0.5))
         2.0
 
     """
@@ -982,7 +982,7 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
     .. container:: example
 
         >>> print(
-        ...     reproportion_harmonics(
+        ...     evans.reproportion_harmonics(
         ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_tuples'
         ...     )
         ... )
@@ -991,7 +991,7 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
     .. container:: example
 
         >>> print(
-        ...     reproportion_harmonics(
+        ...     evans.reproportion_harmonics(
         ...         fund=20, scale=[(_ + 1) for _ in range(5)], return_amp_reciprocals='as_lists'
         ...     )
         ... )
@@ -1000,7 +1000,7 @@ def reproportion_harmonics(fund, scale, return_amp_reciprocals=None):
     .. container:: example
 
         >>> print(
-        ...     reproportion_harmonics(
+        ...     evans.reproportion_harmonics(
         ...         fund=20, scale=[(_ + 1) for _ in range(5)],
         ...     )
         ... )
