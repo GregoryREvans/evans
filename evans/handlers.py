@@ -15,11 +15,8 @@ class Handler:
     Handler Base Class
     """
 
-    def __str__(self):
-        return abjad.storage(self)
-
     def __repr__(self):
-        return abjad.storage(self)
+        return abjad.StorageFormatManager(self).get_repr_format()
 
 
 class ArticulationHandler(Handler):
@@ -29,10 +26,19 @@ class ArticulationHandler(Handler):
     ..  container:: example
 
         >>> staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 c'4 c'4 c'4")
-        >>> art_lst = ["staccato", "tenuto", "staccatissimo", "open", "halfopen", "stopped", "portato", "tremolo"]
+        >>> art_lst = [
+        ...     "staccato",
+        ...     "tenuto",
+        ...     "staccatissimo",
+        ...     "open",
+        ...     "halfopen",
+        ...     "stopped",
+        ...     "portato",
+        ...     "tremolo"
+        ... ]
         >>> handler = evans.ArticulationHandler(
         ...     articulation_list=art_lst,
-        ...     articulation_boolean_vector=[0],
+        ...     articulation_boolean_vector=[1],
         ...     vector_continuous=True,
         ...     continuous=True,
         ... )
@@ -68,7 +74,7 @@ class ArticulationHandler(Handler):
     def __init__(
         self,
         articulation_list=None,
-        articulation_boolean_vector=[0],
+        articulation_boolean_vector=(1,),
         vector_continuous=True,
         continuous=False,
         count=-1,
@@ -96,7 +102,7 @@ class ArticulationHandler(Handler):
         articulations = self._cyc_articulations(r=len(ties))
         vector = self.articulation_boolean_vector(r=len(ties))
         for tie, articulation, bool in zip(ties, articulations, vector):
-            if bool == 0:
+            if bool == 1:
                 if self.articulation_list is not None:
                     if articulation == "tremolo":
                         for leaf in tie:
@@ -110,9 +116,6 @@ class ArticulationHandler(Handler):
                         abjad.attach(abjad.Articulation(articulation), tie[0])
             else:
                 continue
-
-    def identifiers(self):
-        return f"""articulation list:\n{self.articulation_list}\narticulation boolean vector\n{self.articulation_boolean_vector}\nvector continuous\n{self.vector_continuous}\ncontinuous\n{self.continuous},"""
 
     def name(self):
         return self.name
@@ -160,9 +163,9 @@ class BendHandler(Handler):
 
     def __init__(
         self,
-        bend_amounts=[1],
+        bend_amounts=(1,),
         bend_continuous=True,
-        boolean_vector=[0],
+        boolean_vector=(1,),
         vector_continuous=True,
         bend_count=-1,
         vector_count=-1,
@@ -310,36 +313,14 @@ class BisbigliandoHandler(Handler):
             if value == 1:
                 fingering = self.fingering_list(r=1)[0]
                 if fingering is None:
-                    start_literal = abjad.LilyPondLiteral(
-                        [
-                            r"""- \tweak padding""" + f""" #{self.padding}""",
-                            r"""- \tweak staff-padding"""
-                            + f""" #{self.staff_padding}""",
-                            r"""- \tweak bound-details.right.padding"""
-                            + f""" #{self.right_padding}""",
-                            r"""- \tweak bound-details.left.text""",
-                            r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
-                            r"""\startTrillSpan""",
-                        ],
-                        format_slot="after",
-                    )
+                    start_literal = self._make_start_literal()
                     stop_literal = abjad.LilyPondLiteral(
                         r"\stopTrillSpan", format_slot="after"
                     )
                     abjad.attach(start_literal, tie[0])
                     abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
                 else:
-                    start_literal_pre = abjad.LilyPondLiteral(
-                        [
-                            r"""- \tweak padding""" + f""" #{self.padding}""",
-                            r"""- \tweak staff-padding"""
-                            + f""" #{self.staff_padding}""",
-                            r"""- \tweak bound-details.right.padding"""
-                            + f""" #{self.right_padding}""",
-                            r"""- \tweak bound-details.left.text""",
-                        ],
-                        format_slot="after",
-                    )
+                    start_literal_pre = self._make_start_literal_pre()
                     start_literal = abjad.LilyPondLiteral(
                         fingering, format_slot="after"
                     )
@@ -353,6 +334,36 @@ class BisbigliandoHandler(Handler):
                     abjad.attach(start_literal, tie[0])
                     abjad.attach(start_literal_post, tie[0])
                     abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
+
+    def _make_start_literal(self):
+        start_literal = abjad.LilyPondLiteral(
+            [
+                r"""- \tweak padding""" + f""" #{self.padding}""",
+                r"""- \tweak staff-padding"""
+                + f""" #{self.staff_padding}""",
+                r"""- \tweak bound-details.right.padding"""
+                + f""" #{self.right_padding}""",
+                r"""- \tweak bound-details.left.text""",
+                r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
+                r"""\startTrillSpan""",
+            ],
+            format_slot="after",
+        )
+        return start_literal
+
+    def _make_start_literal_pre(self):
+        start_literal_pre = abjad.LilyPondLiteral(
+            [
+                r"""- \tweak padding""" + f""" #{self.padding}""",
+                r"""- \tweak staff-padding"""
+                + f""" #{self.staff_padding}""",
+                r"""- \tweak bound-details.right.padding"""
+                + f""" #{self.right_padding}""",
+                r"""- \tweak bound-details.left.text""",
+            ],
+            format_slot="after",
+        )
+        return start_literal_pre
 
     def name(self):
         return self.name
@@ -397,6 +408,31 @@ class ClefHandler(Handler):
 
     """
 
+    _clef_groups_up = {
+        "bass": ("bass", "tenorvarC", "treble"),  # "treble^8", "treble^15"),
+        "tenor": ("tenorvarC", "treble"),  # "treble^8", "treble^15"),
+        "alto": ("varC", "treble"),  # "treble^8", "treble^15"),
+        "treble": ("treble",),  # "treble^8", "treble^15"),
+    }
+
+    _clef_groups_down = {
+        "bass": ("bass", "bass_8", "bass_15"),
+        "tenor": ("tenorvarC", "bass", "bass_8"),
+        "alto": ("varC", "bass", "bass_8"),
+        "treble": ("treble", "treble_8", "bass"),
+    }
+
+    _default_clef_shelves = {
+        "bass": (-28, 6),
+        "tenor": (-10, 12),
+        "tenorvarC": (-10, 12),
+        "alto": (-12, 18),
+        "varC": (-12, 18),
+        "treble": (-5, 24),
+        "treble^8": (7, 36),
+        "treble^15": (19, 48),
+    }
+
     def __init__(
         self,
         clef=None,
@@ -420,35 +456,13 @@ class ClefHandler(Handler):
         self._add_ottavas(voice)
 
     def _extended_range_clefs(self, clef):
-        clef_groups_up = {
-            "bass": ("bass", "tenorvarC", "treble"),  # "treble^8", "treble^15"),
-            "tenor": ("tenorvarC", "treble"),  # "treble^8", "treble^15"),
-            "alto": ("varC", "treble"),  # "treble^8", "treble^15"),
-            "treble": ("treble",),  # "treble^8", "treble^15"),
-        }
-        clef_groups_down = {
-            "bass": ("bass", "bass_8", "bass_15"),
-            "tenor": ("tenorvarC", "bass", "bass_8"),
-            "alto": ("varC", "bass", "bass_8"),
-            "treble": ("treble", "treble_8", "bass"),
-        }
         if self.extend_in_direction == "down":
-            return clef_groups_down[clef]
+            return self._clef_groups_down[clef]
         else:
-            return clef_groups_up[clef]
+            return self._clef_groups_up[clef]
 
     def _extended_range_ottavas(self, clef):
-        default_clef_shelves = {
-            "bass": (-28, 6),
-            "tenor": (-10, 12),
-            "tenorvarC": (-10, 12),
-            "alto": (-12, 18),
-            "varC": (-12, 18),
-            "treble": (-5, 24),
-            "treble^8": (7, 36),
-            "treble^15": (19, 48),
-        }
-        return default_clef_shelves[clef]
+        return self._default_clef_shelves[clef]
 
     def _add_clefs(self, voice):  # allow the beginning of a run to ignore active clef
         clef = self.clef
@@ -475,9 +489,8 @@ class ClefHandler(Handler):
                         else:
                             continue
                     active_clef_in_list = clef_list[-1]
-                    active_clef_in_list_shelf = self._extended_range_ottavas(
-                        active_clef_in_list.name
-                    )
+                    range_ = self._extended_range_ottavas(active_clef_in_list.name)
+                    active_clef_in_list_shelf = range_
                     if pitch > active_clef_in_list_shelf[1]:
                         test_value = value + 1
                         if test_value < len(allowable_clefs):
@@ -485,12 +498,9 @@ class ClefHandler(Handler):
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            elif (
-                                abjad.inspect(tie[0]).indicator(abjad.Clef) is not None
-                            ):
-                                abjad.detach(
-                                    abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0]
-                                )
+                            if abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
+                                indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                abjad.detach(indicator, tie[0])
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
                             else:
@@ -503,14 +513,9 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    elif (
-                                        abjad.inspect(tie[0]).indicator(abjad.Clef)
-                                        is not None
-                                    ):
-                                        abjad.detach(
-                                            abjad.inspect(tie[0]).indicator(abjad.Clef),
-                                            tie[0],
-                                        )
+                                    indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                    if indicator is not None:
+                                        abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
                                     else:
@@ -529,12 +534,9 @@ class ClefHandler(Handler):
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            elif (
-                                abjad.inspect(tie[0]).indicator(abjad.Clef) is not None
-                            ):
-                                abjad.detach(
-                                    abjad.inspect(tie[0]).indicator(abjad.Clef), tie[0]
-                                )
+                            indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                            if indicator is not None:
+                                abjad.detach(indicator, tie[0])
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
                             else:
@@ -547,14 +549,9 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    elif (
-                                        abjad.inspect(tie[0]).indicator(abjad.Clef)
-                                        is not None
-                                    ):
-                                        abjad.detach(
-                                            abjad.inspect(tie[0]).indicator(abjad.Clef),
-                                            tie[0],
-                                        )
+                                    indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                    if indicator is not None:
+                                        abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
                                         clef_list.append(clef)
                                     else:
@@ -571,14 +568,9 @@ class ClefHandler(Handler):
                                 clef = abjad.Clef(temp_clef)
                                 if clef == clef_list[-1]:
                                     continue
-                                elif (
-                                    abjad.inspect(tie[0]).indicator(abjad.Clef)
-                                    is not None
-                                ):
-                                    abjad.detach(
-                                        abjad.inspect(tie[0]).indicator(abjad.Clef),
-                                        tie[0],
-                                    )
+                                indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                if indicator is not None:
+                                    abjad.detach(indicator, tie[0])
                                     abjad.attach(clef, tie[0])
                                     clef_list.append(clef)
                                 else:
@@ -592,10 +584,9 @@ class ClefHandler(Handler):
                 converted_clef = self._extended_range_clefs(clef)[0]
                 clef = abjad.Clef(converted_clef)
                 first_leaf = abjad.select(voice).leaves()[0]
-                if abjad.inspect(first_leaf).indicator(abjad.Clef) is not None:
-                    abjad.detach(
-                        abjad.inspect(first_leaf).indicator(abjad.Clef), first_leaf
-                    )
+                indicator = abjad.inspect(first_leaf).indicator(abjad.Clef)
+                if indicator is not None:
+                    abjad.detach(indicator, first_leaf)
                     abjad.attach(clef, first_leaf)
                 else:
                     abjad.attach(clef, first_leaf)

@@ -83,9 +83,12 @@ class Command:
         target = selector(voice)
         for tuplet in abjad.select(target).tuplets():
             maker = abjad.LeafMaker()
-            abjad.mutate(tuplet).replace(maker([0], [abjad.inspect(tuplet).duration()]))
+            duration = abjad.inspect(tuplet).duration()
+            selections = maker([0], [duration])
+            abjad.mutate(tuplet).replace(selections)
         target = selector(voice)
-        abjad.mutate(abjad.select(target).leaves()).replace(contents[:])
+        leaves = abjad.select(target).leaves()
+        abjad.mutate(leaves).replace(contents[:])
 
 
 def attach(voice_name, indicator, selector=None):

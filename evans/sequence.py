@@ -45,7 +45,7 @@ class CyclicList:
         return abjad.storage(self)
 
     def __repr__(self):
-        return abjad.storage(self)
+        return abjad.StorageFormatManager(self).get_repr_format()
 
     def state_cyc(self, lst, r):
         returned_material = []
