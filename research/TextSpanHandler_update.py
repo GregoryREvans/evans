@@ -4,7 +4,7 @@ from evans import CyclicList
 
 
 # incorporate spanner anchors
-class TextSpanHandler(object):
+class TextSpanHandler:
     def __init__(
         self,
         span_one_positions=None,

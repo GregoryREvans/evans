@@ -8,7 +8,7 @@ import abjad
 import numpy
 
 
-class CyclicList(object):
+class CyclicList:
     r"""
     Cyclic List
 
@@ -72,7 +72,7 @@ class CyclicList(object):
         return self.count
 
 
-class MarkovChain(object):
+class MarkovChain:
     """
     Markov Chain
 

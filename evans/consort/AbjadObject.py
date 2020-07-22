@@ -1,7 +1,7 @@
 import abjad
 
 
-class AbjadObject(object):
+class AbjadObject:
     # ### CLASS VARIABLES ###
 
     __slots__ = ()

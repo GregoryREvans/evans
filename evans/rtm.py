@@ -416,7 +416,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
     return funnel_list
 
 
-class RTMMaker(object):
+class RTMMaker:
     r"""
 
     .. container:: example

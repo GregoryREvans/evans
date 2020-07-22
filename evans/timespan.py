@@ -71,7 +71,7 @@ class SilentTimespan(abjad.Timespan):
         return ps
 
 
-class TimespanMaker(object):
+class TimespanMaker:
     r"""
 
     ..  container:: example
@@ -199,7 +199,7 @@ class TimespanMaker(object):
         return self._total_duration
 
 
-class TimespanSpecifier(object):
+class TimespanSpecifier:
     def __init__(self, voice_name=None, handler=None):
         self.voice_name = voice_name
         self.handler = handler

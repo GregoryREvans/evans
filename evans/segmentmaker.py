@@ -12,7 +12,7 @@ from .commands import HandlerCommand, RhythmCommand
 from .sequence import flatten
 
 
-class NoteheadBracketMaker(object):
+class NoteheadBracketMaker:
     r"""
     Writes tuplet brackets with inserted note head.
 
@@ -73,7 +73,7 @@ class NoteheadBracketMaker(object):
         return selections
 
 
-class SegmentMaker(object):
+class SegmentMaker:
     def __init__(
         self,
         abbreviations=None,

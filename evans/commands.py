@@ -4,7 +4,7 @@ Command classes.
 import abjad
 
 
-class Command(object):
+class Command:
     def __init__(
         self,
         callable=None,
@@ -120,7 +120,7 @@ def call(voice_name, callable, selector=None):
     )
 
 
-class HandlerCommand(object):
+class HandlerCommand:
     def __init__(self, voice_name, timespan, handler):
         self.voice_name = voice_name
         self.timespan = timespan
@@ -133,7 +133,7 @@ class HandlerCommand(object):
         return abjad.storage(self)
 
 
-class RhythmCommand(object):
+class RhythmCommand:
     def __init__(self, voice_name, timespan, handler):
         self.voice_name = voice_name
         self.timespan = timespan

@@ -10,7 +10,7 @@ from abjadext import microtones
 from . import sequence
 
 
-class Handler(object):
+class Handler:
     """
     Handler Base Class
     """
