@@ -1,5 +1,5 @@
-Evans API
-=========
+Perllan API
+===========
 
 .. toctree::
    :includehidden:

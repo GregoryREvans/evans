@@ -41,7 +41,6 @@ ji_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -64,8 +63,6 @@ ji_utilities
    .. automethod:: RatioClassSegment.__add__
 
    .. automethod:: RatioClassSegment.__contains__
-
-   .. automethod:: RatioClassSegment.__getitem__
 
    .. automethod:: RatioClassSegment.__iter__
 
@@ -110,7 +107,6 @@ ji_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -131,8 +127,6 @@ ji_utilities
    .. automethod:: RatioClassSet.__add__
 
    .. automethod:: RatioClassSet.__contains__
-
-   .. automethod:: RatioClassSet.__getitem__
 
    .. automethod:: RatioClassSet.__iter__
 
@@ -173,7 +167,6 @@ ji_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -197,8 +190,6 @@ ji_utilities
    .. automethod:: RatioSegment.__add__
 
    .. automethod:: RatioSegment.__contains__
-
-   .. automethod:: RatioSegment.__getitem__
 
    .. automethod:: RatioSegment.__iter__
 
@@ -245,7 +236,6 @@ ji_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -267,8 +257,6 @@ ji_utilities
    .. automethod:: RatioSet.__add__
 
    .. automethod:: RatioSet.__contains__
-
-   .. automethod:: RatioSet.__getitem__
 
    .. automethod:: RatioSet.__iter__
 

@@ -33,7 +33,7 @@ extensions = [
 ]
 
 master_doc = "index"
-project = "Evans API"
+project = "Perllan API"
 pygments_style = "sphinx"
 release = ""
 source_suffix = ".rst"
@@ -56,7 +56,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 ### HTML HELP ###
 
-htmlhelp_basename = "EvansAPIdoc"
+htmlhelp_basename = "PerllanAPIdoc"
 
 ### LATEX ###
 
@@ -76,7 +76,7 @@ latex_elements = {
 }
 
 latex_documents = [
-    ("index", "EvansAPI.tex", "Evans API", "Gregory Rowland Evans", "manual")
+    ("index", "PerllanAPI.tex", "Perllan API", "Gregory Rowland Evans", "manual")
 ]
 
 latex_domain_indices = False
@@ -93,7 +93,7 @@ intersphinx_mapping = {
 }
 todo_include_todos = True
 
-uqbar_api_title = "Evans API"
+uqbar_api_title = "Perllan API"
 uqbar_api_source_paths = ["evans", "abjadext.microtones", "tsmakers"]
 uqbar_api_root_documenter_class = "uqbar.apis.SummarizingRootDocumenter"
 uqbar_api_module_documenter_class = "uqbar.apis.SummarizingModuleDocumenter"

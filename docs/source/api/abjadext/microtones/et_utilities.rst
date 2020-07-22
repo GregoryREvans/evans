@@ -41,7 +41,6 @@ et_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -64,8 +63,6 @@ et_utilities
    .. automethod:: PitchClassSegment.__add__
 
    .. automethod:: PitchClassSegment.__contains__
-
-   .. automethod:: PitchClassSegment.__getitem__
 
    .. automethod:: PitchClassSegment.__iter__
 
@@ -110,7 +107,6 @@ et_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -133,8 +129,6 @@ et_utilities
    .. automethod:: PitchClassSet.__add__
 
    .. automethod:: PitchClassSet.__contains__
-
-   .. automethod:: PitchClassSet.__getitem__
 
    .. automethod:: PitchClassSet.__iter__
 
@@ -179,7 +173,6 @@ et_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -202,8 +195,6 @@ et_utilities
    .. automethod:: PitchSegment.__add__
 
    .. automethod:: PitchSegment.__contains__
-
-   .. automethod:: PitchSegment.__getitem__
 
    .. automethod:: PitchSegment.__iter__
 
@@ -248,7 +239,6 @@ et_utilities
 
       __add__
       __contains__
-      __getitem__
       __iter__
       __len__
       __repr__
@@ -269,8 +259,6 @@ et_utilities
    .. automethod:: PitchSet.__add__
 
    .. automethod:: PitchSet.__contains__
-
-   .. automethod:: PitchSet.__getitem__
 
    .. automethod:: PitchSet.__iter__
 
