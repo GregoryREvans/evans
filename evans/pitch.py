@@ -134,7 +134,10 @@ def to_nearest_eighth_tone(number, frac=False):
     if frac is False:
         return abjad.mathx.integer_equivalent_number_to_integer(div)
     else:
-        return quicktions.Fraction(abjad.mathx.integer_equivalent_number_to_integer(div))
+        return quicktions.Fraction(
+            abjad.mathx.integer_equivalent_number_to_integer(div)
+        )
+
 
 def to_nearest_quarter_tone(number, frac=False):
     """
@@ -157,7 +160,9 @@ def to_nearest_quarter_tone(number, frac=False):
     if frac is False:
         return abjad.mathx.integer_equivalent_number_to_integer(div)
     else:
-        return quicktions.Fraction(abjad.mathx.integer_equivalent_number_to_integer(div))
+        return quicktions.Fraction(
+            abjad.mathx.integer_equivalent_number_to_integer(div)
+        )
 
 
 def to_nearest_sixth_tone(number):
@@ -192,7 +197,9 @@ def to_nearest_third_tone(number):
     """
     semitones = quicktions.Fraction(int(round(3 * number)), 3)
     if semitones.denominator == 3:
-        semitones = quicktions.Fraction(int(round(quicktions.Fraction(3, 2) * number)), quicktions.Fraction(3, 2))
+        semitones = quicktions.Fraction(
+            int(round(quicktions.Fraction(3, 2) * number)), quicktions.Fraction(3, 2)
+        )
     return semitones
 
 
