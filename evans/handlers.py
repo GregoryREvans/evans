@@ -339,8 +339,7 @@ class BisbigliandoHandler(Handler):
         start_literal = abjad.LilyPondLiteral(
             [
                 r"""- \tweak padding""" + f""" #{self.padding}""",
-                r"""- \tweak staff-padding"""
-                + f""" #{self.staff_padding}""",
+                r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                 r"""- \tweak bound-details.right.padding"""
                 + f""" #{self.right_padding}""",
                 r"""- \tweak bound-details.left.text""",
@@ -355,8 +354,7 @@ class BisbigliandoHandler(Handler):
         start_literal_pre = abjad.LilyPondLiteral(
             [
                 r"""- \tweak padding""" + f""" #{self.padding}""",
-                r"""- \tweak staff-padding"""
-                + f""" #{self.staff_padding}""",
+                r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
                 r"""- \tweak bound-details.right.padding"""
                 + f""" #{self.right_padding}""",
                 r"""- \tweak bound-details.left.text""",
@@ -513,7 +511,9 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                    indicator = abjad.inspect(tie[0]).indicator(
+                                        abjad.Clef
+                                    )
                                     if indicator is not None:
                                         abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
@@ -549,7 +549,9 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                    indicator = abjad.inspect(tie[0]).indicator(
+                                        abjad.Clef
+                                    )
                                     if indicator is not None:
                                         abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
