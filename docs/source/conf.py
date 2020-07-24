@@ -143,6 +143,13 @@ try:
 except ImportError:
     raise Exception("Could not import tsmakers")
 
+try:
+    import quicktions  # noqa
+
+    uqbar_book_console_setup.append("import quicktions")
+except ImportError:
+    raise Exception("Could not import quicktions")
+
 uqbar_book_console_teardown = []
 uqbar_book_extensions = [
     "uqbar.book.extensions.GraphExtension",

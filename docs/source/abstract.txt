@@ -1,0 +1,17 @@
+`Perllan` is a network of `Python` (https://www.python.org/) packages which wrap the `Abjad API for Formalized Score Control` (https://abjad.github.io/).
+
+Perllan lets you:
+
+-   calculate and transform abstract pitch and interval material with ``abjadext.microtones``
+-   formalize and render segments of `Lilypond` scores with ``evans``
+-   generate complex timespan lattices with ``tsmakers``
+
+..  note:: This documentation represents the development branches of packages under **heavy** development, and therefore may **not** be stable and may **not** represent the functionality of any main branches.
+
+Send compliments or complaints to gregoryrowlandevans@gmail.com, or register
+an issue at:
+https://github.com/GregoryREvans/abjad-ext-microtones/issues,
+https://github.com/GregoryREvans/evans/issues, or
+https://github.com/GregoryREvans/tsmakers/issues.
+
+``Perllan`` is compatible with Python 3.6+.

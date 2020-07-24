@@ -23,14 +23,12 @@ microtones
    :hidden:
 
    et
-   et_utilities
    ji
-   ji_utilities
+   utilities
 
 .. autosummary::
    :nosignatures:
 
    et
-   et_utilities
    ji
-   ji_utilities
+   utilities

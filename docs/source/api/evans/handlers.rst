@@ -53,7 +53,6 @@ handlers
 
       __call__
       add_articulations
-      identifiers
       name
       state
 
@@ -70,10 +69,6 @@ handlers
 
       .. automethod:: ArticulationHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: ArticulationHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -82,8 +77,6 @@ handlers
       :class: class-header
 
    .. automethod:: ArticulationHandler.add_articulations
-
-   .. automethod:: ArticulationHandler.identifiers
 
    .. automethod:: ArticulationHandler.name
 
@@ -118,10 +111,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: BendHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: BendHandler.__str__
 
    .. raw:: html
 
@@ -166,10 +155,6 @@ handlers
 
       .. automethod:: BisbigliandoHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: BisbigliandoHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -210,10 +195,6 @@ handlers
 
       .. automethod:: ClefHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: ClefHandler.__str__
-
 .. autoclass:: DynamicHandler
 
    .. raw:: html
@@ -242,10 +223,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: DynamicHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: DynamicHandler.__str__
 
    .. raw:: html
 
@@ -287,10 +264,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: GettatoHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: GettatoHandler.__str__
 
    .. raw:: html
 
@@ -335,10 +308,6 @@ handlers
 
       .. automethod:: GlissandoHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: GlissandoHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -381,10 +350,6 @@ handlers
 
       .. automethod:: GraceHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: GraceHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -409,7 +374,6 @@ handlers
       :nosignatures:
 
       __repr__
-      __str__
 
    .. raw:: html
 
@@ -419,8 +383,6 @@ handlers
       :class: class-header
 
    .. automethod:: Handler.__repr__
-
-   .. automethod:: Handler.__str__
 
 .. autoclass:: NoteheadHandler
 
@@ -451,10 +413,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: NoteheadHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: NoteheadHandler.__str__
 
    .. raw:: html
 
@@ -498,10 +456,6 @@ handlers
 
       .. automethod:: PitchHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: PitchHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -541,10 +495,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: RhythmHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: RhythmHandler.__str__
 
    .. raw:: html
 
@@ -586,10 +536,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: SlurHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: SlurHandler.__str__
 
    .. raw:: html
 
@@ -634,10 +580,6 @@ handlers
 
       .. automethod:: TempoSpannerHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: TempoSpannerHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -680,10 +622,6 @@ handlers
 
       .. automethod:: TextSpanHandler.__repr__
 
-   .. container:: inherited
-
-      .. automethod:: TextSpanHandler.__str__
-
    .. raw:: html
 
       <hr/>
@@ -723,10 +661,6 @@ handlers
    .. container:: inherited
 
       .. automethod:: TrillHandler.__repr__
-
-   .. container:: inherited
-
-      .. automethod:: TrillHandler.__str__
 
    .. raw:: html
 

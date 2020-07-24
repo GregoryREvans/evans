@@ -64,28 +64,6 @@ Package for equal tempered microtones.
 
    <hr/>
 
-.. rubric:: :ref:`abjadext.microtones.et_utilities <abjadext--microtones--et-utilities>`
-   :class: section-header
-
-.. raw:: html
-
-   <hr/>
-
-.. rubric:: Classes
-   :class: subsection-header
-
-.. autosummary::
-   :nosignatures:
-
-   ~abjadext.microtones.et_utilities.PitchClassSegment
-   ~abjadext.microtones.et_utilities.PitchClassSet
-   ~abjadext.microtones.et_utilities.PitchSegment
-   ~abjadext.microtones.et_utilities.PitchSet
-
-.. raw:: html
-
-   <hr/>
-
 .. rubric:: :ref:`abjadext.microtones.ji <abjadext--microtones--ji>`
    :class: section-header
 
@@ -121,7 +99,7 @@ Package for Just Intonation.
 
    <hr/>
 
-.. rubric:: :ref:`abjadext.microtones.ji_utilities <abjadext--microtones--ji-utilities>`
+.. rubric:: :ref:`abjadext.microtones.utilities <abjadext--microtones--utilities>`
    :class: section-header
 
 .. raw:: html
@@ -134,10 +112,14 @@ Package for Just Intonation.
 .. autosummary::
    :nosignatures:
 
-   ~abjadext.microtones.ji_utilities.RatioClassSegment
-   ~abjadext.microtones.ji_utilities.RatioClassSet
-   ~abjadext.microtones.ji_utilities.RatioSegment
-   ~abjadext.microtones.ji_utilities.RatioSet
+   ~abjadext.microtones.utilities.PitchClassSegment
+   ~abjadext.microtones.utilities.PitchClassSet
+   ~abjadext.microtones.utilities.PitchSegment
+   ~abjadext.microtones.utilities.PitchSet
+   ~abjadext.microtones.utilities.RatioClassSegment
+   ~abjadext.microtones.utilities.RatioClassSet
+   ~abjadext.microtones.utilities.RatioSegment
+   ~abjadext.microtones.utilities.RatioSet
 
 .. raw:: html
 

@@ -1,8 +1,35 @@
 Perllan API
 ===========
 
-.. toctree::
-   :includehidden:
-   :maxdepth: 3
+Introduction
+------------
 
-   api/index
+.. include:: abstract.txt
+
+.. toctree::
+  :caption: Introduction
+  :maxdepth: 2
+
+  installation
+  concepts
+
+.. toctree::
+  :caption: Documentation
+  :includehidden:
+  :maxdepth: 3
+
+  api/abjadext/microtones/index
+
+  api/evans/index
+
+  api/tsmakers/index
+
+.. toctree::
+  :caption: Examples
+
+  scores
+
+.. toctree::
+  :caption: Reference
+
+  glossary
