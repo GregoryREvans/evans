@@ -612,14 +612,11 @@ class ClefHandler(Handler):
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                if (
-                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
-                                    is not None
-                                ):
-                                    abjad.detach(
-                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
-                                        tie[0],
-                                    )
+                                ottava_indicator = abjad.inspect(tie[0]).indicator(
+                                    abjad.Ottava
+                                )
+                                if ottava_indicator is not None:
+                                    abjad.detach(ottava_indicator, tie[0])
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -629,14 +626,11 @@ class ClefHandler(Handler):
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                if (
-                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
-                                    is not None
-                                ):
-                                    abjad.detach(
-                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
-                                        tie[0],
-                                    )
+                                ottava_indicator = abjad.inspect(tie[0]).indicator(
+                                    abjad.Ottava
+                                )
+                                if ottava_indicator is not None:
+                                    abjad.detach(ottava_indicator, tie[0])
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -648,14 +642,11 @@ class ClefHandler(Handler):
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                if (
-                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
-                                    is not None
-                                ):
-                                    abjad.detach(
-                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
-                                        tie[0],
-                                    )
+                                ottava_indicator = abjad.inspect(tie[0]).indicator(
+                                    abjad.Ottava
+                                )
+                                if ottava_indicator is not None:
+                                    abjad.detach(ottava_indicator, tie[0])
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -665,14 +656,11 @@ class ClefHandler(Handler):
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                if (
-                                    abjad.inspect(tie[0]).indicator(abjad.Ottava)
-                                    is not None
-                                ):
-                                    abjad.detach(
-                                        abjad.inspect(tie[0]).indicator(abjad.Ottava),
-                                        tie[0],
-                                    )
+                                ottava_indicator = abjad.inspect(tie[0]).indicator(
+                                    abjad.Ottava
+                                )
+                                if ottava_indicator is not None:
+                                    abjad.detach(ottava_indicator, tie[0])
                                     abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
                                 else:
                                     abjad.attach(start, tie[0])
@@ -822,21 +810,21 @@ class DynamicHandler(Handler):
         if isinstance(start, str):
             start = abjad.Dynamic(start)
         elif isinstance(start, int):
-            start = abjad.Dynamic(abjad.Dynamic.dynamic_ordinal_to_dynamic_name(start))
+            ord_to_name = abjad.Dynamic.dynamic_ordinal_to_dynamic_name(start)
+            start = abjad.Dynamic(ord_to_name)
         else:
             pass
         if isinstance(stop, str):
             stop = abjad.Dynamic(stop)
         elif isinstance(stop, int):
-            stop = abjad.Dynamic(abjad.Dynamic.dynamic_ordinal_to_dynamic_name(stop))
+            ord_to_name = abjad.Dynamic.dynamic_ordinal_to_dynamic_name(stop)
+            stop = abjad.Dynamic(ord_to_name)
         else:
             pass
         if flared == 1:
             if start.ordinal < stop.ordinal:
-                if start.name == "niente":
-                    start = abjad.Dynamic(
-                        "niente", hide=True
-                    )  # carry these through instead?
+                if start.name == "niente":  # carry these through instead?
+                    start = abjad.Dynamic("niente", hide=True)
                     hairpin = "o<|"
                 else:
                     hairpin = "<|"
@@ -905,11 +893,11 @@ class DynamicHandler(Handler):
                         items = self._cyc_dynamics(r=2)
                         start = items[0]
                         stop = items[1]
-                    hairpin = abjad.StartHairpin(
-                        self._calculate_hairpin(
-                            start, stop, flared=self._cyc_flare_boolean_vector(r=1)[0]
-                        )
+                    flare_value = self._cyc_flare_boolean_vector(r=1)[0]
+                    calculated_hairpin = self._calculate_hairpin(
+                        start, stop, flared=flare_value
                     )
+                    hairpin = abjad.StartHairpin(calculated_hairpin)
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
                     effort_bools = self._cyc_effort_boolean_vector(r=2)
                     if isinstance(start, str):
@@ -950,14 +938,11 @@ class DynamicHandler(Handler):
                         if stop.name != "niente":
                             if self.with_constante_hairpins is True:
                                 abjad.attach(abjad.StartHairpin("--"), run[-1])
-                                abjad.attach(
-                                    abjad.StopHairpin(), abjad.inspect(run[-1]).leaf(1)
-                                )
-                        else:
+                                next_tie_leaf = abjad.inspect(run[-1]).leaf(1)
+                                abjad.attach(abjad.StopHairpin(), next_tie_leaf)
+                        else:  # attach to anchor?
                             if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
-                                stop = abjad.Dynamic(
-                                    stop, command=r"\!", leak=True
-                                )  # attach to anchor
+                                stop = abjad.Dynamic(stop, command=r"\!", leak=True)
                             else:
                                 pass
                     else:
@@ -1030,13 +1015,11 @@ class DynamicHandler(Handler):
                                 stop = abjad.Dynamic(
                                     stop_string, leak=True
                                 )  # attach to anchor
-                        hairpin = abjad.StartHairpin(
-                            self._calculate_hairpin(
-                                start,
-                                stop,
-                                flared=self._cyc_flare_boolean_vector(r=1)[0],
-                            )
+                        flare_value = self._cyc_flare_boolean_vector(r=1)[0]
+                        calculated_hairpin = self._calculate_hairpin(
+                            start, stop, flared=flare_value,
                         )
+                        hairpin = abjad.StartHairpin(calculated_hairpin)
                         abjad.hairpin([start, hairpin, stop], run)
             else:
                 start = self._cyc_dynamics(r=1)[0]
@@ -1060,6 +1043,8 @@ class DynamicHandler(Handler):
                     pass
         self._remove_niente(selections)
 
+    # attach to anchor?
+    # maybe just continue instead of replacing?
     def _remove_niente(self, selections):
         for leaf in abjad.select(selections).leaves():
             for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
@@ -1067,14 +1052,12 @@ class DynamicHandler(Handler):
                     if dynamic.command == r"\!":
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command=r"\!", leak=True),
-                            leaf,  # attach to anchor
-                        )  # maybe just continue instead of replacing?
+                            abjad.Dynamic(dynamic, command=r"\!", leak=True), leaf
+                        )
                     elif dynamic.leak is True:
                         abjad.detach(dynamic, leaf)
                         abjad.attach(
-                            abjad.Dynamic(dynamic, command=r"\!", leak=True),
-                            leaf,  # attach to anchor
+                            abjad.Dynamic(dynamic, command=r"\!", leak=True), leaf
                         )
                     else:
                         abjad.detach(dynamic, leaf)
@@ -1474,11 +1457,8 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
-                                abjad.glissando(
-                                    run[:],
-                                    abjad.tweak(self.line_style).style,
-                                    hide_middle_note_heads=True,
-                                )
+                                t = abjad.tweak(self.line_style).style
+                                abjad.glissando(run[:], t, hide_middle_note_heads=True)
                             else:
                                 continue
                         else:
@@ -1497,9 +1477,10 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
+                                t = abjad.tweak(self.line_style).style
                                 abjad.glissando(
                                     run[:],
-                                    abjad.tweak(self.line_style).style,
+                                    t,
                                     hide_middle_note_heads=True,
                                     hide_middle_stems=True,
                                 )
@@ -1525,11 +1506,9 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
+                                t = abjad.tweak(self.line_style).style
                                 abjad.glissando(
-                                    run[:],
-                                    abjad.tweak(self.line_style).style,
-                                    allow_repeats=True,
-                                    allow_ties=False,
+                                    run[:], t, allow_repeats=True, allow_ties=False,
                                 )
                             else:
                                 continue
@@ -1540,7 +1519,7 @@ class GlissandoHandler(Handler):
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
-                                    run[:], allow_repeats=True, allow_ties=False
+                                    run[:], allow_repeats=True, allow_ties=False,
                                 )
                             else:
                                 continue
@@ -1661,7 +1640,7 @@ class GraceHandler(Handler):
                         grace = abjad.BeforeGraceContainer(
                             grace_list, command=r"\slashedGrace"
                         )
-                        if len(abjad.select(grace).leaves(pitched=True)) > 1:
+                        if 1 < len(abjad.select(grace).leaves(pitched=True)):
                             abjad.beam(
                                 grace,
                                 beam_rests=True,
@@ -1827,10 +1806,8 @@ class NoteheadHandler(Handler):
                 \glissando
                 """,
                 "absolute_after",
-            )
-            for tie, bool1, bool2 in zip(
-                ties, head_vector, trans_vector
-            ):  # verify that heads are different?
+            )  # verify that heads are different?
+            for tie, bool1, bool2 in zip(ties, head_vector, trans_vector):
                 if bool1 == 1:
                     if bool2 == 1:
                         abjad.attach(transition_arrow, tie[-1])
@@ -2325,7 +2302,8 @@ class PitchHandler(Handler):
             bools = self._cyc_chord_boolean_vector(r=len(ties_))
             for tie, bool in zip(ties_, bools):
                 if 0 < bool:
-                    pitches_.append(self._cyc_pitches(r=self._cyc_chord_groups(r=1)[0]))
+                    group_size = self._cyc_chord_groups(r=1)[0]
+                    pitches_.append(self._cyc_pitches(r=group_size))
                 else:
                     pitches_.append(self._cyc_pitches(r=1)[0])
         else:
@@ -2346,9 +2324,8 @@ class PitchHandler(Handler):
         leaf_maker = abjad.LeafMaker()
         old_ties = [tie for tie in abjad.iterate(selections).logical_ties(pitched=True)]
         if len(old_ties) > 0:
-            pitches, durations, old_leaves = self._collect_pitches_durations_leaves(
-                old_ties
-            )
+            collect = self._collect_pitches_durations_leaves(old_ties)
+            pitches, durations, old_leaves = collect
             microtonal_indices_to_pitch = abjad.OrderedDict()
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
@@ -2503,9 +2480,8 @@ class RhythmHandler(Handler):
         return abjad.OrderedDict([("state", self.rmaker.state)])
 
 
-class SlurHandler(
-    Handler
-):  # add style option for \slurDotted and \slurDashed and \slurSolid
+# add style option for \slurDotted and \slurDashed and \slurSolid
+class SlurHandler(Handler):
     r"""
     Slur Handler
 
@@ -2658,7 +2634,8 @@ class TempoSpannerHandler(Handler):
                 [
                     r"- \abjad-dashed-line-with-arrow",
                     r"- \baca-metronome-mark-spanner-left-text "
-                    + f'{start_temp[0]} {start_temp[1]} {start_temp[2]} "{start_temp[3]}"',
+                    + f"{start_temp[0]} {start_temp[1]} {start_temp[2]}"
+                    + f' "{start_temp[3]}"',
                     r"- \tweak padding #" + f"{self.padding}",
                     r"- \tweak staff-padding #" + f"{self.staff_padding}",
                     r"\bacaStartTextSpanMM",
@@ -2886,9 +2863,8 @@ class TextSpanHandler(Handler):
 
     def _apply_empty_spanner(self, selections, span_command):
         first_leaf = abjad.select(selections).leaves()[0]
-        abjad.attach(
-            abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), first_leaf
-        )
+        stop_indicator = abjad.StopTextSpan(command=r"\stopTextSpan" + span_command)
+        abjad.attach(stop_indicator, first_leaf)
 
     def _apply_position_and_span_to_bounds(
         self, selections, positions, style, span_command, span_padding
