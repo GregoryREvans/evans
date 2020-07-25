@@ -1,8 +1,8 @@
 Perllan API
 ===========
 
-Introduction
-------------
+Welcome
+-------
 
 .. include:: abstract.txt
 

@@ -279,72 +279,47 @@ class BisbigliandoHandler(Handler):
 
     def __init__(
         self,
-        fingering_list=[None],
-        boolean_vector=[1],
-        padding=2,
-        staff_padding=2,
-        right_padding=2,
-        continuous=True,
+        *,
         bis_count=-1,
         bool_count=-1,
-        name="Bisbigliando Handler",
+        boolean_vector=None,
+        continuous=True,  # forget=None
+        fingering_list=None,
+        name=None,
+        padding=2,
+        right_padding=2,
+        staff_padding=2,
     ):
-        self._bis_count = bis_count
-        self._bool_count = bool_count
-        self.continuous = continuous
-        self.padding = padding
-        self.staff_padding = staff_padding
-        self.right_padding = right_padding
-        self.fingering_list = sequence.CyclicList(
-            fingering_list, self.continuous, self._bis_count
-        )
+        self.bis_count = bis_count
+        self.bool_count = bool_count
+        if boolean_vector is None:
+            boolean_vector = [1]
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._bool_count
+            boolean_vector, continuous=continuous, count=bool_count,
+        )
+        self.continuous = continuous
+        if fingering_list is None:
+            fingering_list = [None]
+        self.fingering_list = sequence.CyclicList(
+            fingering_list, continuous=continuous, count=bis_count,
         )
         self.name = name
+        self.padding = padding
+        self.right_padding = right_padding
+        self.staff_padding = staff_padding
 
     def __call__(self, selections):
         self.add_spanner(selections)
 
-    def add_spanner(self, selections):
-        ties = abjad.select(selections).logical_ties(pitched=True)
-        values = self.boolean_vector(r=len(ties))
-        for value, tie in zip(values, ties):
-            if value == 1:
-                fingering = self.fingering_list(r=1)[0]
-                if fingering is None:
-                    start_literal = self._make_start_literal()
-                    stop_literal = abjad.LilyPondLiteral(
-                        r"\stopTrillSpan", format_slot="after"
-                    )
-                    abjad.attach(start_literal, tie[0])
-                    abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
-                else:
-                    start_literal_pre = self._make_start_literal_pre()
-                    start_literal = abjad.LilyPondLiteral(
-                        fingering, format_slot="after"
-                    )
-                    start_literal_post = abjad.LilyPondLiteral(
-                        [r"""\startTrillSpan"""], format_slot="after"
-                    )
-                    stop_literal = abjad.LilyPondLiteral(
-                        r"\stopTrillSpan", format_slot="after"
-                    )
-                    abjad.attach(start_literal_pre, tie[0])
-                    abjad.attach(start_literal, tie[0])
-                    abjad.attach(start_literal_post, tie[0])
-                    abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
-
     def _make_start_literal(self):
+        markup = r'\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }'
         start_literal = abjad.LilyPondLiteral(
             [
-                r"""- \tweak padding""" + f""" #{self.padding}""",
-                r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
-                r"""- \tweak bound-details.right.padding"""
-                + f""" #{self.right_padding}""",
-                r"""- \tweak bound-details.left.text""",
-                r"""\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }""",
-                r"""\startTrillSpan""",
+                fr"- \tweak padding #{self.padding}",
+                fr"- \tweak staff-padding #{self.staff_padding}",
+                fr"- \tweak bound-details.right.padding #{self.right_padding}",
+                fr"- \tweak bound-details.left.text {markup}",
+                r"\startTrillSpan",
             ],
             format_slot="after",
         )
@@ -353,21 +328,47 @@ class BisbigliandoHandler(Handler):
     def _make_start_literal_pre(self):
         start_literal_pre = abjad.LilyPondLiteral(
             [
-                r"""- \tweak padding""" + f""" #{self.padding}""",
-                r"""- \tweak staff-padding""" + f""" #{self.staff_padding}""",
-                r"""- \tweak bound-details.right.padding"""
-                + f""" #{self.right_padding}""",
-                r"""- \tweak bound-details.left.text""",
+                fr"- \tweak padding #{self.padding}",
+                fr"- \tweak staff-padding #{self.staff_padding}",
+                fr"- \tweak bound-details.right.padding #{self.right_padding}",
+                r"- \tweak bound-details.left.text",
             ],
             format_slot="after",
         )
         return start_literal_pre
 
-    def name(self):
-        return self.name
+    def _treat_tie(self, value, tie):
+        if value != 1:
+            return
+        fingering = self.fingering_list(r=1)[0]
+        if fingering is None:
+            start_literal = self._make_start_literal()
+            stop_literal = abjad.LilyPondLiteral(r"\stopTrillSpan", format_slot="after")
+            abjad.attach(start_literal, tie[0])
+            abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
+            return
+        start_literal_pre = self._make_start_literal_pre()
+        start_literal = abjad.LilyPondLiteral(fingering, format_slot="after")
+        start_literal_post = abjad.LilyPondLiteral(
+            r"\startTrillSpan", format_slot="after"
+        )
+        stop_literal = abjad.LilyPondLiteral(r"\stopTrillSpan", format_slot="after")
+        abjad.attach(start_literal_pre, tie[0])
+        abjad.attach(start_literal, tie[0])
+        abjad.attach(start_literal_post, tie[0])
+        abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
+
+    def add_spanner(self, selections):
+        ties = abjad.select(selections).logical_ties(pitched=True)
+        values = self.boolean_vector(r=len(ties))
+        for value, tie in zip(values, ties):
+            self._treat_tie(value, tie)
 
     def state(self):
-        return abjad.OrderedDict([("count", self.boolean_vector.state())])
+        state_dict = abjad.OrderedDict()
+        state_dict["boolean_vector_count"] = self.boolean_vector.count
+        state_dict["fingering_list_count"] = self.fingering_list.count
+        return state_dict
 
 
 # add shelf for ottava to ensure that no notes in the bracket are illegible

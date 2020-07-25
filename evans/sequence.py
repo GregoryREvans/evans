@@ -36,7 +36,7 @@ class CyclicList:
 
     """
 
-    def __init__(self, lst=None, continuous=False, count=-1):
+    def __init__(self, lst=None, continuous=False, count=-1):  # add *,
         self.lst = lst
         self.continuous = continuous
         self.count = count

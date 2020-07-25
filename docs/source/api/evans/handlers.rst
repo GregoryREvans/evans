@@ -139,7 +139,6 @@ handlers
 
       __call__
       add_spanner
-      name
       state
 
    .. raw:: html
@@ -163,8 +162,6 @@ handlers
       :class: class-header
 
    .. automethod:: BisbigliandoHandler.add_spanner
-
-   .. automethod:: BisbigliandoHandler.name
 
    .. automethod:: BisbigliandoHandler.state
 
