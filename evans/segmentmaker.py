@@ -23,7 +23,7 @@ class NoteheadBracketMaker:
         >>> staff = abjad.Staff()
         >>> staff.append(tuplet_2)
         >>> new_brackets = evans.NoteheadBracketMaker()
-        >>> b = new_brackets(staff)
+        >>> new_brackets(staff)
         >>> abjad.show(staff) # doctest: +SKIP
 
         .. docs::
@@ -35,7 +35,7 @@ class NoteheadBracketMaker:
                 \times 2/3 {
                     c'4.
                     \tweak text #tuplet-number::calc-fraction-text
-                    \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "24")
+                    \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "8")
                     \times 3/2 {
                         cs'8
                         d'8
@@ -54,23 +54,34 @@ class NoteheadBracketMaker:
     def __repr__(self):
         return abjad.storage(self)
 
+    def _assemble_notehead(self, head_dur):
+        pair = head_dur.pair
+        dot_parts = []
+        while 1 < pair[0]:
+            dot_part = (1, pair[1])
+            dot_parts.append(dot_part)
+            head_dur -= abjad.Duration(dot_part)
+            pair = head_dur.pair
+        duration_string = f"{pair[1]}"
+        for _ in dot_parts:
+            duration_string += "."
+        return duration_string
+
     def _transform_brackets(self, selections):
         for tuplet in abjad.select(selections).components(abjad.Tuplet):
-            # written_duration = abjad.inspect(tuplet).duration().equal_or_greater_assignable
-            time_duration = tuplet.multiplied_duration
-            # print(time_duration)
-            time_denominator = time_duration.denominator
-            # print(time_denominator)
+            inner_durs = []
+            for _ in tuplet[:]:
+                if isinstance(_, abjad.Tuplet):
+                    inner_durs.append(_.multiplied_duration)
+                else:
+                    inner_durs.append(_.written_duration)
+            tuplet_dur = sum(inner_durs)
             imp_num, imp_den = tuplet.implied_prolation.pair
-            # print(imp_num)
-            notehead_wrapper = (
-                time_denominator * imp_num
-            )  # can't just be the denominator because something like 3/8 divided by 3 = 1/8 but just the denominator "8" doesn't give us enough information to go by
-            multiplier = 1
+            head_dur = tuplet_dur / imp_den
+            dur_string = self._assemble_notehead(head_dur)
             abjad.tweak(
                 tuplet
-            ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}")'
-        return selections
+            ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den} {imp_num}) "{dur_string}")'
 
 
 class SegmentMaker:
@@ -606,7 +617,16 @@ class SegmentMaker:
             if tuplet.trivial() is True:
                 tuplet.hide = True
             if abjad.inspect(tuplet).sustained() is True:
-                dur = abjad.inspect(tuplet).duration()
+                inner_durs = []
+                for _ in tuplet[:]:
+                    if isinstance(_, abjad.Tuplet):
+                        inner_durs.append(_.multiplied_duration)
+                    else:
+                        inner_durs.append(_.written_duration)
+                tuplet_dur = sum(inner_durs)
+                imp_num, imp_den = tuplet.implied_prolation.pair
+                head_dur = tuplet_dur / imp_den
+                dur = head_dur * imp_num
                 maker = abjad.NoteMaker()
                 donor_leaves = maker([0], [dur])
                 indicators = abjad.inspect(tuplet[0]).indicators()
@@ -614,25 +634,21 @@ class SegmentMaker:
                     abjad.attach(indicator, donor_leaves[-1])
                 abjad.mutate(tuplet).replace(donor_leaves[:])
             if tuplet.rest_filled() is True:
-                dur = abjad.inspect(tuplet).duration()
+                inner_durs = []
+                for _ in tuplet[:]:
+                    if isinstance(_, abjad.Tuplet):
+                        inner_durs.append(_.multiplied_duration)
+                    else:
+                        inner_durs.append(_.written_duration)
+                tuplet_dur = sum(inner_durs)
+                imp_num, imp_den = tuplet.implied_prolation.pair
+                head_dur = tuplet_dur / imp_den
+                dur = head_dur * imp_num
                 maker = abjad.NoteMaker()
                 abjad.mutate(tuplet).replace(maker([None], [dur]))
             if tuplet.hide is not True:
-                time_duration = tuplet.multiplied_duration
-                imp_num, imp_den = tuplet.implied_prolation.pair
-                notehead_wrapper = time_duration / imp_num
-                wrapper_pair = notehead_wrapper.pair
-                if wrapper_pair[0] == 3:
-                    notehead_wrapper = wrapper_pair[1] // 2
-                    dots = "."
-                else:
-                    notehead_wrapper = wrapper_pair[1]
-                    dots = ""
-                multiplier = 1
-                # if self.tuplet_bracket_noteheads is True:
-                abjad.tweak(
-                    tuplet
-                ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den * multiplier} {imp_num * multiplier}) "{notehead_wrapper}{dots}")'
+                notehead_maker = NoteheadBracketMaker()
+                notehead_maker(tuplet)
 
     def _write_optimization_log(self):
         print("Writing optimization log ...")
