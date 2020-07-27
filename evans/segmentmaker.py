@@ -22,6 +22,7 @@ class NoteheadBracketMaker:
         >>> tuplet_2 = abjad.Tuplet((2, 3), components=[abjad.Note(0, (3, 8)), tuplet])
         >>> staff = abjad.Staff()
         >>> staff.append(tuplet_2)
+        >>> staff.extend([abjad.Note("c'4"), abjad.Note("cs'8"), abjad.Note("d'8")])
         >>> new_brackets = evans.NoteheadBracketMaker()
         >>> new_brackets(staff)
         >>> abjad.show(staff) # doctest: +SKIP
@@ -41,6 +42,9 @@ class NoteheadBracketMaker:
                         d'8
                     }
                 }
+                c'4
+                cs'8
+                d'8
             }
 
     """
