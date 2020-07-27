@@ -578,7 +578,9 @@ class TimespanMaker:
     def __repr__(self):
         return abjad.storage(self)
 
-    def __call__(self, counts, max_duration=None, translation=0, rotation=None, voice_name=None):
+    def __call__(
+        self, counts, max_duration=None, translation=0, rotation=None, voice_name=None
+    ):
         if rotation:
             counts = counts[rotation:] + counts[:rotation]
         counts = self._ready_counts(counts, translation)
