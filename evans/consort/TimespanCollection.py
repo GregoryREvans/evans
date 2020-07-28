@@ -419,7 +419,7 @@ class TimespanCollection(AbjadObject):
         return abjad.FormatSpecification(
             client=self,
             storage_format_args_values=values,
-            storage_format_kwargs_names=names,
+            storage_format_keyword_names=names,
         )
 
     ### PUBLIC METHODS ###

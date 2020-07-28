@@ -15,7 +15,7 @@ class LogicalTieCollection(AbjadObject):
         >>> for tie in logical_ties:
         ...     logical_tie_collection.insert(tie)
         ...
-        >>> logical_tie_collection
+        >>> print(abjad.storage(logical_tie_collection))
         evans.LogicalTieCollection(
             [
                 abjad.LogicalTie(
@@ -399,7 +399,7 @@ class LogicalTieCollection(AbjadObject):
         return abjad.FormatSpecification(
             client=self,
             storage_format_args_values=values,
-            storage_format_kwargs_names=names,
+            storage_format_keyword_names=names,
         )
 
     ### PUBLIC METHODS ###
