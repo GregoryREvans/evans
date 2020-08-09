@@ -49,6 +49,12 @@ before_install:
     - cd $LOCATION
     - export MYPYPATH=$MYPYPATH:$RMAKERS
 
+    # clone & install ide:
+    - ide=/tmp/ide
+    - git clone https://github.com/Abjad/ide.git $rmakers
+    - pip install -e $ide
+    - export MYPYPATH=$MYPYPATH:$ide
+
     # clone & install microtones:
     - MICROTONES=/tmp/abjad-ext-microtones
     - git clone -b greg/dev https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES

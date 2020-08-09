@@ -75,20 +75,12 @@ class Command:
         elif self.command == "detach":
             abjad.detach(self.indicator, selection)
         elif self.command == "replace":
-            self._replace(voice, self.contents, self.selector)
+            self._replace(selection, self.contents, selection)
         else:
             raise Exception(f"Invalid command {self.command}")
 
-    def _replace(self, voice, contents, selector):
-        target = selector(voice)
-        for tuplet in abjad.select(target).tuplets():
-            maker = abjad.LeafMaker()
-            duration = abjad.inspect(tuplet).duration()
-            selections = maker([0], [duration])
-            abjad.mutate(tuplet).replace(selections)
-        target = selector(voice)
-        leaves = abjad.select(target).leaves()
-        abjad.mutate(leaves).replace(contents[:])
+    def _replace(self, voice, contents, selection):
+        abjad.mutate(selection[:]).replace(contents[:])
 
 
 def attach(voice_name, indicator, selector=None):

@@ -2529,12 +2529,16 @@ class SlurHandler(Handler):
 
     def add_slurs(self, selections):
         if self.apply_slur_to == "selections":
+            if len(abjad.select(selections).logical_ties(pitched=True)) < 2:
+                pass
             if self.boolean_vector(r=1)[0] == 1:
                 abjad.slur(selections[:])
             else:
                 pass
         elif self.apply_slur_to == "runs":
             for run in abjad.select(selections).runs():
+                if len(abjad.select(run).logical_ties()) < 2:
+                    continue
                 if self.boolean_vector(r=1)[0] == 1:
                     abjad.slur(run[:])
                 else:

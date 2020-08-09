@@ -6,6 +6,7 @@ import itertools
 import os
 
 import abjad
+import baca
 
 from . import consort
 from .commands import HandlerCommand, RhythmCommand
@@ -549,7 +550,7 @@ class SegmentMaker:
             literal = abjad.LilyPondLiteral("", "closing")
             abjad.attach(literal, container, tag=None)
         directory = self.current_directory
-        pdf_path = abjad.Path(f"{directory}/illustration.pdf")
+        pdf_path = baca.Path(f"{directory}/illustration.pdf")
         if pdf_path.exists():
             pdf_path.unlink()
         print(f"Persisting {pdf_path.trim()} ...")
