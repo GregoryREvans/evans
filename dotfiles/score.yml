@@ -44,7 +44,7 @@ before_install:
 
   # clone & install ide:
   - ide=/tmp/ide
-  - git clone https://github.com/Abjad/ide.git $rmakers
+  - git clone https://github.com/Abjad/ide.git $ide
   - pip install -e $ide
   - export MYPYPATH=$MYPYPATH:$ide
 
