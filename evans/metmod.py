@@ -250,10 +250,11 @@ def metric_modulation(
         )
         return mark
 
+
 def calculate_tempo_modulated_duration(
     original_tempo=((1, 4), 60),
     new_tempo=((1, 4), 120),
-    duration=abjad.Duration((1, 1))
+    duration=abjad.Duration((1, 1)),
 ):
     """
 
@@ -278,6 +279,7 @@ def calculate_tempo_modulated_duration(
         Duration(1909, 576)
 
     """
+
     def convert_to_quarter(tempo):
         notehead_string = f"{tempo[0][0]}/{tempo[0][1]}"
         beat_change = quicktions.Fraction("1/4") / quicktions.Fraction(notehead_string)
