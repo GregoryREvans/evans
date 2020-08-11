@@ -268,7 +268,7 @@ def return_vertical_moment_ties(score):
         ... )
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[0, 1, 2, 3, 4],
-        ...     continuous=True,
+        ...     forget=False,
         ...     to_ties=True,
         ... )
         >>> vm_ties = evans.return_vertical_moment_ties(score)
@@ -336,7 +336,7 @@ def return_vertical_moment_ties(score):
         ...         staff_3,
         ...     ]
         ... )
-        >>> handler = evans.PitchHandler(pitch_list=[0, 1, 2, 3, 4], continuous=True)
+        >>> handler = evans.PitchHandler(pitch_list=[0, 1, 2, 3, 4], forget=False)
         >>> for i, tie in enumerate(evans.return_vertical_moment_ties(score)):
         ...     string = f"{i}"
         ...     markup = abjad.Markup(string, direction=abjad.Up)

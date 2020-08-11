@@ -19,7 +19,7 @@ class TextSpanHandler:
         span_three_style=None,
         span_three_padding=None,
         attach_span_three_to=None,
-        continuous=False,
+        forget=True,
         count_1=-1,
         count_2=-1,
         count_3=-1,
@@ -37,18 +37,18 @@ class TextSpanHandler:
         self.span_three_style = span_three_style
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
-        self.continuous = continuous
+        self.forget = forget
         self._count_1 = count_1
         self._count_2 = count_2
         self._count_3 = count_3
         self._cyc_span_one_positions = CyclicList(
-            span_one_positions, self.continuous, self._count_1
+            span_one_positions, self.forget, self._count_1
         )
         self._cyc_span_two_positions = CyclicList(
-            span_two_positions, self.continuous, self._count_2
+            span_two_positions, self.forget, self._count_2
         )
         self._cyc_span_three_positions = CyclicList(
-            span_three_positions, self.continuous, self._count_3
+            span_three_positions, self.forget, self._count_3
         )
         self.name = name
 

@@ -69,8 +69,8 @@ selections = abjad.select(staff[:])
 handler = DynamicHandler(
     dynamic_list=["f", "mp", "p", "mf", "ff"],
     flare_boolean_vector=[1, 0, 0, 1],
-    flare_continuous=True,
-    continuous=True,
+    flare_forget=False,
+    forget=False,
     name="dynamic_handler_one",
 )
 for run in abjad.select(selections).runs():

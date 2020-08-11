@@ -90,5 +90,5 @@ def _apply_position_and_span_to_leaves(
 
 # ###test###
 # staff = abjad.Staff("c'8 c'8 c'8 c'8 c'8 c'8 r8 r8 c'8 c'8 c'8 c'8 c'8 c'8 r8 r8")
-# applicator = _apply_position_and_span_to_leaves(selections=staff[:], positions=CyclicList(lst=["1/2", "1/1", "1/4"], continuous=True), style="solid-line", span_command="One", span_padding=1.5)
+# applicator = _apply_position_and_span_to_leaves(selections=staff[:], positions=CyclicList(lst=["1/2", "1/1", "1/4"], forget=False), style="solid-line", span_command="One", span_padding=1.5)
 # abjad.show(staff)

@@ -16,8 +16,8 @@ class CyclicList:
 
         >>> _cyc_count = -1
         >>> _non_cyc_count = -1
-        >>> cyc_generator = evans.CyclicList(lst=[1, 2, 3], continuous=True, count=_cyc_count)
-        >>> non_cyc_generator = evans.CyclicList(lst=[1, 2, 3], continuous=False, count=_non_cyc_count)
+        >>> cyc_generator = evans.CyclicList(lst=[1, 2, 3], forget=False, count=_cyc_count)
+        >>> non_cyc_generator = evans.CyclicList(lst=[1, 2, 3], forget=True, count=_non_cyc_count)
 
         >>> cyc_generator(r=2)
         [1, 2]
@@ -36,9 +36,9 @@ class CyclicList:
 
     """
 
-    def __init__(self, lst=None, continuous=False, count=-1):  # add *,
+    def __init__(self, lst=None, forget=True, count=-1):  # add *,
         self.lst = lst
-        self.continuous = continuous
+        self.forget = forget
         self.count = count
 
     def __str__(self):
@@ -63,7 +63,7 @@ class CyclicList:
         return returned_material
 
     def __call__(self, r):
-        if self.continuous is True:
+        if self.forget is False:
             return self.state_cyc(self.lst, r)
         else:
             return self.non_state_cyc(self.lst, r)
@@ -143,7 +143,7 @@ def add_sequences(x, y):
 
     """
     returned_sequence = []
-    cyc_y = CyclicList(y, continuous=True)
+    cyc_y = CyclicList(y, forget=False)
     for _ in x:
         y_val = cyc_y(r=1)[0]
         returned_sequence.append(_ + y_val)
@@ -665,7 +665,7 @@ def multiply_sequences(x, y):
 
     """
     returned_sequence = []
-    cyc_y = CyclicList(y, continuous=True)
+    cyc_y = CyclicList(y, forget=False)
     for _ in x:
         y_val = cyc_y(r=1)[0]
         returned_sequence.append(_ * y_val)
@@ -782,8 +782,8 @@ def pitch_warp(
 ):
     warp_count = -1
     bool_count = -1
-    w = CyclicList(warp_values, count=warp_count, continuous=True)
-    b = CyclicList(boolean_vector, count=bool_count, continuous=True)
+    w = CyclicList(warp_values, count=warp_count, forget=False)
+    b = CyclicList(boolean_vector, count=bool_count, forget=False)
     bool_values = b(r=len(pitch_list))
     pairs = zip(bool_values, pitch_list)
     for i, pair in enumerate(pairs):

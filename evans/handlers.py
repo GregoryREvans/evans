@@ -39,8 +39,8 @@ class ArticulationHandler(Handler):
         >>> handler = evans.ArticulationHandler(
         ...     articulation_list=art_lst,
         ...     articulation_boolean_vector=[1],
-        ...     vector_continuous=True,
-        ...     continuous=True,
+        ...     vector_forget=False,
+        ...     forget=False,
         ... )
         >>> handler(staff)
         >>> abjad.show(staff) # doctest: +SKIP
@@ -75,22 +75,22 @@ class ArticulationHandler(Handler):
         self,
         articulation_list=None,
         articulation_boolean_vector=(1,),
-        vector_continuous=True,
-        continuous=False,
+        vector_forget=False,
+        forget=True,
         count=-1,
         vector_count=-1,
         name="Articulation Handler",
     ):
         self.articulation_list = articulation_list
-        self.vector_continuous = vector_continuous
-        self.continuous = continuous
+        self.vector_forget = vector_forget
+        self.forget = forget
         self._count = count
         self._vector_count = vector_count
         self.articulation_boolean_vector = sequence.CyclicList(
-            articulation_boolean_vector, self.vector_continuous, self._vector_count
+            articulation_boolean_vector, self.vector_forget, self._vector_count
         )
         self._cyc_articulations = sequence.CyclicList(
-            lst=articulation_list, continuous=self.continuous, count=self._count
+            lst=articulation_list, forget=self.forget, count=self._count
         )
         self.name = name
 
@@ -138,9 +138,9 @@ class BendHandler(Handler):
         >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
         >>> handler = evans.BendHandler(
         ...     bend_amounts=[1, 1.5],
-        ...     bend_continuous=True,
+        ...     bend_forget=False,
         ...     boolean_vector=[1, 1, 0, 1],
-        ...     vector_continuous=True,
+        ...     vector_forget=False,
         ... )
         >>> handler(staff)
         >>> abjad.show(staff) # doctest: +SKIP
@@ -164,22 +164,22 @@ class BendHandler(Handler):
     def __init__(
         self,
         bend_amounts=(1,),
-        bend_continuous=True,
+        bend_forget=False,
         boolean_vector=(1,),
-        vector_continuous=True,
+        vector_forget=False,
         bend_count=-1,
         vector_count=-1,
         name="Bend Handler",
     ):
         self._bend_count = bend_count
         self._vector_count = vector_count
-        self.bend_continuous = bend_continuous
-        self.vector_continuous = vector_continuous
+        self.bend_forget = bend_forget
+        self.vector_forget = vector_forget
         self.bend_amounts = sequence.CyclicList(
-            bend_amounts, self.bend_continuous, self._bend_count
+            bend_amounts, self.bend_forget, self._bend_count
         )
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.vector_continuous, self._vector_count
+            boolean_vector, self.vector_forget, self._vector_count
         )
         self.name = name
 
@@ -230,7 +230,7 @@ class BisbigliandoHandler(Handler):
         ...     fingering_list=[None, m],
         ...     boolean_vector=[1],
         ...     staff_padding=2,
-        ... continuous=True,
+        ... forget=False,
         ... )
         >>> handler(s[:-1])
         >>> abjad.show(s) # doctest: +SKIP
@@ -283,7 +283,7 @@ class BisbigliandoHandler(Handler):
         bis_count=-1,
         bool_count=-1,
         boolean_vector=None,
-        continuous=True,  # forget=None
+        forget=False,  # forget=None
         fingering_list=None,
         name=None,
         padding=2,
@@ -295,13 +295,13 @@ class BisbigliandoHandler(Handler):
         if boolean_vector is None:
             boolean_vector = [1]
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, continuous=continuous, count=bool_count,
+            boolean_vector, forget=forget, count=bool_count,
         )
-        self.continuous = continuous
+        self.forget = forget
         if fingering_list is None:
             fingering_list = [None]
         self.fingering_list = sequence.CyclicList(
-            fingering_list, continuous=continuous, count=bis_count,
+            fingering_list, forget=forget, count=bis_count,
         )
         self.name = name
         self.padding = padding
@@ -681,14 +681,14 @@ class DynamicHandler(Handler):
         >>> handler = evans.DynamicHandler(
         ...     dynamic_list=['f', 'niente', 'p', 'mf'],
         ...     flare_boolean_vector=[0, 0, 0, 1],
-        ...     flare_continuous=True,
+        ...     flare_forget=False,
         ...     hold_first_boolean_vector=[1, 0, 0,],
-        ...     hold_first_continuous=True,
+        ...     hold_first_forget=False,
         ...     hold_last_boolean_vector=[0, 1],
-        ...     hold_last_continuous=True,
+        ...     hold_last_forget=False,
         ...     effort_boolean_vector=[1, 0],
-        ...     effort_continuous=True,
-        ...     continuous=True,
+        ...     effort_forget=False,
+        ...     forget=False,
         ... )
         >>> first_group = staff[0:3]
         >>> second_group = staff[2:]
@@ -755,15 +755,15 @@ class DynamicHandler(Handler):
         self,
         dynamic_list=None,
         flare_boolean_vector=[0],
-        flare_continuous=True,
+        flare_forget=False,
         hold_first_boolean_vector=[0],
-        hold_first_continuous=True,
+        hold_first_forget=False,
         hold_last_boolean_vector=[0],
-        hold_last_continuous=True,
+        hold_last_forget=False,
         effort_boolean_vector=[0],
-        effort_continuous=True,
+        effort_forget=False,
         with_constante_hairpins=True,
-        continuous=True,
+        forget=False,
         count_1=-1,
         count_2=-1,
         count_3=-1,
@@ -773,34 +773,34 @@ class DynamicHandler(Handler):
     ):
         self.dynamic_list = dynamic_list
         self.flare_boolean_vector = flare_boolean_vector
-        self.flare_continuous = flare_continuous
+        self.flare_forget = flare_forget
         self.hold_first_boolean_vector = hold_first_boolean_vector
-        self.hold_first_continuous = hold_first_continuous
+        self.hold_first_forget = hold_first_forget
         self.hold_last_boolean_vector = hold_last_boolean_vector
-        self.hold_last_continuous = hold_last_continuous
+        self.hold_last_forget = hold_last_forget
         self.effort_boolean_vector = effort_boolean_vector
-        self.effort_continuous = effort_continuous
+        self.effort_forget = effort_forget
         self.with_constante_hairpins = with_constante_hairpins
-        self.continuous = continuous
+        self.forget = forget
         self._count_1 = count_1
         self._count_2 = count_2
         self._count_3 = count_3
         self._count_4 = count_4
         self._count_5 = count_5
         self._cyc_dynamics = sequence.CyclicList(
-            dynamic_list, self.continuous, self._count_1
+            dynamic_list, self.forget, self._count_1
         )
         self._cyc_flare_boolean_vector = sequence.CyclicList(
-            flare_boolean_vector, self.flare_continuous, self._count_2
+            flare_boolean_vector, self.flare_forget, self._count_2
         )
         self._cyc_hold_first_boolean_vector = sequence.CyclicList(
-            hold_first_boolean_vector, self.hold_first_continuous, self._count_3
+            hold_first_boolean_vector, self.hold_first_forget, self._count_3
         )
         self._cyc_hold_last_boolean_vector = sequence.CyclicList(
-            hold_last_boolean_vector, self.hold_last_continuous, self._count_4
+            hold_last_boolean_vector, self.hold_last_forget, self._count_4
         )
         self._cyc_effort_boolean_vector = sequence.CyclicList(
-            effort_boolean_vector, self.effort_continuous, self._count_5
+            effort_boolean_vector, self.effort_forget, self._count_5
         )
         self.name = name
 
@@ -1293,11 +1293,11 @@ class GettatoHandler(Handler):
     def __init__(
         self,
         number_of_attacks=[4, 5, 6],
-        attack_number_continuous=True,
+        attack_number_forget=False,
         actions=["throw", "drop"],
-        action_continuous=True,
+        action_forget=False,
         boolean_vector=[1],
-        vector_continuous=True,
+        vector_forget=False,
         attack_count=-1,
         action_count=-1,
         vector_count=-1,
@@ -1306,17 +1306,17 @@ class GettatoHandler(Handler):
         self._attack_count = attack_count
         self._action_count = action_count
         self._vector_count = vector_count
-        self.attack_number_continuous = attack_number_continuous
-        self.action_continuous = action_continuous
-        self.vector_continuous = vector_continuous
+        self.attack_number_forget = attack_number_forget
+        self.action_forget = action_forget
+        self.vector_forget = vector_forget
         self.attacks = sequence.CyclicList(
-            number_of_attacks, self.attack_number_continuous, self._attack_count
+            number_of_attacks, self.attack_number_forget, self._attack_count
         )
         self.actions = sequence.CyclicList(
-            actions, self.action_continuous, self._action_count
+            actions, self.action_forget, self._action_count
         )
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.vector_continuous, self._vector_count
+            boolean_vector, self.vector_forget, self._vector_count
         )
         self.name = name
 
@@ -1402,7 +1402,7 @@ class GlissandoHandler(Handler):
         >>> handler = evans.GlissandoHandler(
         ...     line_style="dotted-line",
         ...     boolean_vector=[1],
-        ...     continuous=True,
+        ...     forget=False,
         ...     apply_to="runs",
         ... )
         >>> handler(staff)
@@ -1432,7 +1432,7 @@ class GlissandoHandler(Handler):
         glissando_style=None,
         line_style=None,
         boolean_vector=[0],
-        continuous=True,
+        forget=False,
         apply_to="runs",
         count=-1,
         name="Glissando Handler",
@@ -1440,10 +1440,10 @@ class GlissandoHandler(Handler):
         self.glissando_style = glissando_style
         self.line_style = line_style
         self._count = count
-        self.continuous = continuous
+        self.forget = forget
         self.apply_to = apply_to
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._count
+            boolean_vector, self.forget, self._count
         )
         self.name = name
 
@@ -1550,7 +1550,7 @@ class GraceHandler(Handler):
         >>> handler = evans.GraceHandler(
         ...     boolean_vector=[0, 1, 0, 1],
         ...     gesture_lengths=[1, 2],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(staff[:])
         >>> file = abjad.LilyPondFile.new(
@@ -1601,21 +1601,21 @@ class GraceHandler(Handler):
         self,
         boolean_vector=None,
         gesture_lengths=None,
-        continuous=False,
+        forget=True,
         vector_count=-1,
         gesture_count=-1,
         name="Grace Handler",
     ):
-        self.continuous = continuous
+        self.forget = forget
         self._vector_count = vector_count
         self._gesture_count = gesture_count
         self.boolean_vector = boolean_vector
         self.gesture_lengths = gesture_lengths
         self._cyc_boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._vector_count
+            boolean_vector, self.forget, self._vector_count
         )
         self._cyc_gesture_lengths = sequence.CyclicList(
-            gesture_lengths, self.continuous, self._gesture_count
+            gesture_lengths, self.forget, self._gesture_count
         )
         self.name = name
 
@@ -1715,10 +1715,10 @@ class NoteheadHandler(Handler):
         ...     notehead_list=["default", "harmonic", "triangle", "slash"],
         ...     transition=True,
         ...     head_boolean_vector=[1],
-        ...     head_vector_continuous=True,
+        ...     head_vector_forget=False,
         ...     transition_boolean_vector=[0, 1],
-        ...     transition_vector_continuous=True,
-        ...     continuous=False,
+        ...     transition_vector_forget=False,
+        ...     forget=True,
         ... )
         >>> handler(staff)
         >>> abjad.show(staff) # doctest: +SKIP
@@ -1751,31 +1751,31 @@ class NoteheadHandler(Handler):
         notehead_list=None,
         transition=False,
         head_boolean_vector=[0],
-        head_vector_continuous=True,
+        head_vector_forget=False,
         transition_boolean_vector=[0],
-        transition_vector_continuous=True,
-        continuous=False,
+        transition_vector_forget=False,
+        forget=True,
         count=-1,
         name="Notehead Handler",
     ):
         self.notehead_list = notehead_list
         self.transition = transition
-        self.head_vector_continuous = head_vector_continuous
+        self.head_vector_forget = head_vector_forget
         self._head_vector_count = -1
         self.head_boolean_vector = sequence.CyclicList(
-            head_boolean_vector, self.head_vector_continuous, self._head_vector_count
+            head_boolean_vector, self.head_vector_forget, self._head_vector_count
         )
-        self.transition_vector_continuous = transition_vector_continuous
+        self.transition_vector_forget = transition_vector_forget
         self._transition_vector_count = -1
         self.transition_boolean_vector = sequence.CyclicList(
             transition_boolean_vector,
-            self.transition_vector_continuous,
+            self.transition_vector_forget,
             self._transition_vector_count,
         )
-        self.continuous = continuous
+        self.forget = forget
         self._count = count
         self._cyc_noteheads = sequence.CyclicList(
-            notehead_list, self.continuous, self._count
+            notehead_list, self.forget, self._count
         )
         self.name = name
 
@@ -1844,7 +1844,7 @@ class PitchHandler(Handler):
         >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[1, 2, 3, 4],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> abjad.show(s) # doctest: +SKIP
@@ -1865,7 +1865,7 @@ class PitchHandler(Handler):
         >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[1, [2, 3], 4],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> abjad.show(s) # doctest: +SKIP
@@ -1888,7 +1888,7 @@ class PitchHandler(Handler):
         ...     pitch_list=[0, 1, 2.5, 3, 4, 5.5],
         ...     chord_boolean_vector=[0, 1, 1],
         ...     chord_groups=[2, 4],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> abjad.show(s) # doctest: +SKIP
@@ -1912,7 +1912,7 @@ class PitchHandler(Handler):
         ...     allow_chord_duplicates=True,
         ...     chord_boolean_vector=[0, 1, 1],
         ...     chord_groups=[2, 4],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> abjad.show(s) # doctest: +SKIP
@@ -1933,7 +1933,7 @@ class PitchHandler(Handler):
         >>> s = abjad.Staff("c'4 c'4 c'4 c'4")
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[1, fractions.Fraction(9, 4), 3, 4],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> file = abjad.LilyPondFile.new(
@@ -1965,7 +1965,7 @@ class PitchHandler(Handler):
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[1, [fractions.Fraction(4, 3), 4], 5, fractions.Fraction(37, 6)],
         ...     allow_chord_duplicates=True,
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> file = abjad.LilyPondFile.new(
@@ -2009,7 +2009,7 @@ class PitchHandler(Handler):
         ...         2,
         ...         fractions.Fraction(23, 4),
         ...     ],
-        ...     continuous=True,
+        ...     forget=False,
         ...     allow_chord_duplicates=True,
         ... )
         >>> handler(s)
@@ -2053,7 +2053,7 @@ class PitchHandler(Handler):
         >>> staff = abjad.Staff(notes)
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[_ for _ in pitch_set],
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(staff)
         >>> file = abjad.LilyPondFile.new(
@@ -2108,7 +2108,7 @@ class PitchHandler(Handler):
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[_ for _ in pitch_set],
         ...     apply_all=True,
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(staff)
         >>> file = abjad.LilyPondFile.new(
@@ -2186,7 +2186,7 @@ class PitchHandler(Handler):
         >>> handler = evans.PitchHandler(
         ...     pitch_list=[_ for _ in ratio_segment],
         ...     as_ratios=True,
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(staff)
         >>> file = abjad.LilyPondFile.new(
@@ -2259,7 +2259,7 @@ class PitchHandler(Handler):
         as_ratios=False,
         chord_boolean_vector=[0],
         chord_groups=None,
-        continuous=False,
+        forget=True,
         to_ties=False,
         pitch_count=-1,
         chord_boolean_count=-1,
@@ -2272,20 +2272,20 @@ class PitchHandler(Handler):
         self.as_ratios = as_ratios
         self.chord_boolean_vector = chord_boolean_vector
         self.chord_groups = chord_groups
-        self.continuous = continuous
+        self.forget = forget
         self.to_ties = to_ties
         self.name = name
         self._pitch_count = pitch_count
         self._chord_boolean_count = chord_boolean_count
         self._chord_groups_count = chord_groups_count
         self._cyc_pitches = sequence.CyclicList(
-            self.pitch_list, self.continuous, self._pitch_count
+            self.pitch_list, self.forget, self._pitch_count
         )
         self._cyc_chord_boolean_vector = sequence.CyclicList(
-            self.chord_boolean_vector, self.continuous, self._chord_boolean_count
+            self.chord_boolean_vector, self.forget, self._chord_boolean_count
         )
         self._cyc_chord_groups = sequence.CyclicList(
-            self.chord_groups, self.continuous, self._chord_groups_count
+            self.chord_groups, self.forget, self._chord_groups_count
         )
 
     def __call__(self, selections):
@@ -2446,9 +2446,9 @@ class RhythmHandler(Handler):
 
     """
 
-    def __init__(self, rmaker, continuous=False, state=None, name="Rhythm Handler"):
+    def __init__(self, rmaker, forget=True, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker
-        self.continuous = continuous
+        self.forget = forget
         self._input_state = state
         self.state = self.rmaker.state
         self.name = name
@@ -2457,7 +2457,7 @@ class RhythmHandler(Handler):
         return self._make_music(durations)
 
     def _make_basic_rhythm(self, durations):
-        if self.continuous is True:
+        if self.forget is False:
             if self._input_state is not None:
                 self.state = self._input_state
                 selections = self.rmaker(durations, previous_state=self.state)
@@ -2512,15 +2512,15 @@ class SlurHandler(Handler):
         self,
         apply_slur_to="runs",
         boolean_vector=[1],
-        continuous=True,
+        forget=False,
         count=-1,
         name="Slur Handler",
     ):
         self.apply_slur_to = apply_slur_to
         self._count = count
-        self.continuous = continuous
+        self.forget = forget
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._count
+            boolean_vector, self.forget, self._count
         )
         self.name = name
 
@@ -2565,7 +2565,7 @@ class TempoSpannerHandler(Handler):
         ...     boolean_vector=[1],
         ...     padding=4,
         ...     staff_padding=2,
-        ...     continuous=True,
+        ...     forget=False,
         ... )
         >>> handler(s[:-1])
         >>> file = abjad.LilyPondFile.new(
@@ -2608,7 +2608,7 @@ class TempoSpannerHandler(Handler):
         boolean_vector=[1],
         padding=4,
         staff_padding=2,
-        continuous=True,
+        forget=False,
         tempo_count=-1,
         bool_count=-1,
         name="Tempo Spanner Handler",
@@ -2616,13 +2616,13 @@ class TempoSpannerHandler(Handler):
         self._tempo_count = tempo_count
         self._bool_count = bool_count
         self.padding = padding
-        self.continuous = continuous
+        self.forget = forget
         self.staff_padding = staff_padding
         self.tempo_list = sequence.CyclicList(
-            tempo_list, self.continuous, self._tempo_count
+            tempo_list, self.forget, self._tempo_count
         )
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._bool_count
+            boolean_vector, self.forget, self._bool_count
         )
         self.name = name
 
@@ -2750,7 +2750,7 @@ class TextSpanHandler(Handler):
         span_three_style=None,
         span_three_padding=None,
         attach_span_three_to=None,
-        continuous=False,
+        forget=True,
         count_1=-1,
         count_2=-1,
         count_3=-1,
@@ -2768,18 +2768,18 @@ class TextSpanHandler(Handler):
         self.span_three_style = span_three_style
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
-        self.continuous = continuous
+        self.forget = forget
         self._count_1 = count_1
         self._count_2 = count_2
         self._count_3 = count_3
         self._cyc_span_one_positions = sequence.CyclicList(
-            span_one_positions, self.continuous, self._count_1
+            span_one_positions, self.forget, self._count_1
         )
         self._cyc_span_two_positions = sequence.CyclicList(
-            span_two_positions, self.continuous, self._count_2
+            span_two_positions, self.forget, self._count_2
         )
         self._cyc_span_three_positions = sequence.CyclicList(
-            span_three_positions, self.continuous, self._count_3
+            span_three_positions, self.forget, self._count_3
         )
         self.name = name
 
@@ -3040,7 +3040,7 @@ class TrillHandler(Handler):
     .. container:: example
 
         >>> staff = abjad.Staff("<c' d'>4 c'4 c'4 <c' d'>4 c'4 c'4 c'4 c'4 ")
-        >>> handler = evans.TrillHandler(boolean_vector=[0, 1], continuous=True)
+        >>> handler = evans.TrillHandler(boolean_vector=[0, 1], forget=False)
         >>> handler(staff)
         >>> abjad.show(staff) # doctest: +SKIP
 
@@ -3065,12 +3065,12 @@ class TrillHandler(Handler):
     """
 
     def __init__(
-        self, boolean_vector=[0], continuous=True, count=-1, name="Trill Handler"
+        self, boolean_vector=[0], forget=False, count=-1, name="Trill Handler"
     ):
-        self.continuous = continuous
+        self.forget = forget
         self._count = count
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, self.continuous, self._count
+            boolean_vector, self.forget, self._count
         )
         self.name = name
 
