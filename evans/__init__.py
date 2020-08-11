@@ -37,6 +37,7 @@ from .handlers import (
 )
 from .metmod import (
     calculate_metric_modulation,
+    calculate_tempo_modulated_duration,
     compare_speed,
     metric_modulation,
     mixed_number,
@@ -154,6 +155,7 @@ __all__ = [
     "attach",
     "beam_meter",
     "calculate_metric_modulation",
+    "calculate_tempo_modulated_duration",
     "call",
     "collect_offsets",
     "combination_tones",

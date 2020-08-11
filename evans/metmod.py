@@ -249,3 +249,43 @@ def metric_modulation(
             format_slot="after",
         )
         return mark
+
+def calculate_tempo_modulated_duration(
+    original_tempo=((1, 4), 60),
+    new_tempo=((1, 4), 120),
+    duration=abjad.Duration((1, 1))
+):
+    """
+
+    .. container:: example
+
+        >>> evans.calculate_tempo_modulated_duration(
+        ...     original_tempo=((1, 4), 60),
+        ...     new_tempo=((1, 4), 120),
+        ...     duration=abjad.Duration((1, 1)),
+        ... )
+        ...
+        Duration(2, 1)
+
+    .. container:: example
+
+        >>> evans.calculate_tempo_modulated_duration(
+        ...     original_tempo=((1, 4), 72),
+        ...     new_tempo=((1, 4), 83),
+        ...     duration=abjad.Duration((23, 8)),
+        ... )
+        ...
+        Duration(1909, 576)
+
+    """
+    def convert_to_quarter(tempo):
+        notehead_string = f"{tempo[0][0]}/{tempo[0][1]}"
+        beat_change = quicktions.Fraction("1/4") / quicktions.Fraction(notehead_string)
+        new_speed = tempo[1] * beat_change
+        return ((1, 4), new_speed)
+
+    original_tempo = convert_to_quarter(original_tempo)
+    new_tempo = convert_to_quarter(new_tempo)
+    multiplier = original_tempo[1] / new_tempo[1]
+    timed_duration = duration / multiplier
+    return timed_duration
