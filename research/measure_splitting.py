@@ -16,11 +16,11 @@ staff_2 = abjad.Staff(
 )
 score = abjad.Score([sig_context, staff_2, staff,], name="score",)
 for voice in abjad.select(score).components(abjad.Voice):
-    shards = abjad.mutate(voice[:]).split(signatures)
+    shards = abjad.mutate.split(voice[:], signatures)
     v = abjad.Voice(name=voice.name)
     v.extend(shards)
-    abjad.mutate(score[voice.name]).replace(v)
-    shards_ = abjad.mutate(score[voice.name][:]).split(signatures)
+    abjad.mutate.replace(score[voice.name], v)
+    shards_ = abjad.mutate.split(score[voice.name][:], signatures)
     for i, shard_ in enumerate(shards_):
         abjad.Meter.rewrite_meter(
             shard_, signatures[i], rewrite_tuplets=False,

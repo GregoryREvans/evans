@@ -295,7 +295,7 @@ class SegmentMaker:
                     sigs.append(indicator)
         print("Beaming meter ...")
         for voice in abjad.iterate(target["Staff Group"]).components(abjad.Voice):
-            for i, shard in enumerate(abjad.mutate(voice[:]).split(sigs)):
+            for i, shard in enumerate(abjad.mutate.split(voice[:], sigs)):
                 met = abjad.Meter(sigs[i].pair)
                 inventories = [
                     x
@@ -474,7 +474,7 @@ class SegmentMaker:
             abjad.Voice
         ):
             leaves = abjad.select(voice).leaves(grace=False)
-            shards = abjad.mutate(leaves).split(self.time_signatures)
+            shards = abjad.mutate.split(leaves, self.time_signatures)
             for shard in shards[:-1]:
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
                     continue
@@ -509,10 +509,10 @@ class SegmentMaker:
                         tag=abjad.Tag("applying cutaway"),
                     )
                     both_rests = [invisible_rest, multimeasure_rest]
-                    abjad.mutate(shard).replace(both_rests[:])
+                    abjad.mutate.replace(shard, both_rests[:])
                 else:
                     both_rests = [invisible_rest, multimeasure_rest]
-                    abjad.mutate(shard).replace(both_rests[:])
+                    abjad.mutate.replace(shard, both_rests[:])
 
     def _remove_final_grand_pause(self):
         if self.add_final_grand_pause is True:
@@ -521,13 +521,13 @@ class SegmentMaker:
         for staff in abjad.select(self.score_template["Global Context"]).components(
             abjad.Staff
         ):
-            grand_pause = abjad.mutate(staff[:]).split(self.time_signatures)[-1]
+            grand_pause = abjad.mutate.split(staff[:], self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
         for voice in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
-            grand_pause = abjad.mutate(voice[:]).split(self.time_signatures)[-1]
+            grand_pause = abjad.mutate.split(voice[:], self.time_signatures)[-1]
             for _ in grand_pause:
                 voice.remove(_)
 
@@ -583,7 +583,7 @@ class SegmentMaker:
             durations = [_.duration for _ in time_signatures]
             sig_dur = sum(durations)
             assert voice_dur == sig_dur, (voice_dur, sig_dur)
-            shards = abjad.mutate(voice[:]).split(durations)
+            shards = abjad.mutate.split(voice[:], durations)
             for i, shard in enumerate(shards):
                 time_signature = sigs[i]
                 inventories = [
@@ -637,7 +637,7 @@ class SegmentMaker:
                 indicators = abjad.inspect(tuplet[0]).indicators()
                 for indicator in indicators:
                     abjad.attach(indicator, donor_leaves[-1])
-                abjad.mutate(tuplet).replace(donor_leaves[:])
+                abjad.mutate.replace(tuplet, donor_leaves[:])
             if tuplet.rest_filled() is True:
                 inner_durs = []
                 for _ in tuplet[:]:
@@ -650,7 +650,7 @@ class SegmentMaker:
                 head_dur = tuplet_dur / imp_den
                 dur = head_dur * imp_num
                 maker = abjad.NoteMaker()
-                abjad.mutate(tuplet).replace(maker([None], [dur]))
+                abjad.mutate.replace(tuplet, maker([None], [dur]))
             if tuplet.hide is not True:
                 notehead_maker = NoteheadBracketMaker()
                 notehead_maker(tuplet)

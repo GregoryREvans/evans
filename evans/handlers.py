@@ -2397,7 +2397,7 @@ class PitchHandler(Handler):
                         abjad.attach(indicator, new_leaf)
                     if before_grace is not None:
                         abjad.attach(before_grace, new_leaf)
-                    abjad.mutate(old_leaf).replace(new_leaf)
+                    abjad.mutate.replace(old_leaf, new_leaf)
 
     def name(self):
         return self.name

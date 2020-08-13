@@ -80,7 +80,7 @@ class Command:
             raise Exception(f"Invalid command {self.command}")
 
     def _replace(self, voice, contents, selection):
-        abjad.mutate(selection[:]).replace(contents[:])
+        abjad.mutate.replace(selection[:], contents[:])
 
 
 def attach(voice_name, indicator, selector=None):

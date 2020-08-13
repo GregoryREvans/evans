@@ -35,7 +35,7 @@ class AddSpannerAnchor:
         return container
 
     def add_anchor(self):
-        abjad.mutate(self.leaf).replace(self.calc_anchor()[:])
+        abjad.mutate.replace(self.leaf, self.calc_anchor()[:])
 
     def add_spanner_anchor(self):
         if abjad.inspect(self.leaf).leaf(1) is not None:

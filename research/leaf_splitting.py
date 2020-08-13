@@ -16,6 +16,6 @@ staff = abjad.Staff("c'4")
 print(abjad.lilypond(staff))
 leaves = staff[:]
 
-abjad.mutate(leaves).split(durations, tie_split_notes=False)
+abjad.mutate.split(leaves, durations, tie_split_notes=False)
 
 print(abjad.lilypond(staff))
