@@ -3,6 +3,7 @@ Pitch functions.
 """
 import abjad
 import quicktions
+from abjadext import microtones
 
 from .sequence import flatten
 
@@ -405,3 +406,112 @@ def return_vertical_moment_ties(score):
     flat_moments = flatten(new_moments)
     flat_moments.sort(key=lambda _: abjad.inspect(_).timespan())
     return flat_moments
+
+
+def tonnetz(chord, chord_quality, transforms):
+    """
+    ..  container:: example
+
+        >>> source = ["1/1", "6/5", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l", "r"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 6/5, 3/2)
+        (1, 5/4, 3/2)
+        (5/4, 3/2, 15/8)
+        (3/2, 15/8, 9/8)
+
+    """
+    chord = microtones.RatioSegment(chord)
+    chord = chord.constrain_to_octave()
+    returned_list = [chord]
+    updated_transforms = []
+    for transform in transforms:
+        if transform == "n":
+            updated_transforms.extend(["r", "l", "p"])
+        elif transform == "s":
+            updated_transforms.extend(["l", "p", "r"])
+        elif transform == "h":
+            updated_transforms.extend(["l", "p", "l"])
+        elif transform == "N":
+            updated_transforms.append(["r", "l", "p"])
+        elif transform == "S":
+            updated_transforms.append(["l", "p", "r"])
+        elif transform == "H":
+            updated_transforms.append(["l", "p", "l"])
+        else:
+            updated_transforms.append(transform)
+    for transform in updated_transforms:
+        if isinstance(transform, list):
+            returned_list.extend(tonnetz(returned_list[-1], chord_quality, transform))
+        elif transform == "p":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                returned_list.append(i)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                returned_list.append(i)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("5/4")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("4/5")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("5/6")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert()
+                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("6/5")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        else:
+            raise Exception(
+                f"Transform '{transform}' not recognized. Use p, l, r, s, h, or, n."
+            )
+    return returned_list

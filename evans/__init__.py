@@ -51,6 +51,7 @@ from .pitch import (
     to_nearest_sixth_tone,
     to_nearest_third_tone,
     to_nearest_twelfth_tone,
+    tonnetz,
 )
 from .rtm import (
     RTMMaker,
@@ -216,5 +217,6 @@ __all__ = [
     "to_nearest_sixth_tone",
     "to_nearest_third_tone",
     "to_nearest_twelfth_tone",
+    "tonnetz",
     "warp",
 ]
