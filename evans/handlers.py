@@ -2127,28 +2127,28 @@ class PitchHandler(Handler):
             \new Staff
             {
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-markup
+                \tweak Accidental.text \abjad-natural-markup
                 c'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \one-quarter-flat-markup
                 df'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-markup
+                \tweak Accidental.text \abjad-natural-markup
                 g'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \three-eighths-sharp-markup
                 e'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-markup
+                \tweak Accidental.text \abjad-natural-markup
                 f'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \flat-markup
+                \tweak Accidental.text \abjad-flat-markup
                 ef'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \three-eighths-flat-markup
                 a4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-markup
+                \tweak Accidental.text \abjad-natural-markup
                 b4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \one-quarter-sharp-markup
@@ -2160,7 +2160,7 @@ class PitchHandler(Handler):
                 \tweak Accidental.text \one-quarter-flat-markup
                 df''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \flat-markup
+                \tweak Accidental.text \abjad-flat-markup
                 af'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \one-quarter-flat-markup
@@ -2205,10 +2205,10 @@ class PitchHandler(Handler):
             \new Staff
             {
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 c'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 g'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
@@ -2220,22 +2220,22 @@ class PitchHandler(Handler):
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 a'4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 c''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 d''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 e''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 c''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 g''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural
+                \tweak Accidental.text \abjad-natural
                 f''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \markup {
@@ -2243,7 +2243,7 @@ class PitchHandler(Handler):
                         {
                             \one-septimal-comma-down
                             \hspace #0.125
-                            \flat
+                            \abjad-flat
                         }
                     }
                 bf''4
