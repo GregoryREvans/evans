@@ -71,7 +71,7 @@ def test_segments_01(segment):
         return
     assert os.path.exists(ly)
     assert os.path.exists(ly_old)
-    if not abjad.TestManager.compare_files(ly_old, ly):
+    if not abjad.iox.compare_files(ly_old, ly):
         ly_old_text = open(ly_old, "r")
         ly_old_text = ly_old_text.read()
         ly_text = open(ly, "r")
