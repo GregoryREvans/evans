@@ -75,6 +75,6 @@ for n in range(2, 13):
     sig = abjad.TimeSignature((n, 4))
     first_leaf = abjad.select(score).leaves()[0]
     abjad.attach(sig, first_leaf)
-    abjad.persist(score).as_ly(
-        f"/Users/evansdsg2/evans/research/pitch_patterns/divisions_of_{n}.ly"
+    abjad.persist.as_ly(
+        score, f"/Users/evansdsg2/evans/research/pitch_patterns/divisions_of_{n}.ly",
     )

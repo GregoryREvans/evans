@@ -554,7 +554,7 @@ class SegmentMaker:
         if pdf_path.exists():
             pdf_path.unlink()
         print(f"Persisting {pdf_path.trim()} ...")
-        result = abjad.persist(score_file).as_pdf(pdf_path, strict=79)
+        result = abjad.persist.as_pdf(score_file, pdf_path, strict=79)
         success = result[3]
         if success is False:
             print("LilyPond failed!")

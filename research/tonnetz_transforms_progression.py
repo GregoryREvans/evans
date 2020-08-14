@@ -4,9 +4,11 @@ from abjadext import microtones
 
 score = abjad.Score()
 
-source = microtones.RatioSegment([1, "6/5", "3/2",])
+source = microtones.RatioSegment([1, "5/4", "3/2",])
 
-triads = evans.tonnetz(source, "minor", ["p", "l", "r"])
+triads = evans.tonnetz(
+    source, "major", ["p", "h", "s", "n", "p", "l", "r", "r", "l", "l",]
+)
 
 for chord in triads:
     staff = abjad.Staff([abjad.Note("c'8") for pitch in chord])

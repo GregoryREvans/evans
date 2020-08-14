@@ -444,7 +444,9 @@ def tonnetz(chord, chord_quality, transforms):
             updated_transforms.append(transform)
     for transform in updated_transforms:
         if isinstance(transform, list):
-            returned_list.extend(tonnetz(returned_list[-1], chord_quality, transform))
+            returned_list.append(
+                tonnetz(returned_list[-1], chord_quality, transform)[-1]
+            )
         elif transform == "p":
             if chord_quality == "major":
                 chord_quality = "minor"
