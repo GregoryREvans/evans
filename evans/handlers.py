@@ -106,7 +106,7 @@ class ArticulationHandler(Handler):
                 if self.articulation_list is not None:
                     if articulation == "tremolo":
                         for leaf in tie:
-                            if abjad.inspect(leaf).duration() <= abjad.Duration(1, 32):
+                            if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
                                 continue
                             else:
                                 abjad.attach(abjad.StemTremolo(32), leaf)
@@ -345,7 +345,7 @@ class BisbigliandoHandler(Handler):
             start_literal = self._make_start_literal()
             stop_literal = abjad.LilyPondLiteral(r"\stopTrillSpan", format_slot="after")
             abjad.attach(start_literal, tie[0])
-            abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
+            abjad.attach(stop_literal, abjad.get.leaf(tie[-1], 1))
             return
         start_literal_pre = self._make_start_literal_pre()
         start_literal = abjad.LilyPondLiteral(fingering, format_slot="after")
@@ -356,7 +356,7 @@ class BisbigliandoHandler(Handler):
         abjad.attach(start_literal_pre, tie[0])
         abjad.attach(start_literal, tie[0])
         abjad.attach(start_literal_post, tie[0])
-        abjad.attach(stop_literal, abjad.inspect(tie[-1]).leaf(1))
+        abjad.attach(stop_literal, abjad.get.leaf(tie[-1], 1))
 
     def add_spanner(self, selections):
         ties = abjad.select(selections).logical_ties(pitched=True)
@@ -478,7 +478,7 @@ class ClefHandler(Handler):
                     allowable_clefs = self._extended_range_clefs(base_clef)
                 for tie in abjad.select(voice).logical_ties(pitched=True):
                     pitches = []
-                    for pitch in abjad.inspect(tie[0]).pitches():
+                    for pitch in abjad.get.pitches(tie[0]):
                         pitches.append(pitch.number)
                     pitch = statistics.mean(pitches)
                     value = None
@@ -497,8 +497,8 @@ class ClefHandler(Handler):
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            if abjad.inspect(tie[0]).indicator(abjad.Clef) is not None:
-                                indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                            if abjad.get.indicator(tie[0], abjad.Clef) is not None:
+                                indicator = abjad.get.indicator(tie[0], abjad.Clef)
                                 abjad.detach(indicator, tie[0])
                                 abjad.attach(clef, tie[0])
                                 clef_list.append(clef)
@@ -512,9 +512,7 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    indicator = abjad.inspect(tie[0]).indicator(
-                                        abjad.Clef
-                                    )
+                                    indicator = abjad.get.indicator(tie[0], abjad.Clef)
                                     if indicator is not None:
                                         abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
@@ -535,7 +533,7 @@ class ClefHandler(Handler):
                             clef = abjad.Clef(temp_clef)
                             if clef == clef_list[-1]:
                                 continue
-                            indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                            indicator = abjad.get.indicator(tie[0], abjad.Clef)
                             if indicator is not None:
                                 abjad.detach(indicator, tie[0])
                                 abjad.attach(clef, tie[0])
@@ -550,9 +548,7 @@ class ClefHandler(Handler):
                                     clef = abjad.Clef(temp_clef)
                                     if clef == clef_list[-1]:
                                         continue
-                                    indicator = abjad.inspect(tie[0]).indicator(
-                                        abjad.Clef
-                                    )
+                                    indicator = abjad.get.indicator(tie[0], abjad.Clef)
                                     if indicator is not None:
                                         abjad.detach(indicator, tie[0])
                                         abjad.attach(clef, tie[0])
@@ -571,7 +567,7 @@ class ClefHandler(Handler):
                                 clef = abjad.Clef(temp_clef)
                                 if clef == clef_list[-1]:
                                     continue
-                                indicator = abjad.inspect(tie[0]).indicator(abjad.Clef)
+                                indicator = abjad.get.indicator(tie[0], abjad.Clef)
                                 if indicator is not None:
                                     abjad.detach(indicator, tie[0])
                                     abjad.attach(clef, tie[0])
@@ -587,7 +583,7 @@ class ClefHandler(Handler):
                 converted_clef = self._extended_range_clefs(clef)[0]
                 clef = abjad.Clef(converted_clef)
                 first_leaf = abjad.select(voice).leaves()[0]
-                indicator = abjad.inspect(first_leaf).indicator(abjad.Clef)
+                indicator = abjad.get.indicator(first_leaf, abjad.Clef)
                 if indicator is not None:
                     abjad.detach(indicator, first_leaf)
                     abjad.attach(clef, first_leaf)
@@ -609,63 +605,63 @@ class ClefHandler(Handler):
                 if self.ottava_shelf is not None:
                     shelf = self.ottava_shelf
                     if self.extend_in_direction == "down":
-                        for pitch in abjad.inspect(tie[0]).pitches():
+                        for pitch in abjad.get.pitches(tie[0]):
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                ottava_indicator = abjad.inspect(tie[0]).indicator(
-                                    abjad.Ottava
+                                ottava_indicator = abjad.get.indicator(
+                                    tie[0], abjad.Ottava
                                 )
                                 if ottava_indicator is not None:
                                     abjad.detach(ottava_indicator, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                                 else:
                                     abjad.attach(start, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                     else:
-                        for pitch in abjad.inspect(tie[0]).pitches():
+                        for pitch in abjad.get.pitches(tie[0]):
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                ottava_indicator = abjad.inspect(tie[0]).indicator(
-                                    abjad.Ottava
+                                ottava_indicator = abjad.get.indicator(
+                                    tie[0], abjad.Ottava
                                 )
                                 if ottava_indicator is not None:
                                     abjad.detach(ottava_indicator, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                                 else:
                                     abjad.attach(start, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                 else:
                     shelf = self._extended_range_ottavas(current_clef)
                     if self.extend_in_direction == "down":
-                        for pitch in abjad.inspect(tie[0]).pitches():
+                        for pitch in abjad.get.pitches(tie[0]):
                             if pitch < shelf[0]:
                                 start = abjad.Ottava(n=-1)
                                 stop = abjad.Ottava(n=0)
-                                ottava_indicator = abjad.inspect(tie[0]).indicator(
-                                    abjad.Ottava
+                                ottava_indicator = abjad.get.indicator(
+                                    tie[0], abjad.Ottava
                                 )
                                 if ottava_indicator is not None:
                                     abjad.detach(ottava_indicator, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                                 else:
                                     abjad.attach(start, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                     else:
-                        for pitch in abjad.inspect(tie[0]).pitches():
+                        for pitch in abjad.get.pitches(tie[0]):
                             if pitch > shelf[1]:
                                 start = abjad.Ottava(n=1)
                                 stop = abjad.Ottava(n=0)
-                                ottava_indicator = abjad.inspect(tie[0]).indicator(
-                                    abjad.Ottava
+                                ottava_indicator = abjad.get.indicator(
+                                    tie[0], abjad.Ottava
                                 )
                                 if ottava_indicator is not None:
                                     abjad.detach(ottava_indicator, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
                                 else:
                                     abjad.attach(start, tie[0])
-                                    abjad.attach(stop, abjad.inspect(tie[-1]).leaf(1))
+                                    abjad.attach(stop, abjad.get.leaf(tie[-1], 1))
         else:
             pass
 
@@ -886,8 +882,8 @@ class DynamicHandler(Handler):
             hold_first = self._cyc_hold_first_boolean_vector(r=1)[0]
             if hold_first == 0:
                 if len(run) > 1:
-                    if abjad.inspect(run[0]).has_indicator(abjad.Dynamic):
-                        current_dynamic = abjad.inspect(run[0]).indicator(abjad.Dynamic)
+                    if abjad.get.has_indicator(run[0], abjad.Dynamic):
+                        current_dynamic = abjad.get.indicator(run[0], abjad.Dynamic)
                         start = abjad.Dynamic(current_dynamic, hide=True)
                         stop = self._cyc_dynamics(r=1)[0]
                     else:
@@ -939,19 +935,19 @@ class DynamicHandler(Handler):
                         if stop.name != "niente":
                             if self.with_constante_hairpins is True:
                                 abjad.attach(abjad.StartHairpin("--"), run[-1])
-                                next_tie_leaf = abjad.inspect(run[-1]).leaf(1)
+                                next_tie_leaf = abjad.get.leaf(run[-1], 1)
                                 abjad.attach(abjad.StopHairpin(), next_tie_leaf)
                         else:  # attach to anchor?
-                            if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
+                            if isinstance(abjad.get.leaf(run[-1], 1), abjad.Rest):
                                 stop = abjad.Dynamic(stop, command=r"\!", leak=True)
                             else:
                                 pass
                     else:
-                        if isinstance(abjad.inspect(run[-1]).leaf(1), abjad.Rest):
+                        if isinstance(abjad.get.leaf(run[-1], 1), abjad.Rest):
                             stop = abjad.Dynamic(stop, leak=True)  # attach to anchor
                         else:
                             pass
-                    if abjad.inspect(run[0]).has_indicator(abjad.Dynamic):
+                    if abjad.get.has_indicator(run[0], abjad.Dynamic):
                         abjad.attach(abjad.StopHairpin(), run[0])
                         abjad.attach(hairpin, run[0])
                         abjad.attach(stop, run[-1])
@@ -971,7 +967,7 @@ class DynamicHandler(Handler):
                             start_string = self._make_effort_dynamics(start)
                             start = abjad.Dynamic(start_string)
                         sustain = abjad.StartHairpin("--")
-                        next_leaf = abjad.inspect(run[-1]).leaf(1)
+                        next_leaf = abjad.get.leaf(run[-1], 1)
                         abjad.attach(start, run[0])
                         if self.with_constante_hairpins is True:
                             abjad.attach(sustain, run[0])
@@ -1034,7 +1030,7 @@ class DynamicHandler(Handler):
                     start = abjad.Dynamic(start)
                 hairpin = abjad.StartHairpin("--")
                 stopper = abjad.StopHairpin()
-                next_leaf = abjad.inspect(run[-1]).leaf(1)
+                next_leaf = abjad.get.leaf(run[-1], 1)
                 abjad.attach(start, run[0])
                 if self.with_constante_hairpins is True:
                     abjad.attach(hairpin, run[0])
@@ -1048,7 +1044,7 @@ class DynamicHandler(Handler):
     # maybe just continue instead of replacing?
     def _remove_niente(self, selections):
         for leaf in abjad.select(selections).leaves():
-            for dynamic in abjad.inspect(leaf).indicators(abjad.Dynamic):
+            for dynamic in abjad.get.indicators(leaf, abjad.Dynamic):
                 if dynamic.name == "niente":
                     if dynamic.command == r"\!":
                         abjad.detach(dynamic, leaf)
@@ -1329,7 +1325,7 @@ class GettatoHandler(Handler):
         for value, tie in zip(vector, ties):
             if value == 1:
                 repetitions = self.attacks(r=1)[0]
-                pitches = [_ for _ in abjad.inspect(tie[0]).pitches()]
+                pitches = [_ for _ in abjad.get.pitches(tie[0])]
                 repeated_pitch = pitches[-1]
                 list_ = []
                 list_.append(abjad.Chord([repeated_pitch], (1, 32)))
@@ -2391,8 +2387,8 @@ class PitchHandler(Handler):
                             )
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
-                    indicators = abjad.inspect(old_leaf).indicators()
-                    before_grace = abjad.inspect(old_leaf).before_grace_container()
+                    indicators = abjad.get.indicators(old_leaf)
+                    before_grace = abjad.get.before_grace_container(old_leaf)
                     for indicator in indicators:
                         abjad.attach(indicator, new_leaf)
                     if before_grace is not None:
@@ -2662,9 +2658,7 @@ class TempoSpannerHandler(Handler):
             stopper = abjad.LilyPondLiteral(r"\bacaStopTextSpanMM", format_slot="after")
             abjad.attach(start_literal, abjad.select(ties).leaves()[0])
             abjad.attach(stop_literal, abjad.select(ties).leaves()[-1])
-            abjad.attach(
-                stopper, abjad.inspect(abjad.select(ties).leaves()[-1]).leaf(1)
-            )
+            abjad.attach(stopper, abjad.get.leaf(abjad.select(ties).leaves()[-1], 1))
 
     def name(self):
         return self.name
@@ -2883,7 +2877,7 @@ class TextSpanHandler(Handler):
                 )
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                    abjad.inspect(run[-1]).leaf(1),
+                    abjad.get.leaf(run[-1], 1),
                 )
                 abjad.attach(start_span, run[0])
                 abjad.tweak(start_span).staff_padding = span_padding
@@ -2907,7 +2901,7 @@ class TextSpanHandler(Handler):
                 abjad.attach(stop_span, run[-1])
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                    abjad.inspect(run[-1]).leaf(1),
+                    abjad.get.leaf(run[-1], 1),
                 )
                 abjad.tweak(start_span).staff_padding = span_padding
                 abjad.tweak(stop_span).staff_padding = span_padding
@@ -2917,7 +2911,7 @@ class TextSpanHandler(Handler):
     ):
         for run in abjad.select(selections).runs():
             ties = abjad.select(run).logical_ties(pitched=True)
-            following_leaf = abjad.inspect(ties[-1][-1]).leaf(1)
+            following_leaf = abjad.get.leaf(ties[-1][-1], 1)
             distance = len(ties) + 1
             start_strings = [positions(r=1)[0] for _ in range(distance)]
             for i, start_string in enumerate(start_strings[:-1]):
@@ -2993,7 +2987,7 @@ class TextSpanHandler(Handler):
             abjad.attach(final_indicator, following_leaf)
             abjad.attach(
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                abjad.inspect(following_leaf).leaf(1),
+                abjad.get.leaf(following_leaf, 1),
             )
 
     def _apply_position_and_span_to_left(
@@ -3017,7 +3011,7 @@ class TextSpanHandler(Handler):
             abjad.attach(start_indicator, run[0])
             abjad.attach(
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                abjad.inspect(run[-1]).leaf(1),
+                abjad.get.leaf(run[-1], 1),
             )
 
     def name(self):
@@ -3103,28 +3097,28 @@ class TrillHandler(Handler):
                     abjad.attach(trill_start, new_leaf)
                     abjad.attach(trill_literal, new_leaf)
                     last_leaf = tie[-1]
-                    next_leaf = abjad.inspect(last_leaf).leaf(1)
+                    next_leaf = abjad.get.leaf(last_leaf, 1)
                     if next_leaf is not None:
                         abjad.attach(trill_stop, next_leaf)
                     else:
                         continue
-                    indicators = abjad.inspect(old_chord).indicators()
+                    indicators = abjad.get.indicators(old_chord)
                     for indicator in indicators:
                         abjad.attach(indicator, new_leaf)
 
-                    parent = abjad.inspect(old_chord).parentage().parent
+                    parent = abjad.get.parentage(old_chord).parent
                     parent[parent.index(old_chord)] = new_leaf
 
                     tail = abjad.select(tie).leaves()[1:]
                     for leaf in tail:
                         new_tail = abjad.Note(base_pitch, leaf.written_duration)
-                        indicators = abjad.inspect(leaf).indicators()
+                        indicators = abjad.get.indicators(leaf)
                         for indicator in indicators:
                             abjad.attach(indicator, new_tail)
-                        before_grace = abjad.inspect(leaf).before_grace_container()
+                        before_grace = abjad.get.before_grace_container(leaf)
                         if before_grace is not None:
                             abjad.attach(before_grace, new_tail)
-                        parent = abjad.inspect(leaf).parentage().parent
+                        parent = abjad.get.parentage(leaf).parent
                         parent[parent.index(leaf)] = new_tail
                 else:
                     continue

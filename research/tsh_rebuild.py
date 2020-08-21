@@ -9,7 +9,7 @@ def _apply_position_and_span_to_leaves(
 ):
     for run in abjad.select(selections).runs():
         ties = abjad.select(run).logical_ties(pitched=True)
-        following_leaf = abjad.inspect(ties[-1][-1]).leaf(1)
+        following_leaf = abjad.get.leaf(ties[-1][-1], 1)
         distance = len(ties) + 1
         start_strings = [positions(r=1)[0] for _ in range(distance)]
         for i, start_string in enumerate(start_strings[:-1]):
@@ -84,7 +84,7 @@ def _apply_position_and_span_to_leaves(
         abjad.attach(final_indicator, following_leaf)
         abjad.attach(
             abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-            abjad.inspect(following_leaf).leaf(1),
+            abjad.get.leaf(following_leaf, 1),
         )
 
 

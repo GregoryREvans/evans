@@ -16,15 +16,15 @@ def mixed_number(fraction_pair=(288, 5)):
 
 
 def compare_speed(l_note=None, r_note=None):
-    left_dur = abjad.inspect(l_note).duration()
-    right_dur = abjad.inspect(r_note).duration()
+    left_dur = abjad.get.duration(l_note)
+    right_dur = abjad.get.duration(r_note)
     multiplier = left_dur / right_dur
     return multiplier
 
 
 def calculate_metric_modulation(l_tempo=60, l_note=None, r_note=None):
-    left_dur = abjad.inspect(l_note).duration()
-    right_dur = abjad.inspect(r_note).duration()
+    left_dur = abjad.get.duration(l_note)
+    right_dur = abjad.get.duration(r_note)
     multiplier = right_dur / left_dur
     new_tempo = l_tempo * multiplier
     return new_tempo
@@ -202,7 +202,7 @@ def metric_modulation(
     returned_speed = float(modulation_speed * compare_speed(left_note, modulated_beat))
     if returned_speed % 1 == 0.0:
         met = abjad.MetronomeMark.make_tempo_equation_markup(
-            abjad.inspect(modulated_beat).duration(), int(returned_speed)
+            abjad.get.duration(modulated_beat), int(returned_speed)
         )
         mod = abjad.MetricModulation(
             left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
@@ -226,7 +226,7 @@ def metric_modulation(
         return mark
     else:
         met = abjad.MetronomeMark.make_tempo_equation_markup(
-            abjad.inspect(modulated_beat).duration(),
+            abjad.get.duration(modulated_beat),
             quicktions.Fraction(returned_speed).limit_denominator(),
         )
         mod = abjad.MetricModulation(

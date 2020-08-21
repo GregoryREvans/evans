@@ -14,15 +14,15 @@ class AddSpannerAnchor:
         pre_mult = self.leaf.written_duration - self.anchor_dur
         mult = pre_mult / self.leaf.written_duration
         if isinstance(self.leaf, abjad.Chord):
-            pitches = [abjad.NamedPitch(_) for _ in abjad.inspect(self.leaf).pitches()]
+            pitches = [abjad.NamedPitch(_) for _ in abjad.get.pitches(self.leaf)]
         elif isinstance(self.leaf, abjad.Note):
-            pitches = [abjad.NamedPitch(_) for _ in abjad.inspect(self.leaf).pitches()]
+            pitches = [abjad.NamedPitch(_) for _ in abjad.get.pitches(self.leaf)]
             pitches = pitches[0]
         else:
             pass
         maker = abjad.LeafMaker()
         new_leaves = [list_ for list_ in maker([pitches], durs)]
-        indicators = abjad.inspect(self.leaf).indicators()
+        indicators = abjad.get.indicators(self.leaf)
         for indicator in indicators:
             abjad.attach(indicator, new_leaves[0][0])
         self.leaf.multiplier = mult
@@ -38,9 +38,9 @@ class AddSpannerAnchor:
         abjad.mutate.replace(self.leaf, self.calc_anchor()[:])
 
     def add_spanner_anchor(self):
-        if abjad.inspect(self.leaf).leaf(1) is not None:
-            next_leaf = abjad.inspect(self.leaf).leaf(1)
-            if abjad.inspect(next_leaf).annotation("type") != "spanner anchor":
+        if abjad.get.leaf(self.leaf, 1) is not None:
+            next_leaf = abjad.get.leaf(self.leaf, 1)
+            if abjad.get.annotation(next_leaf, "type") != "spanner anchor":
                 self.add_anchor()
             else:
                 pass

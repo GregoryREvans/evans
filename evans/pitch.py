@@ -404,7 +404,7 @@ def return_vertical_moment_ties(score):
             )
             new_moments.append(new_moment)
     flat_moments = flatten(new_moments)
-    flat_moments.sort(key=lambda _: abjad.inspect(_).timespan())
+    flat_moments.sort(key=lambda _: abjad.get.timespan(_))
     return flat_moments
 
 

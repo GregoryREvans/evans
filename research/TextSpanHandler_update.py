@@ -153,7 +153,7 @@ class TextSpanHandler:
                 )
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                    abjad.inspect(run[-1]).leaf(1),
+                    abjad.get.leaf(run[-1], 1),
                 )
                 abjad.attach(start_span, run[0])
                 abjad.tweak(start_span).staff_padding = span_padding
@@ -177,7 +177,7 @@ class TextSpanHandler:
                 abjad.attach(stop_span, run[-1])
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                    abjad.inspect(run[-1]).leaf(1),
+                    abjad.get.leaf(run[-1], 1),
                 )
                 abjad.tweak(start_span).staff_padding = span_padding
                 abjad.tweak(stop_span).staff_padding = span_padding
@@ -187,7 +187,7 @@ class TextSpanHandler:
     ):
         for run in abjad.select(selections).runs():
             ties = abjad.select(run).logical_ties(pitched=True)
-            leaf_after_run = abjad.inspect(ties[-1][-1]).leaf(1)
+            leaf_after_run = abjad.get.leaf(ties[-1][-1], 1)
             following_leaf = abjad.Note("c'16")
             distance = len(ties) + 1
             start_strings = [positions(r=1)[0] for _ in range(distance)]
@@ -289,7 +289,7 @@ class TextSpanHandler:
             abjad.attach(start_indicator, run[0])
             abjad.attach(
                 abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
-                abjad.inspect(run[-1]).leaf(1),
+                abjad.get.leaf(run[-1], 1),
             )
 
     def name(self):

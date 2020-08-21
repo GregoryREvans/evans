@@ -290,7 +290,7 @@ class SegmentMaker:
         global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
-            for indicator in abjad.inspect(skip).indicators():
+            for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
         print("Beaming meter ...")
@@ -320,9 +320,9 @@ class SegmentMaker:
                         include_rests=False,
                     )
         for trem in abjad.select(target).components(abjad.TremoloContainer):
-            if abjad.StartBeam() in abjad.inspect(trem[0]).indicators():
+            if abjad.StartBeam() in abjad.get.indicators(trem[0]):
                 abjad.detach(abjad.StartBeam(), trem[0])
-            if abjad.StopBeam() in abjad.inspect(trem[-1]).indicators():
+            if abjad.StopBeam() in abjad.get.indicators(trem[-1]):
                 abjad.detach(abjad.StopBeam(), trem[-1])
 
     def _break_pages(self):
@@ -346,7 +346,7 @@ class SegmentMaker:
             abjad.select(self.score_template["Staff Group"]).components(abjad.Voice)
         ):
             penultimate_rest = abjad.select(voice).leaves()[-2]
-            persistent_attachments = abjad.inspect(penultimate_rest).indicators()
+            persistent_attachments = abjad.get.indicators(penultimate_rest)
             info[f"Voice {i + 1}"] = persistent_attachments
         with open(f"{self.current_directory}/.persistent.py", "w") as fp:
             info_format = abjad.storage(info)
@@ -478,8 +478,8 @@ class SegmentMaker:
             for shard in shards[:-1]:
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
                     continue
-                indicators = abjad.inspect(shard[0]).indicators()
-                multiplier = abjad.inspect(shard).duration() / 2
+                indicators = abjad.get.indicators(shard[0])
+                multiplier = abjad.get.duration(shard) / 2
                 invisible_rest = abjad.Rest(1, multiplier=(multiplier))
                 rest_literal = abjad.LilyPondLiteral(
                     r"\once \override Rest.transparent = ##t", "before"
@@ -574,11 +574,11 @@ class SegmentMaker:
         global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
-            for indicator in abjad.inspect(skip).indicators():
+            for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
         for voice in abjad.select(target["Staff Group"]).components(abjad.Voice):
-            voice_dur = abjad.inspect(voice).duration()
+            voice_dur = abjad.get.duration(voice)
             time_signatures = sigs[:-1]
             durations = [_.duration for _ in time_signatures]
             sig_dur = sum(durations)
@@ -621,7 +621,7 @@ class SegmentMaker:
                 tuplet.trivialize()
             if tuplet.trivial() is True:
                 tuplet.hide = True
-            if abjad.inspect(tuplet).sustained() is True:
+            if abjad.get.sustained(tuplet) is True:
                 inner_durs = []
                 for _ in tuplet[:]:
                     if isinstance(_, abjad.Tuplet):
@@ -634,7 +634,7 @@ class SegmentMaker:
                 dur = head_dur * imp_num
                 maker = abjad.NoteMaker()
                 donor_leaves = maker([0], [dur])
-                indicators = abjad.inspect(tuplet[0]).indicators()
+                indicators = abjad.get.indicators(tuplet[0])
                 for indicator in indicators:
                     abjad.attach(indicator, donor_leaves[-1])
                 abjad.mutate.replace(tuplet, donor_leaves[:])
@@ -758,7 +758,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
     for i, _ in enumerate(offsets[:-1]):
         offset_pair = [offsets[i], offsets[i + 1]]
         offset_pairs.append(offset_pair)
-    initial_offset = abjad.inspect(components[0]).timespan().start_offset
+    initial_offset = abjad.get.timespan(components[0]).start_offset
     for i, pair in enumerate(offset_pairs):
         for i_, item in enumerate(pair):
             offset_pairs[i][i_] = item + initial_offset
@@ -769,10 +769,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 
     tup_list = [tup for tup in abjad.select(components).components(abjad.Tuplet)]
     for t in tup_list:
-        if (
-            isinstance(abjad.inspect(t).parentage().components[1], abjad.Tuplet)
-            is False
-        ):
+        if isinstance(abjad.get.parentage(t).components[1], abjad.Tuplet) is False:
             abjad.beam(
                 t[:],
                 beam_rests=include_rests,
@@ -785,10 +782,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 
     non_tup_list = []
     for leaf in abjad.select(components).leaves():
-        if (
-            isinstance(abjad.inspect(leaf).parentage().components[1], abjad.Tuplet)
-            is False
-        ):
+        if isinstance(abjad.get.parentage(leaf).components[1], abjad.Tuplet) is False:
             non_tup_list.append(leaf)
 
     beamed_groups = []
@@ -800,12 +794,10 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
             abjad.select(non_tup_list[:])
             .leaves()
             .group_by(
-                predicate=lambda x: abjad.inspect(x)
-                .timespan()
-                .happens_during_timespan(span)
+                predicate=lambda x: abjad.get.timespan(x).happens_during_timespan(span)
             )
         ):
-            if abjad.inspect(group).timespan().happens_during_timespan(span) is True:
+            if abjad.get.timespan(group).happens_during_timespan(span) is True:
                 beamed_groups[i].append(group[:])
 
     for subgroup in beamed_groups:
