@@ -451,16 +451,16 @@ def tonnetz(chord, chord_quality, transforms):
             if chord_quality == "major":
                 chord_quality = "minor"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 returned_list.append(i)
             elif chord_quality == "minor":
                 chord_quality = "major"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 returned_list.append(i)
@@ -470,8 +470,8 @@ def tonnetz(chord, chord_quality, transforms):
             if chord_quality == "major":
                 chord_quality = "minor"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 il = i.multiply("5/4")
@@ -480,8 +480,8 @@ def tonnetz(chord, chord_quality, transforms):
             elif chord_quality == "minor":
                 chord_quality = "major"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 il = i.multiply("4/5")
@@ -493,8 +493,8 @@ def tonnetz(chord, chord_quality, transforms):
             if chord_quality == "major":
                 chord_quality = "minor"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 ir = i.multiply("5/6")
@@ -503,8 +503,8 @@ def tonnetz(chord, chord_quality, transforms):
             elif chord_quality == "minor":
                 chord_quality = "major"
                 target = returned_list[-1]
-                i = target.invert()
-                i = i.multiply((target[0] * quicktions.Fraction(3, 2)) * target[0])
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
                 i = i.constrain_to_octave()
                 i = i.retrograde()
                 ir = i.multiply("6/5")
