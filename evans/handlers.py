@@ -2211,13 +2211,13 @@ class PitchHandler(Handler):
                 e'4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
-                e''4
+                e'''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
-                a'4
+                a''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
-                c''4
+                c'''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 d''4
@@ -2228,21 +2228,14 @@ class PitchHandler(Handler):
                 \tweak Accidental.text \abjad-natural
                 c''4
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
-                g''4
+                \tweak Accidental.text \natural-one-syntonic-comma-down
+                e'''4
+                \tweak Accidental.stencil #ly:text-interface::print
+                \tweak Accidental.text \one-tridecimal-third-tone-down
+                d'''4
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
-                f''4
-                \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \markup {
-                    \concat
-                        {
-                            \one-septimal-comma-down
-                            \hspace #0.125
-                            \abjad-flat
-                        }
-                    }
-                bf''4
+                g'''4
             }
 
     """
