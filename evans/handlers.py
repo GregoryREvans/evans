@@ -2689,15 +2689,8 @@ class TextSpanHandler(Handler):
             {
                 c'4
                 - \abjad-dashed-line-with-arrow
-                - \tweak bound-details.left.text \markup {
-                    \concat
-                        {
-                            \upright
-                                pont.
-                            \hspace
-                                #0.5
-                        }
-                    }
+                - \tweak bound-details.left.text \markup \concat { \upright
+                    pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 1.4
                 - \tweak staff-padding #1.5
                 \startTextSpanOne
@@ -2705,15 +2698,8 @@ class TextSpanHandler(Handler):
                 c'4
                 \stopTextSpanOne
                 - \abjad-dashed-line-with-hook
-                - \tweak bound-details.left.text \markup {
-                    \concat
-                        {
-                            \upright
-                                pont.
-                            \hspace
-                                #0.5
-                        }
-                    }
+                - \tweak bound-details.left.text \markup \concat { \upright
+                    pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 3
                 - \tweak staff-padding #1.5
                 \startTextSpanOne

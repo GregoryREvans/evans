@@ -13,7 +13,8 @@ triads = evans.tonnetz(
 for chord in triads:
     staff = abjad.Staff([abjad.Note("c'8") for pitch in chord])
     for pitch, note in zip(chord, staff):
-        m = microtones.tune_to_ratio(note.note_head, pitch, return_cent_markup=True)
+        microtones.tune_to_ratio(note.note_head, pitch)
+        m = microtones.return_cent_deviation_markup(pitch="c'", ratio=pitch, tonic="e")
         abjad.attach(m, note)
     abjad.attach(abjad.Clef("treble"), staff[0])
     abjad.attach(abjad.TimeSignature((6, 4)), staff[0])
