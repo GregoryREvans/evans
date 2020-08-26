@@ -4,10 +4,29 @@ from abjadext import microtones
 
 score = abjad.Score()
 
-source = microtones.RatioSegment([1, "5/4", "3/2",])
+source = microtones.RatioSegment(
+    [
+        1,
+        "5/4",
+        "3/2",
+    ]
+)
 
 triads = evans.tonnetz(
-    source, "major", ["p", "h", "s", "n", "p", "l", "r", "r", "l", "l",]
+    source,
+    "major",
+    [
+        "p",
+        "h",
+        "s",
+        "n",
+        "p",
+        "l",
+        "r",
+        "r",
+        "l",
+        "l",
+    ],
 )
 
 for chord in triads:

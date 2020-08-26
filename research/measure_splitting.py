@@ -9,12 +9,32 @@ for sig, sk in zip(signatures, skips):
 sig_context = abjad.Staff(skips)
 maker = abjad.LeafMaker()
 selections = maker(pitches, durs)
-staff = abjad.Staff([abjad.Voice(selections, name="Voice 1",),], name="Staff 1",)
+staff = abjad.Staff(
+    [
+        abjad.Voice(
+            selections,
+            name="Voice 1",
+        ),
+    ],
+    name="Staff 1",
+)
 staff_2 = abjad.Staff(
-    [abjad.Voice(r"\times 4/5 {c'4 c'4 c'4 c'4 c'4} cs'2.", name="Voice 2",),],
+    [
+        abjad.Voice(
+            r"\times 4/5 {c'4 c'4 c'4 c'4 c'4} cs'2.",
+            name="Voice 2",
+        ),
+    ],
     name="Staff 2",
 )
-score = abjad.Score([sig_context, staff_2, staff,], name="score",)
+score = abjad.Score(
+    [
+        sig_context,
+        staff_2,
+        staff,
+    ],
+    name="score",
+)
 for voice in abjad.select(score).components(abjad.Voice):
     shards = abjad.mutate.split(voice[:], signatures)
     v = abjad.Voice(name=voice.name)
@@ -23,7 +43,9 @@ for voice in abjad.select(score).components(abjad.Voice):
     shards_ = abjad.mutate.split(score[voice.name][:], signatures)
     for i, shard_ in enumerate(shards_):
         abjad.Meter.rewrite_meter(
-            shard_, signatures[i], rewrite_tuplets=False,
+            shard_,
+            signatures[i],
+            rewrite_tuplets=False,
         )
 
 for voice in abjad.select(score).components(abjad.Voice):

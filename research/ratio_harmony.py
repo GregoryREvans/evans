@@ -17,7 +17,9 @@ print("calculating combination tones")
 ratios_to_hertz = [fundamental_hertz * Fraction(ratio) for ratio in ratios]
 
 combination_ratios = evans.herz_combination_tone_ratios(
-    fundamental=fundamental_hertz, pitches=ratios_to_hertz, depth=1,
+    fundamental=fundamental_hertz,
+    pitches=ratios_to_hertz,
+    depth=1,
 )
 combination_ratios = [
     "1/2",
@@ -44,7 +46,11 @@ for ratio, leaf in zip(combination_ratios, abjad.select(staff_2).leaves()):
     mark = abjad.Markup(ratio, direction=abjad.Up)
     abjad.attach(mark, leaf)
 print("handling clefs")
-handler = evans.ClefHandler(clef="bass", add_extended_clefs=True, add_ottavas=True,)
+handler = evans.ClefHandler(
+    clef="bass",
+    add_extended_clefs=True,
+    add_ottavas=True,
+)
 handler(staff_1)
 handler(staff_2)
 print("preparing score")
@@ -76,7 +82,9 @@ print("calculating combination tones")
 ratios_to_hertz = [fundamental_hertz * Fraction(ratio) for ratio in ratios]
 
 combination_ratios = evans.herz_combination_tone_ratios(
-    fundamental=fundamental_hertz, pitches=ratios_to_hertz, depth=1,
+    fundamental=fundamental_hertz,
+    pitches=ratios_to_hertz,
+    depth=1,
 )
 combination_ratios = [
     "1",
@@ -98,7 +106,11 @@ for ratio, leaf in zip(combination_ratios, abjad.select(staff_2).leaves()):
     mark = abjad.Markup(ratio, direction=abjad.Up)
     abjad.attach(mark, leaf)
 print("handling clefs")
-handler = evans.ClefHandler(clef="bass", add_extended_clefs=True, add_ottavas=True,)
+handler = evans.ClefHandler(
+    clef="bass",
+    add_extended_clefs=True,
+    add_ottavas=True,
+)
 handler(staff_1)
 handler(staff_2)
 print("preparing score")

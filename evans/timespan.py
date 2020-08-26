@@ -799,5 +799,9 @@ def intercalate_silences(rhythm_command_list, voice_names=None):
         for timespan in timespan_list:
             silences -= timespan
         for timespan in silences:
-            new_command = RhythmCommand(voice_name, timespan, silence_maker,)
+            new_command = RhythmCommand(
+                voice_name,
+                timespan,
+                silence_maker,
+            )
             rhythm_command_list.append(new_command)

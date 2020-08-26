@@ -531,7 +531,12 @@ class TimespanCollection(AbjadObject):
             return result
 
         results = recurse(self._root_node, timespan)
-        results.sort(key=lambda x: (x.start_offset, x.stop_offset,))
+        results.sort(
+            key=lambda x: (
+                x.start_offset,
+                x.stop_offset,
+            )
+        )
         return tuple(results)
 
     def get_simultaneity_at(self, offset):

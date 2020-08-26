@@ -13,7 +13,9 @@ fundamental_hertz = fundamental_pitch.hertz
 ratios_1 = ["1/1", "2/1", "3/2", "5/3", "8/5", "13/8", "21/13"]
 ratios_to_hertz_1 = [fundamental_hertz * Fraction(ratio) for ratio in ratios_1]
 combination_ratios_1 = evans.herz_combination_tone_ratios(
-    fundamental=fundamental_hertz, pitches=ratios_to_hertz_1, depth=1,
+    fundamental=fundamental_hertz,
+    pitches=ratios_to_hertz_1,
+    depth=1,
 )
 combination_ratios_1 = [
     "5/8",

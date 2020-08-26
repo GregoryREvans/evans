@@ -87,7 +87,10 @@ def attach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="attach", indicator=indicator, selector=selector, voice_name=voice_name,
+        command="attach",
+        indicator=indicator,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 
@@ -95,7 +98,10 @@ def detach(voice_name, indicator, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="detach", indicator=indicator, selector=selector, voice_name=voice_name,
+        command="detach",
+        indicator=indicator,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 
@@ -103,7 +109,10 @@ def replace(voice_name, contents, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="replace", contents=contents, selector=selector, voice_name=voice_name,
+        command="replace",
+        contents=contents,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 
@@ -111,7 +120,10 @@ def call(voice_name, callable, selector=None):
     if selector is None:
         selector = abjad.select().leaf(0)
     return Command(
-        command="call", callable=callable, selector=selector, voice_name=voice_name,
+        command="call",
+        callable=callable,
+        selector=selector,
+        voice_name=voice_name,
     )
 
 

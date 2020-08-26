@@ -295,13 +295,17 @@ class BisbigliandoHandler(Handler):
         if boolean_vector is None:
             boolean_vector = [1]
         self.boolean_vector = sequence.CyclicList(
-            boolean_vector, forget=forget, count=bool_count,
+            boolean_vector,
+            forget=forget,
+            count=bool_count,
         )
         self.forget = forget
         if fingering_list is None:
             fingering_list = [None]
         self.fingering_list = sequence.CyclicList(
-            fingering_list, forget=forget, count=bis_count,
+            fingering_list,
+            forget=forget,
+            count=bis_count,
         )
         self.name = name
         self.padding = padding
@@ -1014,7 +1018,9 @@ class DynamicHandler(Handler):
                                 )  # attach to anchor
                         flare_value = self._cyc_flare_boolean_vector(r=1)[0]
                         calculated_hairpin = self._calculate_hairpin(
-                            start, stop, flared=flare_value,
+                            start,
+                            stop,
+                            flared=flare_value,
                         )
                         hairpin = abjad.StartHairpin(calculated_hairpin)
                         abjad.hairpin([start, hairpin, stop], run)
@@ -1505,7 +1511,10 @@ class GlissandoHandler(Handler):
                             if len(run) > 1:
                                 t = abjad.tweak(self.line_style).style
                                 abjad.glissando(
-                                    run[:], t, allow_repeats=True, allow_ties=False,
+                                    run[:],
+                                    t,
+                                    allow_repeats=True,
+                                    allow_ties=False,
                                 )
                             else:
                                 continue
@@ -1516,7 +1525,9 @@ class GlissandoHandler(Handler):
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
                                 abjad.glissando(
-                                    run[:], allow_repeats=True, allow_ties=False,
+                                    run[:],
+                                    allow_repeats=True,
+                                    allow_ties=False,
                                 )
                             else:
                                 continue
