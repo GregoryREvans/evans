@@ -512,8 +512,284 @@ def tonnetz(chord, chord_quality, transforms):
                 returned_list.append(ir)
             else:
                 raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l7":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("7/4")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("4/7")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r7":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("7/12")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("12/7")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l11":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("11/8")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("8/11")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r11":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("11/12")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("12/11")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l13":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("13/8")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("8/13")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r13":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("13/24")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("24/13")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l17":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("17/16")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("16/17")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r17":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("17/24")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("24/17")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l19":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("19/16")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("16/19")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r19":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("19/24")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("24/19")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "l23":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("23/16")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                il = i.multiply("16/23")
+                il = il.constrain_to_octave()
+                returned_list.append(il)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
+        elif transform == "r23":
+            if chord_quality == "major":
+                chord_quality = "minor"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("23/24")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            elif chord_quality == "minor":
+                chord_quality = "major"
+                target = returned_list[-1]
+                i = target.invert(target[0])
+                i = i.multiply("3/2")
+                i = i.constrain_to_octave()
+                i = i.retrograde()
+                ir = i.multiply("24/23")
+                ir = ir.constrain_to_octave()
+                returned_list.append(ir)
+            else:
+                raise Exception(f"Unrecogized chord quality {chord_quality}")
         else:
             raise Exception(
-                f"Transform '{transform}' not recognized. Use p, l, r, s, h, or, n."
+                f"Transform '{transform}' not recognized. Use p, l, l7, l11, l13, l17, l19, l23, r, r7, r11, r13, r17, r19, r23, s, h, or, n."
             )
     return returned_list
