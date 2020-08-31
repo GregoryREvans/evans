@@ -422,6 +422,162 @@ def tonnetz(chord, chord_quality, transforms):
         (5/4, 3/2, 15/8)
         (3/2, 15/8, 9/8)
 
+    ..  container:: example
+
+        >>> source = ["1/1", "5/4", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l", "r"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 5/4, 3/2)
+        (1, 6/5, 3/2)
+        (4/5, 1, 6/5)
+        (2/3, 4/5, 1)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "12/7", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l7", "r7"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 12/7, 3/2)
+        (1, 7/8, 3/2)
+        (7/4, 3/2, 21/16)
+        (3/2, 21/16, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "7/4", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l7", "r7"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 7/4, 3/2)
+        (1, 6/7, 3/2)
+        (4/7, 1, 6/7)
+        (2/3, 4/7, 1/2)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "12/11", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l11", "r11"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 12/11, 3/2)
+        (1, 11/8, 3/2)
+        (11/8, 3/2, 33/32)
+        (3/2, 33/32, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "11/8", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l11", "r11"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 11/8, 3/2)
+        (1, 12/11, 3/2)
+        (8/11, 1, 12/11)
+        (2/3, 8/11, 1)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "24/13", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l13", "r13"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 24/13, 3/2)
+        (1, 13/16, 3/2)
+        (13/8, 3/2, 39/32)
+        (3/2, 39/32, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "13/8", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l13", "r13"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 13/8, 3/2)
+        (1, 12/13, 3/2)
+        (8/13, 1, 12/13)
+        (2/3, 8/13, 1/2)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "24/17", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l17", "r17"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 24/17, 3/2)
+        (1, 17/16, 3/2)
+        (17/16, 3/2, 51/32)
+        (3/2, 51/32, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "17/16", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l17", "r17"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 17/16, 3/2)
+        (1, 24/17, 3/2)
+        (16/17, 1, 24/17)
+        (2/3, 16/17, 1)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "24/19", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l19", "r19"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 24/19, 3/2)
+        (1, 19/16, 3/2)
+        (19/16, 3/2, 57/32)
+        (3/2, 57/32, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "19/16", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l19", "r19"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 19/16, 3/2)
+        (1, 24/19, 3/2)
+        (16/19, 1, 24/19)
+        (2/3, 16/19, 1)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "24/23", "3/2"]
+        >>> triads = evans.tonnetz(source, "minor", ["p", "l23", "r23"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 24/23, 3/2)
+        (1, 23/16, 3/2)
+        (23/16, 3/2, 69/64)
+        (3/2, 69/64, 9/8)
+
+    ..  container:: example
+
+        >>> source = ["1/1", "23/16", "3/2"]
+        >>> triads = evans.tonnetz(source, "major", ["p", "l23", "r23"])
+        >>> for triad in triads:
+        ...     print(triad)
+        ...
+        (1, 23/16, 3/2)
+        (1, 24/23, 3/2)
+        (16/23, 1, 24/23)
+        (2/3, 16/23, 1)
+
     """
     chord = microtones.RatioSegment(chord)
     chord = chord.constrain_to_octave()
