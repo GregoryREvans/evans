@@ -45,6 +45,7 @@ from .metmod import (
 from .pitch import (
     combination_tones,
     herz_combination_tone_ratios,
+    return_cent_markup,
     return_vertical_moment_ties,
     to_nearest_eighth_tone,
     to_nearest_quarter_tone,
@@ -52,6 +53,7 @@ from .pitch import (
     to_nearest_third_tone,
     to_nearest_twelfth_tone,
     tonnetz,
+    tune_to_ratio,
 )
 from .rtm import (
     RTMMaker,
@@ -206,6 +208,7 @@ __all__ = [
     "reproportion_chromatic_decimals",
     "reproportion_harmonics",
     "reproportion_scale",
+    "return_cent_markup",
     "return_vertical_moment_ties",
     "rotate",
     "rotate_tree",
@@ -218,5 +221,6 @@ __all__ = [
     "to_nearest_third_tone",
     "to_nearest_twelfth_tone",
     "tonnetz",
+    "tune_to_ratio",
     "warp",
 ]

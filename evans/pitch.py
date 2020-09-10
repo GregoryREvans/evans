@@ -1,6 +1,8 @@
 """
 Pitch functions.
 """
+import math
+
 import abjad
 import quicktions
 from abjadext import microtones
@@ -949,3 +951,44 @@ def tonnetz(chord, chord_quality, transforms):
                 f"Transform '{transform}' not recognized. Use p, l, l7, l11, l13, l17, l19, l23, r, r7, r11, r13, r17, r19, r23, s, h, or, n."
             )
     return returned_list
+
+
+def tune_to_ratio(
+    note_head,
+    ratio,
+):
+    ratio = quicktions.Fraction(ratio)
+    log_ratio = quicktions.Fraction(math.log10(ratio))
+    log_2 = quicktions.Fraction(1200 / math.log10(2))
+    ji_cents = quicktions.Fraction(log_ratio * log_2)
+    semitones = ji_cents / 100
+    parts = math.modf(semitones)
+    pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
+    remainder = round(parts[0] * 100)
+    if 50 < remainder:
+        pitch += 1
+        remainder = -100 + remainder
+    note_head.written_pitch = pitch
+
+
+def return_cent_markup(
+    note_head,
+    ratio,
+):
+    ratio = quicktions.Fraction(ratio)
+    log_ratio = quicktions.Fraction(math.log10(ratio))
+    log_2 = quicktions.Fraction(1200 / math.log10(2))
+    ji_cents = quicktions.Fraction(log_ratio * log_2)
+    semitones = ji_cents / 100
+    parts = math.modf(semitones)
+    pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
+    remainder = round(parts[0] * 100)
+    if 50 < remainder:
+        pitch += 1
+        remainder = -100 + remainder
+    if remainder < 0:
+        cent_string = f"{remainder}¢"
+    else:
+        cent_string = f"+{remainder}¢"
+    mark = abjad.Markup(cent_string, direction=abjad.Up).center_align()
+    return mark
