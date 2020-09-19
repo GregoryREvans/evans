@@ -1609,11 +1609,13 @@ class GraceHandler(Handler):
         boolean_vector=None,
         gesture_lengths=None,
         forget=True,
+        remove_skips=False,
         vector_count=-1,
         gesture_count=-1,
         name="Grace Handler",
     ):
         self.forget = forget
+        self.remove_skips = remove_skips
         self._vector_count = vector_count
         self._gesture_count = gesture_count
         self.boolean_vector = boolean_vector
@@ -1642,9 +1644,11 @@ class GraceHandler(Handler):
                             s = "c'16"
                             grace_list = grace_list + s
                             grace_list = grace_list + " "
-                            grace_list = grace_list + "s8.."
-                            grace_list = grace_list + " "
-                        grace_list = grace_list + "s2"
+                            if self.remove_skips is False:
+                                grace_list = grace_list + "s8.."
+                                grace_list = grace_list + " "
+                        if self.remove_skips is False:
+                            grace_list = grace_list + "s2"
                         grace = abjad.BeforeGraceContainer(
                             grace_list, command=r"\slashedGrace"
                         )
@@ -2214,39 +2218,87 @@ class PitchHandler(Handler):
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 c'4
+                ^ \markup {
+                    \center-align
+                        +0
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 g'4
+                ^ \markup {
+                    \center-align
+                        +2
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 e'4
+                ^ \markup {
+                    \center-align
+                        -14
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 e'''4
+                ^ \markup {
+                    \center-align
+                        -14
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 a''4
+                ^ \markup {
+                    \center-align
+                        -16
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 c'''4
+                ^ \markup {
+                    \center-align
+                        +0
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 d''4
+                ^ \markup {
+                    \center-align
+                        +4
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 e''4
+                ^ \markup {
+                    \center-align
+                        -14
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 c''4
+                ^ \markup {
+                    \center-align
+                        +0
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \natural-one-syntonic-comma-down
                 e'''4
+                ^ \markup {
+                    \center-align
+                        -14
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \one-tridecimal-third-tone-down
                 d'''4
+                ^ \markup {
+                    \center-align
+                        -61
+                    }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural
                 g'''4
+                ^ \markup {
+                    \center-align
+                        +2
+                    }
             }
 
     """
@@ -2279,13 +2331,19 @@ class PitchHandler(Handler):
         self._chord_boolean_count = chord_boolean_count
         self._chord_groups_count = chord_groups_count
         self._cyc_pitches = sequence.CyclicList(
-            self.pitch_list, self.forget, self._pitch_count
+            self.pitch_list,
+            self.forget,
+            self._pitch_count,
         )
         self._cyc_chord_boolean_vector = sequence.CyclicList(
-            self.chord_boolean_vector, self.forget, self._chord_boolean_count
+            self.chord_boolean_vector,
+            self.forget,
+            self._chord_boolean_count,
         )
         self._cyc_chord_groups = sequence.CyclicList(
-            self.chord_groups, self.forget, self._chord_groups_count
+            self.chord_groups,
+            self.forget,
+            self._chord_groups_count,
         )
 
     def __call__(self, selections):
@@ -2319,7 +2377,7 @@ class PitchHandler(Handler):
                 leaves.append(leaf)
         return pitches, durations, leaves
 
-    def _apply_pitches(self, selections):
+    def _apply_pitches(self, selections):  # get apply all to handler chords
         if self.as_ratios is True:
             self.apply_all = True
         leaf_maker = abjad.LeafMaker()
@@ -2369,6 +2427,7 @@ class PitchHandler(Handler):
             for index in microtonal_indices_to_pitch:
                 for leaf in abjad.select(new_leaves[int(index)]).leaves():
                     if isinstance(leaf, abjad.Chord):
+                        marks = []
                         heads = leaf.note_heads
                         for sub_index in microtonal_indices_to_pitch[index]:
                             head = heads[int(sub_index)]
@@ -2377,18 +2436,35 @@ class PitchHandler(Handler):
                                     head, microtonal_indices_to_pitch[index][sub_index]
                                 )
                             else:
+                                marks.append(
+                                    microtones.return_cent_deviation_markup(
+                                        microtonal_indices_to_pitch[index][sub_index]
+                                    )
+                                )
                                 microtones.tune_to_ratio(
                                     head, microtonal_indices_to_pitch[index][sub_index]
                                 )
+                        if 0 < len(marks):
+                            m = abjad.Markup.center_column(marks)
+                            if leaf is abjad.get.logical_tie(leaf).head:
+                                abjad.attach(m, leaf)
                     else:
                         if self.as_ratios is False:
-                            microtones.apply_alteration(
-                                leaf.note_head, microtonal_indices_to_pitch[index]
-                            )
+                            temp = microtonal_indices_to_pitch[index]
+                            if isinstance(temp, abjad.OrderedDict):
+                                temp = microtonal_indices_to_pitch[index]["1"]
+                            microtones.apply_alteration(leaf.note_head, temp)
                         else:
+                            temp = microtonal_indices_to_pitch[index]
+                            if isinstance(temp, abjad.OrderedDict):
+                                temp = microtonal_indices_to_pitch[index]["1"]
+                            m = microtones.return_cent_deviation_markup(temp)
                             microtones.tune_to_ratio(
-                                leaf.note_head, microtonal_indices_to_pitch[index]
+                                leaf.note_head,
+                                temp,
                             )
+                            if leaf is abjad.get.logical_tie(leaf).head:
+                                abjad.attach(m, leaf)
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.get.indicators(old_leaf)

@@ -646,6 +646,13 @@ def multiple_sequence(fundamental=20, number_of_partials=10, multiple=1.5):
     return returned_list
 
 
+def multiply_all(list_of_numbers):
+    x = 1
+    for _ in list_of_numbers:
+        x *= _
+    return x
+
+
 def multiply_sequences(x, y):
     """
 

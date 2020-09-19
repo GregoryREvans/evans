@@ -1,13 +1,14 @@
 """
 Pitch functions.
 """
+import itertools
 import math
 
 import abjad
 import quicktions
 from abjadext import microtones
 
-from .sequence import flatten
+from .sequence import flatten, multiply_all
 
 
 def combination_tones(pitches=[0, 5, 7], depth=1):
@@ -68,6 +69,13 @@ def combination_tones(pitches=[0, 5, 7], depth=1):
     return pitches
 
 
+def combination_multiples(bank, *, combination_size=2):
+    comb = set(_ for _ in itertools.combinations(bank, combination_size))
+    multiples = [multiply_all(_) for _ in comb]
+    segment = microtones.RatioSet(multiples).constrain_to_octave().sorted()
+    return segment
+
+
 def herz_combination_tone_ratios(
     fundamental=261.625565, pitches=[327.03195625, 392.43834749999996], depth=2
 ):
@@ -114,114 +122,27 @@ def herz_combination_tone_ratios(
     return returned_list
 
 
-def to_nearest_eighth_tone(number, frac=False):
-    """
-    Rounds number to nearest eighth
-
-    ..  container:: example
-
-        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
-        >>> l = [evans.to_nearest_eighth_tone(_, frac=True) for _ in l]
-        >>> l
-        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(9, 4), Fraction(13, 2), Fraction(29, 4), Fraction(29, 4)]
-
-    """
-    number = round(float(number) * 4) / 4
-    div, mod = divmod(number, 1)
-    if mod == 0.75:
-        div += 0.75
-    elif mod == 0.5:
-        div += 0.5
-    elif mod == 0.25:
-        div += 0.25
-    if frac is False:
-        return abjad.mathx.integer_equivalent_number_to_integer(div)
+def return_cent_markup(
+    note_head,
+    ratio,
+):
+    ratio = quicktions.Fraction(ratio)
+    log_ratio = quicktions.Fraction(math.log10(ratio))
+    log_2 = quicktions.Fraction(1200 / math.log10(2))
+    ji_cents = quicktions.Fraction(log_ratio * log_2)
+    semitones = ji_cents / 100
+    parts = math.modf(semitones)
+    pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
+    remainder = round(parts[0] * 100)
+    if 50 < remainder:
+        pitch += 1
+        remainder = -100 + remainder
+    if remainder < 0:
+        cent_string = f"{remainder}¢"
     else:
-        return quicktions.Fraction(
-            abjad.mathx.integer_equivalent_number_to_integer(div)
-        )
-
-
-def to_nearest_quarter_tone(number, frac=False):
-    """
-    Rounds number to nearest quarter
-
-    ..  container:: example
-
-        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
-        >>> l = [evans.to_nearest_quarter_tone(_, frac=True) for _ in l]
-        >>> l
-        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(2, 1), Fraction(13, 2), Fraction(7, 1), Fraction(7, 1)]
-
-    """
-    number = round(float(number) * 4) / 4
-    div, mod = divmod(number, 1)
-    if mod == 0.75:
-        div += 1
-    elif mod == 0.5:
-        div += 0.5
-    if frac is False:
-        return abjad.mathx.integer_equivalent_number_to_integer(div)
-    else:
-        return quicktions.Fraction(
-            abjad.mathx.integer_equivalent_number_to_integer(div)
-        )
-
-
-def to_nearest_sixth_tone(number):
-    """
-    Rounds number to nearest sixth
-
-    ..  container:: example
-
-        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
-        >>> l = [evans.to_nearest_sixth_tone(_) for _ in l]
-        >>> l
-        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(7, 3), Fraction(19, 3), Fraction(22, 3), Fraction(7, 1)]
-
-    """
-    semitones = quicktions.Fraction(int(round(6 * number)), 6)
-    if semitones.denominator == 6:
-        semitones = quicktions.Fraction(int(round(3 * number)), 3)
-    return semitones
-
-
-def to_nearest_third_tone(number):
-    """
-    Rounds number to nearest third
-
-    ..  container:: example
-
-        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
-        >>> l = [evans.to_nearest_third_tone(_) for _ in l]
-        >>> l
-        [Fraction(0, 1), Fraction(1, 1), Fraction(14, 3), Fraction(2, 1), Fraction(20, 3), Fraction(22, 3), Fraction(7, 1)]
-
-    """
-    semitones = quicktions.Fraction(int(round(3 * number)), 3)
-    if semitones.denominator == 3:
-        semitones = quicktions.Fraction(
-            int(round(quicktions.Fraction(3, 2) * number)), quicktions.Fraction(3, 2)
-        )
-    return semitones
-
-
-def to_nearest_twelfth_tone(number):
-    """
-    Rounds number to nearest twelfth
-
-    ..  container:: example
-
-        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
-        >>> l = [evans.to_nearest_twelfth_tone(_) for _ in l]
-        >>> l
-        [Fraction(0, 1), Fraction(7, 6), Fraction(9, 2), Fraction(9, 4), Fraction(19, 3), Fraction(22, 3), Fraction(43, 6)]
-
-    """
-    semitones = quicktions.Fraction(int(round(12 * number)), 12)
-    if semitones.denominator == 12:
-        semitones = quicktions.Fraction(int(round(6 * number)), 6)
-    return semitones
+        cent_string = f"+{remainder}¢"
+    mark = abjad.Markup(cent_string, direction=abjad.Up).center_align()
+    return mark
 
 
 def return_vertical_moment_ties(score):
@@ -408,6 +329,123 @@ def return_vertical_moment_ties(score):
     flat_moments = flatten(new_moments)
     flat_moments.sort(key=lambda _: abjad.get.timespan(_))
     return flat_moments
+
+
+def relative_ratios(integers):
+    integers.sort()
+    root = integers[0]
+    ratios = microtones.RatioSegment([f"{_}/{root}" for _ in integers])
+    return ratios
+
+
+def to_nearest_eighth_tone(number, frac=False):
+    """
+    Rounds number to nearest eighth
+
+    ..  container:: example
+
+        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
+        >>> l = [evans.to_nearest_eighth_tone(_, frac=True) for _ in l]
+        >>> l
+        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(9, 4), Fraction(13, 2), Fraction(29, 4), Fraction(29, 4)]
+
+    """
+    number = round(float(number) * 4) / 4
+    div, mod = divmod(number, 1)
+    if mod == 0.75:
+        div += 0.75
+    elif mod == 0.5:
+        div += 0.5
+    elif mod == 0.25:
+        div += 0.25
+    if frac is False:
+        return abjad.mathx.integer_equivalent_number_to_integer(div)
+    else:
+        return quicktions.Fraction(
+            abjad.mathx.integer_equivalent_number_to_integer(div)
+        )
+
+
+def to_nearest_quarter_tone(number, frac=False):
+    """
+    Rounds number to nearest quarter
+
+    ..  container:: example
+
+        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
+        >>> l = [evans.to_nearest_quarter_tone(_, frac=True) for _ in l]
+        >>> l
+        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(2, 1), Fraction(13, 2), Fraction(7, 1), Fraction(7, 1)]
+
+    """
+    number = round(float(number) * 4) / 4
+    div, mod = divmod(number, 1)
+    if mod == 0.75:
+        div += 1
+    elif mod == 0.5:
+        div += 0.5
+    if frac is False:
+        return abjad.mathx.integer_equivalent_number_to_integer(div)
+    else:
+        return quicktions.Fraction(
+            abjad.mathx.integer_equivalent_number_to_integer(div)
+        )
+
+
+def to_nearest_sixth_tone(number):
+    """
+    Rounds number to nearest sixth
+
+    ..  container:: example
+
+        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
+        >>> l = [evans.to_nearest_sixth_tone(_) for _ in l]
+        >>> l
+        [Fraction(0, 1), Fraction(1, 1), Fraction(9, 2), Fraction(7, 3), Fraction(19, 3), Fraction(22, 3), Fraction(7, 1)]
+
+    """
+    semitones = quicktions.Fraction(int(round(6 * number)), 6)
+    if semitones.denominator == 6:
+        semitones = quicktions.Fraction(int(round(3 * number)), 3)
+    return semitones
+
+
+def to_nearest_third_tone(number):
+    """
+    Rounds number to nearest third
+
+    ..  container:: example
+
+        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
+        >>> l = [evans.to_nearest_third_tone(_) for _ in l]
+        >>> l
+        [Fraction(0, 1), Fraction(1, 1), Fraction(14, 3), Fraction(2, 1), Fraction(20, 3), Fraction(22, 3), Fraction(7, 1)]
+
+    """
+    semitones = quicktions.Fraction(int(round(3 * number)), 3)
+    if semitones.denominator == 3:
+        semitones = quicktions.Fraction(
+            int(round(quicktions.Fraction(3, 2) * number)), quicktions.Fraction(3, 2)
+        )
+    return semitones
+
+
+def to_nearest_twelfth_tone(number):
+    """
+    Rounds number to nearest twelfth
+
+    ..  container:: example
+
+        >>> l = [0, 1.111, 4.5, 2.23, 6.4, 7.3, 7.15]
+        >>> l = [evans.to_nearest_twelfth_tone(_) for _ in l]
+        >>> l
+        [Fraction(0, 1), Fraction(7, 6), Fraction(9, 2), Fraction(9, 4), Fraction(19, 3), Fraction(22, 3), Fraction(43, 6)]
+
+    """
+    semitones = quicktions.Fraction(int(round(12 * number)), 12)
+    if semitones.denominator == 12:
+        semitones = quicktions.Fraction(int(round(6 * number)), 6)
+    return semitones
 
 
 def tonnetz(chord, chord_quality, transforms):
@@ -969,26 +1007,3 @@ def tune_to_ratio(
         pitch += 1
         remainder = -100 + remainder
     note_head.written_pitch = pitch
-
-
-def return_cent_markup(
-    note_head,
-    ratio,
-):
-    ratio = quicktions.Fraction(ratio)
-    log_ratio = quicktions.Fraction(math.log10(ratio))
-    log_2 = quicktions.Fraction(1200 / math.log10(2))
-    ji_cents = quicktions.Fraction(log_ratio * log_2)
-    semitones = ji_cents / 100
-    parts = math.modf(semitones)
-    pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
-    remainder = round(parts[0] * 100)
-    if 50 < remainder:
-        pitch += 1
-        remainder = -100 + remainder
-    if remainder < 0:
-        cent_string = f"{remainder}¢"
-    else:
-        cent_string = f"+{remainder}¢"
-    mark = abjad.Markup(cent_string, direction=abjad.Up).center_align()
-    return mark

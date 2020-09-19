@@ -557,7 +557,7 @@ class SegmentMaker:
         result = abjad.persist.as_pdf(
             score_file,
             pdf_path,
-            # strict=79,
+            align_tags=79,
         )
         success = result[3]
         if success is False:
