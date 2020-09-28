@@ -2291,7 +2291,7 @@ class PitchHandler(Handler):
                 d'''4
                 ^ \markup {
                     \center-align
-                        -61
+                        C♯+39
                     }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \abjad-natural

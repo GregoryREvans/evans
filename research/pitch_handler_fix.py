@@ -2,7 +2,6 @@ import abjad
 import evans
 from abjadext import microtones
 
-
 # from abjadext.microtones import RatioSegment
 
 segment_one = microtones.PitchSegment(
