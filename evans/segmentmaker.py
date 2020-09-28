@@ -163,7 +163,7 @@ class SegmentMaker:
         if self.names is not None:
             names = []
             nm = self.names
-            mark_names = [abjad.Markup(_) for _ in nm]
+            mark_names = [abjad.Markup(_, literal=True) for _ in nm]
             for x in mark_names:
                 x.hcenter_in(14)
                 names.append(abjad.StartMarkup(markup=x))
@@ -225,7 +225,7 @@ class SegmentMaker:
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
-            abjad.iterpitches.transpose_from_sounding_pitch(voice)
+            # abjad.iterpitches.transpose_from_sounding_pitch(voice)
             handler(voice)
 
     def _add_ending_skips(self):

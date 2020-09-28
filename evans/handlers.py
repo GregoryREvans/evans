@@ -8,6 +8,7 @@ import quicktions
 from abjadext import microtones
 
 from . import sequence
+from .pitch import return_cent_markup, tune_to_ratio
 
 
 class Handler:
@@ -2389,8 +2390,8 @@ class PitchHandler(Handler):
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
                     _.sort()
+                    nested_indices_to_pitch = abjad.OrderedDict()
                     for i_, sub_ in enumerate(_):
-                        nested_indices_to_pitch = abjad.OrderedDict()
                         if self.apply_all is False:
                             if isinstance(sub_, str):
                                 val = abjad.NumberedPitch(sub_).number
@@ -2424,6 +2425,24 @@ class PitchHandler(Handler):
                 new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
             else:
                 new_leaves = old_leaves
+                for i, pair in enumerate(
+                    zip(new_leaves, microtonal_indices_to_pitch.values())
+                ):
+                    leaf, pitch = pair
+                    if isinstance(pitch, abjad.OrderedDict):
+                        replacement_chord = abjad.Chord()
+                        replacement_chord.written_duration = leaf.written_duration
+                        replacement_chord.note_heads = abjad.NoteHeadList(
+                            [abjad.NoteHead(leaf.written_pitch) for _ in pair[1]]
+                        )
+                        indicators = abjad.get.indicators(leaf)
+                        before_grace = abjad.get.before_grace_container(leaf)
+                        for indicator in indicators:
+                            abjad.attach(indicator, replacement_chord)
+                        if before_grace is not None:
+                            abjad.attach(before_grace, replacement_chord)
+                        abjad.mutate.replace(leaf, replacement_chord)
+                        new_leaves[i] = replacement_chord
             for index in microtonal_indices_to_pitch:
                 for leaf in abjad.select(new_leaves[int(index)]).leaves():
                     if isinstance(leaf, abjad.Chord):
@@ -2436,16 +2455,32 @@ class PitchHandler(Handler):
                                     head, microtonal_indices_to_pitch[index][sub_index]
                                 )
                             else:
-                                marks.append(
-                                    microtones.return_cent_deviation_markup(
-                                        microtonal_indices_to_pitch[index][sub_index]
+                                ratio = microtonal_indices_to_pitch[index][sub_index]
+                                factors = []
+                                for _ in microtones.ji._prime_factors(
+                                    quicktions.Fraction(ratio).numerator
+                                ):
+                                    factors.append(_)
+                                for _ in microtones.ji._prime_factors(
+                                    quicktions.Fraction(ratio).denominator
+                                ):
+                                    factors.append(_)
+                                over_23 = 0
+                                if 0 < len(factors):
+                                    over_23 = max(factors)
+                                if 23 < over_23:
+                                    marks.append(return_cent_markup(head, ratio))
+                                    tune_to_ratio(head, ratio)
+                                else:
+                                    marks.append(
+                                        microtones.return_cent_deviation_markup(
+                                            ratio, head.written_pitch
+                                        )
                                     )
-                                )
-                                microtones.tune_to_ratio(
-                                    head, microtonal_indices_to_pitch[index][sub_index]
-                                )
+                                    microtones.tune_to_ratio(head, ratio)
                         if 0 < len(marks):
-                            m = abjad.Markup.center_column(marks)
+                            column = abjad.Markup.center_column(marks[::-1])
+                            m = abjad.Markup(column, direction=abjad.Up).center_align()
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf)
                     else:
@@ -2458,11 +2493,30 @@ class PitchHandler(Handler):
                             temp = microtonal_indices_to_pitch[index]
                             if isinstance(temp, abjad.OrderedDict):
                                 temp = microtonal_indices_to_pitch[index]["1"]
-                            m = microtones.return_cent_deviation_markup(temp)
-                            microtones.tune_to_ratio(
-                                leaf.note_head,
-                                temp,
-                            )
+                            factors = []
+                            for _ in microtones.ji._prime_factors(
+                                quicktions.Fraction(temp).numerator
+                            ):
+                                factors.append(_)
+                            for _ in microtones.ji._prime_factors(
+                                quicktions.Fraction(temp).denominator
+                            ):
+                                factors.append(_)
+                            over_23 = 0
+                            if 0 < len(factors):
+                                over_23 = max(factors)
+                            if 23 < over_23:
+                                m = return_cent_markup(leaf.note_head, temp)
+                                tune_to_ratio(leaf.note_head, temp)
+                            else:
+                                m = microtones.return_cent_deviation_markup(
+                                    temp,
+                                    leaf.note_head.written_pitch,
+                                )
+                                microtones.tune_to_ratio(
+                                    leaf.note_head,
+                                    temp,
+                                )
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf)
             if self.apply_all is False:
@@ -3125,7 +3179,12 @@ class TrillHandler(Handler):
     """
 
     def __init__(
-        self, boolean_vector=[0], forget=False, count=-1, name="Trill Handler"
+        self,
+        boolean_vector=[0],
+        forget=False,
+        count=-1,
+        name="Trill Handler",
+        only_chords=False,
     ):
         self.forget = forget
         self._count = count
@@ -3133,12 +3192,16 @@ class TrillHandler(Handler):
             boolean_vector, self.forget, self._count
         )
         self.name = name
+        self.only_chords = only_chords
 
     def __call__(self, selections):
         self._apply_trills(selections)
 
     def _apply_trills(self, selections):
         ties = abjad.select(selections).logical_ties(pitched=True)
+        if self.only_chords:
+            chords = abjad.select(selections).components(abjad.Chord)
+            ties = abjad.select(chords).logical_ties(pitched=True)
         vector = self.boolean_vector
         for tie, bool in zip(ties, vector(r=len(ties))):
             if bool == 1:
@@ -3186,10 +3249,6 @@ class TrillHandler(Handler):
                             abjad.attach(before_grace, new_tail)
                         parent = abjad.get.parentage(leaf).parent
                         parent[parent.index(leaf)] = new_tail
-                else:
-                    continue
-            else:
-                continue
 
     def name(self):
         return self.name

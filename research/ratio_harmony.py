@@ -1,8 +1,7 @@
 import abjad
+import evans
 from abjadext import microtones
 from quicktions import Fraction
-
-from .. import evans
 
 print("calculating basic ratios")
 fundamental_pitch = abjad.NumberedPitch(-9)
@@ -59,8 +58,8 @@ print("preparing file")
 lilypond_file = abjad.LilyPondFile.new(
     score,
     includes=[
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily",
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/microtones/ekmelos-ji-accidental-markups.ily",
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily",
     ],
 )
 style = '"dodecaphonic"'
@@ -119,8 +118,8 @@ print("preparing file")
 lilypond_file = abjad.LilyPondFile.new(
     score,
     includes=[
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily",
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/microtones/ekmelos-ji-accidental-markups.ily",
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        "/Users/evansdsg2/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily",
     ],
 )
 style = '"dodecaphonic"'

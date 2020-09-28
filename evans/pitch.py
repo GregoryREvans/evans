@@ -134,13 +134,17 @@ def return_cent_markup(
     parts = math.modf(semitones)
     pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
     remainder = round(parts[0] * 100)
-    if 50 < remainder:
-        pitch += 1
-        remainder = -100 + remainder
+    if 50 < abs(remainder):
+        if 0 < remainder:
+            pitch += 1
+            remainder = -100 + remainder
+        else:
+            pitch -= 1
+            remainder = 100 + remainder
     if remainder < 0:
-        cent_string = f"{remainder}¢"
+        cent_string = f"{remainder}"
     else:
-        cent_string = f"+{remainder}¢"
+        cent_string = f"+{remainder}"
     mark = abjad.Markup(cent_string, direction=abjad.Up).center_align()
     return mark
 
