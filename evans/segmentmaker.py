@@ -146,9 +146,11 @@ class SegmentMaker:
 
     def _add_attachments(self):
         print("Adding attachments ...")
-        last_voice = abjad.select(self.score_template).components(abjad.Voice)[-1]
-        colophon_leaf = abjad.select(last_voice).leaves()[-2]
         if self.colophon is not None:
+            last_voice = abjad.select(self.score_template).components(abjad.Voice)[
+                -1
+            ]  #
+            colophon_leaf = abjad.select(last_voice).leaves()[-2]  #
             abjad.attach(self.colophon, colophon_leaf)
 
         if self.abbreviations is not None:
@@ -192,7 +194,7 @@ class SegmentMaker:
         bar_line = abjad.BarLine(self.barline)
         if self.barline is not None:
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Voice
+                abjad.Staff  # was Voice
             ):
                 if self.barline == "|.":
                     last_leaf = abjad.select(voice).leaves()[-1]
@@ -206,7 +208,9 @@ class SegmentMaker:
             names,
             self.instruments,
             self.clef_handlers,
-            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice),
+            abjad.select(self.score_template["Staff Group"]).components(
+                abjad.Staff
+            ),  # was Voice
         ):
             first_leaf = abjad.select(voice).leaves()[0]
             if self.name_staves is True:
@@ -343,7 +347,9 @@ class SegmentMaker:
         print("Caching persistent info ...")
         info = abjad.OrderedDict()
         for i, voice in enumerate(
-            abjad.select(self.score_template["Staff Group"]).components(abjad.Voice)
+            abjad.select(self.score_template["Staff Group"]).components(
+                abjad.Staff
+            )  # was Voice
         ):
             penultimate_rest = abjad.select(voice).leaves()[-2]
             persistent_attachments = abjad.get.indicators(penultimate_rest)
@@ -471,7 +477,7 @@ class SegmentMaker:
     def _make_mm_rests(self):
         print("Making MM rests ...")
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-            abjad.Voice
+            abjad.Staff  # was Voice
         ):
             leaves = abjad.select(voice).leaves(grace=False)
             shards = abjad.mutate.split(leaves, self.time_signatures)

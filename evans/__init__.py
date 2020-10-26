@@ -17,6 +17,7 @@ from .consort import (
     RatioPartsExpression,
     TimespanCollection,
     TimespanSimultaneity,
+    iterate_nwise,
 )
 from .handlers import (
     ArticulationHandler,
@@ -184,6 +185,7 @@ __all__ = [
     "hexagonal_sequence",
     "human_sorted_keys",
     "intercalate_silences",
+    "iterate_nwise",
     "josephus",
     "lindenmayer",
     "make_showable_list",

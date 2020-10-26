@@ -2304,11 +2304,12 @@ class PitchHandler(Handler):
 
     """
 
-    def __init__(
+    def __init__(  # for apply all add a sharp/flat/none keyword
         self,
         pitch_list=None,
         allow_chord_duplicates=False,
         apply_all=False,
+        apply_all_spelling=None,
         as_ratios=False,
         chord_boolean_vector=[0],
         chord_groups=None,
@@ -2322,6 +2323,7 @@ class PitchHandler(Handler):
         self.pitch_list = pitch_list
         self.allow_chord_duplicates = allow_chord_duplicates
         self.apply_all = apply_all
+        self.apply_all_spelling = apply_all_spelling
         self.as_ratios = as_ratios
         self.chord_boolean_vector = chord_boolean_vector
         self.chord_groups = chord_groups
@@ -2452,7 +2454,9 @@ class PitchHandler(Handler):
                             head = heads[int(sub_index)]
                             if self.as_ratios is False:
                                 microtones.apply_alteration(
-                                    head, microtonal_indices_to_pitch[index][sub_index]
+                                    head,
+                                    microtonal_indices_to_pitch[index][sub_index],
+                                    spell=self.apply_all_spelling,
                                 )
                             else:
                                 ratio = microtonal_indices_to_pitch[index][sub_index]
@@ -2488,7 +2492,11 @@ class PitchHandler(Handler):
                             temp = microtonal_indices_to_pitch[index]
                             if isinstance(temp, abjad.OrderedDict):
                                 temp = microtonal_indices_to_pitch[index]["1"]
-                            microtones.apply_alteration(leaf.note_head, temp)
+                            microtones.apply_alteration(
+                                leaf.note_head,
+                                temp,
+                                spell=self.apply_all_spelling,
+                            )
                         else:
                             temp = microtonal_indices_to_pitch[index]
                             if isinstance(temp, abjad.OrderedDict):
