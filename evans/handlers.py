@@ -765,6 +765,8 @@ class DynamicHandler(Handler):
         effort_forget=False,
         with_constante_hairpins=True,
         forget=False,
+        terminating_dynamic_markup=False,
+        terminating_dynamic_markup_boolean_vector=[1],
         count_1=-1,
         count_2=-1,
         count_3=-1,
@@ -783,25 +785,44 @@ class DynamicHandler(Handler):
         self.effort_forget = effort_forget
         self.with_constante_hairpins = with_constante_hairpins
         self.forget = forget
+        self.terminating_dynamic_markup = terminating_dynamic_markup
+        self.terminating_dynamic_markup_boolean_vector = (
+            terminating_dynamic_markup_boolean_vector
+        )
         self._count_1 = count_1
         self._count_2 = count_2
         self._count_3 = count_3
         self._count_4 = count_4
         self._count_5 = count_5
         self._cyc_dynamics = sequence.CyclicList(
-            dynamic_list, self.forget, self._count_1
+            dynamic_list,
+            self.forget,
+            self._count_1,
         )
         self._cyc_flare_boolean_vector = sequence.CyclicList(
-            flare_boolean_vector, self.flare_forget, self._count_2
+            flare_boolean_vector,
+            self.flare_forget,
+            self._count_2,
         )
         self._cyc_hold_first_boolean_vector = sequence.CyclicList(
-            hold_first_boolean_vector, self.hold_first_forget, self._count_3
+            hold_first_boolean_vector,
+            self.hold_first_forget,
+            self._count_3,
         )
         self._cyc_hold_last_boolean_vector = sequence.CyclicList(
-            hold_last_boolean_vector, self.hold_last_forget, self._count_4
+            hold_last_boolean_vector,
+            self.hold_last_forget,
+            self._count_4,
         )
         self._cyc_effort_boolean_vector = sequence.CyclicList(
-            effort_boolean_vector, self.effort_forget, self._count_5
+            effort_boolean_vector,
+            self.effort_forget,
+            self._count_5,
+        )
+        self._terminating_dynamic_boolean_vector = sequence.CyclicList(
+            terminating_dynamic_markup_boolean_vector,
+            False,
+            -1,
         )
         self.name = name
 
@@ -958,6 +979,38 @@ class DynamicHandler(Handler):
                         abjad.attach(stop, run[-1])
                     else:
                         abjad.hairpin([start, hairpin, stop], run)
+                        if self.terminating_dynamic_markup is True:  # NEW
+                            markup_val = self._terminating_dynamic_boolean_vector(r=1)[
+                                0
+                            ]
+                            if markup_val == 1:
+                                if start.ordinal < stop.ordinal:
+                                    mark_text = (
+                                        abjad.Markup(
+                                            f"cresc. a {stop.name}",
+                                            direction=abjad.Down,
+                                        )
+                                        .small()
+                                        .whiteout()
+                                        .box()
+                                        .italic()
+                                        .override(("box-padding", 0.5))
+                                        .override(("style", "box"))
+                                    )
+                                else:
+                                    mark_text = (
+                                        abjad.Markup(
+                                            f"dim. a {stop.name}",
+                                            direction=abjad.Down,
+                                        )
+                                        .small()
+                                        .whiteout()
+                                        .box()
+                                        .italic()
+                                        .override(("box-padding", 0.5))
+                                        .override(("style", "box"))
+                                    )
+                                abjad.attach(mark_text, abjad.select(run).leaf(0))
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
                     if hold_last == 1:
@@ -1025,6 +1078,38 @@ class DynamicHandler(Handler):
                         )
                         hairpin = abjad.StartHairpin(calculated_hairpin)
                         abjad.hairpin([start, hairpin, stop], run)
+                        if self.terminating_dynamic_markup is True:  # NEW
+                            markup_val = self._terminating_dynamic_boolean_vector(r=1)[
+                                0
+                            ]
+                            if markup_val == 1:
+                                if start.ordinal < stop.ordinal:
+                                    mark_text = (
+                                        abjad.Markup(
+                                            f"cresc. a {stop.name}",
+                                            direction=abjad.Down,
+                                        )
+                                        .small()
+                                        .whiteout()
+                                        .box()
+                                        .italic()
+                                        .override(("box-padding", 0.5))
+                                        .override(("style", "box"))
+                                    )
+                                else:
+                                    mark_text = (
+                                        abjad.Markup(
+                                            f"dim. a {stop.name}",
+                                            direction=abjad.Down,
+                                        )
+                                        .small()
+                                        .whiteout()
+                                        .box()
+                                        .italic()
+                                        .override(("box-padding", 0.5))
+                                        .override(("style", "box"))
+                                    )
+                                abjad.attach(mark_text, abjad.select(run).leaf(0))
             else:
                 start = self._cyc_dynamics(r=1)[0]
                 if start == "niente":
