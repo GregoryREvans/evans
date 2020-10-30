@@ -2957,6 +2957,7 @@ class TextSpanHandler(Handler):
         span_three_style=None,
         span_three_padding=None,
         attach_span_three_to=None,
+        hooks=True,
         forget=True,
         count_1=-1,
         count_2=-1,
@@ -2975,6 +2976,7 @@ class TextSpanHandler(Handler):
         self.span_three_style = span_three_style
         self.span_three_padding = span_three_padding
         self.attach_span_three_to = attach_span_three_to
+        self.hooks = hooks
         self.forget = forget
         self._count_1 = count_1
         self._count_2 = count_2
@@ -3101,12 +3103,20 @@ class TextSpanHandler(Handler):
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
                 )
-                stop_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
-                    style=style + "-with-hook",
-                    command=r"\startTextSpan" + span_command,
-                    right_padding=3,
-                )
+                if self.hooks is True:
+                    stop_span = abjad.StartTextSpan(
+                        left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                        style=style + "-with-hook",
+                        command=r"\startTextSpan" + span_command,
+                        right_padding=3,
+                    )
+                else:
+                    stop_span = abjad.StartTextSpan(
+                        left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                        style="invisible-line",
+                        command=r"\startTextSpan" + span_command,
+                        right_padding=3,
+                    )
                 abjad.attach(start_span, run[0])
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), run[-1]
