@@ -1888,7 +1888,7 @@ class NoteheadHandler(Handler):
             for tie, head, bool in zip(ties, heads, head_vector):
                 string = str(r"""\tweak NoteHead.style #'""")
                 full_string = string + head
-                style = abjad.LilyPondLiteral(full_string, format_slot="before")
+                style = abjad.LilyPondLiteral(full_string, format_slot="opening")
                 if bool == 1:
                     for leaf in abjad.select(tie).leaves(pitched=True):
                         abjad.attach(style, leaf)
