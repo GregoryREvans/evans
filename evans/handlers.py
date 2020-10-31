@@ -2831,6 +2831,7 @@ class TempoSpannerHandler(Handler):
         boolean_vector=[1],
         padding=4,
         staff_padding=2,
+        font_size=2,
         forget=False,
         tempo_count=-1,
         bool_count=-1,
@@ -2841,6 +2842,7 @@ class TempoSpannerHandler(Handler):
         self.padding = padding
         self.forget = forget
         self.staff_padding = staff_padding
+        self.font_size = font_size
         self.tempo_list = sequence.CyclicList(
             tempo_list, self.forget, self._tempo_count
         )
@@ -2866,6 +2868,7 @@ class TempoSpannerHandler(Handler):
                     + f' "{start_temp[3]}"',
                     r"- \tweak padding #" + f"{self.padding}",
                     r"- \tweak staff-padding #" + f"{self.staff_padding}",
+                    r"- \tweak font-size #" + f"{self.font_size}",
                     r"\bacaStartTextSpanMM",
                 ],
                 format_slot="after",
@@ -2878,6 +2881,7 @@ class TempoSpannerHandler(Handler):
                     + f'{stop_temp[0]} {stop_temp[1]} {stop_temp[2]} "{stop_temp[3]}"',
                     r"- \tweak padding #" + f"{self.padding}",
                     r"- \tweak staff-padding #" + f"{self.staff_padding}",
+                    r"- \tweak font-size #" + f"{self.font_size}",
                     r"\bacaStartTextSpanMM",
                 ],
                 format_slot="after",
