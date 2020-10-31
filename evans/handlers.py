@@ -2810,6 +2810,7 @@ class TempoSpannerHandler(Handler):
                 - \baca-metronome-mark-spanner-left-text 3 0 1 "87"
                 - \tweak padding #4
                 - \tweak staff-padding #2
+                - \tweak font-size #2
                 \bacaStartTextSpanMM
                 s4
                 s4
@@ -2818,6 +2819,7 @@ class TempoSpannerHandler(Handler):
                 - \baca-metronome-mark-spanner-left-text 3 0 1 "95"
                 - \tweak padding #4
                 - \tweak staff-padding #2
+                - \tweak font-size #2
                 \bacaStartTextSpanMM
                 s4
                 \bacaStopTextSpanMM
