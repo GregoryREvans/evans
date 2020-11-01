@@ -666,7 +666,7 @@ class SegmentMaker:
                 notehead_maker(tuplet)
 
     def _write_optimization_log(self):
-        print("Writing optimization log ...")
+        print("Writing optimization log ...\n")
         times = [self.pre_handlers_time + self.handlers_time + self.post_handlers_time]
         segment_time = sum(times)
         with open(f"{self.current_directory}/.optimization", "a") as fp:
