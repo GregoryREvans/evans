@@ -671,6 +671,67 @@ class ClefHandler(Handler):
             pass
 
 
+class CompositeHandler(Handler):
+    r"""
+    Composite Handler
+
+    .. container:: example
+
+        >>> durs = [abjad.Duration((4, 4))]
+        >>> rh = evans.RhythmHandler(evans.RTMMaker(["(1 (1 1 1 1))"]))
+        >>> ph = evans.PitchHandler([0, 1, 2, 3])
+        >>> ah = evans.ArticulationHandler(["staccato", "tenuto"])
+        >>> comp = evans.CompositeHandler(rhythm_handler=rh, attachment_handlers=[ph, ah])
+        >>> n = comp(durations=durs)
+        >>> st = abjad.Staff(n)
+        >>> abjad.show(st) # doctest: +SKIP
+
+        .. docs
+
+            >>> print(abjad.lilypond(st))
+            \new Staff
+            {
+                {
+                    c'4
+                    - \staccato
+                    cs'4
+                    - \tenuto
+                    d'4
+                    - \staccato
+                    ef'4
+                    - \tenuto
+                }
+            }
+
+    """
+
+    def __init__(
+        self,
+        rhythm_handler=None,
+        attachment_handlers=(None,),
+    ):
+        self.rhythm_handler = rhythm_handler
+        self.attachment_handlers = attachment_handlers
+
+    def __call__(
+        self,
+        durations=(None,),
+        selections=None,
+    ):
+        if self.rhythm_handler is not None:
+            selections = self._make_container(self.rhythm_handler, durations)
+        for handler in self.attachment_handlers:
+            handler(selections)
+        selections = abjad.select(selections)
+        return selections
+
+    def _make_container(self, handler, durations):
+        selections = handler(durations)
+        container = abjad.Container([])
+        container.extend(selections)
+        return container
+
+
 # incorporate spanner anchors
 class DynamicHandler(Handler):
     r"""
