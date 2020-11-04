@@ -709,9 +709,11 @@ class CompositeHandler(Handler):
         self,
         rhythm_handler=None,
         attachment_handlers=(None,),
+        name="Composite Handler",
     ):
         self.rhythm_handler = rhythm_handler
         self.attachment_handlers = attachment_handlers
+        self.name = name
 
     def __call__(
         self,
@@ -730,6 +732,15 @@ class CompositeHandler(Handler):
         container = abjad.Container([])
         container.extend(selections)
         return container
+
+    def return_state(self):
+        return self.rhythm_handler.return_state()
+
+    def state(self):
+        state_dict = abjad.OrderedDict()
+        for _ in self.attachment_handlers:
+            state_dict[_.name] = _.state()
+        return state_dict
 
 
 # incorporate spanner anchors
