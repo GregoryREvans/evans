@@ -203,6 +203,13 @@ class SegmentMaker:
                     last_leaf = abjad.select(voice).leaves()[-3]
                     abjad.attach(bar_line, last_leaf)
 
+        if self.clef_handlers is None:
+            self.clef_handlers = [
+                None
+                for _ in abjad.select(self.score_template["Staff Group"]).components(
+                    abjad.Staff
+                )
+            ]
         for abbrev, name, inst, handler, voice in zip(
             abbreviations,
             names,
@@ -608,7 +615,7 @@ class SegmentMaker:
                         shard,
                         time_signature,
                         boundary_depth=inventories[-1][0],
-                        rewrite_tuplets=False,
+                        rewrite_tuplets=False,  # doesn't always work?
                     )
                 else:
                     abjad.Meter.rewrite_meter(

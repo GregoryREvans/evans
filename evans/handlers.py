@@ -724,8 +724,7 @@ class CompositeHandler(Handler):
             selections = self._make_container(self.rhythm_handler, durations)
         for handler in self.attachment_handlers:
             handler(selections)
-        selections = abjad.select(selections)
-        return selections
+        return selections[:]
 
     def _make_container(self, handler, durations):
         selections = handler(durations)
