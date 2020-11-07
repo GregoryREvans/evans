@@ -376,6 +376,130 @@ class BisbigliandoHandler(Handler):
         return state_dict
 
 
+class BowAngleHandler(Handler):
+    r"""
+    Bow Angle Handler: In Progress
+
+    ..  container:: example
+
+        >>> s = abjad.Staff("c'2 c'2 c'2 c'2 r2 r2")
+        >>> handler = evans.BowAngleHandler([0, 45, 0, -45])
+        >>> handler(s)
+        >>> file = abjad.LilyPondFile(
+        ...     s,
+        ...     includes=[
+        ...         "/Users/evansdsg2/evans/lilypond/evans.ily",
+        ...     ],
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \new Staff
+            {
+                c'2
+                - \abjad-solid-line-with-arrow
+                - \evans-clockwise-BAD-spanner-left-text #0
+                - \tweak bound-details.right.padding 1.4
+                - \tweak staff-padding #2
+                \evansStartTextSpanBAD
+                c'2
+                \evansStopTextSpanBAD
+                - \abjad-solid-line-with-arrow
+                - \evans-counterclockwise-BAD-spanner-left-text #45
+                - \tweak bound-details.right.padding 1.4
+                - \tweak staff-padding #2
+                \evansStartTextSpanBAD
+                c'2
+                \evansStopTextSpanBAD
+                - \abjad-solid-line-with-arrow
+                - \evans-counterclockwise-BAD-spanner-left-text #0
+                - \tweak bound-details.right.padding 1.4
+                - \tweak staff-padding #2
+                \evansStartTextSpanBAD
+                c'2
+                \evansStopTextSpanBAD
+                - \abjad-solid-line-with-arrow
+                - \evans-clockwise-BAD-spanner-left-text #-45
+                - \evans-BAD-spanner-right-text #0
+                - \tweak bound-details.right.padding 1.4
+                - \tweak staff-padding #2
+                \evansStartTextSpanBAD
+                r2
+                \evansStopTextSpanBAD
+                r2
+            }
+
+    """
+
+    def __init__(
+        self,
+        angles=(0, 45),
+    ):
+        self.agles = angles
+        self._cyc_angles = sequence.CyclicList(angles, forget=False)
+
+    def __call__(self, selections):
+        self._add_spanners(selections)
+
+    def _return_arc_direction(self, left_number, right_number):
+        if left_number < right_number:
+            return "clockwise"
+        else:
+            return "counterclockwise"
+
+    def _add_spanners(self, selections):
+        for run in abjad.select(selections).runs():
+            numbers = self._cyc_angles(r=len(run) + 1)
+            first_leaf = abjad.select(run).leaf(0)
+            start_literal = abjad.LilyPondLiteral(
+                [
+                    r"- \abjad-solid-line-with-arrow",
+                    rf"- \evans-{self._return_arc_direction(numbers[0], numbers[1])}-BAD-spanner-left-text #{numbers[0]}",
+                    r"- \tweak bound-details.right.padding 1.4",
+                    r"- \tweak staff-padding #2",
+                    r"\evansStartTextSpanBAD",
+                ],
+                format_slot="absolute_after",
+            )
+            abjad.attach(start_literal, first_leaf)
+            for i, tie in enumerate(abjad.select(run).logical_ties()[1:-1]):
+                literal = abjad.LilyPondLiteral(
+                    [
+                        r"\evansStopTextSpanBAD",
+                        r"- \abjad-solid-line-with-arrow",
+                        rf"- \evans-{self._return_arc_direction(numbers[i + 1], numbers[i + 2])}-BAD-spanner-left-text #{numbers[i + 1]}",
+                        r"- \tweak bound-details.right.padding 1.4",
+                        r"- \tweak staff-padding #2",
+                        r"\evansStartTextSpanBAD",
+                    ],
+                    format_slot="absolute_after",
+                )
+                abjad.attach(literal, tie[0])
+            terminating_literal = abjad.LilyPondLiteral(
+                [
+                    r"\evansStopTextSpanBAD",
+                    r"- \abjad-solid-line-with-arrow",
+                    rf"- \evans-{self._return_arc_direction(numbers[-2], numbers[-1])}-BAD-spanner-left-text #{numbers[-2]}",
+                    rf"- \evans-BAD-spanner-right-text #{numbers[-1]}",
+                    r"- \tweak bound-details.right.padding 1.4",
+                    r"- \tweak staff-padding #2",
+                    r"\evansStartTextSpanBAD",
+                ],
+                format_slot="absolute_after",
+            )
+            abjad.attach(terminating_literal, abjad.select(run).leaf(-1))
+            last_leaf = abjad.get.leaf(abjad.select(run).leaf(-1), 1)
+            stop_literal = abjad.LilyPondLiteral(
+                r"\evansStopTextSpanBAD", format_slot="absolute_after"
+            )
+            abjad.attach(stop_literal, last_leaf)
+
+    def state(self):
+        return "State not yet maintained."
+
+
 # add shelf for ottava to ensure that no notes in the bracket are illegible
 class ClefHandler(Handler):
     r"""
@@ -683,7 +807,8 @@ class CompositeHandler(Handler):
         >>> ah = evans.ArticulationHandler(["staccato", "tenuto"])
         >>> comp = evans.CompositeHandler(rhythm_handler=rh, attachment_handlers=[ph, ah])
         >>> n = comp(durations=durs)
-        >>> st = abjad.Staff(n)
+        >>> st = abjad.Staff()
+        >>> st.extend(n)
         >>> abjad.show(st) # doctest: +SKIP
 
         .. docs
@@ -691,16 +816,14 @@ class CompositeHandler(Handler):
             >>> print(abjad.lilypond(st))
             \new Staff
             {
-                {
-                    c'4
-                    - \staccato
-                    cs'4
-                    - \tenuto
-                    d'4
-                    - \staccato
-                    ef'4
-                    - \tenuto
-                }
+                c'4
+                - \staccato
+                cs'4
+                - \tenuto
+                d'4
+                - \staccato
+                ef'4
+                - \tenuto
             }
 
     """
