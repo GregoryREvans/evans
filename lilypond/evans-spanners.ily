@@ -18,7 +18,7 @@ evansStopTextSpanBAD = #(
                 {
                  \evans-clockwise-arc
                 \translate #'(0.2 . 0.75)
-                \scale #'(0.4 . 0.4)
+                \scale #'(0.7 . 0.7)  % was \scale #'(0.4 . 0.4)
                 \concat {
                     \translate #'(0 . 0)
                     #(number->string deg)
@@ -41,7 +41,7 @@ evansStopTextSpanBAD = #(
                 {
                  \evans-counterclockwise-arc
                 \translate #'(0.2 . 0.75)
-                \scale #'(0.4 . 0.4)
+                \scale #'(0.7 . 0.7)  % was \scale #'(0.4 . 0.4)
                 \concat {
                     \translate #'(0 . 0)
                     #(number->string deg)
@@ -81,7 +81,7 @@ evans-counterclockwise-BAD-spanner-left-text = #(
     #{
         \markup {
             \translate #'(0 . 0.75)
-                \scale #'(0.4 . 0.4)
+                \scale #'(0.7 . 0.7)  % was \scale #'(0.4 . 0.4)
                 \concat {
                     \translate #'(0 . 0)
                     #(number->string deg)
