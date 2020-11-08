@@ -74,6 +74,8 @@ class NoteheadBracketMaker:
 
     def _transform_brackets(self, selections):
         for tuplet in abjad.select(selections).components(abjad.Tuplet):
+            for rest_group in abjad.select(tuplet).rests().group_by_contiguity():
+                abjad.mutate.fuse(rest_group)
             inner_durs = []
             for _ in tuplet[:]:
                 if isinstance(_, abjad.Tuplet):
