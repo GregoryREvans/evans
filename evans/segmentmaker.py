@@ -7,6 +7,7 @@ import os
 
 import abjad
 import baca
+import quicktions
 
 from . import consort
 from .commands import HandlerCommand, RhythmCommand
@@ -92,13 +93,16 @@ class NoteheadBracketMaker:
 
 
 class SegmentMaker:
+
+    beaming = False
+
     def __init__(
         self,
         abbreviations=None,
         add_final_grand_pause=True,
         barline="||",
         beam_pattern="runs",
-        beam_rests=True,
+        beam_rests=False,
         clef_handlers=None,
         colophon=None,
         commands=None,
@@ -108,6 +112,7 @@ class SegmentMaker:
         instruments=None,
         names=None,
         name_staves=True,
+        mm_rests=True,
         page_break_counts=None,
         rehearsal_mark=None,
         score_includes=None,
@@ -121,7 +126,7 @@ class SegmentMaker:
         self.add_final_grand_pause = add_final_grand_pause
         self.barline = barline
         self.beam_pattern = beam_pattern
-        self.beam_rests = beam_rests
+        SegmentMaker.beaming = beam_rests
         self.clef_handlers = clef_handlers
         self.colophon = colophon
         self.commands = commands
@@ -131,6 +136,7 @@ class SegmentMaker:
         self.instruments = instruments
         self.names = names
         self.name_staves = name_staves
+        self.mm_rests = mm_rests
         self.page_break_counts = page_break_counts
         self.rehearsal_mark = rehearsal_mark
         self.score_includes = score_includes
@@ -322,16 +328,16 @@ class SegmentMaker:
                         components=shard[:],
                         meter=met,
                         offset_depth=inventories[-1][0],
-                        # include_rests=self.beam_rests,
-                        include_rests=False,
+                        include_rests=SegmentMaker.beaming,
+                        # include_rests=False,
                     )
                 else:
                     beam_meter(
                         components=shard[:],
                         meter=met,
                         offset_depth=inventories[-2][0],
-                        # include_rests=self.beam_rests,
-                        include_rests=False,
+                        include_rests=SegmentMaker.beaming,
+                        # include_rests=False,
                     )
         for trem in abjad.select(target).components(abjad.TremoloContainer):
             if abjad.StartBeam() in abjad.get.indicators(trem[0]):
@@ -617,7 +623,7 @@ class SegmentMaker:
                         shard,
                         time_signature,
                         boundary_depth=inventories[-1][0],
-                        rewrite_tuplets=False,  # doesn't always work?
+                        rewrite_tuplets=False,
                     )
                 else:
                     abjad.Meter.rewrite_meter(
@@ -708,6 +714,79 @@ class SegmentMaker:
             string = "\n".join(lines)
             fp.write(string)
 
+    ## EXPERIMENTAL
+
+    def _extract_voice_info(self, score):
+        score_pitches = []
+        score_durations = []
+        for voice in abjad.select(score).components(abjad.Voice):
+            pitches = []
+            durations = []
+            for tie in abjad.select(voice).logical_ties():
+                dur = abjad.get.duration(tie)
+                durations.append(str(dur))
+                if isinstance(tie[0], abjad.Rest):
+                    sub_pitches = ["Rest()"]
+                else:
+                    if abjad.get.annotation(tie[0], "ratio"):
+                        sub_pitches = [abjad.get.annotation(tie[0], "ratio")]
+                    else:
+                        sub_pitches = [p.hertz for p in abjad.get.pitches(tie[0])]
+                if 1 < len(sub_pitches):
+                    pitches.append([str(s) for s in sub_pitches])
+                elif 0 == len(sub_pitches):
+                    pitches.append("Rest()")
+                else:
+                    pitches.append(str(sub_pitches[0]))
+            score_pitches.append(pitches)
+            score_durations.append(durations)
+        return [_ for _ in zip(score_pitches, score_durations)]
+
+    def _make_sc_file(self):
+        info = self._extract_voice_info(self.score_template)
+        lines = "s.boot;\ns.quit;\n\n("
+
+        for i, voice in enumerate(info):
+            lines += f"\n\t// voice {i + 1}\n\t\tPbind(\n\t\t\t\\freq, Pseq(\n"
+
+            lines += "\t\t\t\t[\n"
+            for chord in voice[0]:
+                lines += "\t\t\t\t\t[\n"
+                if isinstance(chord, list):
+                    for _ in chord:
+                        if _ == "Rest()":
+                            lines += f"\t\t\t\t\t\t{_},\n"
+                        else:
+                            if _[0] == "[":
+                                lines += f"\t\t\t\t\t\t{_[2:-2]},\n"
+                            else:
+                                lines += f"\t\t\t\t\t\t{_},\n"
+                else:
+                    if chord == "Rest()":
+                        lines += f"\t\t\t\t\t\t{chord},\n"
+                    else:
+                        if chord[0] == "[":
+                            lines += f"\t\t\t\t\t\t{chord[2:-2]},\n"
+                        else:
+                            lines += f"\t\t\t\t\t\t{chord},\n"
+                lines += "\t\t\t\t\t],\n"
+            lines += "\t\t\t\t],\n"
+            lines += "\t\t\t),\n"
+            lines += "\t\t\t\\dur, Pseq(\n\t\t\t\t[\n"
+            for dur in voice[1]:
+                lines += f"\t\t\t\t\t{quicktions.Fraction(dur) * 4} * {quicktions.Fraction(60, self.tempo[-1])},\n"
+            lines += "\t\t\t\t]\n"
+            lines += "\t\t\t,1),\n"
+            lines += "\t\t\t\\legato, 1,\n\t\t).play;"
+
+        lines += ")"
+
+        with open(
+            f'{self.current_directory}/voice_to_sc_{str(datetime.datetime.now()).replace(" ", "-").replace(":", "-").replace(".", "-")}.scd',
+            "w",
+        ) as fp:
+            fp.writelines(lines)
+
     def build_segment(self):
         with abjad.Timer() as timer:
             self._make_global_context()
@@ -716,7 +795,8 @@ class SegmentMaker:
             self._call_commands()
         self.handlers_time = int(timer.elapsed_time)
         with abjad.Timer() as timer:
-            self._make_mm_rests()
+            if self.mm_rests:
+                self._make_mm_rests()
             self._add_attachments()
             self._cache_persistent_info()
             self._remove_final_grand_pause()

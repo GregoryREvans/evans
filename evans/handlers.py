@@ -2726,6 +2726,8 @@ class PitchHandler(Handler):
                         new_leaves[i] = replacement_chord
             for index in microtonal_indices_to_pitch:
                 for leaf in abjad.select(new_leaves[int(index)]).leaves():
+                    leaf_annotation_pitch = [_.hertz for _ in abjad.get.pitches(leaf)]
+                    leaf_annotation_ratio = []
                     if isinstance(leaf, abjad.Chord):
                         marks = []
                         heads = leaf.note_heads
@@ -2754,6 +2756,7 @@ class PitchHandler(Handler):
                                 if 23 < over_23:
                                     marks.append(return_cent_markup(head, ratio))
                                     tune_to_ratio(head, ratio)
+                                    leaf_annotation_ratio.append(ratio)
                                 else:
                                     marks.append(
                                         microtones.return_cent_deviation_markup(
@@ -2761,6 +2764,7 @@ class PitchHandler(Handler):
                                         )
                                     )
                                     microtones.tune_to_ratio(head, ratio)
+                                    leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
                             column = abjad.Markup.center_column(marks[::-1])
                             m = abjad.Markup(column, direction=abjad.Up).center_align()
@@ -2795,6 +2799,7 @@ class PitchHandler(Handler):
                             if 23 < over_23:
                                 m = return_cent_markup(leaf.note_head, temp)
                                 tune_to_ratio(leaf.note_head, temp)
+                                leaf_annotation_ratio.append(temp)
                             else:
                                 m = microtones.return_cent_deviation_markup(
                                     temp,
@@ -2804,8 +2809,14 @@ class PitchHandler(Handler):
                                     leaf.note_head,
                                     temp,
                                 )
+                                leaf_annotation_ratio.append(temp)
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf)
+                    annotation_string = [
+                        f"{x} * {y}"
+                        for x, y in zip(leaf_annotation_pitch, leaf_annotation_ratio)
+                    ]
+                    abjad.annotate(leaf, "ratio", annotation_string)
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.get.indicators(old_leaf)
