@@ -2124,6 +2124,91 @@ class NoteheadHandler(Handler):
         )
 
 
+class OnBeatGraceHandler(Handler):
+    r"""
+    On Beat Grace Handler
+
+    """
+
+    def __init__(
+        self,
+        number_of_attacks=[4, 5, 6],
+        durations=[
+            2,
+            1,
+            1,
+            1,
+            2,
+            1,
+            2,
+            1,
+            1,
+        ],
+        attack_number_forget=False,
+        durations_forget=False,
+        font_size=(-4),
+        leaf_duration=(1, 28),
+        boolean_vector=[1],
+        vector_forget=False,
+        attack_count=-1,
+        durations_count=-1,
+        vector_count=-1,
+        name="On Beat Grace Handler",
+    ):
+        self.font_size = font_size
+        self.leaf_duration = leaf_duration
+        self._attack_count = attack_count
+        self._durations_count = durations_count
+        self._vector_count = vector_count
+        self.attack_number_forget = attack_number_forget
+        self.durations_forget = durations_forget
+        self.vector_forget = vector_forget
+        self.attacks = sequence.CyclicList(
+            number_of_attacks, self.attack_number_forget, self._attack_count
+        )
+        self.durations = sequence.CyclicList(
+            durations, self.durations_forget, self._durations_count
+        )
+        self.boolean_vector = sequence.CyclicList(
+            boolean_vector, self.vector_forget, self._vector_count
+        )
+        self.name = name
+
+    def __call__(self, selections):
+        self.add_grace(selections)
+
+    def add_grace(self, selections):
+        ties = abjad.select(selections).logical_ties(pitched=True)
+        vector = self.boolean_vector(r=len(ties))
+        for value, tie in zip(vector, ties):
+            if value == 1:
+                repetitions = self.attacks(r=1)[0]
+                list_ = []
+                durs = self.durations(r=repetitions)
+                for _ in durs:
+                    list_.append(abjad.Note("c'", (_, 16)))
+                sel = abjad.Selection(list_)
+                abjad.on_beat_grace_container(
+                    sel,
+                    tie[:],
+                    leaf_duration=self.leaf_duration,
+                    do_not_slur=False,
+                    do_not_beam=False,
+                    font_size=self.font_size,
+                )
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return abjad.OrderedDict(
+            [
+                ("attack_count", self.attacks.state()),
+                ("vector_count", self.boolean_vector.state()),
+            ]
+        )
+
+
 class PitchHandler(Handler):
     r"""
     Pitch Handler
