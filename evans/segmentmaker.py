@@ -446,14 +446,14 @@ class SegmentMaker:
 
     def _extract_parts(self):
         print("Extracting parts ...")
-        for count, voice in enumerate(
-            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Voice)
+        for count, staff in enumerate(
+            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Staff)
         ):
-            t = r"\tag #'" + f"voice{count + 1}" + r" {"
-            pre_lit = abjad.LilyPondLiteral(t, format_slot="absolute_before")
-            post_lit = abjad.LilyPondLiteral(r"}", format_slot="absolute_after")
-            abjad.attach(pre_lit, voice)
-            abjad.attach(post_lit, voice)
+            t = rf"\tag #'voice{count + 1}"
+            literal = abjad.LilyPondLiteral(t, format_slot="before")
+            container = abjad.Container()
+            abjad.attach(literal, container)
+            abjad.mutate.wrap(staff, container)
 
     def _make_global_context(self):
         print("Making global context ...")
