@@ -252,7 +252,7 @@ class SegmentMaker:
         print("Adding ending skips ...")
         last_skip = abjad.select(self.score_template["Global Context"]).leaves()[-1]
         override_command = abjad.LilyPondLiteral(
-            r"\once \override TimeSignature.color = #white", format_slot="before"
+            r"\once \override Score.TimeSignature.stencil = ##f", format_slot="before"
         )
         abjad.attach(
             override_command, last_skip, tag=abjad.Tag("applying ending skips")
