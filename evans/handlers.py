@@ -1750,7 +1750,11 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
-                                abjad.glissando(run[:], hide_middle_note_heads=True)
+                                abjad.glissando(
+                                    run[:],
+                                    hide_middle_note_heads=True,
+                                    allow_repeats=True,
+                                )
                             else:
                                 continue
                         else:
