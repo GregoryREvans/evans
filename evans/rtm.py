@@ -3,6 +3,8 @@ Rhythm tree functions.
 """
 import abjad
 
+from .sequence import normalize_sum
+
 
 def nested_list_to_rtm(nested_list):
     r"""
@@ -492,3 +494,53 @@ class RTMMaker:
                 last_leaf = abjad.select(selection_).leaves()[-1]
                 abjad.attach(abjad.Tie(), last_leaf)
         return selections
+
+
+class RhythmTreeQuantizer:
+    def __init__(self):
+        pass
+
+    def __call__(self, string):
+        parsed_string = self._parse_tree(string)
+        self._quantize_rhythm_tree(parsed_string)
+        return parsed_string.rtm_format
+
+    def _operation(self, nodes):
+        numerators = []
+        for node in nodes:
+            numerators.append(node.preprolated_duration.numerator)
+        numerators_sum = sum(numerators)
+        if 4 < numerators_sum:
+            normalized = normalize_sum(numerators, desired_sum=4)
+            new_numerators = [round(_) for _ in normalized if round(_) != 0]
+            for numerator, node in zip(new_numerators, nodes):
+                node.preprolated_duration = abjad.Duration(numerator, 1)
+
+    def _parse_tree(self, string):
+        parser = abjad.rhythmtrees.RhythmTreeParser()
+        rhythm_tree_list = parser(string)
+        rhythm_tree_container = rhythm_tree_list[0]
+        return rhythm_tree_container
+
+    def _recursive_operation(self, layers):
+        temp = []
+        for layer in layers:
+            if isinstance(layer, list):
+                self._recursive_operation(layer)
+            else:
+                temp.append(layer)
+        self._operation(temp)
+
+    def _return_layers(self, parsed_tree):
+        layers = []
+        for node in parsed_tree:
+            if isinstance(node, abjad.rhythmtrees.RhythmTreeContainer):
+                layers.append(node)
+                layers.append(self._return_layers(node))
+            else:
+                layers.append(node)
+        return layers
+
+    def _quantize_rhythm_tree(self, rtm_container):
+        layers = self._return_layers(rtm_container)
+        self._recursive_operation(layers)

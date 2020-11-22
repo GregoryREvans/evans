@@ -1999,6 +1999,147 @@ class GraceHandler(Handler):
         )
 
 
+class IntermittentVoiceHandler(Handler):
+    r"""
+    IntermittentVoiceHandler
+
+    .. container:: example
+
+        >>> ph_up = evans.PitchHandler([8, 8.5, 9, 9.5, 9, 8.5], forget=False)
+        >>> ph_down = evans.PitchHandler([0, 1, 2, 3, 4, 5], forget=False)
+        >>> s = abjad.Staff([abjad.Voice("c'4 c'8 c'8 c'8 c'4.", name="Voice1")], name="Staff1")
+        >>> ph_down(s)
+        >>> h = evans.RhythmHandler(
+        ...     rmakers.stack(
+        ...         rmakers.talea(
+        ...             [1, 2, 3, 4],
+        ...             8,
+        ...             extra_counts=[1, 0, -1],
+        ...         ),
+        ...         rmakers.trivialize(abjad.select().tuplets()),
+        ...         rmakers.extract_trivial(abjad.select().tuplets()),
+        ...         rmakers.rewrite_rest_filled(abjad.select().tuplets()),
+        ...         rmakers.rewrite_sustained(abjad.select().tuplets()),
+        ...     ),
+        ...     forget=False,
+        ... )
+        ...
+        >>> ivh = IntermittentVoiceHandler(h, direction=abjad.Up)
+        >>> sel1 = abjad.select(s["Voice1"]).leaf(0)
+        >>> sel2 = abjad.select(s["Voice1"]).leaf(2)
+        >>> sel3 = abjad.select(s["Voice1"]).leaves().get([3, 4])
+        >>> ivh(sel1)
+        >>> ivh(sel2)
+        >>> ivh(sel3)
+        >>> ph_up = evans.PitchHandler([8, 8.5, 9, 9.5, 9, 8.5], forget=False)
+        >>> for voice in abjad.select(s).components(abjad.Voice):
+        ...     if voice.name == "intermittent_voice":
+        ...         ph_up(voice)
+        ...
+        >>> file = abjad.LilyPondFile.new(
+        ...     s,
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        ...     ]
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \context Staff = "Staff1"
+            {
+                \context Voice = "Voice1"
+                {
+                    <<
+                        \context Voice = "original_voice"
+                        {
+                            \voiceTwo
+                            c'4
+                        }
+                        \context Voice = "intermittent_voice"
+                        {
+                            \times 2/3 {
+                                \voiceOne
+                                af'8
+                                aqf'4
+                            }
+                        }
+                    >>
+                    cs'8
+                    <<
+                        \context Voice = "original_voice"
+                        {
+                            \voiceTwo
+                            d'8
+                        }
+                        \context Voice = "intermittent_voice"
+                        {
+                            \voiceOne
+                            a'8
+                        }
+                    >>
+                    <<
+                        \context Voice = "original_voice"
+                        {
+                            \voiceTwo
+                            ef'8
+                            e'4.
+                        }
+                        \context Voice = "intermittent_voice"
+                        {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 4/3 {
+                                \voiceOne
+                                aqs'4
+                                a'8
+                            }
+                        }
+                    >>
+                }
+            }
+
+    """
+
+    def __init__(
+        self,
+        rhythm_handler,
+        direction=abjad.Up,
+    ):
+        self.rhythm_handler = rhythm_handler
+        self.direction = direction
+
+    def __call__(
+        self,
+        selections,
+    ):
+        selections = abjad.select(selections)
+        self._add_voice(selections)
+
+    def _add_voice(self, selections):
+        if self.direction == abjad.Up:
+            literal1 = abjad.LilyPondLiteral(r"\voiceTwo")
+            literal2 = abjad.LilyPondLiteral(r"\voiceOne")
+        else:
+            literal1 = abjad.LilyPondLiteral(r"\voiceOne")
+            literal2 = abjad.LilyPondLiteral(r"\voiceTwo")
+
+        duration = [abjad.get.duration(selections[:])]
+        container = abjad.Container(simultaneous=True)
+        original_voice = abjad.Voice(name="original_voice")
+        intermittent_voice = abjad.Voice(name="intermittent_voice")
+        intermittent_voice.append(self._make_components(duration)[:])
+        abjad.mutate.wrap(selections, original_voice)
+        abjad.mutate.wrap(original_voice, container)
+        container.append(intermittent_voice)
+        abjad.attach(literal1, abjad.select(original_voice).leaf(0))
+        abjad.attach(literal2, abjad.select(intermittent_voice).leaf(0))
+
+    def _make_components(self, duration):
+        return self.rhythm_handler(duration)
+
+
 class NoteheadHandler(Handler):
     r"""
     Notehead Handler

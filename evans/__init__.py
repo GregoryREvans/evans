@@ -30,6 +30,7 @@ from .handlers import (
     GettatoHandler,
     GlissandoHandler,
     GraceHandler,
+    IntermittentVoiceHandler,
     NoteheadHandler,
     OnBeatGraceHandler,
     PitchHandler,
@@ -63,6 +64,7 @@ from .pitch import (
 )
 from .rtm import (
     RTMMaker,
+    RhythmTreeQuantizer,
     funnel_inner_tree_to_x,
     funnel_tree_to_x,
     nested_list_to_rtm,
@@ -140,6 +142,7 @@ __all__ = [
     "GettatoHandler",
     "GlissandoHandler",
     "GraceHandler",
+    "IntermittentVoiceHandler",
     "HandlerCommand",
     "LogicalTieCollection",
     "MarkovChain",
@@ -224,6 +227,7 @@ __all__ = [
     "reproportion_scale",
     "return_cent_markup",
     "return_vertical_moment_ties",
+    "RhythmTreeQuantizer",
     "rotate",
     "rotate_tree",
     "sorted_keys",
