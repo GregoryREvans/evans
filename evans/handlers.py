@@ -2053,7 +2053,7 @@ class IntermittentVoiceHandler(Handler):
                 \context Voice = "Voice1"
                 {
                     <<
-                        \context Voice = "original_voice"
+                        \context Voice = "Voice1"
                         {
                             \voiceTwo
                             c'4
@@ -2067,9 +2067,10 @@ class IntermittentVoiceHandler(Handler):
                             }
                         }
                     >>
+                    \oneVoice
                     cs'8
                     <<
-                        \context Voice = "original_voice"
+                        \context Voice = "Voice1"
                         {
                             \voiceTwo
                             d'8
@@ -2080,8 +2081,9 @@ class IntermittentVoiceHandler(Handler):
                             a'8
                         }
                     >>
+                    \oneVoice
                     <<
-                        \context Voice = "original_voice"
+                        \context Voice = "Voice1"
                         {
                             \voiceTwo
                             ef'8
@@ -2097,6 +2099,7 @@ class IntermittentVoiceHandler(Handler):
                             }
                         }
                     >>
+                    \oneVoice
                 }
             }
 
@@ -2124,10 +2127,10 @@ class IntermittentVoiceHandler(Handler):
         else:
             literal1 = abjad.LilyPondLiteral(r"\voiceOne")
             literal2 = abjad.LilyPondLiteral(r"\voiceTwo")
-
+        closing_literal = abjad.LilyPondLiteral(r"\oneVoice", format_slot="after")
         duration = [abjad.get.duration(selections[:])]
         container = abjad.Container(simultaneous=True)
-        original_voice = abjad.Voice(name="original_voice")
+        original_voice = abjad.Voice(name=self._find_parent(selections))
         intermittent_voice = abjad.Voice(name="intermittent_voice")
         intermittent_voice.append(self._make_components(duration)[:])
         abjad.mutate.wrap(selections, original_voice)
@@ -2135,6 +2138,13 @@ class IntermittentVoiceHandler(Handler):
         container.append(intermittent_voice)
         abjad.attach(literal1, abjad.select(original_voice).leaf(0))
         abjad.attach(literal2, abjad.select(intermittent_voice).leaf(0))
+        abjad.attach(closing_literal, container)
+
+    def _find_parent(self, selections):
+        first_leaf = abjad.select(selections).leaf(0)
+        parentage = abjad.get.parentage(first_leaf)
+        parent_voice = abjad.select(parentage).components(abjad.Voice)
+        return parent_voice[0].name
 
     def _make_components(self, duration):
         return self.rhythm_handler(duration)
