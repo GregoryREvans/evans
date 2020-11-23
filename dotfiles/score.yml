@@ -42,11 +42,11 @@ before_install:
   - pip install -e $rmakers
   - export MYPYPATH=$MYPYPATH:$rmakers
 
-  # # clone & install ide:
-  # - ide=/tmp/ide
-  # - git clone https://github.com/Abjad/ide.git $ide
-  # - pip install -e $ide
-  # - export MYPYPATH=$MYPYPATH:$ide
+  # clone & install ide:
+  - ide=/tmp/ide
+  - git clone https://github.com/Abjad/ide.git $ide
+  - pip install -e $ide
+  - export MYPYPATH=$MYPYPATH:$ide
 
   # clone & install microtones:
   - microtones=/tmp/abjad-ext-microtones

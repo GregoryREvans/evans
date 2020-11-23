@@ -49,11 +49,11 @@ before_install:
     - cd $LOCATION
     - export MYPYPATH=$MYPYPATH:$RMAKERS
 
-    # # clone & install ide:
-    # - ide=/tmp/ide
-    # - git clone https://github.com/Abjad/ide.git $ide
-    # - pip install -e $ide
-    # - export MYPYPATH=$MYPYPATH:$ide
+    # clone & install ide:
+    - ide=/tmp/ide
+    - git clone https://github.com/Abjad/ide.git $ide
+    - pip install -e $ide
+    - export MYPYPATH=$MYPYPATH:$ide
 
     # clone & install microtones:
     - MICROTONES=/tmp/abjad-ext-microtones
