@@ -52,6 +52,14 @@ BoundaryTimespanMaker
 
       .. automethod:: BoundaryTimespanMaker.__illustrate__
 
+   .. container:: inherited
+
+      .. automethod:: BoundaryTimespanMaker.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: BoundaryTimespanMaker.__str__
+
    .. raw:: html
 
       <hr/>

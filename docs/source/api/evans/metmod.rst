@@ -23,11 +23,14 @@ metmod
    :nosignatures:
 
    ~calculate_metric_modulation
+   ~calculate_tempo_modulated_duration
    ~compare_speed
    ~metric_modulation
    ~mixed_number
 
 .. autofunction:: calculate_metric_modulation
+
+.. autofunction:: calculate_tempo_modulated_duration
 
 .. autofunction:: compare_speed
 

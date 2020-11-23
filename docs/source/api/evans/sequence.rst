@@ -136,6 +136,7 @@ sequence
    ~mirror
    ~mod
    ~multiple_sequence
+   ~multiply_all
    ~multiply_sequences
    ~n_bonacci_cycle
    ~normalize_sum
@@ -189,6 +190,8 @@ sequence
 .. autofunction:: mod
 
 .. autofunction:: multiple_sequence
+
+.. autofunction:: multiply_all
 
 .. autofunction:: multiply_sequences
 

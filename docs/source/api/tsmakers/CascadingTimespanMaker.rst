@@ -50,6 +50,14 @@ CascadingTimespanMaker
 
       .. automethod:: CascadingTimespanMaker.__illustrate__
 
+   .. container:: inherited
+
+      .. automethod:: CascadingTimespanMaker.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: CascadingTimespanMaker.__str__
+
    .. raw:: html
 
       <hr/>

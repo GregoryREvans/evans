@@ -27,6 +27,8 @@ MusicSpecifierSequence
       __call__
       __getitem__
       __len__
+      __repr__
+      __str__
       application_rate
       music_specifiers
       transpose
@@ -43,6 +45,10 @@ MusicSpecifierSequence
    .. automethod:: MusicSpecifierSequence.__getitem__
 
    .. automethod:: MusicSpecifierSequence.__len__
+
+   .. automethod:: MusicSpecifierSequence.__repr__
+
+   .. automethod:: MusicSpecifierSequence.__str__
 
    .. raw:: html
 

@@ -24,6 +24,8 @@ SilentTimespan
    .. autosummary::
       :nosignatures:
 
+      __repr__
+      __str__
       forbid_fusing
       forbid_splitting
       handler
@@ -80,9 +82,9 @@ SilentTimespan
 
       .. automethod:: SilentTimespan.__or__
 
-   .. container:: inherited
+   .. automethod:: SilentTimespan.__repr__
 
-      .. automethod:: SilentTimespan.__repr__
+   .. automethod:: SilentTimespan.__str__
 
    .. container:: inherited
 

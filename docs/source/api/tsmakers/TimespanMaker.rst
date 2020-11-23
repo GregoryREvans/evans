@@ -27,6 +27,8 @@ TimespanMaker
       __call__
       __format__
       __illustrate__
+      __repr__
+      __str__
       division_masks
       is_dependent
       padding
@@ -46,6 +48,10 @@ TimespanMaker
    .. automethod:: TimespanMaker.__format__
 
    .. automethod:: TimespanMaker.__illustrate__
+
+   .. automethod:: TimespanMaker.__repr__
+
+   .. automethod:: TimespanMaker.__str__
 
    .. raw:: html
 

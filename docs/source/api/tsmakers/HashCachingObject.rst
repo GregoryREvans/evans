@@ -27,6 +27,8 @@ HashCachingObject
       __eq__
       __format__
       __hash__
+      __repr__
+      __str__
 
    .. raw:: html
 
@@ -40,3 +42,7 @@ HashCachingObject
    .. automethod:: HashCachingObject.__format__
 
    .. automethod:: HashCachingObject.__hash__
+
+   .. automethod:: HashCachingObject.__repr__
+
+   .. automethod:: HashCachingObject.__str__

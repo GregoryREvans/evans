@@ -23,6 +23,7 @@ rtm
    :nosignatures:
 
    ~RTMMaker
+   ~RhythmTreeQuantizer
 
 .. autoclass:: RTMMaker
 
@@ -52,6 +53,29 @@ rtm
    .. automethod:: RTMMaker.__repr__
 
    .. automethod:: RTMMaker.__str__
+
+.. autoclass:: RhythmTreeQuantizer
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: RhythmTreeQuantizer.__call__
 
 .. raw:: html
 

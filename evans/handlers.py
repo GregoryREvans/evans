@@ -385,10 +385,12 @@ class BowAngleHandler(Handler):
         >>> s = abjad.Staff("c'2 c'2 c'2 c'2 r2 r2")
         >>> handler = evans.BowAngleHandler([0, 45, 0, -45])
         >>> handler(s)
-        >>> file = abjad.LilyPondFile(
+        >>> file = abjad.LilyPondFile.new(
         ...     s,
         ...     includes=[
-        ...         "/Users/evansdsg2/evans/lilypond/evans.ily",
+        ...         "abjad.ily",
+        ...         "evans-markups.ily",
+        ...         "evans-spanners.ily",
         ...     ],
         ... )
         >>> abjad.show(file) # doctest: +SKIP
@@ -2024,7 +2026,7 @@ class IntermittentVoiceHandler(Handler):
         ...     forget=False,
         ... )
         ...
-        >>> ivh = IntermittentVoiceHandler(h, direction=abjad.Up)
+        >>> ivh = evans.IntermittentVoiceHandler(h, direction=abjad.Up)
         >>> sel1 = abjad.select(s["Voice1"]).leaf(0)
         >>> sel2 = abjad.select(s["Voice1"]).leaf(2)
         >>> sel3 = abjad.select(s["Voice1"]).leaves().get([3, 4])
@@ -2039,7 +2041,7 @@ class IntermittentVoiceHandler(Handler):
         >>> file = abjad.LilyPondFile.new(
         ...     s,
         ...     includes=[
-        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        ...         "abjad.ily",
         ...     ]
         ... )
         ...
@@ -2282,6 +2284,117 @@ class NoteheadHandler(Handler):
 class OnBeatGraceHandler(Handler):
     r"""
     On Beat Grace Handler
+
+    .. container:: example
+
+        >>> grace_handler = evans.OnBeatGraceHandler(
+        ...     number_of_attacks=[
+        ...         4,
+        ...         3,
+        ...         4,
+        ...         5,
+        ...         6,
+        ...         3,
+        ...         4,
+        ...         3,
+        ...         4,
+        ...         3,
+        ...         4,
+        ...         5,
+        ...         5,
+        ...         3,
+        ...         4,
+        ...         3,
+        ...     ],
+        ...     durations=[
+        ...         2,
+        ...         1,
+        ...         1,
+        ...         1,
+        ...         2,
+        ...         1,
+        ...         2,
+        ...         1,
+        ...         1,
+        ...     ],
+        ...     font_size=-4,
+        ...     leaf_duration=(1, 100),
+        ...     attack_number_forget=False,
+        ...     durations_forget=False,
+        ...     boolean_vector=[1],
+        ...     vector_forget=False,
+        ...     name="On Beat Grace Handler",
+        ...     )
+        ...
+        >>> head_handler = evans.NoteheadHandler(
+        ...     ["harmonic"],
+        ...     head_boolean_vector=[1],
+        ...     forget=False,
+        ... )
+        ...
+        >>> pitch_handler = evans.PitchHandler(
+        ...     [
+        ...         30,
+        ...         32,
+        ...         29.5,
+        ...         31,
+        ...         31.5,
+        ...         33,
+        ...         30,
+        ...         29,
+        ...         32.5,
+        ...     ],
+        ...     forget=False,
+        ... )
+        ...
+        >>> s = abjad.Staff([abjad.Voice("e''4 e''2 e''4", name="Voice1")], name="Staff1")
+        >>> grace_handler(abjad.select(s).leaf(1))
+        >>> pitch_handler(abjad.select(s).logical_ties(grace=True))
+        >>> head_handler(abjad.select(s).logical_ties(grace=True))
+        >>> file = abjad.LilyPondFile.new(
+        ...     s,
+        ...     includes=["abjad.ily"],
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(s))
+            \context Staff = "Staff1"
+            {
+                \context Voice = "Voice1"
+                {
+                    e''4
+                    <<
+                        \context Voice = "On_Beat_Grace_Container"
+                        {
+                            \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                            \slash
+                            \voiceOne
+                            \tweak NoteHead.style #'harmonic
+                            fs'''8
+                            [
+                            (
+                            \tweak NoteHead.style #'harmonic
+                            af'''16
+                            \tweak NoteHead.style #'harmonic
+                            fqs'''16
+                            \tweak NoteHead.style #'harmonic
+                            g'''16
+                            )
+                            ]
+                        }
+                        \context Voice = "Voice1"
+                        {
+                            \voiceTwo %! abjad.on_beat_grace_container(4)
+                            e''2
+                        }
+                    >>
+                    \oneVoice %! abjad.on_beat_grace_container(5)
+                    e''4
+                }
+            }
 
     """
 

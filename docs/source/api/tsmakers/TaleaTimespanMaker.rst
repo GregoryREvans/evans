@@ -54,6 +54,14 @@ TaleaTimespanMaker
 
       .. automethod:: TaleaTimespanMaker.__illustrate__
 
+   .. container:: inherited
+
+      .. automethod:: TaleaTimespanMaker.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: TaleaTimespanMaker.__str__
+
    .. raw:: html
 
       <hr/>

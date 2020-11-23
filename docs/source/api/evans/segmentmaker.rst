@@ -69,6 +69,7 @@ segmentmaker
       __repr__
       __str__
       beam_score
+      beaming
       build_segment
       call_handlers
       rewrite_meter

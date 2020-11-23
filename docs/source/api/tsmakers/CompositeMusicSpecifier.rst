@@ -53,6 +53,14 @@ CompositeMusicSpecifier
 
       .. automethod:: CompositeMusicSpecifier.__hash__
 
+   .. container:: inherited
+
+      .. automethod:: CompositeMusicSpecifier.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: CompositeMusicSpecifier.__str__
+
    .. raw:: html
 
       <hr/>

@@ -52,6 +52,14 @@ DependentTimespanMaker
 
       .. automethod:: DependentTimespanMaker.__illustrate__
 
+   .. container:: inherited
+
+      .. automethod:: DependentTimespanMaker.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: DependentTimespanMaker.__str__
+
    .. raw:: html
 
       <hr/>

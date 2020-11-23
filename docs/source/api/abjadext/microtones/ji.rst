@@ -95,8 +95,11 @@ ji
    :nosignatures:
 
    ~make_ji_bundle
+   ~return_cent_deviation_markup
    ~tune_to_ratio
 
 .. autofunction:: make_ji_bundle
+
+.. autofunction:: return_cent_deviation_markup
 
 .. autofunction:: tune_to_ratio

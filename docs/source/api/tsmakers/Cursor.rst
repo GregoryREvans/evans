@@ -26,6 +26,8 @@ Cursor
 
       __iter__
       __next__
+      __repr__
+      __str__
       backtrack
       index
       next
@@ -41,6 +43,10 @@ Cursor
    .. automethod:: Cursor.__iter__
 
    .. automethod:: Cursor.__next__
+
+   .. automethod:: Cursor.__repr__
+
+   .. automethod:: Cursor.__str__
 
    .. raw:: html
 

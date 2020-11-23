@@ -25,6 +25,8 @@ PerformedTimespan
       :nosignatures:
 
       __lt__
+      __repr__
+      __str__
       divisions
       forbid_fusing
       forbid_splitting
@@ -85,9 +87,9 @@ PerformedTimespan
 
       .. automethod:: PerformedTimespan.__or__
 
-   .. container:: inherited
+   .. automethod:: PerformedTimespan.__repr__
 
-      .. automethod:: PerformedTimespan.__repr__
+   .. automethod:: PerformedTimespan.__str__
 
    .. container:: inherited
 

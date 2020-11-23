@@ -24,9 +24,22 @@ TimespanSpecifier
    .. autosummary::
       :nosignatures:
 
+      __repr__
+      __str__
       forbid_fusing
       forbid_splitting
       minimum_duration
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: TimespanSpecifier.__repr__
+
+   .. automethod:: TimespanSpecifier.__str__
 
    .. raw:: html
 

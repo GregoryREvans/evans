@@ -33,6 +33,14 @@ FloodedTimespanMaker
 
       .. automethod:: FloodedTimespanMaker.__illustrate__
 
+   .. container:: inherited
+
+      .. automethod:: FloodedTimespanMaker.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: FloodedTimespanMaker.__str__
+
    .. raw:: html
 
       <hr/>

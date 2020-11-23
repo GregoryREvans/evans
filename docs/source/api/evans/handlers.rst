@@ -25,13 +25,17 @@ handlers
    ~ArticulationHandler
    ~BendHandler
    ~BisbigliandoHandler
+   ~BowAngleHandler
    ~ClefHandler
+   ~CompositeHandler
    ~DynamicHandler
    ~GettatoHandler
    ~GlissandoHandler
    ~GraceHandler
    ~Handler
+   ~IntermittentVoiceHandler
    ~NoteheadHandler
+   ~OnBeatGraceHandler
    ~PitchHandler
    ~RhythmHandler
    ~SlurHandler
@@ -165,6 +169,43 @@ handlers
 
    .. automethod:: BisbigliandoHandler.state
 
+.. autoclass:: BowAngleHandler
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+      state
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: BowAngleHandler.__call__
+
+   .. container:: inherited
+
+      .. automethod:: BowAngleHandler.__repr__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. automethod:: BowAngleHandler.state
+
 .. autoclass:: ClefHandler
 
    .. raw:: html
@@ -191,6 +232,46 @@ handlers
    .. container:: inherited
 
       .. automethod:: ClefHandler.__repr__
+
+.. autoclass:: CompositeHandler
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+      return_state
+      state
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: CompositeHandler.__call__
+
+   .. container:: inherited
+
+      .. automethod:: CompositeHandler.__repr__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. automethod:: CompositeHandler.return_state
+
+   .. automethod:: CompositeHandler.state
 
 .. autoclass:: DynamicHandler
 
@@ -381,6 +462,33 @@ handlers
 
    .. automethod:: Handler.__repr__
 
+.. autoclass:: IntermittentVoiceHandler
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: IntermittentVoiceHandler.__call__
+
+   .. container:: inherited
+
+      .. automethod:: IntermittentVoiceHandler.__repr__
+
 .. autoclass:: NoteheadHandler
 
    .. raw:: html
@@ -423,6 +531,49 @@ handlers
    .. automethod:: NoteheadHandler.name
 
    .. automethod:: NoteheadHandler.state
+
+.. autoclass:: OnBeatGraceHandler
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+      add_grace
+      name
+      state
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: OnBeatGraceHandler.__call__
+
+   .. container:: inherited
+
+      .. automethod:: OnBeatGraceHandler.__repr__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. automethod:: OnBeatGraceHandler.add_grace
+
+   .. automethod:: OnBeatGraceHandler.name
+
+   .. automethod:: OnBeatGraceHandler.state
 
 .. autoclass:: PitchHandler
 

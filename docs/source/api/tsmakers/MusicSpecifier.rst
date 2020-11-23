@@ -24,6 +24,8 @@ MusicSpecifier
    .. autosummary::
       :nosignatures:
 
+      __repr__
+      __str__
       attachment_handler
       color
       comment
@@ -56,6 +58,10 @@ MusicSpecifier
    .. container:: inherited
 
       .. automethod:: MusicSpecifier.__hash__
+
+   .. automethod:: MusicSpecifier.__repr__
+
+   .. automethod:: MusicSpecifier.__str__
 
    .. raw:: html
 

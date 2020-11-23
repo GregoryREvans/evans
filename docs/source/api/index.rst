@@ -93,6 +93,7 @@ Package for Just Intonation.
    :nosignatures:
 
    ~abjadext.microtones.ji.make_ji_bundle
+   ~abjadext.microtones.ji.return_cent_deviation_markup
    ~abjadext.microtones.ji.tune_to_ratio
 
 .. raw:: html
@@ -231,13 +232,17 @@ Handler classes.
    ~evans.handlers.ArticulationHandler
    ~evans.handlers.BendHandler
    ~evans.handlers.BisbigliandoHandler
+   ~evans.handlers.BowAngleHandler
    ~evans.handlers.ClefHandler
+   ~evans.handlers.CompositeHandler
    ~evans.handlers.DynamicHandler
    ~evans.handlers.GettatoHandler
    ~evans.handlers.GlissandoHandler
    ~evans.handlers.GraceHandler
    ~evans.handlers.Handler
+   ~evans.handlers.IntermittentVoiceHandler
    ~evans.handlers.NoteheadHandler
+   ~evans.handlers.OnBeatGraceHandler
    ~evans.handlers.PitchHandler
    ~evans.handlers.RhythmHandler
    ~evans.handlers.SlurHandler
@@ -265,6 +270,7 @@ Metric modulation.
    :nosignatures:
 
    ~evans.metmod.calculate_metric_modulation
+   ~evans.metmod.calculate_tempo_modulated_duration
    ~evans.metmod.compare_speed
    ~evans.metmod.metric_modulation
    ~evans.metmod.mixed_number
@@ -288,14 +294,19 @@ Pitch functions.
 .. autosummary::
    :nosignatures:
 
+   ~evans.pitch.combination_multiples
    ~evans.pitch.combination_tones
    ~evans.pitch.herz_combination_tone_ratios
+   ~evans.pitch.relative_ratios
+   ~evans.pitch.return_cent_markup
    ~evans.pitch.return_vertical_moment_ties
    ~evans.pitch.to_nearest_eighth_tone
    ~evans.pitch.to_nearest_quarter_tone
    ~evans.pitch.to_nearest_sixth_tone
    ~evans.pitch.to_nearest_third_tone
    ~evans.pitch.to_nearest_twelfth_tone
+   ~evans.pitch.tonnetz
+   ~evans.pitch.tune_to_ratio
 
 .. raw:: html
 
@@ -317,6 +328,7 @@ Rhythm tree functions.
    :nosignatures:
 
    ~evans.rtm.RTMMaker
+   ~evans.rtm.RhythmTreeQuantizer
 
 .. raw:: html
 
@@ -416,6 +428,7 @@ Sequence classes and functions.
    ~evans.sequence.mirror
    ~evans.sequence.mod
    ~evans.sequence.multiple_sequence
+   ~evans.sequence.multiply_all
    ~evans.sequence.multiply_sequences
    ~evans.sequence.n_bonacci_cycle
    ~evans.sequence.normalize_sum
