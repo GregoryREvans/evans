@@ -13,6 +13,8 @@ class Command:
         indicator=None,
         selector=None,
         voice_name=None,
+        source_voice_name=None,
+        target_voice_name=None,
     ):
         self.callable = callable
         self.command = command
@@ -20,6 +22,8 @@ class Command:
         self.indicator = indicator
         self.selector = selector
         self.voice_name = voice_name
+        self.source_voice_name = source_voice_name
+        self.target_voice_name = target_voice_name
 
     def __str__(self):
         return abjad.storage(self)
@@ -76,6 +80,8 @@ class Command:
             abjad.detach(self.indicator, selection)
         elif self.command == "replace":
             self._replace(selection, self.contents, selection)
+        elif self.command == "duplicate":
+            score[target_voice_name].extend(abjad.mutate.copy(score[source_voice_name]))
         else:
             raise Exception(f"Invalid command {self.command}")
 
@@ -124,6 +130,14 @@ def call(voice_name, callable, selector=None):
         callable=callable,
         selector=selector,
         voice_name=voice_name,
+    )
+
+
+def duplicate(source_voice_name, target_voice_name):
+    return Command(
+        command="duplicate",
+        source_voice_name=source_voice_name,
+        target_voice_name=target_voice_name,
     )
 
 

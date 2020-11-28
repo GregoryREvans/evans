@@ -112,6 +112,7 @@ from .sequence import (
     rotate,
     warp,
 )
+from .spanners import BowAnglePoint, bow_angle_spanner
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
