@@ -13,7 +13,10 @@ class BowAnglePoint:
         self,
         degrees=None,
     ):
-        self._degrees = abjad.NonreducedFraction(degrees, 90)
+        if degrees is not None:
+            self._degrees = abjad.NonreducedFraction(degrees, 90)
+        else:
+            self._degrees = degrees
 
     def __lt__(self, argument) -> bool:
         self_degrees = self.degrees or 0
@@ -82,13 +85,13 @@ def bow_angle_spanner(
         this_contact_point = bow_contact_point
         if this_contact_point is None:
             return
-        next_contact_point = abjad.get.indicator(next_leaf, BowContactPoint)
+        next_contact_point = abjad.get.indicator(next_leaf, BowAnglePoint)
         if next_contact_point is None:
             return
         previous_leaf = abjad.get.leaf(leaf, -1)
         previous_contact_point = None
         if previous_leaf is not None:
-            previous_contact_points = previous_leaf._get_indicators(BowContactPoint)
+            previous_contact_points = previous_leaf._get_indicators(BowAnglePoint)
             if previous_contact_points:
                 previous_contact_point = previous_contact_points[0]
         if (
@@ -102,7 +105,7 @@ def bow_angle_spanner(
                 direction_change = abjad.Up
         else:
             previous_leaf = abjad.get.leaf(leaf, -1)
-            previous_contact_point = abjad.get.indicator(previous_leaf, BowContactPoint)
+            previous_contact_point = abjad.get.indicator(previous_leaf, BowAnglePoint)
             if (
                 previous_contact_point < this_contact_point
                 and next_contact_point < this_contact_point

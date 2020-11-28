@@ -136,6 +136,8 @@ __all__ = [
     "BendHandler",
     "BisbigliandoHandler",
     "BowAngleHandler",
+    "BowAnglePoint",
+    "bow_angle_spanner",
     "ClefHandler",
     "Command",
     "CompositeHandler",
