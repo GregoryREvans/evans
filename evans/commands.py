@@ -81,7 +81,9 @@ class Command:
         elif self.command == "replace":
             self._replace(selection, self.contents, selection)
         elif self.command == "duplicate":
-            score[target_voice_name].extend(abjad.mutate.copy(score[source_voice_name]))
+            selection[self.target_voice_name].extend(
+                abjad.mutate.copy(selection[self.source_voice_name])
+            )
         else:
             raise Exception(f"Invalid command {self.command}")
 
@@ -136,6 +138,7 @@ def call(voice_name, callable, selector=None):
 def duplicate(source_voice_name, target_voice_name):
     return Command(
         command="duplicate",
+        voice_name="score",
         source_voice_name=source_voice_name,
         target_voice_name=target_voice_name,
     )

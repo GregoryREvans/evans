@@ -10,6 +10,7 @@ from .commands import (
     attach,
     call,
     detach,
+    duplicate,
     replace,
 )
 from .consort import (
@@ -182,6 +183,7 @@ __all__ = [
     "derive_added_sequences",
     "derive_multiplied_sequences",
     "detach",
+    "duplicate",
     "e_bonacci_cycle",
     "e_dovan_cycle",
     "feigenbaum_bifurcations",
