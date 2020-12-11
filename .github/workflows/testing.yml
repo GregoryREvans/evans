@@ -95,4 +95,4 @@ jobs:
         black-check .
         flake8-check .
         isort-check .
-        evans-doctest .
+    # evans-doctest .
