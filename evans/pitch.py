@@ -363,11 +363,9 @@ def to_nearest_eighth_tone(number, frac=False):
     elif mod == 0.25:
         div += 0.25
     if frac is False:
-        return abjad.mathx.integer_equivalent_number_to_integer(div)
+        return abjad.math.integer_equivalent_number_to_integer(div)
     else:
-        return quicktions.Fraction(
-            abjad.mathx.integer_equivalent_number_to_integer(div)
-        )
+        return quicktions.Fraction(abjad.math.integer_equivalent_number_to_integer(div))
 
 
 def to_nearest_quarter_tone(number, frac=False):
@@ -389,11 +387,9 @@ def to_nearest_quarter_tone(number, frac=False):
     elif mod == 0.5:
         div += 0.5
     if frac is False:
-        return abjad.mathx.integer_equivalent_number_to_integer(div)
+        return abjad.math.integer_equivalent_number_to_integer(div)
     else:
-        return quicktions.Fraction(
-            abjad.mathx.integer_equivalent_number_to_integer(div)
-        )
+        return quicktions.Fraction(abjad.math.integer_equivalent_number_to_integer(div))
 
 
 def to_nearest_sixth_tone(number):
