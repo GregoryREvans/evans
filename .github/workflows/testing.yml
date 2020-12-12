@@ -44,6 +44,7 @@ jobs:
       run: |
         wget -q -O $LILYPOND $LILYPOND_URL/$LILYPOND_SOURCE
         sh $LILYPOND --batch
+        echo "$LILYPOND/Contents/Resources/bin" >> $GITHUB_PATH
 
     - name: Install abjad
       run: |
