@@ -230,7 +230,7 @@ class TimespanCollection(AbjadObject):
             ...     ])
             >>> timespan = abjad.Timespan(5, 10)
             >>> result = timespan_collection - timespan
-            >>> print(format(timespan_collection))
+            >>> print(abjad.storage(timespan_collection))
             evans.TimespanCollection(
                 [
                     abjad.Timespan(

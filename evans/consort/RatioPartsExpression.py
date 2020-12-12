@@ -89,7 +89,7 @@ class RatioPartsExpression(AbjadObject):
 
             >>> ratio = [-1, 2, -1, 1, -1]
             >>> expression = evans.RatioPartsExpression.from_sequence(ratio)
-            >>> print(format(expression))
+            >>> print(abjad.storage(expression))
             evans.RatioPartsExpression(
                 parts=(1, 3),
                 ratio=abjad.Ratio((1, 2, 1, 1, 1)),

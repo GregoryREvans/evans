@@ -9,12 +9,12 @@ import abjad
 import pytest
 
 test_path = pathlib.Path(__file__).parent
-# travis_build_dir = os.environ.get("TRAVIS_BUILD_DIR")
-# assert isinstance(travis_build_dir, str)
-# wrapper = pathlib.Path(travis_build_dir)
-wrapper = str(test_path)
-# segments_dir = wrapper / wrapper.name / "segments"
-segments_dir = wrapper / "segments"
+travis_build_dir = os.environ.get("TRAVIS_BUILD_DIR")
+assert isinstance(travis_build_dir, str)
+wrapper = pathlib.Path(travis_build_dir)
+# wrapper = str(test_path)
+segments_dir = wrapper / wrapper.name / "segments"
+# segments_dir = wrapper / "segments"
 segments = []
 for path in sorted(segments_dir.iterdir()):
     if not path.is_dir():
