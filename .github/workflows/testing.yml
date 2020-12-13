@@ -20,6 +20,7 @@ env:
   TSMAKERS: /tmp/tsmakers
   BACA: /tmp/baca
   IDE: /tmp/ide
+  MYPYPATH: /tmp
 
 jobs:
   build:
@@ -40,7 +41,7 @@ jobs:
     - name: Install checkers
       run: |
         python -m pip install --upgrade pip
-        pip install black flake8 isort pytest six
+        pip install black flake8 isort mypy pytest six
 
     - name: Install lilypond
       run: |
@@ -53,31 +54,37 @@ jobs:
         git clone https://github.com/Abjad/abjad.git $ABJAD
         pip install -e $ABJAD
         echo "$ABJAD/scr" >> $GITHUB_PATH
+        echo "$MYPYPATH:$ABJAD" >> $MYPYPATH
 
     - name: Install rmakers
       run: |
         git clone https://github.com/Abjad/abjad-ext-rmakers.git $RMAKERS
         pip install -e $RMAKERS
+        echo "$MYPYPATH:$RMAKERS" >> $MYPYPATH
 
     - name: Install microtones
       run: |
         git clone -b greg/dev https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES
         pip install -e $MICROTONES
+        echo "$MYPYPATH:$MICROTONES" >> $MYPYPATH
 
     - name: Install tsmakers
       run: |
         git clone https://github.com/GregoryREvans/tsmakers.git $TSMAKERS
         pip install -e $TSMAKERS
+        echo "$MYPYPATH:$TSMAKERS" >> $MYPYPATH
 
     - name: Install baca
       run: |
         git clone https://github.com/trevorbaca/baca.git $BACA
         pip install -e $BACA
+        echo "$MYPYPATH:$BACA" >> $MYPYPATH
 
     - name: Install ide
       run: |
         git clone https://github.com/trevorbaca/ide.git $IDE
         pip install -e $IDE
+        echo "$MYPYPATH:$IDE" >> $MYPYPATH
 
     - name: Install package
       run: |
@@ -98,6 +105,7 @@ jobs:
         black-check .
         flake8-check .
         isort-check .
+        mypy .
         evans-doctest .
 
 # git clone -b trevor/dev https://github.com/Abjad/abjad.git $ABJAD
