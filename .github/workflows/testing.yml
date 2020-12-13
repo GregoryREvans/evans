@@ -100,7 +100,7 @@ jobs:
         black-check .
         flake8-check .
         isort-check .
-        mypy .
         evans-doctest .
+    # mypy .
 
 # git clone -b trevor/dev https://github.com/Abjad/abjad.git $ABJAD
