@@ -12,7 +12,7 @@ test_path = pathlib.Path(__file__).parent
 build_dir = str(test_path)
 assert isinstance(build_dir, str)
 wrapper = pathlib.Path(build_dir)
-segments_dir = wrapper / wrapper.name / "segments"
+segments_dir = "segments"
 segments = []
 for path in sorted(segments_dir.iterdir()):
     if not path.is_dir():
