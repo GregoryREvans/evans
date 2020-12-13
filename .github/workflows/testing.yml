@@ -59,7 +59,7 @@ jobs:
       run: |
         git clone https://github.com/Abjad/abjad-ext-rmakers.git $RMAKERS
         pip install -e $RMAKERS
-        export MYPYPATH=$MYPYPATH:$RMAKER
+        export MYPYPATH=$MYPYPATH:$RMAKERS
 
     - name: Install microtones
       run: |
