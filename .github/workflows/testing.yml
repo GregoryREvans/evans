@@ -84,7 +84,7 @@ jobs:
       run: |
         pip install -e .
         echo "./scr" >> $GITHUB_PATH
-        ln -s ./dotfiles/.mypy.ini mypy.ini
+        ln -s ./dotfiles/.mypy.ini ./mypy.ini
 
     - name: Sanity-check
       run: |
