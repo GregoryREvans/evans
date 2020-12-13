@@ -20,6 +20,7 @@ env:
   TSMAKERS: /tmp/tsmakers
   BACA: /tmp/baca
   IDE: /tmp/ide
+  MYPYPATH: echo "/tmp/abjad:/tmp/abjad-ext-rmakers:/tmp/abjad-ext-microtones:/tmp/tsmakers:/tmp/baca:/tmp/ide"
 
 jobs:
   build:
@@ -53,37 +54,31 @@ jobs:
         git clone https://github.com/Abjad/abjad.git $ABJAD
         pip install -e $ABJAD
         echo "$ABJAD/scr" >> $GITHUB_PATH
-        export MYPYPATH=$ABJAD
 
     - name: Install rmakers
       run: |
         git clone https://github.com/Abjad/abjad-ext-rmakers.git $RMAKERS
         pip install -e $RMAKERS
-        export MYPYPATH=$MYPYPATH:$RMAKERS
 
     - name: Install microtones
       run: |
         git clone -b greg/dev https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES
         pip install -e $MICROTONES
-        export MYPYPATH=$MYPYPATH:$MICROTONES
 
     - name: Install tsmakers
       run: |
         git clone https://github.com/GregoryREvans/tsmakers.git $TSMAKERS
         pip install -e $TSMAKERS
-        export MYPYPATH=$MYPYPATH:$TSMAKERS
 
     - name: Install baca
       run: |
         git clone https://github.com/trevorbaca/baca.git $BACA
         pip install -e $BACA
-        export MYPYPATH=$MYPYPATH:$BACA
 
     - name: Install ide
       run: |
         git clone https://github.com/trevorbaca/ide.git $IDE
         pip install -e $IDE
-        export MYPYPATH=$MYPYPATH:$IDE
 
     - name: Install package
       run: |
