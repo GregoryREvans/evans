@@ -84,6 +84,7 @@ jobs:
       run: |
         pip install -e .
         echo "./scr" >> $GITHUB_PATH
+        ln -s ./dotfiles/.mypy.ini mypy.ini
 
     - name: Sanity-check
       run: |
@@ -101,6 +102,6 @@ jobs:
         flake8-check .
         isort-check .
         evans-doctest .
-    # mypy .
+        mypy .
 
 # git clone -b trevor/dev https://github.com/Abjad/abjad.git $ABJAD
