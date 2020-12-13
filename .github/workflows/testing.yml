@@ -20,7 +20,7 @@ env:
   TSMAKERS: /tmp/tsmakers
   BACA: /tmp/baca
   IDE: /tmp/ide
-  MYPYPATH: echo "/tmp/abjad:/tmp/abjad-ext-rmakers:/tmp/abjad-ext-microtones:/tmp/tsmakers:/tmp/baca:/tmp/ide"
+  MYPYPATH: "/tmp/abjad:/tmp/abjad-ext-rmakers:/tmp/abjad-ext-microtones:/tmp/tsmakers:/tmp/baca:/tmp/ide"
 
 jobs:
   build:
@@ -88,6 +88,7 @@ jobs:
     - name: Sanity-check
       run: |
         ls
+        echo $MYPYPATH
         which black-check
         which evans-doctest
         which flake8-check
