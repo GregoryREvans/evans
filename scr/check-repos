@@ -10,3 +10,5 @@ cd ~/Scores/onkos; mypy .
 cd ~/Scores/passagenwerk; mypy .
 cd ~/Scores/sim; mypy .
 cd ~/evans; check
+cd ~/tsmakers; check
+cd ~/abjad-ext-microtones; check
