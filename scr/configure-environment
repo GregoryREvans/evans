@@ -71,8 +71,16 @@ echo "MYPYPATH=$MYPYPATH:~/baca" >> ~/.zshrc
 echo "Installing Scores"
 
 mkdir ~/Scores
-# clone scores into here
-# add to path
+git clone https://github.com/GregoryREvans/adumbration.git ~/Scores/adumbration
+git clone https://github.com/GregoryREvans/chalk_line.git ~/Scores/chalk_line
+git clone https://github.com/GregoryREvans/guerrero.git ~/Scores/guerrero
+git clone https://github.com/GregoryREvans/hamon_shu.git ~/Scores/hamon_shu
+git clone https://github.com/GregoryREvans/hugag.git ~/Scores/hugag
+git clone https://github.com/GregoryREvans/magnolia.git ~/Scores/magnolia
+git clone https://github.com/GregoryREvans/onkos.git ~/Scores/onkos
+git clone https://github.com/GregoryREvans/passagenwerk.git ~/Scores/passagenwerk
+git clone https://github.com/GregoryREvans/redbud.git ~/Scores/redbud
+git clone https://github.com/GregoryREvans/sim.git ~/Scores/sim
 
 echo "Cloning website"
 
