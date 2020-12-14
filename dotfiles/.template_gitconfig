@@ -1,0 +1,7 @@
+[core]
+	editor = 'Atom' --wait
+[user]
+	name = USERNAME
+	email = EMAIL
+[push]
+	default = simple

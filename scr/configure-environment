@@ -1,0 +1,106 @@
+echo "! Don't forget to switch to zsh !"
+
+echo "Installing LilyPond"
+
+wget -q -O ~/Applications/lilypond http://lilypond.org/download/binaries/linux-64/lilypond-2.19.84-1.linux-64.sh
+sh ~/Applications/lilypond --batch
+
+echo "Installing pip and virtualenv"
+
+python ~/evans/dotfiles/get-pip.py
+pip install virtualenv
+python3 -m virtualenv ~/.virtualenvs/abjad
+ln -s ~/evans/dotfiles/.template_zshrc ~/.zshrc
+echo "function workon_abjad {source ~/.virtualenvs/abjad/bin/activate}" >> ~/.zshrc
+echo "workon_abjad" >> ~/.zshrc
+workon_abjad
+
+echo "Installing evans"
+
+pip install -e ~/evans
+echo "PATH=$PATH:~/bin" >> ~/.zshrc
+echo "PATH=$PATH:~/evans/scr" >> ~/.zshrc
+echo "MYPYPATH=$MYPYPATH:~/evans" >> ~/.zshrc
+ln -s ~/evans/dotfiles/.mypy.ini ~/.mypy.ini
+ln -s ~/evans/dotfiles/.template_gitconfig ~/.gitconfig
+mv ~/evans/dotfiles/.abjad ~/.abjad
+
+echo "Installing abjad"
+
+git clone https://github.com/Abjad/abjad.git ~/abjad
+pip install -e ~/abjad
+echo "PATH=$PATH:~/abjad/scr" >> ~/.zshrc
+echo "MYPYPATH=$MYPYPATH:~/abjad" >> ~/.zshrc
+
+echo "Installing uqbar"
+
+git clone https://github.com/josiah-wolf-oberholtzer/uqbar.git ~/uqbar
+pip install -e ~/uqbar
+echo "MYPYPATH=$MYPYPATH:~/uqbar" >> ~/.zshrc
+
+echo "Installing ide"
+
+git clone https://github.com/trevorbaca/ide.git ~/ide
+pip install -e ~/ide
+echo "MYPYPATH=$MYPYPATH:~/ide" >> ~/.zshrc
+
+echo "Installing rmakers"
+
+git clone https://github.com/Abjad/abjad-ext-rmakers.git ~/abjad-ext-rmakers
+pip install -e ~/abjad-ext-rmakers
+echo "MYPYPATH=$MYPYPATH:~/abjad-ext-rmakers" >> ~/.zshrc
+
+echo "Installing microtones"
+
+git clone https://github.com/GregoryREvans/abjad-ext-microtones.git ~/abjad-ext-microtones
+pip install -e ~/abjad-ext-microtones
+echo "MYPYPATH=$MYPYPATH:~/abjad-ext-microtones" >> ~/.zshrc
+
+echo "Installing tsmakers"
+
+git clone https://github.com/GregoryREvans/tsmakers.git ~/tsmakers
+pip install -e ~/tsmakers
+echo "MYPYPATH=$MYPYPATH:~/tsmakers" >> ~/.zshrc
+
+echo "Installing baca"
+
+git clone https://github.com/trevorbaca/baca.git ~/baca
+pip install -e ~/baca
+echo "MYPYPATH=$MYPYPATH:~/baca" >> ~/.zshrc
+
+echo "Installing Scores"
+
+mkdir ~/Scores
+# clone scores into here
+# add to path
+
+echo "Cloning website"
+
+git clone https://github.com/GregoryREvans/GregoryREvans.github.io.git ~/GregoryREvans.github.io
+
+echo "Cloning docs"
+
+git clone https://github.com/GregoryREvans/perllan.git ~/perllan
+
+echo "Installing 3rd party packages"
+
+pip install numpy
+pip install quicktions
+
+echo "Installing checkers"
+
+pip install black
+pip install flake8
+pip install isort
+pip install mypy
+
+echo "Checking repos"
+
+check-repos
+
+echo "Don't forget to install Atom"
+echo "Don't forget to install iTerm"
+echo "Don't forget to install jupyter kernel for Atom"
+echo "Don't forget to install hydrogen for Atom"
+echo "Don't forget to install laguages and highlighters for Atom"
+echo "(consider copying .atom)"
