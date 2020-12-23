@@ -120,6 +120,7 @@ sequence
    :nosignatures:
 
    ~add_sequences
+   ~chen
    ~cyc
    ~derive_added_sequences
    ~derive_multiplied_sequences
@@ -130,9 +131,14 @@ sequence
    ~grouper
    ~guerrero_morales
    ~harmonic_series
+   ~henon
    ~hexagonal_sequence
    ~josephus
+   ~julia_set
    ~lindenmayer
+   ~lorenz
+   ~lu_chen
+   ~mandelbrot_set
    ~mirror
    ~mod
    ~multiple_sequence
@@ -154,10 +160,13 @@ sequence
    ~reproportion_chromatic_decimals
    ~reproportion_harmonics
    ~reproportion_scale
+   ~roessler
    ~rotate
    ~warp
 
 .. autofunction:: add_sequences
+
+.. autofunction:: chen
 
 .. autofunction:: cyc
 
@@ -179,11 +188,21 @@ sequence
 
 .. autofunction:: harmonic_series
 
+.. autofunction:: henon
+
 .. autofunction:: hexagonal_sequence
 
 .. autofunction:: josephus
 
+.. autofunction:: julia_set
+
 .. autofunction:: lindenmayer
+
+.. autofunction:: lorenz
+
+.. autofunction:: lu_chen
+
+.. autofunction:: mandelbrot_set
 
 .. autofunction:: mirror
 
@@ -226,6 +245,8 @@ sequence
 .. autofunction:: reproportion_harmonics
 
 .. autofunction:: reproportion_scale
+
+.. autofunction:: roessler
 
 .. autofunction:: rotate
 

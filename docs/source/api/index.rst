@@ -413,6 +413,7 @@ Sequence classes and functions.
    :nosignatures:
 
    ~evans.sequence.add_sequences
+   ~evans.sequence.chen
    ~evans.sequence.cyc
    ~evans.sequence.derive_added_sequences
    ~evans.sequence.derive_multiplied_sequences
@@ -423,9 +424,14 @@ Sequence classes and functions.
    ~evans.sequence.grouper
    ~evans.sequence.guerrero_morales
    ~evans.sequence.harmonic_series
+   ~evans.sequence.henon
    ~evans.sequence.hexagonal_sequence
    ~evans.sequence.josephus
+   ~evans.sequence.julia_set
    ~evans.sequence.lindenmayer
+   ~evans.sequence.lorenz
+   ~evans.sequence.lu_chen
+   ~evans.sequence.mandelbrot_set
    ~evans.sequence.mirror
    ~evans.sequence.mod
    ~evans.sequence.multiple_sequence
@@ -447,6 +453,7 @@ Sequence classes and functions.
    ~evans.sequence.reproportion_chromatic_decimals
    ~evans.sequence.reproportion_harmonics
    ~evans.sequence.reproportion_scale
+   ~evans.sequence.roessler
    ~evans.sequence.rotate
    ~evans.sequence.warp
 

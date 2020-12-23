@@ -1,11 +1,15 @@
 """
 Sequence classes and functions.
 """
+import decimal
 import itertools
+import math
 import random
 
 import abjad
 import numpy
+import scipy
+from scipy.integrate import odeint
 
 
 class CyclicList:
@@ -148,6 +152,46 @@ def add_sequences(x, y):
         y_val = cyc_y(r=1)[0]
         returned_sequence.append(_ + y_val)
     return returned_sequence
+
+
+def chen(a, b, c, first_state, time_values, iters):
+    """
+
+    .. container:: example
+
+        >>> c = evans.chen(
+        ...     a=40,
+        ...     b=3,
+        ...     c=28,
+        ...     first_state=[-0.1, 0.5, -0.6],
+        ...     time_values=[0.0, 40.0, 0.01],
+        ...     iters=10,
+        ... )
+        ...
+        >>> print(c)
+        [[-0.1, 0.12465461315287765, 0.34050473218831634, 0.5770360314308272, 0.8626644815821614, 1.228312639285715, 1.7104499742301047, 2.3534686146396937, 3.210342581973768, 4.338499963066017], [0.5, 0.6622702530766478, 0.8942439508177749, 1.2176463222616842, 1.66295375321105, 2.2713555330407695, 3.0965468523002206, 4.204669803361282, 5.6680291136883945, 7.542293510840843], [-0.6, -0.5821525955103403, -0.5631370288024949, -0.5417183868578875, -0.5155298081524363, -0.48013350192305393, -0.4273027100127936, -0.34198524404844655, -0.19722719758314597, 0.05337630134609778]]
+
+    """
+
+    def vector_calc(state, t):
+        x, y, z = state
+        return (
+            decimal.Decimal(a) * (decimal.Decimal(y) - decimal.Decimal(x)),
+            (decimal.Decimal(c) - decimal.Decimal(a))
+            * decimal.Decimal(x)
+            * decimal.Decimal(z)
+            + (decimal.Decimal(c) * decimal.Decimal(y)),
+            (decimal.Decimal(x) * decimal.Decimal(y))
+            - (decimal.Decimal(b) * decimal.Decimal(z)),
+        )
+
+    t = numpy.arange(time_values[0], time_values[1], time_values[2])
+    states = odeint(vector_calc, first_state, t)
+    return [
+        [_ for _ in states[:iters, 0]],
+        [_ for _ in states[:iters, 1]],
+        [_ for _ in states[:iters, 2]],
+    ]
 
 
 def cyc(lst):
@@ -499,6 +543,35 @@ def harmonic_series(fundamental=20, number_of_partials=10, invert=False):
     return returned_list
 
 
+def henon(first_state, a, b, iters):
+    """
+
+    .. container:: example
+
+        >>> h = evans.henon(
+        ...     first_state=[(-0.75), 0.32],
+        ...     a=1.2,
+        ...     b=0.3,
+        ...     iters=10,
+        ... )
+        ...
+        >>> print(h)
+        ([-0.75, Decimal('0.6450000000000000316413562021'), Decimal('0.2757699999999999778210746366'), Decimal('1.102241088520000020387803903'), Decimal('-0.375191500666105380643309098'), Decimal('1.161749931949499014986033708'), Decimal('-0.7321529354614302607193373836'), Decimal('0.7052674744991025979072557961'), Decimal('0.1834714666579601521199694779'), Decimal('1.171186107456583192487843126'), Decimal('-0.590970837961775774691947209')], [0.32, Decimal('-0.2249999999999999916733273153'), Decimal('0.1935000000000000023314683518'), Decimal('0.08273099999999999028466035597'), Decimal('0.3306723265559999938790068193'), Decimal('-0.1125574501998316100275303026'), Decimal('0.3485249795848496915977948793'), Decimal('-0.2196458806384290700872707501'), Decimal('0.2115802423497307715421348517'), Decimal('0.05504143999738804359904837692'), Decimal('0.3513558322369749447435751116')])
+
+    """
+    x_coordinates = [first_state[0]]
+    y_coordinates = [first_state[1]]
+    for _ in range(iters):
+        prev_x = x_coordinates[-1]
+        prev_y = y_coordinates[-1]
+        x_coordinates.append(
+            (decimal.Decimal(prev_y) + 1)
+            - (decimal.Decimal(a) * (decimal.Decimal(prev_x) ** 2))
+        )
+        y_coordinates.append(decimal.Decimal(b) * decimal.Decimal(prev_x))
+    return x_coordinates, y_coordinates
+
+
 def hexagonal_sequence(n_list=[1]):
     """
 
@@ -557,6 +630,33 @@ def josephus(n, k):
     return sequences[:-1]
 
 
+def julia_set(c, z0, max_iter):
+    """
+
+    .. container:: example
+
+        >>> s = evans.julia_set(
+        ...     c=0.25,
+        ...     z0=1.5,
+        ...     max_iter=10,
+        ... )
+        ...
+        >>> print(s)
+        1.7209086512090908
+
+    """
+    z = z0
+    n = 0
+    while abs(z) <= 2 and n < max_iter:
+        z = z * z + c
+        n += 1
+
+    if n == max_iter:
+        return max_iter
+
+    return n + 1 - math.log(math.log2(abs(z)))
+
+
 def lindenmayer(seed, rules, iters):
     """
 
@@ -577,6 +677,133 @@ def lindenmayer(seed, rules, iters):
                 result += axiom
         seed = result
     return seed
+
+
+def lorenz(rho, sigma, beta, first_state, time_values, iters):
+    """
+
+    .. container:: example
+
+        >>> l = evans.lorenz(
+        ...     rho=28.0,
+        ...     sigma=10.0,
+        ...     beta=(8.0 / 3.0),
+        ...     first_state=[1.0, 1.0, 1.0],
+        ...     time_values=[0.0, 40.0, 0.01],
+        ...     iters=10,
+        ... )
+        ...
+        >>> print(l)
+        [[1.0, 1.0125657408032651, 1.0488214579592021, 1.107206299034454, 1.1868654842333801, 1.2875548011090359, 1.4095688012763303, 1.5536887870511105, 1.721145788631946, 1.9135963877769706], [1.0, 1.2599200056984277, 1.5240008388892068, 1.798314577764884, 2.0885455352781572, 2.400160398825767, 2.738552104480127, 3.109160997057688, 3.51757713188136, 3.969623487737072], [1.0, 0.9848910446848755, 0.973114341630953, 0.9651591023109144, 0.9617373815250438, 0.9638062240116604, 0.9726082787069016, 0.9897311952182216, 1.0171865646618774, 1.057511871629279]]
+
+    """
+
+    def vector_calc(state, t):
+        x, y, z = state
+        return (
+            decimal.Decimal(sigma) * (decimal.Decimal(y) - decimal.Decimal(x)),
+            decimal.Decimal(x) * (decimal.Decimal(rho) - decimal.Decimal(z))
+            - decimal.Decimal(y),
+            decimal.Decimal(x) * decimal.Decimal(y)
+            - decimal.Decimal(beta) * decimal.Decimal(z),
+        )
+
+    t = numpy.arange(time_values[0], time_values[1], time_values[2])
+    states = odeint(vector_calc, first_state, t)
+    return [
+        [_ for _ in states[:iters, 0]],
+        [_ for _ in states[:iters, 1]],
+        [_ for _ in states[:iters, 2]],
+    ]
+
+
+def lu_chen(a, b, c, u, first_state, time_values, iters):
+    """
+
+    .. container:: example
+
+        >>> l = evans.lu_chen(
+        ...     a=36,
+        ...     b=3,
+        ...     c=20,
+        ...     u=(-15.15),
+        ...     first_state=[0.1, 0.3, -0.6],
+        ...     time_values=[0.0, 40.0, 0.01],
+        ...     iters=10,
+        ... )
+        ...
+        >>> print(l)
+        [[0.1, 0.14507340240351432, 0.14323815901530343, 0.10128972203257065, 0.02212510661501916, -0.09446533541055804, -0.25134777506809247, -0.4538520580544356, -0.7097811725420128, -1.0295889433224696], [0.3, 0.20092880055892573, 0.08027594159872467, -0.06748948170440211, -0.2490165225972874, -0.4723839158805826, -0.7474651998093496, -1.0863625805752994, -1.503923707544488, -2.0183521101080717], [-0.6, -0.5819559886254813, -0.5645492876975078, -0.547848676066436, -0.5317444633853425, -0.5158905397379729, -0.4995950638053594, -0.48163813037580305, -0.4599814138948388, -0.43131546553144084]]
+
+    """
+
+    def vector_calc(state, t):
+        x, y, z = state
+        return (
+            decimal.Decimal(a) * (decimal.Decimal(y) - decimal.Decimal(x)),
+            decimal.Decimal(x)
+            - (decimal.Decimal(x) * decimal.Decimal(z))
+            + (decimal.Decimal(c) * decimal.Decimal(y))
+            + decimal.Decimal(u),
+            (decimal.Decimal(x) * decimal.Decimal(y))
+            - (decimal.Decimal(b) * decimal.Decimal(z)),
+        )
+
+    t = numpy.arange(time_values[0], time_values[1], time_values[2])
+    states = odeint(vector_calc, first_state, t)
+    return [
+        [_ for _ in states[:iters, 0]],
+        [_ for _ in states[:iters, 1]],
+        [_ for _ in states[:iters, 2]],
+    ]
+
+
+def mandelbrot_set(xmin, xmax, ymin, ymax, width, height, maxiter):
+    """
+
+    .. container:: example
+
+        >>> s = evans.mandelbrot_set(
+        ... xmin=7,
+        ... xmax=10,
+        ... ymin=7,
+        ... ymax=10,
+        ... width=10,
+        ... height=10,
+        ... maxiter=10,
+        ... )
+        ...
+        >>> print(s)
+        (array([ 7.        ,  7.33333333,  7.66666667,  8.        ,  8.33333333,
+            8.66666667,  9.        ,  9.33333333,  9.66666667, 10.        ]), array([ 7.        ,  7.33333333,  7.66666667,  8.        ,  8.33333333,
+            8.66666667,  9.        ,  9.33333333,  9.66666667, 10.        ]), array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]))
+
+    """
+
+    def mandelbrot(c, maxiter):
+        z = c
+        for n in range(maxiter):
+            if abs(z) > 2:
+                return n
+            z = z * z + c
+        return 0
+
+    r1 = numpy.linspace(xmin, xmax, width)
+    r2 = numpy.linspace(ymin, ymax, height)
+    n3 = numpy.empty((width, height))
+    for i in range(width):
+        for j in range(height):
+            n3[i, j] = mandelbrot(r1[i] + 1j * r2[j], maxiter)
+    return (r1, r2, n3)
 
 
 def mirror(lst, sequential_duplicates):
@@ -1050,6 +1277,49 @@ def _return_amplitude_reciprocals(rescaled_scale):
     for _ in rescaled_scale:
         reciprocal_list.append(reciprocal(_))
     return reciprocal_list
+
+
+def roessler(a, b, c, t_ini, t_fin, h):
+    """
+
+    .. container:: example
+
+        >>> r = evans.roessler(
+        ...     a=0.13,
+        ...     b=0.2,
+        ...     c=6.5,
+        ...     t_ini=0,
+        ...     t_fin=(3 * (numpy.pi)),
+        ...     h=0.0001,
+        ... )
+        ...
+        >>> print(r)
+        (array([ 0.00000000e+00,  0.00000000e+00, -2.00007553e-09, ...,
+            1.86024565e-03,  1.86567571e-03,  1.87110585e-03]), array([ 0.        ,  0.        ,  0.        , ..., -0.08504001,
+           -0.08504093, -0.08504185]), array([0.00000000e+00, 2.00003777e-05, 3.99877548e-05, ...,
+           3.07404473e-02, 3.07404717e-02, 3.07404962e-02]))
+
+    """
+
+    def calc_coordinates(x_n, y_n, z_n, h, a_, b_, c_):
+        x_n1 = x_n + h * (-y_n - z_n)
+        y_n1 = y_n + h * (x_n + a_ * y_n)
+        z_n1 = z_n + h * (b_ + z_n * (x_n - c_))
+        return x_n1, y_n1, z_n1
+
+    numsteps = int((t_fin - t_ini) / h)
+    t = scipy.linspace(t_ini, t_fin, numsteps)
+    x = numpy.zeros(numsteps)
+    y = numpy.zeros(numsteps)
+    z = numpy.zeros(numsteps)
+    x[0] = 0
+    y[0] = 0
+    z[0] = 0
+    for _ in range(x.size - 1):
+        [x[_ + 1], y[_ + 1], z[_ + 1]] = calc_coordinates(
+            x[_], y[_], z[_], t[_ + 1] - t[_], a, b, c
+        )
+    return x, y, z
 
 
 def rotate(lst, n):
