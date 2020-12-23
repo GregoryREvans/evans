@@ -120,6 +120,7 @@ commands
    ~attach
    ~call
    ~detach
+   ~duplicate
    ~replace
 
 .. autofunction:: attach
@@ -127,5 +128,7 @@ commands
 .. autofunction:: call
 
 .. autofunction:: detach
+
+.. autofunction:: duplicate
 
 .. autofunction:: replace

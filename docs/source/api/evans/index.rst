@@ -30,6 +30,7 @@ evans
    rtm
    segmentmaker
    sequence
+   spanners
    timespan
 
 .. autosummary::
@@ -43,4 +44,5 @@ evans
    rtm
    segmentmaker
    sequence
+   spanners
    timespan

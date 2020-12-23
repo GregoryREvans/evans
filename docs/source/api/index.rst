@@ -167,6 +167,7 @@ Command classes.
    ~evans.commands.attach
    ~evans.commands.call
    ~evans.commands.detach
+   ~evans.commands.duplicate
    ~evans.commands.replace
 
 .. raw:: html
@@ -448,6 +449,37 @@ Sequence classes and functions.
    ~evans.sequence.reproportion_scale
    ~evans.sequence.rotate
    ~evans.sequence.warp
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: :ref:`evans.spanners <evans--spanners>`
+   :class: section-header
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~evans.spanners.BowAnglePoint
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Functions
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~evans.spanners.bow_angle_spanner
 
 .. raw:: html
 
