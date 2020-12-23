@@ -104,9 +104,9 @@ jobs:
         mypy .
         evans-doctest .
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Coveralls
+    #   uses: coverallsapp/github-action@master
+    #   with:
+    #     github-token: ${{ secrets.GITHUB_TOKEN }}
 
 # git clone -b trevor/dev https://github.com/Abjad/abjad.git $ABJAD
