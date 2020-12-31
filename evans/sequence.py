@@ -7,6 +7,7 @@ import math
 import random
 
 import abjad
+import baca
 import numpy
 import scipy
 from scipy.integrate import odeint
@@ -126,6 +127,57 @@ class MarkovChain:
             future_states.append(next_state)
             current_state = next_state
         return future_states
+
+
+class Ratio(abjad.Ratio):
+    def extract_sub_ratios(self):
+        """
+
+        .. container:: example
+
+            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
+            >>> ratio.extract_sub_ratios()
+            [Ratio((1, 1)), Ratio((2, 3)), Ratio((1, 2)), Ratio((2, 5)), Ratio((1, 3)), Ratio((2, 7)), Ratio((1, 4)), Ratio((2, 9))]
+
+        """
+        returned_list = [abjad.Ratio((self.numbers[0], _)) for _ in self.numbers]
+        return returned_list
+
+
+class Sequence(baca.Sequence):
+    def stack_intervals(self):
+        """
+
+        .. container:: example
+
+            >>> s = evans.Sequence([1, -2, 3])
+            >>> s.stack_intervals()
+            Sequence([1, -1, 2])
+
+        """
+        returned_list = [self.items[0]]
+        for _ in self.items[1:]:
+            returned_list.append(_ + returned_list[-1])
+        seq = Sequence(returned_list)
+        return seq
+
+    def stack_pitches(self):
+        """
+
+        .. container:: example
+
+            >>> s = evans.Sequence([1, -2, 3])
+            >>> s.stack_pitches()
+            Sequence([1, 10, 15])
+
+        """
+        returned_list = [self.items[0]]
+        for _ in self.items[1:]:
+            while _ < returned_list[-1]:
+                _ += 12
+            returned_list.append(_)
+        seq = Sequence(returned_list)
+        return seq
 
 
 def add_sequences(x, y):

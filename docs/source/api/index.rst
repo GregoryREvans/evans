@@ -401,6 +401,8 @@ Sequence classes and functions.
 
    ~evans.sequence.CyclicList
    ~evans.sequence.MarkovChain
+   ~evans.sequence.Ratio
+   ~evans.sequence.Sequence
 
 .. raw:: html
 
