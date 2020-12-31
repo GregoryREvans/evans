@@ -46,12 +46,24 @@ class Command:
             ... )
             ...
             >>> command(score)
-            >>> abjad.show(score) # doctest: +SKIP
+            >>> moment = abjad.SchemeMoment((1, 25))
+            >>> abjad.setting(score).proportional_notation_duration = moment
+            >>> file = abjad.LilyPondFile(
+            ...     items=[score],
+            ...     includes=["abjad.ily"],
+            ...     global_staff_size=16,
+            ... )
+            ...
+            >>> abjad.show(file) # doctest: +SKIP
 
             .. docs::
 
                 >>> print(abjad.lilypond(score))
                 \new Score
+                \with
+                {
+                    proportionalNotationDuration = #(ly:make-moment 1 25)
+                }
                 <<
                     \context Staff = "staff one"
                     {

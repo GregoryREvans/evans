@@ -50,11 +50,15 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> file = abjad.LilyPondFile.new(
-        ...     staff,
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
         ...     includes=[
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
-        ...     ]
+        ...     ],
+        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -88,11 +92,15 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> file = abjad.LilyPondFile.new(
-        ...     staff,
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
         ...     includes=[
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
-        ...     ]
+        ...     ],
+        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -126,11 +134,15 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> file = abjad.LilyPondFile.new(
-        ...     staff,
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
         ...     includes=[
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
-        ...     ]
+        ...     ],
+        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -164,11 +176,15 @@ def metric_modulation(
         ...
         >>> staff = abjad.Staff("c'1")
         >>> abjad.attach(m, staff[0])
-        >>> file = abjad.LilyPondFile.new(
-        ...     staff,
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
         ...     includes=[
         ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
-        ...     ]
+        ...     ],
+        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 

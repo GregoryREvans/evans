@@ -22,7 +22,16 @@ def nested_list_to_rtm(nested_list):
         >>> selections = maker(divisions)
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -75,7 +84,16 @@ def rotate_tree(rtm_string, n=1):
         >>> selections = maker(divisions)
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -134,7 +152,16 @@ def rotate_tree(rtm_string, n=1):
     >>> selections = maker(divisions)
     >>> staff = abjad.Staff()
     >>> staff.extend(selections)
-    >>> abjad.show(staff) # doctest: +SKIP
+    >>> score = abjad.Score([staff])
+    >>> moment = abjad.SchemeMoment((1, 25))
+    >>> abjad.setting(score).proportional_notation_duration = moment
+    >>> file = abjad.LilyPondFile(
+    ...     items=[score],
+    ...     includes=["abjad.ily"],
+    ...     global_staff_size=16,
+    ... )
+    ...
+    >>> abjad.show(file) # doctest: +SKIP
 
     .. docs::
 
@@ -283,7 +310,16 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         >>> selections = maker(divisions)
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         ..  docs::
 
@@ -369,7 +405,16 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
             >>> selections = maker(divisions)
             >>> staff = abjad.Staff()
             >>> staff.extend(selections)
-            >>> abjad.show(staff) # doctest: +SKIP
+            >>> score = abjad.Score([staff])
+            >>> moment = abjad.SchemeMoment((1, 25))
+            >>> abjad.setting(score).proportional_notation_duration = moment
+            >>> file = abjad.LilyPondFile(
+            ...     items=[score],
+            ...     includes=["abjad.ily"],
+            ...     global_staff_size=16,
+            ... )
+            ...
+            >>> abjad.show(file) # doctest: +SKIP
 
             ..  docs::
 
@@ -429,7 +474,16 @@ class RTMMaker:
         >>> selections = maker(divisions)
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 

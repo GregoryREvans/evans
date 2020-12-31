@@ -209,12 +209,24 @@ def return_vertical_moment_ties(score):
         ...     abjad.attach(markup, tie[0])
         ...
         >>> handler(vm_ties)
-        >>> abjad.show(score) # doctest: +SKIP
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
             >>> print(abjad.lilypond(score))
             \new Score
+            \with
+            {
+                proportionalNotationDuration = #(ly:make-moment 1 25)
+            }
             <<
                 \new Staff
                 {
@@ -276,12 +288,24 @@ def return_vertical_moment_ties(score):
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
         ...
-        >>> abjad.show(score) # doctest: +SKIP
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
             >>> print(abjad.lilypond(score))
             \new Score
+            \with
+            {
+                proportionalNotationDuration = #(ly:make-moment 1 25)
+            }
             <<
                 \new Staff
                 {

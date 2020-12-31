@@ -9,6 +9,7 @@ import random
 import abjad
 import baca
 import numpy
+import quicktions
 import scipy
 from scipy.integrate import odeint
 
@@ -130,7 +131,7 @@ class MarkovChain:
 
 
 class Ratio(abjad.Ratio):
-    def extract_sub_ratios(self):
+    def extract_sub_ratios(self, reciprocal=False, as_fractions=False):
         """
 
         .. container:: example
@@ -139,8 +140,28 @@ class Ratio(abjad.Ratio):
             >>> ratio.extract_sub_ratios()
             [Ratio((1, 1)), Ratio((2, 3)), Ratio((1, 2)), Ratio((2, 5)), Ratio((1, 3)), Ratio((2, 7)), Ratio((1, 4)), Ratio((2, 9))]
 
+        .. container:: example
+
+            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
+            >>> ratio.extract_sub_ratios(reciprocal=True)
+            [Ratio((1, 1)), Ratio((3, 2)), Ratio((2, 1)), Ratio((5, 2)), Ratio((3, 1)), Ratio((7, 2)), Ratio((4, 1)), Ratio((9, 2))]
+
+        .. container:: example
+
+            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
+            >>> ratio.extract_sub_ratios(reciprocal=True, as_fractions=True)
+            [Fraction(1, 1), Fraction(3, 2), Fraction(2, 1), Fraction(5, 2), Fraction(3, 1), Fraction(7, 2), Fraction(4, 1), Fraction(9, 2)]
+
+        ..  todo::  consider [abjad.Ratio((_, self.numbers[-1])) for _ in self.numbers] i.e.: which direction does the ratio go?
+
         """
         returned_list = [abjad.Ratio((self.numbers[0], _)) for _ in self.numbers]
+        if reciprocal:
+            returned_list = [_.reciprocal for _ in returned_list]
+        if as_fractions:
+            returned_list = [
+                quicktions.Fraction(_.numbers[0], _.numbers[1]) for _ in returned_list
+            ]
         return returned_list
 
 
@@ -1336,7 +1357,7 @@ def roessler(a, b, c, t_ini, t_fin, h):
 
     .. container:: example
 
-        >>> r = evans.roessler(
+        >>> r_list = evans.roessler(
         ...     a=0.13,
         ...     b=0.2,
         ...     c=6.5,
@@ -1345,7 +1366,7 @@ def roessler(a, b, c, t_ini, t_fin, h):
         ...     h=0.0001,
         ... )
         ...
-        >>> print(r)
+        >>> print(r_list)
         (array([ 0.00000000e+00,  0.00000000e+00, -2.00007553e-09, ...,
             1.86024565e-03,  1.86567571e-03,  1.87110585e-03]), array([ 0.        ,  0.        ,  0.        , ..., -0.08504001,
            -0.08504093, -0.08504185]), array([0.00000000e+00, 2.00003777e-05, 3.99877548e-05, ...,

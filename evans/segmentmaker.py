@@ -27,7 +27,16 @@ class NoteheadBracketMaker:
         >>> staff.extend([abjad.Note("c'4"), abjad.Note("cs'8"), abjad.Note("d'8")])
         >>> new_brackets = evans.NoteheadBracketMaker()
         >>> new_brackets(staff)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
@@ -820,7 +829,16 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         ...     staff.append(_)
         ...
         >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
-        >>> abjad.show(staff) # doctest: +SKIP
+        >>> score = abjad.Score([staff])
+        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> abjad.setting(score).proportional_notation_duration = moment
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=["abjad.ily"],
+        ...     global_staff_size=16,
+        ... )
+        ...
+        >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
 
