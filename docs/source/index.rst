@@ -28,6 +28,7 @@ Welcome
   :caption: Examples
 
   scores
+  recipes
 
 .. toctree::
   :caption: Reference
