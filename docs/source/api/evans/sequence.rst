@@ -243,13 +243,32 @@ sequence
       lindenmayer
       lorenz
       lu_chen
+      mandelbrot_set
       map_dict
+      map_indices
       mirror
       mod
       multiply
       multiply_all
+      multiply_sequences
+      n_bonacci_cycle
+      normalize_to_indices
+      normalize_to_sum
+      orbits
+      permutations
+      pitch_warp
+      prime_sequence
+      prism_sequence
+      random_walk
+      recaman_sequence
+      reciprocals
+      reproportion_by_base
+      roessler
+      rotate
       stack_intervals
       stack_pitches
+      transpose
+      warp
 
    .. raw:: html
 
@@ -389,6 +408,8 @@ sequence
 
    .. automethod:: Sequence.map_dict
 
+   .. automethod:: Sequence.map_indices
+
    .. automethod:: Sequence.mirror
 
    .. automethod:: Sequence.mod
@@ -396,6 +417,12 @@ sequence
    .. automethod:: Sequence.multiply
 
    .. automethod:: Sequence.multiply_all
+
+   .. automethod:: Sequence.multiply_sequences
+
+   .. automethod:: Sequence.normalize_to_indices
+
+   .. automethod:: Sequence.normalize_to_sum
 
    .. container:: inherited
 
@@ -425,17 +452,29 @@ sequence
 
       .. automethod:: Sequence.period_of_rotation
 
+   .. automethod:: Sequence.permutations
+
    .. container:: inherited
 
       .. automethod:: Sequence.permute
+
+   .. automethod:: Sequence.pitch_warp
+
+   .. automethod:: Sequence.prism_sequence
 
    .. container:: inherited
 
       .. automethod:: Sequence.quarters
 
+   .. automethod:: Sequence.random_walk
+
    .. container:: inherited
 
       .. automethod:: Sequence.ratios
+
+   .. automethod:: Sequence.recaman_sequence
+
+   .. automethod:: Sequence.reciprocals
 
    .. container:: inherited
 
@@ -469,6 +508,8 @@ sequence
 
       .. automethod:: Sequence.replace_at
 
+   .. automethod:: Sequence.reproportion_by_base
+
    .. container:: inherited
 
       .. automethod:: Sequence.retain
@@ -485,9 +526,7 @@ sequence
 
       .. automethod:: Sequence.reverse
 
-   .. container:: inherited
-
-      .. automethod:: Sequence.rotate
+   .. automethod:: Sequence.rotate
 
    .. container:: inherited
 
@@ -513,9 +552,13 @@ sequence
 
       .. automethod:: Sequence.sum_by_sign
 
+   .. automethod:: Sequence.transpose
+
    .. container:: inherited
 
       .. automethod:: Sequence.truncate
+
+   .. automethod:: Sequence.warp
 
    .. container:: inherited
 
@@ -552,6 +595,16 @@ sequence
 
    .. automethod:: Sequence.lu_chen
 
+   .. automethod:: Sequence.mandelbrot_set
+
+   .. automethod:: Sequence.n_bonacci_cycle
+
+   .. automethod:: Sequence.orbits
+
+   .. automethod:: Sequence.prime_sequence
+
+   .. automethod:: Sequence.roessler
+
    .. raw:: html
 
       <hr/>
@@ -575,79 +628,10 @@ sequence
 
    ~cyc
    ~flatten
-   ~harmonic_series
    ~julia_set
-   ~mandelbrot_set
-   ~multiple_sequence
-   ~multiply_sequences
-   ~n_bonacci_cycle
-   ~normalize_sum
-   ~normalize_to_indices
-   ~orbits
-   ~perm
-   ~pitch_warp
-   ~prime_sequence
-   ~prism_sequence
-   ~random_walk
-   ~recaman_sequence
-   ~reciprocal
-   ~reduce_mod
-   ~reproportion_chord
-   ~reproportion_chromatic_decimals
-   ~reproportion_harmonics
-   ~reproportion_scale
-   ~roessler
-   ~rotate
-   ~warp
 
 .. autofunction:: cyc
 
 .. autofunction:: flatten
 
-.. autofunction:: harmonic_series
-
 .. autofunction:: julia_set
-
-.. autofunction:: mandelbrot_set
-
-.. autofunction:: multiple_sequence
-
-.. autofunction:: multiply_sequences
-
-.. autofunction:: n_bonacci_cycle
-
-.. autofunction:: normalize_sum
-
-.. autofunction:: normalize_to_indices
-
-.. autofunction:: orbits
-
-.. autofunction:: perm
-
-.. autofunction:: pitch_warp
-
-.. autofunction:: prime_sequence
-
-.. autofunction:: prism_sequence
-
-.. autofunction:: random_walk
-
-.. autofunction:: recaman_sequence
-
-.. autofunction:: reciprocal
-
-.. autofunction:: reduce_mod
-
-.. autofunction:: reproportion_chord
-
-.. autofunction:: reproportion_chromatic_decimals
-
-.. autofunction:: reproportion_harmonics
-
-.. autofunction:: reproportion_scale
-
-.. autofunction:: roessler
-
-.. autofunction:: rotate
-
-.. autofunction:: warp

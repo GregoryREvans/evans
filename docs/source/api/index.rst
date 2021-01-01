@@ -416,30 +416,7 @@ Sequence classes and functions.
 
    ~evans.sequence.cyc
    ~evans.sequence.flatten
-   ~evans.sequence.harmonic_series
    ~evans.sequence.julia_set
-   ~evans.sequence.mandelbrot_set
-   ~evans.sequence.multiple_sequence
-   ~evans.sequence.multiply_sequences
-   ~evans.sequence.n_bonacci_cycle
-   ~evans.sequence.normalize_sum
-   ~evans.sequence.normalize_to_indices
-   ~evans.sequence.orbits
-   ~evans.sequence.perm
-   ~evans.sequence.pitch_warp
-   ~evans.sequence.prime_sequence
-   ~evans.sequence.prism_sequence
-   ~evans.sequence.random_walk
-   ~evans.sequence.recaman_sequence
-   ~evans.sequence.reciprocal
-   ~evans.sequence.reduce_mod
-   ~evans.sequence.reproportion_chord
-   ~evans.sequence.reproportion_chromatic_decimals
-   ~evans.sequence.reproportion_harmonics
-   ~evans.sequence.reproportion_scale
-   ~evans.sequence.roessler
-   ~evans.sequence.rotate
-   ~evans.sequence.warp
 
 .. raw:: html
 
