@@ -3,7 +3,7 @@ Rhythm tree functions.
 """
 import abjad
 
-from .sequence import normalize_sum
+from .sequence import Sequence
 
 
 def nested_list_to_rtm(nested_list):
@@ -565,7 +565,7 @@ class RhythmTreeQuantizer:
             numerators.append(node.preprolated_duration.numerator)
         numerators_sum = sum(numerators)
         if 4 < numerators_sum:
-            normalized = normalize_sum(numerators, desired_sum=4)
+            normalized = Sequence(numerators).normalize_to_sum(4)
             new_numerators = [round(_) for _ in normalized if round(_) != 0]
             for numerator, node in zip(new_numerators, nodes):
                 node.preprolated_duration = abjad.Duration(numerator, 1)

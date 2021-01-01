@@ -228,6 +228,26 @@ sequence
    .. autosummary::
       :nosignatures:
 
+      add_sequences
+      chen
+      derive_added_sequences
+      derive_multiplied_sequences
+      e_bonacci_cycle
+      e_dovan_cycle
+      feigenbaum_bifurcations
+      grouper
+      guerrero_morales
+      henon
+      hexagonal_sequence
+      josephus
+      lindenmayer
+      lorenz
+      lu_chen
+      map_dict
+      mirror
+      mod
+      multiply
+      multiply_all
       stack_intervals
       stack_pitches
 
@@ -289,6 +309,8 @@ sequence
 
       .. automethod:: Sequence.accumulate
 
+   .. automethod:: Sequence.add_sequences
+
    .. container:: inherited
 
       .. automethod:: Sequence.boustrophedon
@@ -300,6 +322,10 @@ sequence
    .. container:: inherited
 
       .. automethod:: Sequence.degree_of_rotational_symmetry
+
+   .. automethod:: Sequence.derive_added_sequences
+
+   .. automethod:: Sequence.derive_multiplied_sequences
 
    .. container:: inherited
 
@@ -321,9 +347,15 @@ sequence
 
       .. automethod:: Sequence.group_by_sign
 
+   .. automethod:: Sequence.grouper
+
+   .. automethod:: Sequence.guerrero_morales
+
    .. container:: inherited
 
       .. automethod:: Sequence.helianthate
+
+   .. automethod:: Sequence.hexagonal_sequence
 
    .. container:: inherited
 
@@ -349,9 +381,21 @@ sequence
 
       .. automethod:: Sequence.join
 
+   .. automethod:: Sequence.josephus
+
    .. container:: inherited
 
       .. automethod:: Sequence.map
+
+   .. automethod:: Sequence.map_dict
+
+   .. automethod:: Sequence.mirror
+
+   .. automethod:: Sequence.mod
+
+   .. automethod:: Sequence.multiply
+
+   .. automethod:: Sequence.multiply_all
 
    .. container:: inherited
 
@@ -489,6 +533,29 @@ sequence
 
       <hr/>
 
+   .. rubric:: Class & static methods
+      :class: class-header
+
+   .. automethod:: Sequence.chen
+
+   .. automethod:: Sequence.e_bonacci_cycle
+
+   .. automethod:: Sequence.e_dovan_cycle
+
+   .. automethod:: Sequence.feigenbaum_bifurcations
+
+   .. automethod:: Sequence.henon
+
+   .. automethod:: Sequence.lindenmayer
+
+   .. automethod:: Sequence.lorenz
+
+   .. automethod:: Sequence.lu_chen
+
+   .. raw:: html
+
+      <hr/>
+
    .. rubric:: Read-only properties
       :class: class-header
 
@@ -506,30 +573,12 @@ sequence
 .. autosummary::
    :nosignatures:
 
-   ~add_sequences
-   ~chen
    ~cyc
-   ~derive_added_sequences
-   ~derive_multiplied_sequences
-   ~e_bonacci_cycle
-   ~e_dovan_cycle
-   ~feigenbaum_bifurcations
    ~flatten
-   ~grouper
-   ~guerrero_morales
    ~harmonic_series
-   ~henon
-   ~hexagonal_sequence
-   ~josephus
    ~julia_set
-   ~lindenmayer
-   ~lorenz
-   ~lu_chen
    ~mandelbrot_set
-   ~mirror
-   ~mod
    ~multiple_sequence
-   ~multiply_all
    ~multiply_sequences
    ~n_bonacci_cycle
    ~normalize_sum
@@ -551,53 +600,17 @@ sequence
    ~rotate
    ~warp
 
-.. autofunction:: add_sequences
-
-.. autofunction:: chen
-
 .. autofunction:: cyc
-
-.. autofunction:: derive_added_sequences
-
-.. autofunction:: derive_multiplied_sequences
-
-.. autofunction:: e_bonacci_cycle
-
-.. autofunction:: e_dovan_cycle
-
-.. autofunction:: feigenbaum_bifurcations
 
 .. autofunction:: flatten
 
-.. autofunction:: grouper
-
-.. autofunction:: guerrero_morales
-
 .. autofunction:: harmonic_series
-
-.. autofunction:: henon
-
-.. autofunction:: hexagonal_sequence
-
-.. autofunction:: josephus
 
 .. autofunction:: julia_set
 
-.. autofunction:: lindenmayer
-
-.. autofunction:: lorenz
-
-.. autofunction:: lu_chen
-
 .. autofunction:: mandelbrot_set
 
-.. autofunction:: mirror
-
-.. autofunction:: mod
-
 .. autofunction:: multiple_sequence
-
-.. autofunction:: multiply_all
 
 .. autofunction:: multiply_sequences
 

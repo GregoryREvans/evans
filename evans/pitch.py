@@ -8,7 +8,7 @@ import abjad
 import quicktions
 from abjadext import microtones
 
-from .sequence import flatten, multiply_all
+from .sequence import Sequence, flatten
 
 
 def combination_tones(pitches=[0, 5, 7], depth=1):
@@ -71,7 +71,7 @@ def combination_tones(pitches=[0, 5, 7], depth=1):
 
 def combination_multiples(bank, *, combination_size=2):
     comb = set(_ for _ in itertools.combinations(bank, combination_size))
-    multiples = [multiply_all(_) for _ in comb]
+    multiples = [Sequence(_).multiply_all()[0] for _ in comb]
     segment = microtones.RatioSet(multiples).constrain_to_octave().sorted()
     return segment
 

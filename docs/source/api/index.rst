@@ -414,30 +414,12 @@ Sequence classes and functions.
 .. autosummary::
    :nosignatures:
 
-   ~evans.sequence.add_sequences
-   ~evans.sequence.chen
    ~evans.sequence.cyc
-   ~evans.sequence.derive_added_sequences
-   ~evans.sequence.derive_multiplied_sequences
-   ~evans.sequence.e_bonacci_cycle
-   ~evans.sequence.e_dovan_cycle
-   ~evans.sequence.feigenbaum_bifurcations
    ~evans.sequence.flatten
-   ~evans.sequence.grouper
-   ~evans.sequence.guerrero_morales
    ~evans.sequence.harmonic_series
-   ~evans.sequence.henon
-   ~evans.sequence.hexagonal_sequence
-   ~evans.sequence.josephus
    ~evans.sequence.julia_set
-   ~evans.sequence.lindenmayer
-   ~evans.sequence.lorenz
-   ~evans.sequence.lu_chen
    ~evans.sequence.mandelbrot_set
-   ~evans.sequence.mirror
-   ~evans.sequence.mod
    ~evans.sequence.multiple_sequence
-   ~evans.sequence.multiply_all
    ~evans.sequence.multiply_sequences
    ~evans.sequence.n_bonacci_cycle
    ~evans.sequence.normalize_sum

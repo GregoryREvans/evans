@@ -53,7 +53,7 @@ html_theme_options = {
     "navigation_depth": -1,
     "sticky_navigation": True,
     "style_external_links": True,
-    "display_version": False,
+    "display_version": True,
     "style_nav_header_background": "#556B2F",
 }
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
