@@ -32,13 +32,15 @@ extensions = [
     "uqbar.sphinx.style",
 ]
 
+html_favicon = "_static/notes.ico"
+html_logo = "_static/perllan-logo.png"
 master_doc = "index"
 project = "Perllan API"
 pygments_style = "sphinx"
 release = "0.3"
 source_suffix = ".rst"
 templates_path = ["_templates"]
-version = ""
+version = "0.3"
 
 ### HTML ###
 
@@ -51,6 +53,8 @@ html_theme_options = {
     "navigation_depth": -1,
     "sticky_navigation": True,
     "style_external_links": True,
+    "display_version": False,
+    "style_nav_header_background": "#556B2F",
 }
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 

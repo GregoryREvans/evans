@@ -136,26 +136,32 @@ class Ratio(abjad.Ratio):
 
         .. container:: example
 
-            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
+            >>> ratio = evans.Ratio('9:8:7:6:5:4:3:2')
             >>> ratio.extract_sub_ratios()
-            [Ratio((1, 1)), Ratio((2, 3)), Ratio((1, 2)), Ratio((2, 5)), Ratio((1, 3)), Ratio((2, 7)), Ratio((1, 4)), Ratio((2, 9))]
-
-        .. container:: example
-
-            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
-            >>> ratio.extract_sub_ratios(reciprocal=True)
             [Ratio((1, 1)), Ratio((3, 2)), Ratio((2, 1)), Ratio((5, 2)), Ratio((3, 1)), Ratio((7, 2)), Ratio((4, 1)), Ratio((9, 2))]
 
         .. container:: example
 
-            >>> ratio = evans.Ratio('2:3:4:5:6:7:8:9')
-            >>> ratio.extract_sub_ratios(reciprocal=True, as_fractions=True)
+            >>> ratio = evans.Ratio('9:8:7:6:5:4:3:2')
+            >>> ratio.extract_sub_ratios(reciprocal=True)
+            [Ratio((1, 1)), Ratio((2, 3)), Ratio((1, 2)), Ratio((2, 5)), Ratio((1, 3)), Ratio((2, 7)), Ratio((1, 4)), Ratio((2, 9))]
+
+        .. container:: example
+
+            >>> ratio = evans.Ratio('9:8:7:6:5:4:3:2')
+            >>> ratio.extract_sub_ratios(as_fractions=True)
             [Fraction(1, 1), Fraction(3, 2), Fraction(2, 1), Fraction(5, 2), Fraction(3, 1), Fraction(7, 2), Fraction(4, 1), Fraction(9, 2)]
 
-        ..  todo::  consider [abjad.Ratio((_, self.numbers[-1])) for _ in self.numbers] i.e.: which direction does the ratio go?
+        .. container:: example
+
+            >>> ratio = evans.Ratio('9:8:7:6:5:4:3:2')
+            >>> ratio.extract_sub_ratios(reciprocal=True, as_fractions=True)
+            [Fraction(1, 1), Fraction(2, 3), Fraction(1, 2), Fraction(2, 5), Fraction(1, 3), Fraction(2, 7), Fraction(1, 4), Fraction(2, 9)]
+
+        ..  todo::  consider using abjad.Ratio in abjadext.microtones?
 
         """
-        returned_list = [abjad.Ratio((self.numbers[0], _)) for _ in self.numbers]
+        returned_list = [abjad.Ratio((_, self.numbers[-1])) for _ in self.numbers[::-1]]
         if reciprocal:
             returned_list = [_.reciprocal for _ in returned_list]
         if as_fractions:
@@ -166,6 +172,14 @@ class Ratio(abjad.Ratio):
 
 
 class Sequence(baca.Sequence):
+    """
+
+    .. todo:: add pitch and ratio operations from abjadext.microtones?
+
+    .. todo:: add some sequence functions to sequence class with optional recursion?
+
+    """
+
     def stack_intervals(self):
         """
 
