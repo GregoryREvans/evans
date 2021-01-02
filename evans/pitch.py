@@ -11,6 +11,47 @@ from abjadext import microtones
 from .sequence import Sequence, flatten
 
 
+class PitchClassSet(microtones.PitchClassSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitch_classes])
+        return seq
+
+class PitchSet(microtones.PitchSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitches])
+        return seq
+
+class PitchClassSegment(microtones.PitchClassSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitch_classes])
+        return seq
+
+class PitchSegment(microtones.PitchSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitches])
+        return seq
+
+class RatioClassSet(microtones.RatioClassSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratio_classes])
+        return seq
+
+class RatioSet(microtones.RatioSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratios])
+        return seq
+
+class RatioClassSegment(microtones.RatioClassSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratio_classes])
+        return seq
+
+class RatioSegment(microtones.RatioSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratios])
+        return seq
+
+
 def combination_tones(pitches=[0, 5, 7], depth=1):
     """
 
@@ -1023,6 +1064,7 @@ def tonnetz(chord, chord_quality, transforms):
 def tune_to_ratio(
     note_head,
     ratio,
+    quarter_tones=False,
 ):
     ratio = quicktions.Fraction(ratio)
     log_ratio = quicktions.Fraction(math.log10(ratio))
@@ -1035,4 +1077,8 @@ def tune_to_ratio(
     if 50 < remainder:
         pitch += 1
         remainder = -100 + remainder
+    if quarter_tones:
+        if 25 < remainder:
+            pitch += 0.5
+            remainder = -50 + remainder
     note_head.written_pitch = pitch
