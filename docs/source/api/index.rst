@@ -295,10 +295,8 @@ Pitch functions.
 .. autosummary::
    :nosignatures:
 
-   ~evans.pitch.combination_multiples
    ~evans.pitch.combination_tones
    ~evans.pitch.herz_combination_tone_ratios
-   ~evans.pitch.relative_ratios
    ~evans.pitch.return_cent_markup
    ~evans.pitch.return_vertical_moment_ties
    ~evans.pitch.to_nearest_eighth_tone
@@ -401,7 +399,15 @@ Sequence classes and functions.
 
    ~evans.sequence.CyclicList
    ~evans.sequence.MarkovChain
+   ~evans.sequence.PitchClassSegment
+   ~evans.sequence.PitchClassSet
+   ~evans.sequence.PitchSegment
+   ~evans.sequence.PitchSet
    ~evans.sequence.Ratio
+   ~evans.sequence.RatioClassSegment
+   ~evans.sequence.RatioClassSet
+   ~evans.sequence.RatioSegment
+   ~evans.sequence.RatioSet
    ~evans.sequence.Sequence
 
 .. raw:: html

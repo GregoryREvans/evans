@@ -28,7 +28,8 @@ Welcome
   :caption: Examples
 
   scores
-  recipes
+  recipes_pitch
+  recipes_sequence
 
 .. toctree::
   :caption: Reference

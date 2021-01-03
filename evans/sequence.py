@@ -1370,6 +1370,7 @@ class Sequence(baca.Sequence):
 
         .. container:: example
 
+            >>> import numpy
             >>> evans.Sequence.roessler(
             ...     a=0.13,
             ...     b=0.2,

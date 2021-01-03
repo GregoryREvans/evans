@@ -24,7 +24,15 @@ sequence
 
    ~CyclicList
    ~MarkovChain
+   ~PitchClassSegment
+   ~PitchClassSet
+   ~PitchSegment
+   ~PitchSet
    ~Ratio
+   ~RatioClassSegment
+   ~RatioClassSet
+   ~RatioSegment
+   ~RatioSet
    ~Sequence
 
 .. autoclass:: CyclicList
@@ -110,6 +118,346 @@ sequence
    .. automethod:: MarkovChain.generate_states
 
    .. automethod:: MarkovChain.next_state
+
+.. autoclass:: PitchClassSegment
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__add__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__len__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.complement
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.invert
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.multiply
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.retrograde
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.rotate
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.sorted
+
+   .. automethod:: PitchClassSegment.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSegment.transpose
+
+.. autoclass:: PitchClassSet
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__add__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__len__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.complement
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.invert
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.multiply
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.normal_order
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.prime_form
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.sorted
+
+   .. automethod:: PitchClassSet.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: PitchClassSet.transpose
+
+.. autoclass:: PitchSegment
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__add__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__len__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__setitem__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.complement
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.invert
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.multiply
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.retrograde
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.rotate
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.sorted
+
+   .. automethod:: PitchSegment.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: PitchSegment.transpose
+
+.. autoclass:: PitchSet
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__add__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__len__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.complement
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.invert
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.multiply
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.sorted
+
+   .. automethod:: PitchSet.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: PitchSet.transpose
 
 .. autoclass:: Ratio
 
@@ -216,6 +564,346 @@ sequence
 
       .. autoattribute:: Ratio.reciprocal
 
+.. autoclass:: RatioClassSegment
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__add__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__len__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.complement
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.invert
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.multiply
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.retrograde
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.rotate
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.sorted
+
+   .. automethod:: RatioClassSegment.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSegment.transpose
+
+.. autoclass:: RatioClassSet
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__add__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__len__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.complement
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.invert
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.multiply
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.sorted
+
+   .. automethod:: RatioClassSet.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: RatioClassSet.transpose
+
+.. autoclass:: RatioSegment
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__add__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__len__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__setitem__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.complement
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.constrain_to_octave
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.invert
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.multiply
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.retrograde
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.rotate
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.sorted
+
+   .. automethod:: RatioSegment.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: RatioSegment.transpose
+
+.. autoclass:: RatioSet
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      to_sequence
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__add__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__contains__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__getitem__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__iter__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__len__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__repr__
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.complement
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.constrain_to_octave
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.invert
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.multiply
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.sorted
+
+   .. automethod:: RatioSet.to_sequence
+
+   .. container:: inherited
+
+      .. automethod:: RatioSet.transpose
+
 .. autoclass:: Sequence
 
    .. raw:: html
@@ -230,8 +918,14 @@ sequence
 
       add_sequences
       chen
+      combination_addition
+      combination_division
+      combination_multiplication
+      combination_subtraction
+      combinations
       derive_added_sequences
       derive_multiplied_sequences
+      divide_all
       e_bonacci_cycle
       e_dovan_cycle
       feigenbaum_bifurcations
@@ -267,6 +961,7 @@ sequence
       rotate
       stack_intervals
       stack_pitches
+      subtract_all
       transpose
       warp
 
@@ -334,6 +1029,16 @@ sequence
 
       .. automethod:: Sequence.boustrophedon
 
+   .. automethod:: Sequence.combination_addition
+
+   .. automethod:: Sequence.combination_division
+
+   .. automethod:: Sequence.combination_multiplication
+
+   .. automethod:: Sequence.combination_subtraction
+
+   .. automethod:: Sequence.combinations
+
    .. container:: inherited
 
       .. automethod:: Sequence.count
@@ -345,6 +1050,8 @@ sequence
    .. automethod:: Sequence.derive_added_sequences
 
    .. automethod:: Sequence.derive_multiplied_sequences
+
+   .. automethod:: Sequence.divide_all
 
    .. container:: inherited
 
@@ -543,6 +1250,8 @@ sequence
    .. automethod:: Sequence.stack_intervals
 
    .. automethod:: Sequence.stack_pitches
+
+   .. automethod:: Sequence.subtract_all
 
    .. container:: inherited
 
