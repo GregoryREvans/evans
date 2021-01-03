@@ -49,18 +49,8 @@ from .metmod import (
     mixed_number,
 )
 from .pitch import (
-    PitchClassSet,
-    PitchSet,
-    PitchClassSegment,
-    PitchSegment,
-    RatioClassSet,
-    RatioSet,
-    RatioClassSegment,
-    RatioSegment,
-    combination_multiples,
     combination_tones,
     herz_combination_tone_ratios,
-    relative_ratios,
     return_cent_markup,
     return_vertical_moment_ties,
     to_nearest_eighth_tone,
@@ -80,7 +70,23 @@ from .rtm import (
     rotate_tree,
 )
 from .segmentmaker import NoteheadBracketMaker, SegmentMaker, beam_meter
-from .sequence import CyclicList, MarkovChain, Ratio, Sequence, cyc, flatten, julia_set
+from .sequence import (
+    CyclicList,
+    MarkovChain,
+    PitchClassSegment,
+    PitchClassSet,
+    PitchSegment,
+    PitchSet,
+    Ratio,
+    RatioClassSegment,
+    RatioClassSet,
+    RatioSegment,
+    RatioSet,
+    Sequence,
+    cyc,
+    flatten,
+    julia_set,
+)
 from .spanners import BowAnglePoint, bow_angle_spanner
 from .timespan import (
     SilentTimespan,

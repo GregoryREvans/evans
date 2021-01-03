@@ -11,6 +11,7 @@ import baca
 import numpy
 import quicktions
 import scipy
+from abjadext import microtones
 from scipy.integrate import odeint
 
 
@@ -130,6 +131,54 @@ class MarkovChain:
         return future_states
 
 
+class PitchClassSet(microtones.PitchClassSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitch_classes])
+        return seq
+
+
+class PitchSet(microtones.PitchSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitches])
+        return seq
+
+
+class PitchClassSegment(microtones.PitchClassSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitch_classes])
+        return seq
+
+
+class PitchSegment(microtones.PitchSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.pitches])
+        return seq
+
+
+class RatioClassSet(microtones.RatioClassSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratio_classes])
+        return seq
+
+
+class RatioSet(microtones.RatioSet):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratios])
+        return seq
+
+
+class RatioClassSegment(microtones.RatioClassSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratio_classes])
+        return seq
+
+
+class RatioSegment(microtones.RatioSegment):
+    def to_sequence(self):
+        seq = Sequence([_ for _ in self.ratios])
+        return seq
+
+
 class Ratio(abjad.Ratio):
     def extract_sub_ratios(self, reciprocal=False, as_fractions=False):
         """
@@ -203,6 +252,95 @@ class Sequence(baca.Sequence):
             y_val = cyc_y(r=1)[0]
             returned_sequence.append(_ + y_val)
         return Sequence(returned_sequence)
+
+    def combination_addition(self, size=2):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_addition(2)
+            Sequence([Fraction(5, 4), Fraction(3, 2), Fraction(7, 4)])
+
+        """
+        comb = self.combinations(size, as_set=True)
+        multiples = [Sequence(_).sum() for _ in comb]
+        segment = RatioSet(multiples).constrain_to_octave().sorted()
+        return RatioSet(segment).to_sequence()
+
+    def combination_division(self, size=2):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_division(2)
+            Sequence([Fraction(1, 2), Fraction(2, 3), Fraction(3, 4)])
+
+        """
+        comb = self.combinations(size, as_set=True)
+        multiples = [Sequence(_).divide_all()[0] for _ in comb]
+        segment = RatioSet(multiples).constrain_to_octave().sorted()
+        return RatioSet(segment).to_sequence()
+
+    def combination_multiplication(self, size=2):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_multiplication(2)
+            Sequence([Fraction(1, 1), Fraction(3, 2)])
+
+        """
+        comb = self.combinations(size, as_set=True)
+        multiples = [Sequence(_).multiply_all()[0] for _ in comb]
+        segment = RatioSet(multiples).constrain_to_octave().sorted()
+        return RatioSet(segment).to_sequence()
+
+    def combination_subtraction(self, size=2):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_subtraction(2)
+            Sequence([Fraction(10, 1), Fraction(11, 1)])
+
+        """
+        comb = self.combinations(size, as_set=True)
+        multiples = [Sequence(_).subtract_all()[0] for _ in comb]
+        segment = PitchClassSet(multiples).sorted()
+        return PitchClassSet(segment).to_sequence()
+
+    def combinations(self, size=2, as_set=False):
+        """
+
+        .. container:: example
+
+            >>> l = [2, 2, 3, 3, 4, 4]
+            >>> evans.Sequence(l).combinations(2)
+            Sequence([(2, 2), (2, 3), (2, 3), (2, 4), (2, 4), (2, 3), (2, 3), (2, 4), (2, 4), (3, 3), (3, 4), (3, 4), (3, 4), (3, 4), (4, 4)])
+
+        .. container:: example
+
+            >>> l = [2, 2, 3, 3, 4, 4]
+            >>> evans.Sequence(l).combinations(2, as_set=True)
+            Sequence([(4, 4), (2, 4), (3, 4), (2, 3), (3, 3), (2, 2)])
+
+        """
+        out = [_ for _ in itertools.combinations(self.items, size)]
+        if as_set:
+            out = set(out)
+        return Sequence(out)
 
     @staticmethod
     def chen(a, b, c, first_state, time_values, iters):
@@ -327,6 +465,21 @@ class Sequence(baca.Sequence):
         if flat is True:
             returned_sequence = flatten(returned_sequence)
         return Sequence(returned_sequence)
+
+    def divide_all(self):
+        """
+
+        .. container:: example
+
+            >>> l = [1, 2, 3, 4]
+            >>> evans.Sequence(l).divide_all()
+            Sequence([0.041666666666666664])
+
+        """
+        x = self.items[0]
+        for _ in self.items[1:]:
+            x /= _
+        return Sequence([x])
 
     @staticmethod
     def e_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
@@ -1286,6 +1439,21 @@ class Sequence(baca.Sequence):
             returned_list.append(_)
         seq = Sequence(returned_list)
         return seq
+
+    def subtract_all(self):
+        """
+
+        .. container:: example
+
+            >>> l = [1, 2, 3, 4]
+            >>> evans.Sequence(l).subtract_all()
+            Sequence([-8])
+
+        """
+        x = self.items[0]
+        for _ in self.items[1:]:
+            x -= _
+        return Sequence([x])
 
     def transpose(self, n):
         """

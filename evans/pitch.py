@@ -1,55 +1,12 @@
 """
 Pitch functions.
 """
-import itertools
 import math
 
 import abjad
 import quicktions
-from abjadext import microtones
 
-from .sequence import Sequence, flatten
-
-
-class PitchClassSet(microtones.PitchClassSet):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.pitch_classes])
-        return seq
-
-class PitchSet(microtones.PitchSet):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.pitches])
-        return seq
-
-class PitchClassSegment(microtones.PitchClassSegment):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.pitch_classes])
-        return seq
-
-class PitchSegment(microtones.PitchSegment):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.pitches])
-        return seq
-
-class RatioClassSet(microtones.RatioClassSet):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.ratio_classes])
-        return seq
-
-class RatioSet(microtones.RatioSet):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.ratios])
-        return seq
-
-class RatioClassSegment(microtones.RatioClassSegment):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.ratio_classes])
-        return seq
-
-class RatioSegment(microtones.RatioSegment):
-    def to_sequence(self):
-        seq = Sequence([_ for _ in self.ratios])
-        return seq
+from .sequence import RatioSegment, flatten
 
 
 def combination_tones(pitches=[0, 5, 7], depth=1):
@@ -110,13 +67,6 @@ def combination_tones(pitches=[0, 5, 7], depth=1):
     return pitches
 
 
-def combination_multiples(bank, *, combination_size=2):
-    comb = set(_ for _ in itertools.combinations(bank, combination_size))
-    multiples = [Sequence(_).multiply_all()[0] for _ in comb]
-    segment = microtones.RatioSet(multiples).constrain_to_octave().sorted()
-    return segment
-
-
 def herz_combination_tone_ratios(
     fundamental=261.625565, pitches=[327.03195625, 392.43834749999996], depth=2
 ):
@@ -166,6 +116,7 @@ def herz_combination_tone_ratios(
 def return_cent_markup(
     note_head,
     ratio,
+    quarter_tones=False,
 ):
     ratio = quicktions.Fraction(ratio)
     log_ratio = quicktions.Fraction(math.log10(ratio))
@@ -182,6 +133,14 @@ def return_cent_markup(
         else:
             pitch -= 1
             remainder = 100 + remainder
+    if quarter_tones:
+        if 25 < abs(remainder):
+            if 0 < remainder:
+                pitch += 0.5
+                remainder = -50 + remainder
+            else:
+                pitch -= 0.5
+                remainder = 50 + remainder
     if remainder < 0:
         cent_string = f"{remainder}"
     else:
@@ -403,13 +362,6 @@ def return_vertical_moment_ties(score):
     flat_moments = flatten(new_moments)
     flat_moments.sort(key=lambda _: abjad.get.timespan(_))
     return flat_moments
-
-
-def relative_ratios(integers):
-    integers.sort()
-    root = integers[0]
-    ratios = microtones.RatioSegment([f"{_}/{root}" for _ in integers])
-    return ratios
 
 
 def to_nearest_eighth_tone(number, frac=False):
@@ -689,7 +641,7 @@ def tonnetz(chord, chord_quality, transforms):
         (2/3, 16/23, 1)
 
     """
-    chord = microtones.RatioSegment(chord)
+    chord = RatioSegment(chord)
     chord = chord.constrain_to_octave()
     returned_list = [chord]
     updated_transforms = []
@@ -1074,11 +1026,19 @@ def tune_to_ratio(
     parts = math.modf(semitones)
     pitch = abjad.NumberedPitch(note_head.written_pitch) + parts[1]
     remainder = round(parts[0] * 100)
-    if 50 < remainder:
-        pitch += 1
-        remainder = -100 + remainder
+    if 50 < abs(remainder):
+        if 0 < remainder:
+            pitch += 1
+            remainder = -100 + remainder
+        else:
+            pitch -= 1
+            remainder = 100 + remainder
     if quarter_tones:
-        if 25 < remainder:
-            pitch += 0.5
-            remainder = -50 + remainder
+        if 25 < abs(remainder):
+            if 0 < remainder:
+                pitch += 0.5
+                remainder = -50 + remainder
+            else:
+                pitch -= 0.5
+                remainder = 50 + remainder
     note_head.written_pitch = pitch
