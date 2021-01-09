@@ -251,7 +251,7 @@ class Sequence(baca.Sequence):
         for _ in x:
             y_val = cyc_y(r=1)[0]
             returned_sequence.append(_ + y_val)
-        return Sequence(returned_sequence)
+        return type(self)(returned_sequence)
 
     def combination_addition(self, size=2):
         """
@@ -340,10 +340,10 @@ class Sequence(baca.Sequence):
         out = [_ for _ in itertools.combinations(self.items, size)]
         if as_set:
             out = set(out)
-        return Sequence(out)
+        return type(self)(out)
 
-    @staticmethod
-    def chen(a, b, c, first_state, time_values, iters):
+    @classmethod
+    def chen(cls, a, b, c, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -376,7 +376,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return Sequence(
+        return cls(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -423,7 +423,7 @@ class Sequence(baca.Sequence):
             returned_sequence.append(transposition)
         if flat is True:
             returned_sequence = flatten(returned_sequence)
-        return Sequence(returned_sequence)
+        return type(self)(returned_sequence)
 
     def derive_multiplied_sequences(self, seq, flat=False):
         """
@@ -464,7 +464,7 @@ class Sequence(baca.Sequence):
             returned_sequence.append(transposition)
         if flat is True:
             returned_sequence = flatten(returned_sequence)
-        return Sequence(returned_sequence)
+        return type(self)(returned_sequence)
 
     def divide_all(self):
         """
@@ -479,10 +479,10 @@ class Sequence(baca.Sequence):
         x = self.items[0]
         for _ in self.items[1:]:
             x /= _
-        return Sequence([x])
+        return type(self)([x])
 
-    @staticmethod
-    def e_bonacci_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
+    @classmethod
+    def e_bonacci_cycle(cls, n, iters, first, second, modulus, wrap_to_zero=False):
         """
 
         .. container:: example
@@ -509,10 +509,10 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return Sequence(sequence)
+        return cls(sequence)
 
-    @staticmethod
-    def e_dovan_cycle(n, iters, first, second, modulus, wrap_to_zero=False):
+    @classmethod
+    def e_dovan_cycle(cls, n, iters, first, second, modulus, wrap_to_zero=False):
         """
 
         .. container:: example
@@ -540,10 +540,12 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return Sequence(sequence)
+        return cls(sequence)
 
-    @staticmethod
-    def feigenbaum_bifurcations(fertility=3.59785, initial_state=0.5, iterations=10):
+    @classmethod
+    def feigenbaum_bifurcations(
+        cls, fertility=3.59785, initial_state=0.5, iterations=10
+    ):
         """
 
         .. container:: example
@@ -559,7 +561,7 @@ class Sequence(baca.Sequence):
             next_state = front * back
             list_.append(next_state)
             initial_state = next_state
-        return Sequence(list_)
+        return cls(list_)
 
     def grouper(self, seq):
         """
@@ -567,7 +569,7 @@ class Sequence(baca.Sequence):
         .. container:: example
 
             >>> evans.Sequence([0, 1, 2, 3, 4, 5, 6, 7]).grouper([1, 1, 2, 1, 3])
-            [0, 1, [2, 3], 4, [5, 6, 7]]
+            Sequence([0, 1, [2, 3], 4, [5, 6, 7]])
 
         """
 
@@ -578,7 +580,9 @@ class Sequence(baca.Sequence):
                 c += 1
 
         lst1 = cyc([_ for _ in self.items])
-        return [next(lst1) if i == 1 else [next(lst1) for _ in range(i)] for i in seq]
+        return type(self)(
+            [next(lst1) if i == 1 else [next(lst1) for _ in range(i)] for i in seq]
+        )
 
     def guerrero_morales(self, set_size=None):
         """
@@ -656,10 +660,10 @@ class Sequence(baca.Sequence):
             if 0 < len(temp_pairs_list):
                 pairs_list.extend(temp_pairs_list[0])
                 returned_list.append(list(temp_returned_list[0]))
-        return Sequence(returned_list)
+        return type(self)(returned_list)
 
-    @staticmethod
-    def henon(first_state, a, b, iters):
+    @classmethod
+    def henon(cls, first_state, a, b, iters):
         """
 
         .. container:: example
@@ -685,7 +689,7 @@ class Sequence(baca.Sequence):
                 - (decimal.Decimal(a) * (decimal.Decimal(prev_x) ** 2))
             )
             y_coordinates.append(decimal.Decimal(b) * decimal.Decimal(prev_x))
-        return Sequence([x_coordinates, y_coordinates])
+        return cls([x_coordinates, y_coordinates])
 
     def hexagonal_sequence(self):
         """
@@ -702,7 +706,7 @@ class Sequence(baca.Sequence):
         for n in n_list:
             x = n * (2 * n - 1)
             seq.append(x)
-        return Sequence(seq)
+        return type(self)(seq)
 
     def josephus(self, k):
         """
@@ -766,10 +770,10 @@ class Sequence(baca.Sequence):
             next.remove(_)
             sequences.append(next)
             returned_sequences.append(list(self.retain(next).items))
-        return Sequence(returned_sequences[:-1])
+        return type(self)(returned_sequences[:-1])
 
-    @staticmethod
-    def lindenmayer(seed, rules, iters):
+    @classmethod
+    def lindenmayer(cls, seed, rules, iters):
         """
 
         .. container:: example
@@ -788,10 +792,10 @@ class Sequence(baca.Sequence):
                 else:
                     result += axiom
             seed = result
-        return Sequence(seed)
+        return cls(seed)
 
-    @staticmethod
-    def lorenz(rho, sigma, beta, first_state, time_values, iters):
+    @classmethod
+    def lorenz(cls, rho, sigma, beta, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -821,7 +825,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return Sequence(
+        return cls(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -829,8 +833,8 @@ class Sequence(baca.Sequence):
             ]
         )
 
-    @staticmethod
-    def lu_chen(a, b, c, u, first_state, time_values, iters):
+    @classmethod
+    def lu_chen(cls, a, b, c, u, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -863,7 +867,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return Sequence(
+        return cls(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -871,8 +875,8 @@ class Sequence(baca.Sequence):
             ]
         )
 
-    @staticmethod
-    def mandelbrot_set(xmin, xmax, ymin, ymax, width, height, maxiter):
+    @classmethod
+    def mandelbrot_set(cls, xmin, xmax, ymin, ymax, width, height, maxiter):
         """
 
         .. container:: example
@@ -916,7 +920,7 @@ class Sequence(baca.Sequence):
         for i in range(width):
             for j in range(height):
                 n3[i, j] = mandelbrot(r1[i] + 1j * r2[j], maxiter)
-        return Sequence([r1, r2, n3])
+        return cls([r1, r2, n3])
 
     def map_dict(self, mapping_dict):
         """
@@ -934,7 +938,7 @@ class Sequence(baca.Sequence):
             Sequence([0, 2, 1, 3])
 
         """
-        returned_seq = Sequence([mapping_dict[_] for _ in self.items])
+        returned_seq = type(self)([mapping_dict[_] for _ in self.items])
         return returned_seq
 
     def map_indices(self, index_list):
@@ -951,7 +955,7 @@ class Sequence(baca.Sequence):
         for index in index_list:
             val = items_list[index]
             returned_list.append(val)
-        return Sequence(returned_list)
+        return type(self)(returned_list)
 
     def mirror(self, sequential_duplicates):
         """
@@ -977,9 +981,9 @@ class Sequence(baca.Sequence):
         """
         lst = list(self.items)
         if sequential_duplicates is False:
-            return Sequence(lst + lst[-2:0:-1])
+            return type(self)(lst + lst[-2:0:-1])
         else:
-            return Sequence(lst + lst[::-1])
+            return type(self)(lst + lst[::-1])
 
     def mod(self, modulus, indices=False):
         """
@@ -1004,7 +1008,7 @@ class Sequence(baca.Sequence):
                     continue
             else:
                 continue
-        return Sequence(new_seq)
+        return type(self)(new_seq)
 
     def multiply(self, x):
         """
@@ -1024,7 +1028,7 @@ class Sequence(baca.Sequence):
         returned_seq = []
         for _ in l_:
             returned_seq.append(_ * x)
-        return Sequence(returned_seq)
+        return type(self)(returned_seq)
 
     def multiply_all(self):
         """
@@ -1038,7 +1042,7 @@ class Sequence(baca.Sequence):
         x = 1
         for _ in self.items:
             x *= _
-        return Sequence([x])
+        return type(self)([x])
 
     def multiply_sequences(self, seq):
         """
@@ -1060,11 +1064,11 @@ class Sequence(baca.Sequence):
         for _ in x:
             y_val = cyc_y(r=1)[0]
             returned_sequence.append(_ * y_val)
-        return Sequence(returned_sequence)
+        return type(self)(returned_sequence)
 
-    @staticmethod
+    @classmethod
     def n_bonacci_cycle(
-        n, first_number, second_number, length, modulus, wrap_to_zero=False
+        cls, n, first_number, second_number, length, modulus, wrap_to_zero=False
     ):
         """
 
@@ -1082,7 +1086,7 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return Sequence(sequence)
+        return cls(sequence)
 
     def normalize_to_sum(self, desired_sum=1):
         """
@@ -1101,7 +1105,7 @@ class Sequence(baca.Sequence):
         normalized_list = []
         for _ in integer_list:
             normalized_list.append(_ / sum)
-        return Sequence(normalized_list)
+        return type(self)(normalized_list)
 
     def normalize_to_indices(self):
         """
@@ -1123,10 +1127,10 @@ class Sequence(baca.Sequence):
                 out.append(Sequence(_).normalize_to_indices())
             else:
                 out.append(int(float(_) / minimum_value))
-        return Sequence(out)
+        return type(self)(out)
 
-    @staticmethod
-    def orbits(initial_state=0.4, iterations=10):
+    @classmethod
+    def orbits(cls, initial_state=0.4, iterations=10):
         """
 
         .. container:: example
@@ -1142,7 +1146,7 @@ class Sequence(baca.Sequence):
             next_state = front * back
             list_.append(next_state)
             initial_state = next_state
-        return Sequence(list_)
+        return cls(list_)
 
     def permutations(self):
         """
@@ -1170,9 +1174,9 @@ class Sequence(baca.Sequence):
             for i in range(len(lst)):
                 x = lst[i]
                 ba = lst[:i] + lst[i + 1 :]
-                for p in Sequence(ba).permutations():
+                for p in type(self)(ba).permutations():
                     list_.append([x] + p)
-            return Sequence(list_)
+            return type(self)(list_)
 
     def pitch_warp(self, warp_values=(0.5, -0.5), *, boolean_vector=(1)):
         """
@@ -1199,10 +1203,10 @@ class Sequence(baca.Sequence):
                 else:
                     warp_value = w(r=1)[0]
                     pitch_list[i] = pitch_list[i] + warp_value
-        return Sequence(pitch_list)
+        return type(self)(pitch_list)
 
-    @staticmethod
-    def prime_sequence(start, end):
+    @classmethod
+    def prime_sequence(cls, start, end):
         """
 
         .. container:: example
@@ -1222,7 +1226,7 @@ class Sequence(baca.Sequence):
                             seq.append(val)
                         else:
                             continue
-        return Sequence(seq)
+        return cls(seq)
 
     def prism_sequence(self):
         """
@@ -1238,7 +1242,7 @@ class Sequence(baca.Sequence):
         for n in n_list:
             x = (n + 1) * (3 * n ** 2 + 3 * n + 1)
             seq.append(x)
-        return Sequence(seq)
+        return type(self)(seq)
 
     def random_walk(self, length, step_list, random_seed=1):
         """
@@ -1275,7 +1279,7 @@ class Sequence(baca.Sequence):
         list_ = len(input_list)
         final_list = [input_list[0]]
         final_list.extend([input_list[x] for x in reduce_mod(list_, walk)])
-        return Sequence(final_list)
+        return type(self)(final_list)
 
     def recaman_sequence(self):
         """
@@ -1308,7 +1312,7 @@ class Sequence(baca.Sequence):
         for _ in seq:
             val = calc_number(_)
             returned_list.append(val)
-        return Sequence(returned_list)
+        return type(self)(returned_list)
 
     def reciprocals(self):
         """
@@ -1324,7 +1328,7 @@ class Sequence(baca.Sequence):
         for _ in lst:
             val = 1 / _
             returned_list.append(val)
-        return Sequence(returned_list)
+        return type(self)(returned_list)
 
     def reproportion_by_base(self, base, round=None):
         """
@@ -1350,7 +1354,7 @@ class Sequence(baca.Sequence):
             collection.append(_ * base_converter)
         if round is not None:
             collection = [round(_) for _ in collection]
-        return Sequence(collection)
+        return type(self)(collection)
 
     def rotate(self, n):
         """
@@ -1362,10 +1366,10 @@ class Sequence(baca.Sequence):
 
         """
         lst = list(self.items)
-        return Sequence(lst[n:] + lst[:n])
+        return type(self)(lst[n:] + lst[:n])
 
-    @staticmethod
-    def roessler(a, b, c, t_ini, t_fin, h):
+    @classmethod
+    def roessler(cls, a, b, c, t_ini, t_fin, h):
         """
 
         .. container:: example
@@ -1405,7 +1409,7 @@ class Sequence(baca.Sequence):
             [x[_ + 1], y[_ + 1], z[_ + 1]] = calc_coordinates(
                 x[_], y[_], z[_], t[_ + 1] - t[_], a, b, c
             )
-        return Sequence([x, y, z])
+        return cls([x, y, z])
 
     def stack_intervals(self):
         """
@@ -1420,10 +1424,10 @@ class Sequence(baca.Sequence):
         returned_list = [self.items[0]]
         for _ in self.items[1:]:
             returned_list.append(_ + returned_list[-1])
-        seq = Sequence(returned_list)
+        seq = type(self)(returned_list)
         return seq
 
-    def stack_pitches(self):
+    def stack_pitches(self, as_ratios=False):
         """
 
         .. container:: example
@@ -1434,11 +1438,18 @@ class Sequence(baca.Sequence):
 
         """
         returned_list = [self.items[0]]
-        for _ in self.items[1:]:
-            while _ < returned_list[-1]:
-                _ += 12
-            returned_list.append(_)
-        seq = Sequence(returned_list)
+        if as_ratios:
+            for _ in self.items[1:]:
+                while _ < returned_list[-1]:
+                    _ *= 2
+                returned_list.append(_)
+            seq = type(self)(returned_list)
+        else:
+            for _ in self.items[1:]:
+                while _ < returned_list[-1]:
+                    _ += 12
+                returned_list.append(_)
+            seq = type(self)(returned_list)
         return seq
 
     def subtract_all(self):
@@ -1454,7 +1465,7 @@ class Sequence(baca.Sequence):
         x = self.items[0]
         for _ in self.items[1:]:
             x -= _
-        return Sequence([x])
+        return type(self)([x])
 
     def transpose(self, n):
         """
@@ -1475,7 +1486,7 @@ class Sequence(baca.Sequence):
         for _ in values:
             val = _ + n
             returned_list.append(val)
-        return Sequence(returned_list)
+        return type(self)(returned_list)
 
     def warp(self, min, max, random_seed, by_integers=False):
         """
@@ -1500,7 +1511,7 @@ class Sequence(baca.Sequence):
             perturbation_list = [random.uniform(min, max) for _ in warped_list]
         for x, y in zip(warped_list, perturbation_list):
             final_list.append(x + y)
-        return Sequence(final_list)
+        return type(self)(final_list)
 
 
 def cyc(lst):

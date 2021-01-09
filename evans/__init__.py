@@ -49,6 +49,7 @@ from .metmod import (
     mixed_number,
 )
 from .pitch import (
+    JIPitch,
     combination_tones,
     herz_combination_tone_ratios,
     return_cent_markup,
@@ -121,6 +122,7 @@ __all__ = [
     "GraceHandler",
     "HandlerCommand",
     "IntermittentVoiceHandler",
+    "JIPitch",
     "LogicalTieCollection",
     "MarkovChain",
     "NoteheadBracketMaker",

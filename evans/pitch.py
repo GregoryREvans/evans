@@ -9,6 +9,69 @@ import quicktions
 from .sequence import RatioSegment, flatten
 
 
+class JIPitch(abjad.Pitch):
+    def __init__(
+        self,
+        fundamental,
+        ratio,
+        with_quarter_tones=False,
+    ):
+        self.fundamental = fundamental
+        self.ratio = quicktions.Fraction(ratio)
+        self.with_quarter_tones = with_quarter_tones
+        pair = self._calculate_pitch_and_deviation(self.fundamental, self.ratio)
+        self.pitch = pair[0]
+        self.deviation = pair[1]
+
+    def __str__(self):
+        return abjad.lilypond(self.pitch)
+
+    def _get_lilypond_format(self):
+        return abjad.lilypond(self.pitch)
+
+    def _calculate_pitch_and_deviation(
+        self,
+        pitch,
+        ratio,
+    ):
+        ratio = quicktions.Fraction(ratio)
+        log_ratio = quicktions.Fraction(math.log10(ratio))
+        log_2 = quicktions.Fraction(1200 / math.log10(2))
+        ji_cents = quicktions.Fraction(log_ratio * log_2)
+        semitones = ji_cents / 100
+        parts = math.modf(semitones)
+        pitch = abjad.NumberedPitch(pitch) + parts[1]
+        remainder = round(parts[0] * 100)
+        if 50 < abs(remainder):
+            if 0 < remainder:
+                pitch += 1
+                remainder = -100 + remainder
+            else:
+                pitch -= 1
+                remainder = 100 + remainder
+        if self.with_quarter_tones:
+            if 25 < abs(remainder):
+                if 0 < remainder:
+                    pitch += 0.5
+                    remainder = -50 + remainder
+                else:
+                    pitch -= 0.5
+                    remainder = 50 + remainder
+        return pitch, remainder
+
+    @property
+    def name(self):
+        return abjad.lilypond(self.pitch)
+
+    @property
+    def pitch_class(self):
+        return abjad.NamedPitchClass(self.pitch)
+
+    @property
+    def octave(self):
+        return abjad.Octave(self.pitch)
+
+
 def combination_tones(pitches=[0, 5, 7], depth=1):
     """
 
