@@ -132,24 +132,244 @@ class MarkovChain:
 
 
 class PitchClassSet(microtones.PitchClassSet):
+    def alpha(self, category):
+        """
+
+        .. container:: example
+
+            >>> s = evans.PitchClassSet([_ for _ in range(12)])
+            >>> s.alpha(category=1)
+            PitchClassSet([Fraction(1, 1), Fraction(0, 1), Fraction(3, 1), Fraction(2, 1), Fraction(5, 1), Fraction(4, 1), Fraction(7, 1), Fraction(6, 1), Fraction(9, 1), Fraction(8, 1), Fraction(11, 1), Fraction(10, 1)])
+
+        .. container:: example
+
+            >>> s = evans.PitchClassSet([_ for _ in range(12)])
+            >>> s.alpha(category=2)
+            PitchClassSet([Fraction(11, 1), Fraction(2, 1), Fraction(1, 1), Fraction(4, 1), Fraction(3, 1), Fraction(6, 1), Fraction(5, 1), Fraction(8, 1), Fraction(7, 1), Fraction(10, 1), Fraction(9, 1), Fraction(0, 1)])
+
+        """
+        numbers = []
+        if category == 1:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) + 1
+                else:
+                    number = abs(_) - 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        elif category == 2:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) - 1
+                else:
+                    number = abs(_) + 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        else:
+            numbers = [_ for _ in self]
+        return type(self)(numbers)
+
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitch_classes])
         return seq
 
 
 class PitchSet(microtones.PitchSet):
+    def alpha(self, category):
+        """
+
+        .. container:: example
+
+            >>> s = evans.PitchSet([_ for _ in range(12)])
+            >>> s.alpha(category=1)
+            PitchSet([Fraction(1, 1), Fraction(0, 1), Fraction(3, 1), Fraction(2, 1), Fraction(5, 1), Fraction(4, 1), Fraction(7, 1), Fraction(6, 1), Fraction(9, 1), Fraction(8, 1), Fraction(11, 1), Fraction(10, 1)])
+
+        .. container:: example
+
+            >>> s = evans.PitchSet([_ for _ in range(12)])
+            >>> s.alpha(category=2)
+            PitchSet([Fraction(-1, 1), Fraction(2, 1), Fraction(1, 1), Fraction(4, 1), Fraction(3, 1), Fraction(6, 1), Fraction(5, 1), Fraction(8, 1), Fraction(7, 1), Fraction(10, 1), Fraction(9, 1), Fraction(12, 1)])
+
+        """
+        numbers = []
+        if category == 1:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) + 1
+                else:
+                    number = abs(_) - 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        elif category == 2:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) - 1
+                else:
+                    number = abs(_) + 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        else:
+            numbers = [_ for _ in self]
+        return type(self)(numbers)
+
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitches])
         return seq
 
 
 class PitchClassSegment(microtones.PitchClassSegment):
+    def alpha(self, category):
+        """
+
+        .. container:: example
+
+            >>> s = evans.PitchClassSegment([_ for _ in range(12)])
+            >>> s.alpha(category=1)
+            PitchClassSegment([Fraction(1, 1), Fraction(0, 1), Fraction(3, 1), Fraction(2, 1), Fraction(5, 1), Fraction(4, 1), Fraction(7, 1), Fraction(6, 1), Fraction(9, 1), Fraction(8, 1), Fraction(11, 1), Fraction(10, 1)])
+
+        .. container:: example
+
+            >>> s = evans.PitchClassSegment([_ for _ in range(12)])
+            >>> s.alpha(category=2)
+            PitchClassSegment([Fraction(11, 1), Fraction(2, 1), Fraction(1, 1), Fraction(4, 1), Fraction(3, 1), Fraction(6, 1), Fraction(5, 1), Fraction(8, 1), Fraction(7, 1), Fraction(10, 1), Fraction(9, 1), Fraction(0, 1)])
+
+        """
+        numbers = []
+        if category == 1:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) + 1
+                else:
+                    number = abs(_) - 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        elif category == 2:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) - 1
+                else:
+                    number = abs(_) + 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        else:
+            numbers = [_ for _ in self]
+        return type(self)(numbers)
+
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitch_classes])
         return seq
 
 
 class PitchSegment(microtones.PitchSegment):
+    def alpha(self, category):
+        """
+
+        .. container:: example
+
+            >>> s = evans.PitchSegment([_ for _ in range(12)])
+            >>> s.alpha(category=1)
+            PitchSegment([Fraction(1, 1), Fraction(0, 1), Fraction(3, 1), Fraction(2, 1), Fraction(5, 1), Fraction(4, 1), Fraction(7, 1), Fraction(6, 1), Fraction(9, 1), Fraction(8, 1), Fraction(11, 1), Fraction(10, 1)])
+
+        .. container:: example
+
+            >>> s = evans.PitchSegment([_ for _ in range(12)])
+            >>> s.alpha(category=2)
+            PitchSegment([Fraction(-1, 1), Fraction(2, 1), Fraction(1, 1), Fraction(4, 1), Fraction(3, 1), Fraction(6, 1), Fraction(5, 1), Fraction(8, 1), Fraction(7, 1), Fraction(10, 1), Fraction(9, 1), Fraction(12, 1)])
+
+        """
+        numbers = []
+        if category == 1:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) + 1
+                else:
+                    number = abs(_) - 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        elif category == 2:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) - 1
+                else:
+                    number = abs(_) + 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        else:
+            numbers = [_ for _ in self]
+        return type(self)(numbers)
+
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitches])
         return seq
@@ -252,6 +472,61 @@ class Sequence(baca.Sequence):
             y_val = cyc_y(r=1)[0]
             returned_sequence.append(_ + y_val)
         return type(self)(returned_sequence)
+
+    def alpha(self, category):
+        """
+
+        .. container:: example
+
+            >>> s = evans.Sequence([_ for _ in range(12)])
+            >>> s.alpha(category=1)
+            Sequence([1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10])
+
+        .. container:: example
+
+            >>> s = evans.Sequence([_ for _ in range(12)])
+            >>> s.alpha(category=2)
+            Sequence([-1, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12])
+
+        """
+        numbers = []
+        if category == 1:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) + 1
+                else:
+                    number = abs(_) - 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        elif category == 2:
+            for _ in self:
+                _ = abs(float(_))
+                is_integer = True
+                if not abjad.math.is_integer_equivalent_number(_):
+                    is_integer = False
+                    fraction_part = _ - int(_)
+                    _ = int(_)
+                if abs(_) % 2 == 0:
+                    number = abs(_) - 1
+                else:
+                    number = abs(_) + 1
+                if not is_integer:
+                    number += fraction_part
+                else:
+                    number = int(number)
+                numbers.append(number)
+        else:
+            numbers = [_ for _ in self]
+        return type(self)(numbers)
 
     def combination_addition(self, size=2):
         """
