@@ -1,3 +1,4 @@
+#(ly:set-option 'relative-includes #t)
 \include "evans-markups.ily"
 
 %%% LEAVE FILE-FINAL: %%%

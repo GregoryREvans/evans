@@ -85,14 +85,12 @@ class MarkovChain:
 
     .. container:: example
 
-        >>> import numpy
-        >>> numpy.random.seed(7)
         >>> prob = {
         ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
         ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
         ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
         ... }
-        >>> chain = evans.MarkovChain(transition_prob=prob)
+        >>> chain = evans.MarkovChain(transition_prob=prob, seed=7)
         >>> key_list = [
         ...     x for x in chain.generate_states(
         ...         current_state='one', no=14
@@ -103,9 +101,10 @@ class MarkovChain:
 
     """
 
-    def __init__(self, transition_prob):
+    def __init__(self, transition_prob, seed):
         self.transition_prob = transition_prob
         self.states = list(transition_prob.keys())
+        numpy.random.seed(seed)
 
     def __str__(self):
         return abjad.storage(self)
@@ -1047,6 +1046,17 @@ class Sequence(baca.Sequence):
             returned_sequences.append(list(self.retain(next).items))
         return type(self)(returned_sequences[:-1])
 
+    def linear_asymmetric_inversion(self):
+        out = []
+        for i in range(len(self) - 1):
+            pitch1 = self[i]
+            pitch2 = self[i + 1]
+            interval = abjad.NamedInterval.from_pitch_carriers(pitch1, pitch2)
+            inverted_interval = abjad.NamedInterval("P1") - interval
+            new_pitch = inverted_interval.transpose(abjad.NumberedPitch(pitch1))
+            out.append(new_pitch.number)
+        return out
+
     @classmethod
     def lindenmayer(cls, seed, rules, iters):
         """
@@ -1231,6 +1241,57 @@ class Sequence(baca.Sequence):
             val = items_list[index]
             returned_list.append(val)
         return type(self)(returned_list)
+
+    @classmethod
+    def markov(cls, transition_prob, first_state, length, seed):
+        """
+
+        .. container:: example
+
+            >>> prob = {
+            ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
+            ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
+            ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
+            ... }
+            ...
+            >>> evans.Sequence.markov(
+            ...     transition_prob=prob,
+            ...     first_state="one", \
+            ...     length=14,
+            ...     seed=7,
+            ... )
+            ...
+            Sequence(['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one'])
+
+        """
+        chain = MarkovChain(transition_prob, seed)
+        key_list = [
+            x for x in chain.generate_states(current_state=first_state, no=length)
+        ]
+        seq = cls(key_list)
+        return seq
+
+    def matrix(self, padded=False):
+        if not padded:
+            row = PitchSegment([_ for _ in self])
+            inverted_row = row.invert(row[0]).transpose(0 - row[0])
+            material = type(self)(row).derive_added_sequences(inverted_row)
+            return material
+        else:
+            out = []
+            temp = type(self)()
+            for _ in self:
+                if not isinstance(_, list):
+                    temp += [[_]]
+                else:
+                    temp += [_]
+            sorted_self = type(self)(temp).sort(key=lambda x: len(x))
+            largest = len(sorted_self[-1])
+            for _ in temp:
+                while len(_) < largest:
+                    _.append(None)
+                out.append(_)
+            return type(self)(out)
 
     def mirror(self, sequential_duplicates):
         """
@@ -1480,6 +1541,33 @@ class Sequence(baca.Sequence):
                     pitch_list[i] = pitch_list[i] + warp_value
         return type(self)(pitch_list)
 
+    def potamia(self, columns=False, retrograde=False):
+        """
+
+        .. todo: keep working
+
+        """
+        out = []
+        array = numpy.array([_ for _ in self])
+        if columns:
+            array = array.transpose()
+        for i, _ in enumerate(array):
+            if not retrograde:
+                if i % 2 == 0:
+                    temp = [value for value in _]
+                    out.append(temp)
+                else:
+                    temp = type(self)([value for value in _]).reverse()
+                    out.append(temp)
+            else:
+                if i % 2 == 0:
+                    temp = type(self)([value for value in _]).reverse()
+                    out.append(temp)
+                else:
+                    temp = [value for value in _]
+                    out.append(temp)
+        return type(self)(out)
+
     @classmethod
     def prime_sequence(cls, start, end):
         """
@@ -1556,6 +1644,23 @@ class Sequence(baca.Sequence):
         final_list.extend([input_list[x] for x in reduce_mod(list_, walk)])
         return type(self)(final_list)
 
+    @classmethod
+    def ratio(cls, ratio, reciprocals=False):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence.ratio("9:8:7:6:5:4")
+            Sequence([Fraction(1, 1), Fraction(5, 4), Fraction(3, 2), Fraction(7, 4), Fraction(2, 1), Fraction(9, 4)])
+
+        """
+        ratio = Ratio(ratio)
+        seq = ratio.extract_sub_ratios(
+            as_fractions=True,
+            reciprocal=reciprocals,
+        )
+        return cls([_ for _ in seq])
+
     def recaman_sequence(self):
         """
 
@@ -1604,6 +1709,13 @@ class Sequence(baca.Sequence):
             val = 1 / _
             returned_list.append(val)
         return type(self)(returned_list)
+
+    def remove_none(self):
+        out = []
+        for _ in self:
+            if not isinstance(_, type(None)):
+                out.append(_)
+        return type(self)(out)
 
     def reproportion_by_base(self, base, round=None):
         """
@@ -1787,6 +1899,15 @@ class Sequence(baca.Sequence):
         for x, y in zip(warped_list, perturbation_list):
             final_list.append(x + y)
         return type(self)(final_list)
+
+    def zipped_bifurcation(self, reversed=True):
+        center = len(self) // 2
+        first_half = self[:center]
+        second_half = type(self)(self[center:])
+        if reversed:
+            second_half = second_half.reverse()
+        out = [_ for _ in zip(first_half, second_half)]
+        return type(self)(out).flatten()
 
 
 def cyc(lst):
