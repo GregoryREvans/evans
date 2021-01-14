@@ -177,3 +177,103 @@ def bow_angle_spanner(
     assert isinstance(leaves, abjad.Selection), repr(leaves)
     for leaf in leaves:
         _format_leaf(leaf, leaves)
+
+
+class StringDampComponent(abjad.Markup):
+    def __init__(self, contents, *, direction=None):
+        self._contents = contents
+        if contents[0] == "(" and contents[-1] == ")":
+            self.parens = (contents[0], contents[-1])
+            self.parts = [_ for _ in contents[1:-1]]
+        else:
+            self.parens = False
+            self.parts = [_ for _ in contents]
+        self.column = self._interpret_components()
+        self._direction = direction
+
+    def __repr__(self):
+        return abjad.StorageFormatManager(self.column).get_repr_format()
+
+    def __str__(self):
+        return self.column._get_lilypond_format()
+
+    def _get_lilypond_format(self):
+        return self.column._get_lilypond_format()
+
+    char_to_note_head = {
+        "o": abjad.Markup.musicglyph("noteheads.s0harmonic"),
+        "*": abjad.Markup.musicglyph("noteheads.s2harmonic"),
+        "x": abjad.Markup.musicglyph("noteheads.s2cross"),
+        ".": abjad.Markup.musicglyph("noteheads.s2"),
+    }
+
+    length_to_paren_scale = {
+        1: [
+            abjad.Markup("(").general_align("Y", 0),
+            abjad.Markup(")").general_align("Y", 0),
+        ],
+        2: [
+            abjad.Markup("(").scale((1, 1.5)).general_align("Y", 0.5),
+            abjad.Markup(")").scale((1, 1.5)).general_align("Y", 0.5),
+        ],
+        3: [
+            abjad.Markup("(").scale((1, 2.4)).general_align("Y", 0.5),
+            abjad.Markup(")").scale((1, 2.4)).general_align("Y", 0.5),
+        ],
+        4: [
+            abjad.Markup("(").scale((1, 3.2)).general_align("Y", 0.65),
+            abjad.Markup(")").scale((1, 3.2)).general_align("Y", 0.65),
+        ],
+    }
+
+    def _interpret_components(self):
+        heads = [self.char_to_note_head[_] for _ in self.parts]
+        column = abjad.Markup.center_column(heads)
+        column = column.scale((0.75, 0.75))
+        column = column.override(("baseline-skip", 1.75))
+        if self.parens:
+            column_length = len(heads)
+            paren_markups = self.length_to_paren_scale[column_length]
+            column = abjad.Markup.concat(
+                [
+                    paren_markups[0],
+                    abjad.Markup.hspace(-0.1),
+                    column,
+                    abjad.Markup.hspace(-0.15),
+                    paren_markups[1],
+                ],
+            )
+        return column
+
+    def markup(self):
+        return self.column
+
+
+class StringDampSequence(abjad.Markup):
+    def __init__(self, components, *, direction=None):
+        self._components = [StringDampComponent(_).markup() for _ in components]
+        self._direction = direction
+        self.column = self._make_column()
+
+    def __repr__(self):
+        return abjad.StorageFormatManager(self.column).get_repr_format()
+
+    def __str__(self):
+        return self.column._get_lilypond_format()
+
+    def _get_lilypond_format(self):
+        return self.column._get_lilypond_format()
+
+    def _get_format_pieces(self):
+        return self.column._get_format_pieces()
+
+    def _get_format_specification(self):
+        return self.column._get_format_specification()
+
+    def _make_column(self):
+        m = abjad.Markup.center_column(self._components, direction=self._direction)
+        m = m.override(("baseline-skip", 1.75))
+        return m
+
+    def markup(self):
+        return self.column

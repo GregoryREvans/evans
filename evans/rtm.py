@@ -2,6 +2,7 @@
 Rhythm tree functions.
 """
 import abjad
+from abjadext import rmakers
 
 from .sequence import Sequence
 
@@ -463,7 +464,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
     return funnel_list
 
 
-class RTMMaker:
+class RTMMaker(rmakers.RhythmMaker):
     r"""
 
     .. container:: example
@@ -508,7 +509,7 @@ class RTMMaker:
     def __init__(self, rtm, tie_across_divisions=False):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
-        self.state = -1
+        self._state = -1
 
     def __str__(self):
         return abjad.storage(self)
@@ -525,8 +526,8 @@ class RTMMaker:
         selections = self._rtm_maker(divisions, starting_index=starting_index)
 
         if previous_state is not None:
-            self.state += len(selections)
-            self.state %= len(self.rtm)
+            self._state += len(selections)
+            self._state %= len(self.rtm)
 
         return selections
 
