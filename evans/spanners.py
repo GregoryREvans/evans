@@ -181,14 +181,18 @@ def bow_angle_spanner(
 
 class StringDampComponent(abjad.Markup):
     def __init__(self, contents, *, direction=None):
-        self._contents = contents
-        if contents[0] == "(" and contents[-1] == ")":
-            self.parens = (contents[0], contents[-1])
-            self.parts = [_ for _ in contents[1:-1]]
+        if contents != "":
+            self._contents = contents
+            if contents[0] == "(" and contents[-1] == ")":
+                self.parens = (contents[0], contents[-1])
+                self.parts = [_ for _ in contents[1:-1]]
+            else:
+                self.parens = False
+                self.parts = [_ for _ in contents]
+            self.column = self._interpret_components()
         else:
-            self.parens = False
-            self.parts = [_ for _ in contents]
-        self.column = self._interpret_components()
+            self._contents = None
+            self.column = None
         self._direction = direction
 
     def __repr__(self):
@@ -250,8 +254,14 @@ class StringDampComponent(abjad.Markup):
 
 
 class StringDampSequence(abjad.Markup):
-    def __init__(self, components, *, direction=None):
-        self._components = [StringDampComponent(_).markup() for _ in components]
+    """
+    Add optional arbitrary text markup like bis. or trem. above column
+    """
+
+    def __init__(self, contents, *, direction=None):
+        self._parsed_string = self._parse_string(contents)
+        self._contents = [StringDampComponent(_).markup() for _ in self._parsed_string]
+        self._contents = [_ for _ in self._contents if _ is not None]
         self._direction = direction
         self.column = self._make_column()
 
@@ -264,16 +274,56 @@ class StringDampSequence(abjad.Markup):
     def _get_lilypond_format(self):
         return self.column._get_lilypond_format()
 
-    def _get_format_pieces(self):
-        return self.column._get_format_pieces()
+    def _fuse_list(self, list_, sub=False):
+        length = len(list_)
+        out = []
+        current = ""
+        for i, _ in enumerate(list_):
+            if not isinstance(_, list):
+                current += _
+                if i == length - 1:
+                    out.append(_)
+            else:
+                out.append(current)
+                current = ""
+                out.append(self._fuse_list(_, True))
+        if not sub:
+            return out
+        else:
+            out = f"({current})"
+            return out
 
-    def _get_format_specification(self):
-        return self.column._get_format_specification()
+    def _loop_string(self, s):
+        out = []
+        flag = False
+        sub_list = []
+        for x in s:
+            if not flag:
+                if sub_list != []:
+                    out.append(sub_list)
+                    sub_list = []
+                if x != "(":
+                    out.append(x)
+                else:
+                    flag = True
+            else:
+                if x != ")":
+                    sub_list.append(x)
+                else:
+                    flag = False
+        if sub_list != []:
+            out.append(sub_list)
+        return out
 
     def _make_column(self):
-        m = abjad.Markup.center_column(self._components, direction=self._direction)
+        m = abjad.Markup.center_column(self._contents, direction=self._direction)
         m = m.override(("baseline-skip", 1.75))
         return m
+
+    def _parse_string(self, s):
+        looped_string = self._loop_string(s)
+        fused_list = self._fuse_list(looped_string)
+        return fused_list
 
     def markup(self):
         return self.column
