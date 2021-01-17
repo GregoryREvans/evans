@@ -5,10 +5,6 @@ import abjad
 
 @functools.total_ordering
 class BowAnglePoint:
-    """
-    Bow Angle Point
-    """
-
     def __init__(
         self,
         degrees=None,
@@ -55,10 +51,6 @@ def bow_angle_spanner(
     omit_bow_changes=True,
     tag=None,
 ):
-    """
-    bow angle spanner
-    """
-
     def _get_indicators(leaf):
         bow_contact_point = None
         prototype = BowAnglePoint
@@ -179,7 +171,7 @@ def bow_angle_spanner(
         _format_leaf(leaf, leaves)
 
 
-class StringDampComponent(abjad.Markup):
+class DampingComponent:
     def __init__(self, contents, *, direction=None):
         if contents != "":
             self._contents = contents
@@ -253,15 +245,12 @@ class StringDampComponent(abjad.Markup):
         return self.column
 
 
-class StringDampSequence(abjad.Markup):
-    """
-    Add optional arbitrary text markup like bis. or trem. above column
-    """
-
+class Damping:
     def __init__(self, contents, *, direction=None):
-        self._parsed_string = self._parse_string(contents)
-        self._contents = [StringDampComponent(_).markup() for _ in self._parsed_string]
-        self._contents = [_ for _ in self._contents if _ is not None]
+        self._contents = contents
+        self._parsed_string = self._parse_string(self._contents)
+        self._markup_list = [DampingComponent(_).markup() for _ in self._parsed_string]
+        self._markup_list = [_ for _ in self._markup_list if _ is not None]
         self._direction = direction
         self.column = self._make_column()
 
@@ -282,7 +271,7 @@ class StringDampSequence(abjad.Markup):
             if not isinstance(_, list):
                 current += _
                 if i == length - 1:
-                    out.append(_)
+                    out.append(current)
             else:
                 out.append(current)
                 current = ""
@@ -316,7 +305,7 @@ class StringDampSequence(abjad.Markup):
         return out
 
     def _make_column(self):
-        m = abjad.Markup.center_column(self._contents, direction=self._direction)
+        m = abjad.Markup.center_column(self._markup_list, direction=self._direction)
         m = m.override(("baseline-skip", 1.75))
         return m
 

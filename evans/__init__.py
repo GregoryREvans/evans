@@ -88,12 +88,7 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import (
-    BowAnglePoint,
-    StringDampComponent,
-    StringDampSequence,
-    bow_angle_spanner,
-)
+from .spanners import BowAnglePoint, Damping, DampingComponent, bow_angle_spanner
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -152,8 +147,8 @@ __all__ = [
     "Sequence",
     "SilentTimespan",
     "SlurHandler",
-    "StringDampComponent",
-    "StringDampSequence",
+    "DampingComponent",
+    "Damping",
     "TempoSpannerHandler",
     "TextSpanHandler",
     "TimespanCollection",

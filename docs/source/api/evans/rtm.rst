@@ -22,37 +22,7 @@ rtm
 .. autosummary::
    :nosignatures:
 
-   ~RTMMaker
    ~RhythmTreeQuantizer
-
-.. autoclass:: RTMMaker
-
-   .. raw:: html
-
-      <hr/>
-
-   .. rubric:: Attributes Summary
-      :class: class-header
-
-   .. autosummary::
-      :nosignatures:
-
-      __call__
-      __repr__
-      __str__
-
-   .. raw:: html
-
-      <hr/>
-
-   .. rubric:: Special methods
-      :class: class-header
-
-   .. automethod:: RTMMaker.__call__
-
-   .. automethod:: RTMMaker.__repr__
-
-   .. automethod:: RTMMaker.__str__
 
 .. autoclass:: RhythmTreeQuantizer
 
@@ -99,3 +69,75 @@ rtm
 .. autofunction:: nested_list_to_rtm
 
 .. autofunction:: rotate_tree
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Rhythm-makers
+   :class: section-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~RTMMaker
+
+.. autoclass:: RTMMaker
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __call__
+      __repr__
+      __str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. automethod:: RTMMaker.__call__
+
+   .. container:: inherited
+
+      .. automethod:: RTMMaker.__eq__
+
+   .. container:: inherited
+
+      .. automethod:: RTMMaker.__hash__
+
+   .. automethod:: RTMMaker.__repr__
+
+   .. automethod:: RTMMaker.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Read-only properties
+      :class: class-header
+
+   .. container:: inherited
+
+      .. autoattribute:: RTMMaker.previous_state
+
+   .. container:: inherited
+
+      .. autoattribute:: RTMMaker.spelling
+
+   .. container:: inherited
+
+      .. autoattribute:: RTMMaker.state
+
+   .. container:: inherited
+
+      .. autoattribute:: RTMMaker.tag

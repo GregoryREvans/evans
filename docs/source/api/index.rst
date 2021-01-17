@@ -289,6 +289,18 @@ Pitch functions.
 
    <hr/>
 
+.. rubric:: Classes
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~evans.pitch.JIPitch
+
+.. raw:: html
+
+   <hr/>
+
 .. rubric:: Functions
    :class: subsection-header
 
@@ -326,7 +338,6 @@ Rhythm tree functions.
 .. autosummary::
    :nosignatures:
 
-   ~evans.rtm.RTMMaker
    ~evans.rtm.RhythmTreeQuantizer
 
 .. raw:: html
@@ -343,6 +354,18 @@ Rhythm tree functions.
    ~evans.rtm.funnel_tree_to_x
    ~evans.rtm.nested_list_to_rtm
    ~evans.rtm.rotate_tree
+
+.. raw:: html
+
+   <hr/>
+
+.. rubric:: Rhythm-makers
+   :class: subsection-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~evans.rtm.RTMMaker
 
 .. raw:: html
 
@@ -442,6 +465,8 @@ Sequence classes and functions.
    :nosignatures:
 
    ~evans.spanners.BowAnglePoint
+   ~evans.spanners.Damping
+   ~evans.spanners.DampingComponent
 
 .. raw:: html
 

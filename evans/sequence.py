@@ -426,8 +426,6 @@ class Ratio(abjad.Ratio):
             >>> ratio.extract_sub_ratios(reciprocal=True, as_fractions=True)
             Sequence([Fraction(1, 1), Fraction(2, 3), Fraction(1, 2), Fraction(2, 5), Fraction(1, 3), Fraction(2, 7), Fraction(1, 4), Fraction(2, 9)])
 
-        ..  todo::  consider using abjad.Ratio in abjadext.microtones?
-
         """
         returned_list = [abjad.Ratio((_, self.numbers[-1])) for _ in self.numbers[::-1]]
         if reciprocal:
@@ -440,14 +438,6 @@ class Ratio(abjad.Ratio):
 
 
 class Sequence(baca.Sequence):
-    """
-
-    .. todo:: add pitch and ratio operations from abjadext.microtones?
-
-    .. todo:: add some sequence functions to sequence class with optional recursion?
-
-    """
-
     def add_sequences(self, seq):
         """
 
@@ -617,7 +607,7 @@ class Sequence(baca.Sequence):
         return type(self)(out)
 
     @classmethod
-    def chen(cls, a, b, c, first_state, time_values, iters):
+    def chen(class_, a, b, c, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -650,7 +640,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return cls(
+        return class_(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -756,7 +746,7 @@ class Sequence(baca.Sequence):
         return type(self)([x])
 
     @classmethod
-    def e_bonacci_cycle(cls, n, iters, first, second, modulus, wrap_to_zero=False):
+    def e_bonacci_cycle(class_, n, iters, first, second, modulus, wrap_to_zero=False):
         """
 
         .. container:: example
@@ -783,10 +773,10 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return cls(sequence)
+        return class_(sequence)
 
     @classmethod
-    def e_dovan_cycle(cls, n, iters, first, second, modulus, wrap_to_zero=False):
+    def e_dovan_cycle(class_, n, iters, first, second, modulus, wrap_to_zero=False):
         """
 
         .. container:: example
@@ -814,11 +804,11 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return cls(sequence)
+        return class_(sequence)
 
     @classmethod
     def feigenbaum_bifurcations(
-        cls, fertility=3.59785, initial_state=0.5, iterations=10
+        class_, fertility=3.59785, initial_state=0.5, iterations=10
     ):
         """
 
@@ -835,7 +825,7 @@ class Sequence(baca.Sequence):
             next_state = front * back
             list_.append(next_state)
             initial_state = next_state
-        return cls(list_)
+        return class_(list_)
 
     def grouper(self, seq):
         """
@@ -937,7 +927,7 @@ class Sequence(baca.Sequence):
         return type(self)(returned_list)
 
     @classmethod
-    def henon(cls, first_state, a, b, iters):
+    def henon(class_, first_state, a, b, iters):
         """
 
         .. container:: example
@@ -963,7 +953,7 @@ class Sequence(baca.Sequence):
                 - (decimal.Decimal(a) * (decimal.Decimal(prev_x) ** 2))
             )
             y_coordinates.append(decimal.Decimal(b) * decimal.Decimal(prev_x))
-        return cls([x_coordinates, y_coordinates])
+        return class_([x_coordinates, y_coordinates])
 
     def hexagonal_sequence(self):
         """
@@ -1058,7 +1048,7 @@ class Sequence(baca.Sequence):
         return out
 
     @classmethod
-    def lindenmayer(cls, seed, rules, iters):
+    def lindenmayer(class_, seed, rules, iters):
         """
 
         .. container:: example
@@ -1077,10 +1067,10 @@ class Sequence(baca.Sequence):
                 else:
                     result += axiom
             seed = result
-        return cls(seed)
+        return class_(seed)
 
     @classmethod
-    def lorenz(cls, rho, sigma, beta, first_state, time_values, iters):
+    def lorenz(class_, rho, sigma, beta, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -1110,7 +1100,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return cls(
+        return class_(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -1119,7 +1109,7 @@ class Sequence(baca.Sequence):
         )
 
     @classmethod
-    def lu_chen(cls, a, b, c, u, first_state, time_values, iters):
+    def lu_chen(class_, a, b, c, u, first_state, time_values, iters):
         """
 
         .. container:: example
@@ -1152,7 +1142,7 @@ class Sequence(baca.Sequence):
 
         t = numpy.arange(time_values[0], time_values[1], time_values[2])
         states = odeint(vector_calc, first_state, t)
-        return cls(
+        return class_(
             [
                 [_ for _ in states[:iters, 0]],
                 [_ for _ in states[:iters, 1]],
@@ -1161,7 +1151,7 @@ class Sequence(baca.Sequence):
         )
 
     @classmethod
-    def mandelbrot_set(cls, xmin, xmax, ymin, ymax, width, height, maxiter):
+    def mandelbrot_set(class_, xmin, xmax, ymin, ymax, width, height, maxiter):
         """
 
         .. container:: example
@@ -1205,7 +1195,7 @@ class Sequence(baca.Sequence):
         for i in range(width):
             for j in range(height):
                 n3[i, j] = mandelbrot(r1[i] + 1j * r2[j], maxiter)
-        return cls([r1, r2, n3])
+        return class_([r1, r2, n3])
 
     def map_dict(self, mapping_dict):
         """
@@ -1243,24 +1233,22 @@ class Sequence(baca.Sequence):
         return type(self)(returned_list)
 
     @classmethod
-    def markov(cls, transition_prob, first_state, length, seed):
+    def markov(class_, transition_prob, first_state, length, seed):
         """
 
         .. container:: example
 
             >>> prob = {
-            ...     'one': {'one': 0.8, 'two': 0.19, 'three': 0.01},
-            ...     'two': {'one': 0.2, 'two': 0.7, 'three': 0.1},
-            ...     'three': {'one': 0.1, 'two': 0.2, 'three': 0.7}
+            ...     "one": {"one": 0.8, "two": 0.19, "three": 0.01},
+            ...     "two": {"one": 0.2, "two": 0.7, "three": 0.1},
+            ...     "three": {"one": 0.1, "two": 0.2, "three": 0.7},
             ... }
-            ...
             >>> evans.Sequence.markov(
             ...     transition_prob=prob,
-            ...     first_state="one", \
+            ...     first_state="one",
             ...     length=14,
             ...     seed=7,
             ... )
-            ...
             Sequence(['one', 'one', 'one', 'one', 'two', 'two', 'two', 'one', 'one', 'one', 'one', 'two', 'two', 'one'])
 
         """
@@ -1268,7 +1256,7 @@ class Sequence(baca.Sequence):
         key_list = [
             x for x in chain.generate_states(current_state=first_state, no=length)
         ]
-        seq = cls(key_list)
+        seq = class_(key_list)
         return seq
 
     def matrix(self, padded=False):
@@ -1404,7 +1392,7 @@ class Sequence(baca.Sequence):
 
     @classmethod
     def n_bonacci_cycle(
-        cls, n, first_number, second_number, length, modulus, wrap_to_zero=False
+        class_, n, first_number, second_number, length, modulus, wrap_to_zero=False
     ):
         """
 
@@ -1422,7 +1410,7 @@ class Sequence(baca.Sequence):
             for index, item in enumerate(sequence):
                 if item == 0:
                     sequence[index] = item + modulus
-        return cls(sequence)
+        return class_(sequence)
 
     def normalize_to_sum(self, desired_sum=1):
         """
@@ -1466,7 +1454,7 @@ class Sequence(baca.Sequence):
         return type(self)(out)
 
     @classmethod
-    def orbits(cls, initial_state=0.4, iterations=10):
+    def orbits(class_, initial_state=0.4, iterations=10):
         """
 
         .. container:: example
@@ -1482,7 +1470,7 @@ class Sequence(baca.Sequence):
             next_state = front * back
             list_.append(next_state)
             initial_state = next_state
-        return cls(list_)
+        return class_(list_)
 
     def permutations(self):
         """
@@ -1496,8 +1484,6 @@ class Sequence(baca.Sequence):
 
             >>> evans.Sequence([0, [1, 2], 3]).permutations()
             Sequence([[0, [1, 2], 3], [0, 3, [1, 2]], [[1, 2], 0, 3], [[1, 2], 3, 0], [3, 0, [1, 2]], [3, [1, 2], 0]])
-
-        .. todo:: Add recursive permutations?
 
         """
         lst = list(self.items)
@@ -1542,11 +1528,6 @@ class Sequence(baca.Sequence):
         return type(self)(pitch_list)
 
     def potamia(self, columns=False, retrograde=False):
-        """
-
-        .. todo: keep working
-
-        """
         out = []
         array = numpy.array([_ for _ in self])
         if columns:
@@ -1569,7 +1550,7 @@ class Sequence(baca.Sequence):
         return type(self)(out)
 
     @classmethod
-    def prime_sequence(cls, start, end):
+    def prime_sequence(class_, start, end):
         """
 
         .. container:: example
@@ -1589,7 +1570,7 @@ class Sequence(baca.Sequence):
                             seq.append(val)
                         else:
                             continue
-        return cls(seq)
+        return class_(seq)
 
     def prism_sequence(self):
         """
@@ -1645,7 +1626,7 @@ class Sequence(baca.Sequence):
         return type(self)(final_list)
 
     @classmethod
-    def ratio(cls, ratio, reciprocals=False):
+    def ratio(class_, ratio, reciprocals=False):
         """
 
         .. container:: example
@@ -1659,7 +1640,7 @@ class Sequence(baca.Sequence):
             as_fractions=True,
             reciprocal=reciprocals,
         )
-        return cls([_ for _ in seq])
+        return class_([_ for _ in seq])
 
     def recaman_sequence(self):
         """
@@ -1756,7 +1737,7 @@ class Sequence(baca.Sequence):
         return type(self)(lst[n:] + lst[:n])
 
     @classmethod
-    def roessler(cls, a, b, c, t_ini, t_fin, h):
+    def roessler(class_, a, b, c, t_ini, t_fin, h):
         """
 
         .. container:: example
@@ -1796,7 +1777,7 @@ class Sequence(baca.Sequence):
             [x[_ + 1], y[_ + 1], z[_ + 1]] = calc_coordinates(
                 x[_], y[_], z[_], t[_ + 1] - t[_], a, b, c
             )
-        return cls([x, y, z])
+        return class_([x, y, z])
 
     def stack_intervals(self):
         """

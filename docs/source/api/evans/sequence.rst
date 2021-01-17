@@ -131,6 +131,7 @@ sequence
    .. autosummary::
       :nosignatures:
 
+      alpha
       to_sequence
 
    .. raw:: html
@@ -175,6 +176,8 @@ sequence
    .. rubric:: Methods
       :class: class-header
 
+   .. automethod:: PitchClassSegment.alpha
+
    .. container:: inherited
 
       .. automethod:: PitchClassSegment.complement
@@ -217,6 +220,7 @@ sequence
    .. autosummary::
       :nosignatures:
 
+      alpha
       to_sequence
 
    .. raw:: html
@@ -261,6 +265,8 @@ sequence
    .. rubric:: Methods
       :class: class-header
 
+   .. automethod:: PitchClassSet.alpha
+
    .. container:: inherited
 
       .. automethod:: PitchClassSet.complement
@@ -303,6 +309,7 @@ sequence
    .. autosummary::
       :nosignatures:
 
+      alpha
       to_sequence
 
    .. raw:: html
@@ -351,6 +358,8 @@ sequence
    .. rubric:: Methods
       :class: class-header
 
+   .. automethod:: PitchSegment.alpha
+
    .. container:: inherited
 
       .. automethod:: PitchSegment.complement
@@ -393,6 +402,7 @@ sequence
    .. autosummary::
       :nosignatures:
 
+      alpha
       to_sequence
 
    .. raw:: html
@@ -436,6 +446,8 @@ sequence
 
    .. rubric:: Methods
       :class: class-header
+
+   .. automethod:: PitchSet.alpha
 
    .. container:: inherited
 
@@ -917,6 +929,7 @@ sequence
       :nosignatures:
 
       add_sequences
+      alpha
       chen
       combination_addition
       combination_division
@@ -935,11 +948,14 @@ sequence
       hexagonal_sequence
       josephus
       lindenmayer
+      linear_asymmetric_inversion
       lorenz
       lu_chen
       mandelbrot_set
       map_dict
       map_indices
+      markov
+      matrix
       mirror
       mod
       multiply
@@ -951,11 +967,14 @@ sequence
       orbits
       permutations
       pitch_warp
+      potamia
       prime_sequence
       prism_sequence
       random_walk
+      ratio
       recaman_sequence
       reciprocals
+      remove_none
       reproportion_by_base
       roessler
       rotate
@@ -964,6 +983,7 @@ sequence
       subtract_all
       transpose
       warp
+      zipped_bifurcation
 
    .. raw:: html
 
@@ -1024,6 +1044,8 @@ sequence
       .. automethod:: Sequence.accumulate
 
    .. automethod:: Sequence.add_sequences
+
+   .. automethod:: Sequence.alpha
 
    .. container:: inherited
 
@@ -1109,6 +1131,8 @@ sequence
 
    .. automethod:: Sequence.josephus
 
+   .. automethod:: Sequence.linear_asymmetric_inversion
+
    .. container:: inherited
 
       .. automethod:: Sequence.map
@@ -1116,6 +1140,8 @@ sequence
    .. automethod:: Sequence.map_dict
 
    .. automethod:: Sequence.map_indices
+
+   .. automethod:: Sequence.matrix
 
    .. automethod:: Sequence.mirror
 
@@ -1167,6 +1193,8 @@ sequence
 
    .. automethod:: Sequence.pitch_warp
 
+   .. automethod:: Sequence.potamia
+
    .. automethod:: Sequence.prism_sequence
 
    .. container:: inherited
@@ -1186,6 +1214,8 @@ sequence
    .. container:: inherited
 
       .. automethod:: Sequence.remove
+
+   .. automethod:: Sequence.remove_none
 
    .. container:: inherited
 
@@ -1281,6 +1311,8 @@ sequence
 
       .. automethod:: Sequence.zip
 
+   .. automethod:: Sequence.zipped_bifurcation
+
    .. raw:: html
 
       <hr/>
@@ -1306,11 +1338,15 @@ sequence
 
    .. automethod:: Sequence.mandelbrot_set
 
+   .. automethod:: Sequence.markov
+
    .. automethod:: Sequence.n_bonacci_cycle
 
    .. automethod:: Sequence.orbits
 
    .. automethod:: Sequence.prime_sequence
+
+   .. automethod:: Sequence.ratio
 
    .. automethod:: Sequence.roessler
 

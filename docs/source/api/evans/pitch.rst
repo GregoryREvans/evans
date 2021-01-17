@@ -16,6 +16,135 @@ pitch
 
    <hr/>
 
+.. rubric:: Classes
+   :class: section-header
+
+.. autosummary::
+   :nosignatures:
+
+   ~JIPitch
+
+.. autoclass:: JIPitch
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Attributes Summary
+      :class: class-header
+
+   .. autosummary::
+      :nosignatures:
+
+      __str__
+      name
+      octave
+      pitch_class
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Special methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__eq__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__float__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__ge__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__gt__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__hash__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__le__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__lt__
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.__repr__
+
+   .. automethod:: JIPitch.__str__
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.get_name
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.invert
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.multiply
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.transpose
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Class & static methods
+      :class: class-header
+
+   .. container:: inherited
+
+      .. automethod:: JIPitch.from_hertz
+
+   .. raw:: html
+
+      <hr/>
+
+   .. rubric:: Read-only properties
+      :class: class-header
+
+   .. container:: inherited
+
+      .. autoattribute:: JIPitch.arrow
+
+   .. container:: inherited
+
+      .. autoattribute:: JIPitch.hertz
+
+   .. autoattribute:: JIPitch.name
+
+   .. container:: inherited
+
+      .. autoattribute:: JIPitch.number
+
+   .. autoattribute:: JIPitch.octave
+
+   .. autoattribute:: JIPitch.pitch_class
+
+.. raw:: html
+
+   <hr/>
+
 .. rubric:: Functions
    :class: section-header
 
