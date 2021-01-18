@@ -5,6 +5,18 @@ import abjad
 
 @functools.total_ordering
 class BowAnglePoint:
+    """
+
+    Bow Angle Point
+
+    .. container:: example
+
+        >>> point = evans.BowAnglePoint(90)
+        >>> point
+        BowAnglePoint(degrees=NonreducedFraction(90, 90))
+
+    """
+
     def __init__(
         self,
         degrees=None,
@@ -51,6 +63,69 @@ def bow_angle_spanner(
     omit_bow_changes=True,
     tag=None,
 ):
+    r"""
+
+    .. container:: example
+
+        >>> point_1 = evans.BowAnglePoint(-45)
+        >>> tech_1 = abjad.BowMotionTechnique("ordinario")
+        >>> point_2 = evans.BowAnglePoint(45)
+        >>> tech_2 = abjad.BowMotionTechnique("ordinario")
+        >>> staff = abjad.Staff("c'2 c'2")
+        >>> abjad.attach(point_1, staff[0])
+        >>> abjad.attach(tech_1, staff[0])
+        >>> abjad.attach(point_2, staff[1])
+        >>> abjad.attach(tech_2, staff[1])
+        >>> evans.bow_angle_spanner(staff)
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \tweak Y-offset #-4.0
+                \tweak stencil #ly:text-interface::print
+                \tweak text \markup {
+                    \vcenter
+                        \concat
+                            {
+                                \translate
+                                    #'(0 . 0)
+                                    -45
+                                \translate
+                                    #'(0 . 1)
+                                    \teeny
+                                        o
+                                \hspace
+                                    #0.5
+                            }
+                    }
+                c'2
+                - \tweak style #'line
+                \glissando
+                \tweak Y-offset #0.0
+                \tweak stencil #ly:text-interface::print
+                \tweak text \markup {
+                    \vcenter
+                        \concat
+                            {
+                                \translate
+                                    #'(0 . 0)
+                                    45
+                                \translate
+                                    #'(0 . 1)
+                                    \teeny
+                                        o
+                                \hspace
+                                    #0.5
+                            }
+                    }
+                c'2
+            }
+
+    """
+
     def _get_indicators(leaf):
         bow_contact_point = None
         prototype = BowAnglePoint
@@ -172,6 +247,198 @@ def bow_angle_spanner(
 
 
 class DampingComponent:
+    r"""
+
+    Damping Component
+
+    .. container:: example
+
+        >>> component = evans.DampingComponent("(oo)")
+        >>> abjad.show(component.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(component.markup()))
+            \markup {
+                \concat
+                    {
+                        \general-align
+                            #Y
+                            #0.5
+                            \scale
+                                #'(1 . 1.5)
+                                (
+                        \hspace
+                            #-0.1
+                        \override
+                            #'(baseline-skip . 1.75)
+                            \scale
+                                #'(0.75 . 0.75)
+                                \center-column
+                                    {
+                                        \musicglyph
+                                            #"noteheads.s0harmonic"
+                                        \musicglyph
+                                            #"noteheads.s0harmonic"
+                                    }
+                        \hspace
+                            #-0.15
+                        \general-align
+                            #Y
+                            #0.5
+                            \scale
+                                #'(1 . 1.5)
+                                )
+                    }
+                }
+
+    .. container:: example
+
+        >>> component = evans.DampingComponent("(****)")
+        >>> abjad.show(component.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(component.markup()))
+            \markup {
+                \concat
+                    {
+                        \general-align
+                            #Y
+                            #0.65
+                            \scale
+                                #'(1 . 3.2)
+                                (
+                        \hspace
+                            #-0.1
+                        \override
+                            #'(baseline-skip . 1.75)
+                            \scale
+                                #'(0.75 . 0.75)
+                                \center-column
+                                    {
+                                        \musicglyph
+                                            #"noteheads.s2harmonic"
+                                        \musicglyph
+                                            #"noteheads.s2harmonic"
+                                        \musicglyph
+                                            #"noteheads.s2harmonic"
+                                        \musicglyph
+                                            #"noteheads.s2harmonic"
+                                    }
+                        \hspace
+                            #-0.15
+                        \general-align
+                            #Y
+                            #0.65
+                            \scale
+                                #'(1 . 3.2)
+                                )
+                    }
+                }
+
+    .. container:: example
+
+        >>> component = evans.DampingComponent("(.xo)")
+        >>> abjad.show(component.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(component.markup()))
+            \markup {
+                \concat
+                    {
+                        \general-align
+                            #Y
+                            #0.5
+                            \scale
+                                #'(1 . 2.4)
+                                (
+                        \hspace
+                            #-0.1
+                        \override
+                            #'(baseline-skip . 1.75)
+                            \scale
+                                #'(0.75 . 0.75)
+                                \center-column
+                                    {
+                                        \musicglyph
+                                            #"noteheads.s2"
+                                        \musicglyph
+                                            #"noteheads.s2cross"
+                                        \musicglyph
+                                            #"noteheads.s0harmonic"
+                                    }
+                        \hspace
+                            #-0.15
+                        \general-align
+                            #Y
+                            #0.5
+                            \scale
+                                #'(1 . 2.4)
+                                )
+                    }
+                }
+
+    .. container:: example
+
+        >>> component = evans.DampingComponent("(o)")
+        >>> abjad.show(component.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(component.markup()))
+            \markup {
+                \concat
+                    {
+                        \general-align
+                            #Y
+                            #0
+                            (
+                        \hspace
+                            #-0.1
+                        \override
+                            #'(baseline-skip . 1.75)
+                            \scale
+                                #'(0.75 . 0.75)
+                                \center-column
+                                    {
+                                        \musicglyph
+                                            #"noteheads.s0harmonic"
+                                    }
+                        \hspace
+                            #-0.15
+                        \general-align
+                            #Y
+                            #0
+                            )
+                    }
+                }
+
+    .. container:: example
+
+        >>> component = evans.DampingComponent("x.")
+        >>> abjad.show(component.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(component.markup()))
+            \markup {
+                \override
+                    #'(baseline-skip . 1.75)
+                    \scale
+                        #'(0.75 . 0.75)
+                        \center-column
+                            {
+                                \musicglyph
+                                    #"noteheads.s2cross"
+                                \musicglyph
+                                    #"noteheads.s2"
+                            }
+                }
+
+    """
+
     def __init__(self, contents, *, direction=None):
         if contents != "":
             self._contents = contents
@@ -246,6 +513,179 @@ class DampingComponent:
 
 
 class Damping:
+    r"""
+
+    Damping
+
+    .. container:: example
+
+        >>> damp = evans.Damping("(o)xx.(**).(***)(oooo).")
+        >>> abjad.show(damp.markup()) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(damp.markup()))
+            \markup {
+                \override
+                    #'(baseline-skip . 1.75)
+                    \center-column
+                        {
+                            \concat
+                                {
+                                    \general-align
+                                        #Y
+                                        #0
+                                        (
+                                    \hspace
+                                        #-0.1
+                                    \override
+                                        #'(baseline-skip . 1.75)
+                                        \scale
+                                            #'(0.75 . 0.75)
+                                            \center-column
+                                                {
+                                                    \musicglyph
+                                                        #"noteheads.s0harmonic"
+                                                }
+                                    \hspace
+                                        #-0.15
+                                    \general-align
+                                        #Y
+                                        #0
+                                        )
+                                }
+                            \override
+                                #'(baseline-skip . 1.75)
+                                \scale
+                                    #'(0.75 . 0.75)
+                                    \center-column
+                                        {
+                                            \musicglyph
+                                                #"noteheads.s2cross"
+                                            \musicglyph
+                                                #"noteheads.s2cross"
+                                            \musicglyph
+                                                #"noteheads.s2"
+                                        }
+                            \concat
+                                {
+                                    \general-align
+                                        #Y
+                                        #0.5
+                                        \scale
+                                            #'(1 . 1.5)
+                                            (
+                                    \hspace
+                                        #-0.1
+                                    \override
+                                        #'(baseline-skip . 1.75)
+                                        \scale
+                                            #'(0.75 . 0.75)
+                                            \center-column
+                                                {
+                                                    \musicglyph
+                                                        #"noteheads.s2harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s2harmonic"
+                                                }
+                                    \hspace
+                                        #-0.15
+                                    \general-align
+                                        #Y
+                                        #0.5
+                                        \scale
+                                            #'(1 . 1.5)
+                                            )
+                                }
+                            \override
+                                #'(baseline-skip . 1.75)
+                                \scale
+                                    #'(0.75 . 0.75)
+                                    \center-column
+                                        {
+                                            \musicglyph
+                                                #"noteheads.s2"
+                                        }
+                            \concat
+                                {
+                                    \general-align
+                                        #Y
+                                        #0.5
+                                        \scale
+                                            #'(1 . 2.4)
+                                            (
+                                    \hspace
+                                        #-0.1
+                                    \override
+                                        #'(baseline-skip . 1.75)
+                                        \scale
+                                            #'(0.75 . 0.75)
+                                            \center-column
+                                                {
+                                                    \musicglyph
+                                                        #"noteheads.s2harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s2harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s2harmonic"
+                                                }
+                                    \hspace
+                                        #-0.15
+                                    \general-align
+                                        #Y
+                                        #0.5
+                                        \scale
+                                            #'(1 . 2.4)
+                                            )
+                                }
+                            \concat
+                                {
+                                    \general-align
+                                        #Y
+                                        #0.65
+                                        \scale
+                                            #'(1 . 3.2)
+                                            (
+                                    \hspace
+                                        #-0.1
+                                    \override
+                                        #'(baseline-skip . 1.75)
+                                        \scale
+                                            #'(0.75 . 0.75)
+                                            \center-column
+                                                {
+                                                    \musicglyph
+                                                        #"noteheads.s0harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s0harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s0harmonic"
+                                                    \musicglyph
+                                                        #"noteheads.s0harmonic"
+                                                }
+                                    \hspace
+                                        #-0.15
+                                    \general-align
+                                        #Y
+                                        #0.65
+                                        \scale
+                                            #'(1 . 3.2)
+                                            )
+                                }
+                            \override
+                                #'(baseline-skip . 1.75)
+                                \scale
+                                    #'(0.75 . 0.75)
+                                    \center-column
+                                        {
+                                            \musicglyph
+                                                #"noteheads.s2"
+                                        }
+                        }
+                }
+
+    """
+
     def __init__(self, contents, *, direction=None):
         self._contents = contents
         self._parsed_string = self._parse_string(self._contents)

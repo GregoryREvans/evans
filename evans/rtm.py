@@ -504,6 +504,708 @@ class RTMMaker(rmakers.RhythmMaker):
                 c'4
             }
 
+    .. container:: example
+
+        >>> rtm = "(1 ((1 (2 3)) 4 (3 (2 1 2)) (3 (4 3)) 2))"
+        >>> rotations = []
+        >>> for i in range(len(evans.flatten(nested_list))):
+        ...     new_rtm = evans.rotate_tree(rtm, i)
+        ...     rotations.append(new_rtm)
+        >>> funnels = []
+        >>> for rotation in rotations:
+        ...     funnel = evans.funnel_inner_tree_to_x(rtm_string=rotation, x=6)
+        ...     funnels.append(funnel)
+        >>> index_cycle = evans.cyc([i for i in range(len(funnels[0]))])
+        >>> tuple_list = []
+        >>> for i in range(len(rotations)):
+        ...     tuple_ = (i, next(index_cycle))
+        ...     tuple_list.append(tuple_)
+        >>> final_rtm_list = []
+        >>> for tuple_ in tuple_list:
+        ...     a = tuple_[0]
+        ...     b = tuple_[-1]
+        ...     final_rtm_list.append(funnels[a][b])
+        >>> final_rtm_list = evans.Sequence(final_rtm_list).rotate(1)
+        >>> durs = [
+        ...     (6, 4),
+        ...     (5, 4),
+        ...     (4, 4),
+        ...     (3, 4),
+        ...     (2, 4),
+        ...     (3, 4),
+        ...     (4, 4),
+        ...     (5, 4),
+        ...     (6, 4),
+        ...     (5, 4),
+        ...     (4, 4),
+        ...     (3, 4),
+        ...     (2, 4),
+        ... ]
+        >>> nonlast_tuplets = abjad.select().tuplets()[:-1]
+        >>> last_leaf = abjad.select().leaf(-1)
+        >>> s = rmakers.stack(
+        ...     evans.RTMMaker(final_rtm_list),
+        ...     rmakers.force_rest(abjad.select().leaves().get([0, -2, -1])),
+        ...     rmakers.tie(nonlast_tuplets.map(last_leaf)),
+        ...     rmakers.trivialize(abjad.select().tuplets()),
+        ...     rmakers.extract_trivial(abjad.select().tuplets()),
+        ...     rmakers.rewrite_rest_filled(abjad.select().tuplets()),
+        ...     rmakers.rewrite_sustained(abjad.select().tuplets()),
+        ...     rmakers.beam(),
+        ... )
+        >>> h = evans.RhythmHandler(s, forget=False)
+        >>> voice_1_selections = h(durs)
+        >>> staff_1 = abjad.Staff(name="Voice 1", lilypond_type="RhythmicStaff")
+        >>> staff_1.extend(voice_1_selections)
+        >>> quantizer = evans.RhythmTreeQuantizer()
+        >>> final_rtm_list = [quantizer(_) for _ in final_rtm_list]
+        >>> s = rmakers.stack(
+        ...     evans.RTMMaker(final_rtm_list),
+        ...     rmakers.force_rest(abjad.select().logical_ties().get([0, -2, -1])),
+        ...     rmakers.tie(nonlast_tuplets.map(last_leaf)),
+        ...     rmakers.trivialize(abjad.select().tuplets()),
+        ...     rmakers.extract_trivial(abjad.select().tuplets()),
+        ...     rmakers.rewrite_rest_filled(abjad.select().tuplets()),
+        ...     rmakers.rewrite_sustained(abjad.select().tuplets()),
+        ...     rmakers.beam(),
+        ... )
+        >>> h = evans.RhythmHandler(s, forget=False)
+        >>> voice_2_selections = h(durs)
+        >>> staff_2 = abjad.Staff(name="Voice 2", lilypond_type="RhythmicStaff")
+        >>> staff_2.extend(voice_2_selections)
+        >>> global_context = abjad.Staff(name="Global Context", lilypond_type="GlobalContext")
+        >>> for pair in durs:
+        ...     multiplier = abjad.Multiplier(pair)
+        ...     leaf = abjad.Skip((4, 4), multiplier=pair)
+        ...     sig = abjad.TimeSignature(pair)
+        ...     abjad.attach(sig, leaf)
+        ...     global_context.append(leaf)
+        >>> score = abjad.Score(
+        ...     [
+        ...         global_context,
+        ...         abjad.StaffGroup(
+        ...             [
+        ...                 staff_1,
+        ...                 staff_2,
+        ...             ],
+        ...             name="StaffGroup",
+        ...         ),
+        ...     ],
+        ...     name="score",
+        ... )
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score],
+        ...     includes=[
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/default.ily",
+        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/rhythm-maker-docs.ily",
+        ...     ],
+        ... )
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(score))
+            \context Score = "score"
+            <<
+                \context GlobalContext = "Global Context"
+                {
+                    \time 6/4
+                    s1 * 3/2
+                    \time 5/4
+                    s1 * 5/4
+                    \time 4/4
+                    s1 * 1
+                    \time 3/4
+                    s1 * 3/4
+                    \time 2/4
+                    s1 * 1/2
+                    \time 3/4
+                    s1 * 3/4
+                    \time 4/4
+                    s1 * 1
+                    \time 5/4
+                    s1 * 5/4
+                    \time 6/4
+                    s1 * 3/2
+                    \time 5/4
+                    s1 * 5/4
+                    \time 4/4
+                    s1 * 1
+                    \time 3/4
+                    s1 * 3/4
+                    \time 2/4
+                    s1 * 1/2
+                }
+                \context StaffGroup = "StaffGroup"
+                <<
+                    \context RhythmicStaff = "Voice 1"
+                    {
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 12/17 {
+                            \times 2/3 {
+                                r4
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'2
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8.
+                                ]
+                                c'4
+                                ~
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/7 {
+                                c'2
+                                c'4.
+                                ~
+                            }
+                            c'4
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 20/21 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 10/11 {
+                                c'8.
+                                [
+                                c'8
+                                ~
+                                c'32
+                                ~
+                                ]
+                            }
+                            c'4
+                            \times 4/5 {
+                                c'16
+                                [
+                                c'16
+                                ~
+                                c'64
+                                c'16.
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/7 {
+                                c'4
+                                c'8.
+                                ~
+                            }
+                            c'4
+                            ~
+                        }
+                        \times 8/13 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/11 {
+                                c'4.
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'4
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/9 {
+                                c'8.
+                                [
+                                c'8.
+                                c'8.
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/9 {
+                                c'4
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'4.
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 24/29 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/11 {
+                                c'8.
+                                [
+                                c'8
+                                ~
+                                c'32
+                                ~
+                                ]
+                            }
+                            c'8.
+                            c'16
+                            c'16
+                            c'16
+                            ~
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/6 {
+                                c'16.
+                                [
+                                c'16.
+                                ~
+                                ]
+                            }
+                            c'8.
+                            ~
+                            ]
+                        }
+                        \times 8/15 {
+                            c'16.
+                            [
+                            c'16.
+                            c'8.
+                            c'16
+                            c'16
+                            c'16
+                            ~
+                            c'16.
+                            c'16.
+                            c'8.
+                            ~
+                            ]
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 12/13 {
+                            \times 4/5 {
+                                c'32
+                                [
+                                c'32.
+                                ~
+                                ]
+                            }
+                            c'4
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 3/5 {
+                                c'8
+                                [
+                                c'16
+                                c'8
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/7 {
+                                c'8
+                                [
+                                c'16.
+                                ~
+                                ]
+                            }
+                            c'8
+                            ~
+                            ]
+                        }
+                        \times 8/13 {
+                            \times 4/5 {
+                                c'16
+                                [
+                                c'16.
+                                ~
+                                ]
+                            }
+                            c'2
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 3/5 {
+                                c'4
+                                c'8
+                                c'4
+                                ~
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/7 {
+                                c'4
+                                c'8.
+                                ~
+                            }
+                            c'4
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 10/17 {
+                            \times 2/3 {
+                                c'4
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'2
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8.
+                                ]
+                                c'4
+                                ~
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/7 {
+                                c'2
+                                c'4.
+                                ~
+                            }
+                            c'4
+                            ~
+                        }
+                        \times 4/7 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 10/11 {
+                                c'4.
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'2
+                            \times 4/5 {
+                                c'8
+                                [
+                                c'8
+                                ~
+                                c'32
+                                c'8.
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/7 {
+                                c'2
+                                c'4.
+                                ~
+                            }
+                            c'2
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 10/13 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/11 {
+                                c'4.
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'4
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/9 {
+                                c'8.
+                                [
+                                c'8.
+                                c'8.
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/9 {
+                                c'4
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'4.
+                            ~
+                        }
+                        \times 16/29 {
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/11 {
+                                c'4.
+                                c'4
+                                ~
+                                c'16
+                                ~
+                            }
+                            c'4.
+                            c'8
+                            [
+                            c'8
+                            c'8
+                            ~
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 5/6 {
+                                c'8.
+                                [
+                                c'8.
+                                ~
+                                ]
+                            }
+                            c'4.
+                            ~
+                        }
+                        \times 4/5 {
+                            c'16.
+                            [
+                            c'16.
+                            c'8.
+                            c'16
+                            c'16
+                            c'16
+                            ~
+                            c'16.
+                            c'16.
+                            c'8.
+                            ~
+                            ]
+                        }
+                        \times 8/13 {
+                            \times 4/5 {
+                                c'32
+                                [
+                                c'32.
+                                ~
+                                ]
+                            }
+                            c'4
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 3/5 {
+                                c'8
+                                [
+                                c'16
+                                c'8
+                                ~
+                                ]
+                            }
+                            \tweak text #tuplet-number::calc-fraction-text
+                            \times 6/7 {
+                                c'8
+                                r16.
+                            }
+                            r8
+                        }
+                    }
+                    \context RhythmicStaff = "Voice 2"
+                    {
+                        r8
+                        c'8
+                        c'4
+                        c'16
+                        c'16
+                        c'8
+                        c'8
+                        c'8
+                        c'2
+                        c'8
+                        c'8
+                        c'4
+                        c'16
+                        c'16
+                        c'8
+                        c'8
+                        c'8
+                        c'4
+                        \times 4/5 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8
+                                c'8
+                                ~
+                                ]
+                            }
+                            c'8
+                            c'8
+                            ]
+                            c'4
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 3/5 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8
+                                c'8
+                                ~
+                                ]
+                            }
+                            c'8
+                            c'8
+                            ]
+                            c'4
+                            ~
+                        }
+                        \times 4/5 {
+                            c'16
+                            [
+                            c'16
+                            c'8
+                            \times 2/3 {
+                                c'16
+                                [
+                                c'16
+                                c'16
+                                ~
+                                ]
+                            }
+                            c'16
+                            c'16
+                            c'8
+                            ~
+                            ]
+                        }
+                        c'16
+                        c'16
+                        c'8
+                        \times 4/5 {
+                            c'16
+                            [
+                            c'32
+                            c'16
+                            ~
+                            ]
+                        }
+                        c'16
+                        c'16
+                        c'4
+                        \times 2/3 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            \times 4/5 {
+                                c'8
+                                [
+                                c'16
+                                c'8
+                                ~
+                                ]
+                            }
+                            c'8
+                            c'8
+                            ]
+                            c'2
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 5/6 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            c'16
+                            [
+                            c'16
+                            c'8
+                            c'8
+                            c'8
+                            ]
+                            c'2
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 3/5 {
+                            c'4
+                            c'4
+                            c'2
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            c'4
+                            c'4
+                            c'2
+                            ~
+                        }
+                        c'8
+                        c'8
+                        c'4
+                        \times 2/3 {
+                            c'8
+                            [
+                            c'8
+                            c'8
+                            ~
+                            ]
+                        }
+                        c'8
+                        c'8
+                        c'4
+                        \times 4/5 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8
+                                c'8
+                                ~
+                                ]
+                            }
+                            c'8
+                            c'8
+                            ]
+                            c'4
+                            ~
+                        }
+                        \tweak text #tuplet-number::calc-fraction-text
+                        \times 3/5 {
+                            c'8
+                            [
+                            c'8
+                            ]
+                            c'4
+                            \times 2/3 {
+                                c'8
+                                [
+                                c'8
+                                c'8
+                                ~
+                                ]
+                            }
+                            c'8
+                            c'8
+                            ]
+                            c'4
+                            ~
+                        }
+                        \times 2/3 {
+                            c'16
+                            [
+                            c'16
+                            c'8
+                            \times 4/5 {
+                                c'16
+                                [
+                                c'32
+                                c'16
+                                ]
+                            }
+                            c'16
+                            ]
+                            r16
+                            r4
+                        }
+                    }
+                >>
+            >>
+
     """
 
     def __init__(self, rtm, tie_across_divisions=False):

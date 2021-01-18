@@ -10,6 +10,40 @@ from .sequence import RatioSegment, flatten
 
 
 class JIPitch(abjad.Pitch):
+    r"""
+
+    Just Intonation Pitch
+
+    .. container:: example
+
+        >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=True)
+        >>> note = abjad.Note(pitch, (1, 4))
+        >>> mark = abjad.Markup(str(pitch.deviation), direction=abjad.Up)
+        >>> abjad.attach(mark, note)
+        >>> abjad.show(note) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(note))
+            aqs'4
+            ^ \markup { 19 }
+
+    .. container:: example
+
+        >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=False)
+        >>> note = abjad.Note(pitch, (1, 4))
+        >>> mark = abjad.Markup(str(pitch.deviation), direction=abjad.Up)
+        >>> abjad.attach(mark, note)
+        >>> abjad.show(note) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(note))
+            bf'4
+            ^ \markup { -31 }
+
+    """
+
     def __init__(
         self,
         fundamental,
@@ -1081,6 +1115,11 @@ def tune_to_ratio(
     ratio,
     quarter_tones=False,
 ):
+    """
+
+    Tunes pitch to ratio.
+
+    """
     ratio = quicktions.Fraction(ratio)
     log_ratio = quicktions.Fraction(math.log10(ratio))
     log_2 = quicktions.Fraction(1200 / math.log10(2))

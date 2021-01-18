@@ -1037,6 +1037,14 @@ class Sequence(baca.Sequence):
         return type(self)(returned_sequences[:-1])
 
     def linear_asymmetric_inversion(self):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence([0, 3, 4, 7, 9]).linear_asymmetric_inversion()
+            [-3, 2, 1, 5]
+
+        """
         out = []
         for i in range(len(self) - 1):
             pitch1 = self[i]
@@ -1260,6 +1268,19 @@ class Sequence(baca.Sequence):
         return seq
 
     def matrix(self, padded=False):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence([0, [1, 2], 3, [4, 5, 6, 7], [7, 8], 9]).matrix()
+            Sequence([[Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1), Fraction(4, 1), Fraction(5, 1), Fraction(6, 1), Fraction(7, 1), Fraction(7, 1), Fraction(8, 1), Fraction(9, 1)], [Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1), Fraction(4, 1), Fraction(5, 1), Fraction(6, 1), Fraction(6, 1), Fraction(7, 1), Fraction(8, 1)], [Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1), Fraction(4, 1), Fraction(5, 1), Fraction(5, 1), Fraction(6, 1), Fraction(7, 1)], [Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1), Fraction(4, 1), Fraction(4, 1), Fraction(5, 1), Fraction(6, 1)], [Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1), Fraction(3, 1), Fraction(4, 1), Fraction(5, 1)], [Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1), Fraction(2, 1), Fraction(3, 1), Fraction(4, 1)], [Fraction(-6, 1), Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1), Fraction(1, 1), Fraction(2, 1), Fraction(3, 1)], [Fraction(-7, 1), Fraction(-6, 1), Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1)], [Fraction(-7, 1), Fraction(-6, 1), Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(0, 1), Fraction(1, 1), Fraction(2, 1)], [Fraction(-8, 1), Fraction(-7, 1), Fraction(-6, 1), Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(-1, 1), Fraction(0, 1), Fraction(1, 1)], [Fraction(-9, 1), Fraction(-8, 1), Fraction(-7, 1), Fraction(-6, 1), Fraction(-5, 1), Fraction(-4, 1), Fraction(-3, 1), Fraction(-2, 1), Fraction(-2, 1), Fraction(-1, 1), Fraction(0, 1)]])
+
+        .. container:: example
+
+            >>> evans.Sequence([0, [1, 2], 3, [4, 5, 6, 7], [7, 8], 9]).matrix(padded=True)
+            Sequence([[0, None, None, None], [1, 2, None, None], [3, None, None, None], [4, 5, 6, 7], [7, 8, None, None], [9, None, None, None]])
+
+        """
         if not padded:
             row = PitchSegment([_ for _ in self])
             inverted_row = row.invert(row[0]).transpose(0 - row[0])
@@ -1528,6 +1549,37 @@ class Sequence(baca.Sequence):
         return type(self)(pitch_list)
 
     def potamia(self, columns=False, retrograde=False):
+        """
+
+        .. container:: example
+
+            >>> s = evans.Sequence([0, 1, [2, 3, 4], 5, [6, 7]]).matrix(padded=True)
+            >>> s = s.potamia()
+            >>> s.flatten().remove_none()
+            Sequence([0, 1, 2, 3, 4, 5, 6, 7])
+
+        .. container:: example
+
+            >>> s = evans.Sequence([0, 1, [2, 3, 4], 5, [6, 7]]).matrix(padded=True)
+            >>> s = s.potamia(columns=True)
+            >>> s.flatten().remove_none()
+            Sequence([0, 1, 2, 5, 6, 7, 3, 4])
+
+        .. container:: example
+
+            >>> s = evans.Sequence([0, 1, [2, 3, 4], 5, [6, 7]]).matrix(padded=True)
+            >>> s = s.potamia(retrograde=True)
+            >>> s.flatten().remove_none()
+            Sequence([0, 1, 4, 3, 2, 5, 7, 6])
+
+        .. container:: example
+
+            >>> s = evans.Sequence([0, 1, [2, 3, 4], 5, [6, 7]]).matrix(padded=True)
+            >>> s = s.potamia(columns=True, retrograde=True)
+            >>> s.flatten().remove_none()
+            Sequence([6, 5, 2, 1, 0, 3, 7, 4])
+
+        """
         out = []
         array = numpy.array([_ for _ in self])
         if columns:
@@ -1692,6 +1744,14 @@ class Sequence(baca.Sequence):
         return type(self)(returned_list)
 
     def remove_none(self):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence([0, 1, 2, None, 3, None, 4, 5, None, None]).remove_none()
+            Sequence([0, 1, 2, 3, 4, 5])
+
+        """
         out = []
         for _ in self:
             if not isinstance(_, type(None)):
@@ -1882,6 +1942,19 @@ class Sequence(baca.Sequence):
         return type(self)(final_list)
 
     def zipped_bifurcation(self, reversed=True):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence([0, 1, 2, 3]).zipped_bifurcation()
+            Sequence([0, 3, 1, 2])
+
+        .. container:: example
+
+            >>> evans.Sequence([0, 1, 2, 3]).zipped_bifurcation(reversed=False)
+            Sequence([0, 2, 1, 3])
+
+        """
         center = len(self) // 2
         first_half = self[:center]
         second_half = type(self)(self[center:])
