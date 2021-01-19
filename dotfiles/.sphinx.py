@@ -312,7 +312,7 @@ class LilyPondExtension(Extension):
             flags = []
             glob = f"{render_prefix}.mid*"
         else:
-            flags = ["-dcrop", "-dbackend=png"]
+            flags = ["-dcrop", "--png"]
             glob = f"{render_prefix}*.png"
         lilypond_io = LilyPondIO(
             None,
