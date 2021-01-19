@@ -65,6 +65,7 @@ from .pitch import (
 from .rtm import (
     RTMMaker,
     RhythmTreeQuantizer,
+    flatten_tree_level,
     funnel_inner_tree_to_x,
     funnel_tree_to_x,
     nested_list_to_rtm,
@@ -173,6 +174,7 @@ __all__ = [
     "detach",
     "duplicate",
     "flatten",
+    "flatten_tree_level",
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
     "herz_combination_tone_ratios",

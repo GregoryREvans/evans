@@ -350,6 +350,7 @@ Rhythm tree functions.
 .. autosummary::
    :nosignatures:
 
+   ~evans.rtm.flatten_tree_level
    ~evans.rtm.funnel_inner_tree_to_x
    ~evans.rtm.funnel_tree_to_x
    ~evans.rtm.nested_list_to_rtm
