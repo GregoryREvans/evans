@@ -28,7 +28,11 @@ def mypy_check(wrapper_path):
                 continue
             if sub_dir.name == "Distribution":
                 continue
+            if sub_dir.name == "dotfiles":
+                continue
             if sub_dir.name == "etc":
+                continue
+            if sub_dir.name == "research":
                 continue
             print(f"Mypy checking {sub_dir} ...")
             os.system(f"mypy {sub_dir}")
