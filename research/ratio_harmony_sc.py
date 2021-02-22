@@ -1,7 +1,6 @@
 import abjad
+import evans
 from quicktions import Fraction
-
-from .. import evans
 
 print("calculating basic ratios 1")
 

@@ -1,7 +1,9 @@
 import pathlib
 
 
-def return_directories(p="/Users/evansdsg2/Scores", ignores=("archive", ".mypy_cache")):
+def return_directories(
+    p="/Users/evansdsg2/Scores", ignores=("archive", ".mypy_cache", "squonk")
+):
     build_path = pathlib.Path(p)
     returns = []
     for score in sorted(build_path.iterdir()):

@@ -7,20 +7,17 @@ from abjadext import rmakers
 from .sequence import Sequence
 
 
-def flatten_tree_level(rhythm_tree, recurse=False):
+def flatten_tree_level(rtm, recurse=False):
     r"""
 
     .. container:: example
 
-        >>> parser = abjad.rhythmtrees.RhythmTreeParser()
         >>> string = "(1 (1 (1 ((2 (1 1 1)) 2 2 1))))"
-        >>> rhythm_tree_list = parser(string)
-        >>> rhythm_tree_container = rhythm_tree_list[0]
         >>> rhythm_tree_container_ = evans.flatten_tree_level(
-        ...     rhythm_tree_container,
+        ...     string,
         ...     recurse=False,
         ... )
-        >>> strings = [string, rhythm_tree_container_.rtm_format]
+        >>> strings = [string, rhythm_tree_container_]
         >>> durations = [abjad.Duration(1, 1), abjad.Duration(1, 1)]
         >>> h = evans.RhythmHandler(evans.RTMMaker(strings), forget=False)
         >>> selections = h(durations)
@@ -57,15 +54,12 @@ def flatten_tree_level(rhythm_tree, recurse=False):
 
     .. container:: example
 
-        >>> parser = abjad.rhythmtrees.RhythmTreeParser()
         >>> string = "(1 (1 (1 ((2 (1 1 1)) 2 2 1))))"
-        >>> rhythm_tree_list = parser(string)
-        >>> rhythm_tree_container = rhythm_tree_list[0]
         >>> rhythm_tree_container_ = evans.flatten_tree_level(
-        ...     rhythm_tree_container,
+        ...     string,
         ...     recurse=True,
         ... )
-        >>> strings = [string, rhythm_tree_container_.rtm_format]
+        >>> strings = [string, rhythm_tree_container_]
         >>> durations = [abjad.Duration(1, 1), abjad.Duration(1, 1)]
         >>> h = evans.RhythmHandler(evans.RTMMaker(strings), forget=False)
         >>> selections = h(durations)
@@ -101,12 +95,17 @@ def flatten_tree_level(rhythm_tree, recurse=False):
             }
 
     """
+    parser = abjad.rhythmtrees.RhythmTreeParser()
+    rhythm_tree_list = parser(rtm)
+    rhythm_tree = rhythm_tree_list[0]
     out = []
     for item in rhythm_tree:
         if isinstance(item, abjad.rhythmtrees.RhythmTreeContainer):
             if recurse:
-                temp = flatten_tree_level(item)
-                for _ in temp:
+                temp = flatten_tree_level(item.rtm_format)
+                temp_tree_list = parser(temp)
+                temp_tree = temp_tree_list[0]
+                for _ in temp_tree:
                     out.append(_)
             else:
                 for item_ in item:
@@ -114,7 +113,7 @@ def flatten_tree_level(rhythm_tree, recurse=False):
         else:
             out.append(item)
     out = abjad.rhythmtrees.RhythmTreeContainer(out)
-    return out
+    return out.rtm_format
 
 
 def nested_list_to_rtm(nested_list):
