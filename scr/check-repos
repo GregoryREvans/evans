@@ -2,6 +2,28 @@ cd ~/Scores
 black-check .
 isort-check .
 flake8-check .
+cd ~/Score/adumbration
+mypy-check .
+cd ~/Score/arar
+mypy-check .
+cd ~/Score/chalk_line
+mypy-check .
+cd ~/Score/guerrero
+mypy-check .
+cd ~/Score/hamon_shu
+mypy-check .
+cd ~/Score/hugag
+mypy-check .
+cd ~/Score/magnolia
+mypy-check .
+cd ~/Score/onkos
+mypy-check .
+cd ~/Score/passagenwerk
+mypy-check .
+cd ~/Score/redbud
+mypy-check .
+cd ~/Score/sim
+mypy-check .
 cd ~/evans; check
 cd ~/tsmakers; check
 cd ~/abjad-ext-microtones; check

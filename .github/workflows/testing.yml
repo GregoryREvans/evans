@@ -101,7 +101,7 @@ jobs:
         black-check .
         flake8-check .
         isort-check .
-        # mypy .
+        mypy-check .
         evans-doctest .
 
     # - name: Coveralls
