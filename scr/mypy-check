@@ -20,7 +20,13 @@ def mypy_check(wrapper_path):
                 continue
             if sub_dir.name == "build":
                 continue
+            if sub_dir.name == "Build":
+                continue
+            if sub_dir.name == "Covers":
+                continue
             if sub_dir.name == "distribution":
+                continue
+            if sub_dir.name == "Distribution":
                 continue
             if sub_dir.name == "etc":
                 continue
