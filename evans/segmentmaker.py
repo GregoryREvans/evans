@@ -28,7 +28,7 @@ class NoteheadBracketMaker:
         >>> new_brackets = evans.NoteheadBracketMaker()
         >>> new_brackets(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -173,7 +173,9 @@ class SegmentMaker:
         if self.abbreviations is not None:
             abbreviations = []
             abb = self.abbreviations
-            mark_abbreviations = [abjad.Markup(_) for _ in abb]
+            mark_abbreviations = [
+                abjad.Markup(fr"\markup {_}", literal=True) for _ in abb
+            ]
             for x in mark_abbreviations:
                 x.hcenter_in(12)
                 abbreviations.append(abjad.MarginMarkup(markup=x))
@@ -182,7 +184,7 @@ class SegmentMaker:
         if self.names is not None:
             names = []
             nm = self.names
-            mark_names = [abjad.Markup(_, literal=True) for _ in nm]
+            mark_names = [abjad.Markup(fr"\markup {{ {_} }}", literal=True) for _ in nm]
             for x in mark_names:
                 x.hcenter_in(14)
                 names.append(abjad.StartMarkup(markup=x))
@@ -199,7 +201,9 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(fr"\bold {{ {self.rehearsal_mark} }}")
+            markup=abjad.Markup(
+                fr"\markup \bold {{ {self.rehearsal_mark} }}", literal=True
+            )
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate(
@@ -277,7 +281,11 @@ class SegmentMaker:
             mult_rest_leaf = abjad.MultimeasureRest(1, multiplier=(leaf_duration))
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
-            markup = abjad.Markup.musicglyph(self.fermata, direction=abjad.Up)
+            markup = abjad.Markup(
+                rf"\markup \musicglyph {self.fermata}",
+                direction=abjad.Up,
+                literal=True,
+            )
             markup.center_align()
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
@@ -565,7 +573,7 @@ class SegmentMaker:
     def _render_file(self):
         print("Rendering file ...")
         abjad.SegmentMaker.comment_measure_numbers(self.score_template)
-        score_file = abjad.LilyPondFile.new(
+        score_file = abjad.LilyPondFile(
             self.score_template, includes=self.score_includes
         )
         for leaf in abjad.iterate(self.score_template).leaves():
@@ -830,7 +838,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         ...
         >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],

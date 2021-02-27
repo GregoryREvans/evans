@@ -40,13 +40,13 @@ class Command:
             >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])
             >>> command = evans.Command(
             ...     command="attach",
-            ...     indicator=abjad.Markup("*", direction="up"),
+            ...     indicator=abjad.Markup(r"\markup *", direction="up", literal=True),
             ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
             ...     voice_name="staff one"
             ... )
             ...
             >>> command(score)
-            >>> moment = abjad.SchemeMoment((1, 25))
+            >>> moment = "#(ly:make-moment 1 25)"
             >>> abjad.setting(score).proportional_notation_duration = moment
             >>> file = abjad.LilyPondFile(
             ...     items=[score],
@@ -69,7 +69,7 @@ class Command:
                     {
                         c'4
                         c'4
-                        ^ \markup { * }
+                        ^ \markup *
                         c'4
                         c'4
                     }

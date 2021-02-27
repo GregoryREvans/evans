@@ -69,7 +69,7 @@ group = abjad.StaffGroup([staff1, staff2])
 
 score = abjad.Score([group])
 
-moment = abjad.SchemeMoment((1, 25))
+moment = "#(ly:make-moment 1 25)"
 abjad.setting(score).proportional_notation_duration = moment
 
 file = abjad.LilyPondFile(

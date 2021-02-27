@@ -45,7 +45,7 @@ class ArticulationHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -154,7 +154,7 @@ class BendHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -253,7 +253,7 @@ class BisbigliandoHandler(Handler):
         ... )
         >>> handler(s[:-1])
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -413,7 +413,7 @@ class BowAngleHandler(Handler):
         >>> handler = evans.BowAngleHandler([0, 45, 0, -45])
         >>> handler(s)
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -548,7 +548,7 @@ class ClefHandler(Handler):
         ... )
         >>> handler(s)
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -852,7 +852,7 @@ class CompositeHandler(Handler):
         >>> st = abjad.Staff()
         >>> st.extend(n)
         >>> score = abjad.Score([st])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -941,7 +941,7 @@ class DynamicHandler(Handler):
         >>> handler(first_group)
         >>> handler(second_group)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -1232,31 +1232,21 @@ class DynamicHandler(Handler):
                             ]
                             if markup_val == 1:
                                 if start.ordinal < stop.ordinal:
-                                    mark_text = (
-                                        abjad.Markup(
-                                            f"cresc. a {stop.name}",
-                                            direction=abjad.Down,
-                                        )
-                                        .small()
-                                        .whiteout()
-                                        .box()
-                                        .italic()
-                                        .override(("box-padding", 0.5))
-                                        .override(("style", "box"))
+                                    mark_text = abjad.Markup(
+                                        fr"\markup {{ \small \whiteout \box \italic {{ cresc. a {stop.name} }} }}",
+                                        direction=abjad.Down,
+                                        literal=True,
                                     )
+                                    abjad.override(mark_text).box_padding = 0.5
+                                    abjad.override(mark_text).style = "#'box"
                                 else:
-                                    mark_text = (
-                                        abjad.Markup(
-                                            f"dim. a {stop.name}",
-                                            direction=abjad.Down,
-                                        )
-                                        .small()
-                                        .whiteout()
-                                        .box()
-                                        .italic()
-                                        .override(("box-padding", 0.5))
-                                        .override(("style", "box"))
+                                    mark_text = abjad.Markup(
+                                        fr"\markup \small \whiteout \box \italic {{ dim. a {stop.name} }}",
+                                        direction=abjad.Down,
+                                        literal=True,
                                     )
+                                    abjad.override(mark_text).box_padding = 0.5
+                                    abjad.override(mark_text).style = "#'box"
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
@@ -1331,31 +1321,21 @@ class DynamicHandler(Handler):
                             ]
                             if markup_val == 1:
                                 if start.ordinal < stop.ordinal:
-                                    mark_text = (
-                                        abjad.Markup(
-                                            f"cresc. a {stop.name}",
-                                            direction=abjad.Down,
-                                        )
-                                        .small()
-                                        .whiteout()
-                                        .box()
-                                        .italic()
-                                        .override(("box-padding", 0.5))
-                                        .override(("style", "box"))
+                                    mark_text = abjad.Markup(
+                                        fr"\markup \small \whiteout \box \italic {{ cresc. a {stop.name} }}",
+                                        direction=abjad.Down,
+                                        literal=True,
                                     )
+                                    abjad.override(mark_text).box_padding = 0.5
+                                    abjad.override(mark_text).style = "#'box"
                                 else:
-                                    mark_text = (
-                                        abjad.Markup(
-                                            f"dim. a {stop.name}",
-                                            direction=abjad.Down,
-                                        )
-                                        .small()
-                                        .whiteout()
-                                        .box()
-                                        .italic()
-                                        .override(("box-padding", 0.5))
-                                        .override(("style", "box"))
+                                    mark_text = abjad.Markup(
+                                        fr"\markup \small \whiteout \box \italic {{ dim. a {stop.name} }}",
+                                        direction=abjad.Down,
+                                        literal=True,
                                     )
+                                    abjad.override(mark_text).box_padding = 0.5
+                                    abjad.override(mark_text).style = "#'box"
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
             else:
                 start = self._cyc_dynamics(r=1)[0]
@@ -1429,7 +1409,7 @@ class GettatoHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -1446,24 +1426,19 @@ class GettatoHandler(Handler):
                 <<
                     \context Voice = "On_Beat_Grace_Container"
                     {
-                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \set fontSize = #-4
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
                         \once \override Beam.grow-direction = #left
-                        \slash %! abjad.on_beat_grace_container(2)
-                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        \slash
+                        \voiceOne
                         <
                             \tweak font-size #0
                             \tweak transparent ##t
                             c'
                         >32 * 4/3
-                        ^ \markup {
-                            \hspace
-                                #1
-                            throw
-                            (4)
-                            }
+                        ^ \markup { \hspace #1 throw (4)}
                         [
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
@@ -1481,31 +1456,26 @@ class GettatoHandler(Handler):
                     }
                     \context Voice = "Voice 1"
                     {
-                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        \voiceTwo
                         c'4
                     }
                 >>
                 <<
                     \context Voice = "On_Beat_Grace_Container"
                     {
-                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \set fontSize = #-4
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
                         \once \override Beam.grow-direction = #right
-                        \slash %! abjad.on_beat_grace_container(2)
-                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        \slash
+                        \voiceOne
                         <
                             \tweak font-size #0
                             \tweak transparent ##t
                             fs'
                         >32 * 4/3
-                        ^ \markup {
-                            \hspace
-                                #1
-                            drop
-                            (5)
-                            }
+                        ^ \markup { \hspace #1 drop (5)}
                         [
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
@@ -1527,31 +1497,26 @@ class GettatoHandler(Handler):
                     }
                     \context Voice = "Voice 1"
                     {
-                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        \voiceTwo
                         fs'4
                     }
                 >>
                 <<
                     \context Voice = "On_Beat_Grace_Container"
                     {
-                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \set fontSize = #-4
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
                         \once \override Beam.grow-direction = #left
-                        \slash %! abjad.on_beat_grace_container(2)
-                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        \slash
+                        \voiceOne
                         <
                             \tweak font-size #0
                             \tweak transparent ##t
                             c''
                         >32 * 4/3
-                        ^ \markup {
-                            \hspace
-                                #1
-                            throw
-                            (6)
-                            }
+                        ^ \markup { \hspace #1 throw (6)}
                         [
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
@@ -1577,31 +1542,26 @@ class GettatoHandler(Handler):
                     }
                     \context Voice = "Voice 1"
                     {
-                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        \voiceTwo
                         c''4
                     }
                 >>
                 <<
                     \context Voice = "On_Beat_Grace_Container"
                     {
-                        \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                        \set fontSize = #-4
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
                         \once \override Beam.grow-direction = #right
-                        \slash %! abjad.on_beat_grace_container(2)
-                        \voiceOne %! abjad.on_beat_grace_container(3)
+                        \slash
+                        \voiceOne
                         <
                             \tweak font-size #0
                             \tweak transparent ##t
                             gqs''
                         >32 * 4/3
-                        ^ \markup {
-                            \hspace
-                                #1
-                            drop
-                            (4)
-                            }
+                        ^ \markup { \hspace #1 drop (4)}
                         [
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
@@ -1619,7 +1579,7 @@ class GettatoHandler(Handler):
                     }
                     \context Voice = "Voice 1"
                     {
-                        \voiceTwo %! abjad.on_beat_grace_container(4)
+                        \voiceTwo
                         gqs''4
                     }
                 >>
@@ -1692,7 +1652,9 @@ class GettatoHandler(Handler):
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
-                        fr"\hspace #1 throw ({repetitions})", direction=abjad.Up
+                        fr"\markup {{ \hspace #1 throw ({repetitions})}}",
+                        direction=abjad.Up,
+                        literal=True,
                     )
                     abjad.attach(mark, sel[0])
                 elif a == "drop":
@@ -1702,7 +1664,9 @@ class GettatoHandler(Handler):
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
-                        fr"\hspace#1 drop ({repetitions})", direction=abjad.Up
+                        fr"\markup {{ \hspace #1 drop ({repetitions})}}",
+                        direction=abjad.Up,
+                        literal=True,
                     )
                     abjad.attach(mark, sel[0])
                 else:
@@ -1744,7 +1708,7 @@ class GlissandoHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -1760,14 +1724,14 @@ class GlissandoHandler(Handler):
             \new Staff
             {
                 c'4
-                - \tweak style #'dotted-line %! abjad.glissando(7)
-                \glissando                   %! abjad.glissando(7)
+                - \tweak style #'dotted-line
+                \glissando
                 c'4
-                - \tweak style #'dotted-line %! abjad.glissando(7)
-                \glissando                   %! abjad.glissando(7)
+                - \tweak style #'dotted-line
+                \glissando
                 c'4
-                - \tweak style #'dotted-line %! abjad.glissando(7)
-                \glissando                   %! abjad.glissando(7)
+                - \tweak style #'dotted-line
+                \glissando
                 c'4
             }
 
@@ -1909,7 +1873,7 @@ class GraceHandler(Handler):
         ... )
         >>> handler(staff[:])
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2103,7 +2067,7 @@ class IntermittentVoiceHandler(Handler):
         ...         ph_up(voice)
         ...
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2236,7 +2200,7 @@ class NoteheadHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2427,7 +2391,7 @@ class OnBeatGraceHandler(Handler):
         >>> pitch_handler(abjad.select(s).logical_ties(grace=True))
         >>> head_handler(abjad.select(s).logical_ties(grace=True))
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2448,7 +2412,7 @@ class OnBeatGraceHandler(Handler):
                     <<
                         \context Voice = "On_Beat_Grace_Container"
                         {
-                            \set fontSize = #-4 %! abjad.on_beat_grace_container(1)
+                            \set fontSize = #-4
                             \slash
                             \voiceOne
                             \tweak NoteHead.style #'harmonic
@@ -2466,11 +2430,11 @@ class OnBeatGraceHandler(Handler):
                         }
                         \context Voice = "Voice1"
                         {
-                            \voiceTwo %! abjad.on_beat_grace_container(4)
+                            \voiceTwo
                             e''2
                         }
                     >>
-                    \oneVoice %! abjad.on_beat_grace_container(5)
+                    \oneVoice
                     e''4
                 }
             }
@@ -2571,7 +2535,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2601,7 +2565,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2633,7 +2597,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2666,7 +2630,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -2696,7 +2660,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2730,7 +2694,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(abjad.select(s).logical_ties())
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2777,7 +2741,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(s)
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2822,7 +2786,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2879,7 +2843,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2959,7 +2923,7 @@ class PitchHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score, abjad.Block(name="layout")],
@@ -2976,89 +2940,53 @@ class PitchHandler(Handler):
             \new Staff
             {
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 c'4
-                ^ \markup {
-                    \center-align
-                        +0
-                    }
+                ^ \markup \center-align { +0 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 g'4
-                ^ \markup {
-                    \center-align
-                        +2
-                    }
+                ^ \markup \center-align { +2 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-one-syntonic-comma-down
+                \tweak Accidental.text \markup { \natural-one-syntonic-comma-down  }
                 e'4
-                ^ \markup {
-                    \center-align
-                        -14
-                    }
+                ^ \markup \center-align { -14 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-one-syntonic-comma-down
+                \tweak Accidental.text \markup { \natural-one-syntonic-comma-down  }
                 e'''4
-                ^ \markup {
-                    \center-align
-                        -14
-                    }
+                ^ \markup \center-align { -14 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-one-syntonic-comma-down
+                \tweak Accidental.text \markup { \natural-one-syntonic-comma-down  }
                 a''4
-                ^ \markup {
-                    \center-align
-                        -16
-                    }
+                ^ \markup \center-align { -16 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 c'''4
-                ^ \markup {
-                    \center-align
-                        +0
-                    }
+                ^ \markup \center-align { +0 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 d''4
-                ^ \markup {
-                    \center-align
-                        +4
-                    }
+                ^ \markup \center-align { +4 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-one-syntonic-comma-down
+                \tweak Accidental.text \markup { \natural-one-syntonic-comma-down  }
                 e''4
-                ^ \markup {
-                    \center-align
-                        -14
-                    }
+                ^ \markup \center-align { -14 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 c''4
-                ^ \markup {
-                    \center-align
-                        +0
-                    }
+                ^ \markup \center-align { +0 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \natural-one-syntonic-comma-down
+                \tweak Accidental.text \markup { \natural-one-syntonic-comma-down  }
                 e'''4
-                ^ \markup {
-                    \center-align
-                        -14
-                    }
+                ^ \markup \center-align { -14 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \one-tridecimal-third-tone-down
+                \tweak Accidental.text \markup { \one-tridecimal-third-tone-down  }
                 d'''4
-                ^ \markup {
-                    \center-align
-                        C♯+39
-                    }
+                ^ \markup \center-align { C♯+39 }
                 \tweak Accidental.stencil #ly:text-interface::print
-                \tweak Accidental.text \abjad-natural
+                \tweak Accidental.text \markup { \abjad-natural  }
                 g'''4
-                ^ \markup {
-                    \center-align
-                        +2
-                    }
+                ^ \markup \center-align { +2 }
             }
 
     """
@@ -3246,8 +3174,15 @@ class PitchHandler(Handler):
                                     microtones.tune_to_ratio(head, ratio)
                                     leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
-                            column = abjad.Markup.center_column(marks[::-1])
-                            m = abjad.Markup(column, direction=abjad.Up).center_align()
+                            column = abjad.Markup(
+                                fr"\markup \center-column {marks[::-1]}",
+                                literal=True,
+                            )
+                            m = abjad.Markup(
+                                fr"\markup \center-align {column}",
+                                direction=abjad.Up,
+                                literal=True,
+                            )
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf)
                     else:
@@ -3342,7 +3277,7 @@ class RhythmHandler(Handler):
         ...     staff.extend(selections)
         ...
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -3409,7 +3344,7 @@ class SlurHandler(Handler):
         >>> handler = evans.SlurHandler()
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -3495,7 +3430,7 @@ class TempoSpannerHandler(Handler):
         ... )
         >>> handler(s[:-1])
         >>> score = abjad.Score([s])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -3622,7 +3557,7 @@ class TextSpanHandler(Handler):
         ... )
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -3638,8 +3573,7 @@ class TextSpanHandler(Handler):
             {
                 c'4
                 - \abjad-dashed-line-with-arrow
-                - \tweak bound-details.left.text \markup \concat { \upright
-                    pont. \hspace #0.5 }
+                - \tweak bound-details.left.text \markup \concat { \markup \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 1.4
                 - \tweak staff-padding #1.5
                 \startTextSpanOne
@@ -3647,8 +3581,7 @@ class TextSpanHandler(Handler):
                 c'4
                 \stopTextSpanOne
                 - \abjad-dashed-line-with-hook
-                - \tweak bound-details.left.text \markup \concat { \upright
-                    pont. \hspace #0.5 }
+                - \tweak bound-details.left.text \markup \concat { \markup \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 3
                 - \tweak staff-padding #1.5
                 \startTextSpanOne
@@ -3801,7 +3734,9 @@ class TextSpanHandler(Handler):
         for run in abjad.select(selections).runs():
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                    left_text=abjad.Markup(
+                        fr"\markup \upright {positions(r=1)[0]}", literal=True
+                    ),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
                 )
@@ -3813,21 +3748,27 @@ class TextSpanHandler(Handler):
                 abjad.tweak(start_span).staff_padding = span_padding
             else:
                 start_span = abjad.StartTextSpan(
-                    left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                    left_text=abjad.Markup(
+                        fr"\markup \upright {positions(r=1)[0]}", literal=True
+                    ),
                     style=style + "-with-arrow",
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
                 )
                 if self.hooks is True:
                     stop_span = abjad.StartTextSpan(
-                        left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                        left_text=abjad.Markup(
+                            rf"\markup \upright {positions(r=1)[0]}", literal=True
+                        ),
                         style=style + "-with-hook",
                         command=r"\startTextSpan" + span_command,
                         right_padding=3,
                     )
                 else:
                     stop_span = abjad.StartTextSpan(
-                        left_text=abjad.Markup(positions(r=1)[0]).upright(),
+                        left_text=abjad.Markup(
+                            fr"\markup \upright {positions(r=1)[0]}", literal=True
+                        ),
                         style="invisible-line",
                         command=r"\startTextSpan" + span_command,
                         right_padding=3,
@@ -3880,7 +3821,7 @@ class TextSpanHandler(Handler):
                     ] = fr"""\center-column {{ \upright \center-align \vcenter {start_string} }}"""
             start_indicators = [
                 abjad.StartTextSpan(
-                    left_text=abjad.Markup(start_string, literal=True),
+                    left_text=abjad.Markup(fr"\markup {start_string}", literal=True),
                     style=fr"{style}-with-arrow",
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
@@ -3891,7 +3832,7 @@ class TextSpanHandler(Handler):
             if all(start_string[-1].isdigit() for _ in (0, -1)):
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"""\center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
+                        fr"""\markup \center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
                         literal=True,
                     ),
                     style=r"invisible-line",
@@ -3901,7 +3842,7 @@ class TextSpanHandler(Handler):
             else:
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"""\center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
+                        fr"""\markup \center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
                         literal=True,
                     ),
                     style=r"invisible-line",
@@ -3935,7 +3876,9 @@ class TextSpanHandler(Handler):
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
-                left_text=abjad.Markup(start_string).upright(),
+                left_text=abjad.Markup(
+                    fr"\markup \upright {start_string}", literal=True
+                ),
                 style=fr"{style}-with-hook",
                 command=r"\startTextSpan" + span_command,
                 right_padding=3,
@@ -3975,7 +3918,7 @@ class TrillHandler(Handler):
         >>> handler = evans.TrillHandler(boolean_vector=[0, 1], forget=False)
         >>> handler(staff)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],

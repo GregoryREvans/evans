@@ -133,7 +133,7 @@ def nested_list_to_rtm(nested_list):
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -195,7 +195,7 @@ def rotate_tree(rtm_string, n=1):
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -263,7 +263,7 @@ def rotate_tree(rtm_string, n=1):
     >>> staff = abjad.Staff()
     >>> staff.extend(selections)
     >>> score = abjad.Score([staff])
-    >>> moment = abjad.SchemeMoment((1, 25))
+    >>> moment = "#(ly:make-moment 1 25)"
     >>> abjad.setting(score).proportional_notation_duration = moment
     >>> file = abjad.LilyPondFile(
     ...     items=[score],
@@ -421,7 +421,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -516,7 +516,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
             >>> staff = abjad.Staff()
             >>> staff.extend(selections)
             >>> score = abjad.Score([staff])
-            >>> moment = abjad.SchemeMoment((1, 25))
+            >>> moment = "#(ly:make-moment 1 25)"
             >>> abjad.setting(score).proportional_notation_duration = moment
             >>> file = abjad.LilyPondFile(
             ...     items=[score],
@@ -585,7 +585,7 @@ class RTMMaker(rmakers.RhythmMaker):
         >>> staff = abjad.Staff()
         >>> staff.extend(selections)
         >>> score = abjad.Score([staff])
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],

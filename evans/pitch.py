@@ -18,7 +18,7 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=True)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(str(pitch.deviation), direction=abjad.Up)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up, literal=True)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -26,13 +26,13 @@ class JIPitch(abjad.Pitch):
 
             >>> print(abjad.lilypond(note))
             aqs'4
-            ^ \markup { 19 }
+            ^ \markup 19
 
     .. container:: example
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=False)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(str(pitch.deviation), direction=abjad.Up)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up, literal=True)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -40,7 +40,7 @@ class JIPitch(abjad.Pitch):
 
             >>> print(abjad.lilypond(note))
             bf'4
-            ^ \markup { -31 }
+            ^ \markup -31
 
     """
 
@@ -242,7 +242,9 @@ def return_cent_markup(
         cent_string = f"{remainder}"
     else:
         cent_string = f"+{remainder}"
-    mark = abjad.Markup(cent_string, direction=abjad.Up).center_align()
+    mark = abjad.Markup(
+        fr"\markup \center-align {cent_string}", direction=abjad.Up, literal=True
+    )
     return mark
 
 
@@ -302,11 +304,11 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(string, direction=abjad.Up)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up, literal=True)
         ...     abjad.attach(markup, tie[0])
         ...
         >>> handler(vm_ties)
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -328,39 +330,39 @@ def return_vertical_moment_ties(score):
                 \new Staff
                 {
                     cs'4
-                    ^ \markup { 1 }
+                    ^ \markup 1
                     cs'2
-                    ^ \markup { 6 }
+                    ^ \markup 6
                     d'4
-                    ^ \markup { 12 }
+                    ^ \markup 12
                 }
                 \new Staff
                 {
                     d'4
-                    ^ \markup { 2 }
+                    ^ \markup 2
                     c'4
-                    ^ \markup { 5 }
+                    ^ \markup 5
                     e'2
-                    ^ \markup { 9 }
+                    ^ \markup 9
                 }
                 \new Staff
                 {
                     c'8
-                    ^ \markup { 0 }
+                    ^ \markup 0
                     ef'8
-                    ^ \markup { 3 }
+                    ^ \markup 3
                     e'8
-                    ^ \markup { 4 }
+                    ^ \markup 4
                     d'8
-                    ^ \markup { 7 }
+                    ^ \markup 7
                     ef'8
-                    ^ \markup { 8 }
+                    ^ \markup 8
                     c'8
-                    ^ \markup { 10 }
+                    ^ \markup 10
                     cs'8
-                    ^ \markup { 11 }
+                    ^ \markup 11
                     ef'8
-                    ^ \markup { 13 }
+                    ^ \markup 13
                 }
             >>
 
@@ -381,11 +383,11 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(string, direction=abjad.Up)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up, literal=True)
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
         ...
-        >>> moment = abjad.SchemeMoment((1, 25))
+        >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
         ...     items=[score],
@@ -407,39 +409,39 @@ def return_vertical_moment_ties(score):
                 \new Staff
                 {
                     d'4
-                    ^ \markup { 2 }
+                    ^ \markup 2
                     ~
                     d'2
                     cs'4
-                    ^ \markup { 11 }
+                    ^ \markup 11
                 }
                 \new Staff
                 {
                     cs'4
-                    ^ \markup { 1 }
+                    ^ \markup 1
                     c'4
-                    ^ \markup { 5 }
+                    ^ \markup 5
                     ef'2
-                    ^ \markup { 8 }
+                    ^ \markup 8
                 }
                 \new Staff
                 {
                     c'8
-                    ^ \markup { 0 }
+                    ^ \markup 0
                     ef'8
-                    ^ \markup { 3 }
+                    ^ \markup 3
                     e'8
-                    ^ \markup { 4 }
+                    ^ \markup 4
                     cs'8
-                    ^ \markup { 6 }
+                    ^ \markup 6
                     d'8
-                    ^ \markup { 7 }
+                    ^ \markup 7
                     e'8
-                    ^ \markup { 9 }
+                    ^ \markup 9
                     c'8
-                    ^ \markup { 10 }
+                    ^ \markup 10
                     d'8
-                    ^ \markup { 12 }
+                    ^ \markup 12
                 }
             >>
 
