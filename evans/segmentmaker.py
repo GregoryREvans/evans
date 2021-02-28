@@ -280,7 +280,7 @@ class SegmentMaker:
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
             markup = abjad.Markup(
-                rf"\markup \center-align \musicglyph {self.fermata}",
+                rf"""\markup \center-align \musicglyph #"{self.fermata}" """,
                 direction=abjad.Up,
                 literal=True,
             )
@@ -570,8 +570,10 @@ class SegmentMaker:
     def _render_file(self):
         print("Rendering file ...")
         abjad.SegmentMaker.comment_measure_numbers(self.score_template)
+        score_block = abjad.Block(name="score")
+        score_block.items.append(self.score_template)
         score_file = abjad.LilyPondFile(
-            self.score_template, includes=self.score_includes
+            items=[score_block], includes=self.score_includes
         )
         for leaf in abjad.iterate(self.score_template).leaves():
             literal = abjad.LilyPondLiteral("", "absolute_before")
