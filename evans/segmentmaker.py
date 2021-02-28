@@ -174,19 +174,17 @@ class SegmentMaker:
             abbreviations = []
             abb = self.abbreviations
             mark_abbreviations = [
-                abjad.Markup(fr"\markup {_}", literal=True) for _ in abb
+                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}", literal=True) for _ in abb
             ]
             for x in mark_abbreviations:
-                x.hcenter_in(12)
                 abbreviations.append(abjad.MarginMarkup(markup=x))
         else:
             abbreviations = [_ for _ in range(len(self.instruments))]
         if self.names is not None:
             names = []
             nm = self.names
-            mark_names = [abjad.Markup(fr"\markup {{ {_} }}", literal=True) for _ in nm]
+            mark_names = [abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}", literal=True) for _ in nm]
             for x in mark_names:
-                x.hcenter_in(14)
                 names.append(abjad.StartMarkup(markup=x))
         else:
             names = [_ for _ in range(len(self.instruments))]
