@@ -282,11 +282,10 @@ class SegmentMaker:
             container.append(rest_leaf)
             container.append(mult_rest_leaf)
             markup = abjad.Markup(
-                rf"\markup \musicglyph {self.fermata}",
+                rf"\markup \center-align \musicglyph {self.fermata}",
                 direction=abjad.Up,
                 literal=True,
             )
-            markup.center_align()
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
                 format_slot="before",
