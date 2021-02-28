@@ -608,7 +608,7 @@ class SegmentMaker:
             score_lines = pointer_1.readlines()
             build_path = self.current_directory.parent.with_name("build")
             build_path /= "score"
-            lines = score_lines[15:-1]
+            lines = score_lines[7:-1] # was 15:-1
             with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                 fp.writelines(lines)
 
