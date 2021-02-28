@@ -174,7 +174,8 @@ class SegmentMaker:
             abbreviations = []
             abb = self.abbreviations
             mark_abbreviations = [
-                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}", literal=True) for _ in abb
+                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}", literal=True)
+                for _ in abb
             ]
             for x in mark_abbreviations:
                 abbreviations.append(abjad.MarginMarkup(markup=x))
@@ -183,7 +184,10 @@ class SegmentMaker:
         if self.names is not None:
             names = []
             nm = self.names
-            mark_names = [abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}", literal=True) for _ in nm]
+            mark_names = [
+                abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}", literal=True)
+                for _ in nm
+            ]
             for x in mark_names:
                 names.append(abjad.StartMarkup(markup=x))
         else:
@@ -607,7 +611,7 @@ class SegmentMaker:
             score_lines = pointer_1.readlines()
             build_path = self.current_directory.parent.with_name("build")
             build_path /= "score"
-            lines = score_lines[7:-1] # was 15:-1
+            lines = score_lines[7:-1]  # was 15:-1
             with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                 fp.writelines(lines)
 
