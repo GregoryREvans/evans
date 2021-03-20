@@ -10,13 +10,19 @@ def mypy_check(wrapper_path):
     for sub_dir in sorted(contents_path.iterdir()):
         if sub_dir.name == "segments":
             for segment_dir in sorted(sub_dir.iterdir()):
-                if segment_dir.name.startswith("segment"):
+                if segment_dir.name.startswith("_"):
+                    continue
+                if segment_dir.name.startswith("."):
+                    continue
+                else:
                     print(f"Mypy checking {segment_dir.name} ...")
                     os.system(f"mypy {segment_dir}")
         else:
             if sub_dir.name.startswith("_"):
                 continue
             if sub_dir.name.startswith("."):
+                continue
+            if sub_dir.name == "audio":
                 continue
             if sub_dir.name == "build":
                 continue

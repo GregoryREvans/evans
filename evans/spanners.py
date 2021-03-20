@@ -52,7 +52,7 @@ class BowAnglePoint:
             + f"{degrees}"
             + r" \translate #'(0 . 1) \teeny o \hspace #0.5 }"
         )
-        string = rf"\markup \vcenter {symbol}"
+        string = rf"\markup {{ \vcenter {symbol} }}"
         markup = abjad.Markup(string, literal=True)
         return markup
 
@@ -86,13 +86,13 @@ def bow_angle_spanner(
             {
                 \tweak Y-offset #-4.0
                 \tweak stencil #ly:text-interface::print
-                \tweak text \markup \vcenter \concat { \translate #'(0 . 0) -45 \translate #'(0 . 1) \teeny o \hspace #0.5 }
+                \tweak text \markup { \vcenter \concat { \translate #'(0 . 0) -45 \translate #'(0 . 1) \teeny o \hspace #0.5 } }
                 c'2
                 - \tweak style #'line
                 \glissando
                 \tweak Y-offset #0.0
                 \tweak stencil #ly:text-interface::print
-                \tweak text \markup \vcenter \concat { \translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o \hspace #0.5 }
+                \tweak text \markup { \vcenter \concat { \translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o \hspace #0.5 } }
                 c'2
             }
 
@@ -112,10 +112,10 @@ def bow_angle_spanner(
     def _make_bow_contact_point_tweaks(leaf, bow_contact_point):
         if bow_contact_point is None:
             return
-        abjad.tweak(leaf.note_head).stencil = "ly:text-interface::print"
+        abjad.tweak(leaf.note_head).stencil = "#ly:text-interface::print"
         abjad.tweak(leaf.note_head).text = bow_contact_point.markup
         y_offset = float((4 * bow_contact_point.degrees) - 2)
-        abjad.tweak(leaf.note_head).Y_offset = y_offset
+        abjad.tweak(leaf.note_head).Y_offset = f"#{y_offset}"
 
     def _make_bow_change_contributions(leaf, leaves, bow_contact_point):
         cautionary_change = False
@@ -197,7 +197,7 @@ def bow_angle_spanner(
         if bow_contact_point is None:
             return
         if bow_contact_point.degrees is None:
-            abjad.tweak(leaf.note_head).style = "cross"
+            abjad.tweak(leaf.note_head).style = "#'cross"
             return
         if len(leaves) == 1:
             return

@@ -50,15 +50,119 @@ class JIPitch(abjad.Pitch):
         ratio,
         with_quarter_tones=False,
     ):
-        self.fundamental = fundamental
+        self.fundamental = abjad.NamedPitch(fundamental)
         self.ratio = quicktions.Fraction(ratio)
         self.with_quarter_tones = with_quarter_tones
         pair = self._calculate_pitch_and_deviation(self.fundamental, self.ratio)
         self.pitch = pair[0]
         self.deviation = pair[1]
 
+    def __add__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return type(self)(
+                self.fundamental,
+                quicktions.Fraction(self_fraction + argument),
+                self.with_quarter_tones,
+            )
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return type(self)(
+                self.fundamental.number + argument.fundamental.number,
+                quicktions.Fraction(self_pitch.number + argument_pitch.number),
+                self.with_quarter_tones,
+            )
+
+    def __truediv__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return type(self)(
+                self.fundamental,
+                quicktions.Fraction(self_fraction / argument),
+                self.with_quarter_tones,
+            )
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return type(self)(
+                self.fundamental.number / argument.fundamental.number,
+                quicktions.Fraction(self_pitch.number / argument_pitch.number),
+                self.with_quarter_tones,
+            )
+
+    def __lt__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return self_fraction < argument
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return self_pitch < argument_pitch
+
+    def __lte__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return self_fraction <= argument
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return self_pitch <= argument_pitch
+
+    def __mod__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return self.pitch.number % argument
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return type(self)(
+                self.fundamental.number % argument.fundamental.number,
+                quicktions.Fraction(self_pitch.number % argument_pitch.number),
+                self.with_quarter_tones,
+            )
+
+    def __mul__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return type(self)(
+                self.fundamental,
+                quicktions.Fraction(self_fraction * argument),
+                self.with_quarter_tones,
+            )
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return type(self)(
+                self.fundamental.number * argument.fundamental.number,
+                quicktions.Fraction(self_pitch.number * argument_pitch.number),
+                self.with_quarter_tones,
+            )
+
     def __str__(self):
         return abjad.lilypond(self.pitch)
+
+    def __sub__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            self_ratio = self.ratio
+            self_fraction = quicktions.Fraction(self_ratio)
+            return type(self)(
+                self.fundamental,
+                quicktions.Fraction(self_fraction - argument),
+                self.with_quarter_tones,
+            )
+        elif isinstance(argument, type(self)):
+            self_pitch = self.pitch
+            argument_pitch = argument.pitch
+            return type(self)(
+                self.fundamental.number - argument.fundamental.number,
+                quicktions.Fraction(self_pitch.number - argument_pitch.number),
+                self.with_quarter_tones,
+            )
 
     def _get_lilypond_format(self):
         return abjad.lilypond(self.pitch)

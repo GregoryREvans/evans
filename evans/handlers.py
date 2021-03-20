@@ -8,7 +8,7 @@ import quicktions
 from abjadext import microtones
 
 from . import sequence
-from .pitch import return_cent_markup, tune_to_ratio
+from .pitch import JIPitch, return_cent_markup, tune_to_ratio
 
 
 class Handler:
@@ -1233,20 +1233,16 @@ class DynamicHandler(Handler):
                             if markup_val == 1:
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
-                                        fr"\markup {{ \small \whiteout \box \italic {{ cresc. a {stop.name} }} }}",
+                                        fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
                                         direction=abjad.Down,
                                         literal=True,
                                     )
-                                    abjad.override(mark_text).box_padding = 0.5
-                                    abjad.override(mark_text).style = "#'box"
                                 else:
                                     mark_text = abjad.Markup(
-                                        fr"\markup \small \whiteout \box \italic {{ dim. a {stop.name} }}",
+                                        fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
                                         direction=abjad.Down,
                                         literal=True,
                                     )
-                                    abjad.override(mark_text).box_padding = 0.5
-                                    abjad.override(mark_text).style = "#'box"
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
@@ -1322,20 +1318,16 @@ class DynamicHandler(Handler):
                             if markup_val == 1:
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
-                                        fr"\markup \small \whiteout \box \italic {{ cresc. a {stop.name} }}",
+                                        fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
                                         direction=abjad.Down,
                                         literal=True,
                                     )
-                                    abjad.override(mark_text).box_padding = 0.5
-                                    abjad.override(mark_text).style = "#'box"
                                 else:
                                     mark_text = abjad.Markup(
-                                        fr"\markup \small \whiteout \box \italic {{ dim. a {stop.name} }}",
+                                        fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
                                         direction=abjad.Down,
                                         literal=True,
                                     )
-                                    abjad.override(mark_text).box_padding = 0.5
-                                    abjad.override(mark_text).style = "#'box"
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
             else:
                 start = self._cyc_dynamics(r=1)[0]
@@ -1434,7 +1426,7 @@ class GettatoHandler(Handler):
                         \slash
                         \voiceOne
                         <
-                            \tweak font-size #0
+                            \tweak font-size 0
                             \tweak transparent ##t
                             c'
                         >32 * 4/3
@@ -1471,7 +1463,7 @@ class GettatoHandler(Handler):
                         \slash
                         \voiceOne
                         <
-                            \tweak font-size #0
+                            \tweak font-size 0
                             \tweak transparent ##t
                             fs'
                         >32 * 4/3
@@ -1512,7 +1504,7 @@ class GettatoHandler(Handler):
                         \slash
                         \voiceOne
                         <
-                            \tweak font-size #0
+                            \tweak font-size 0
                             \tweak transparent ##t
                             c''
                         >32 * 4/3
@@ -1557,7 +1549,7 @@ class GettatoHandler(Handler):
                         \slash
                         \voiceOne
                         <
-                            \tweak font-size #0
+                            \tweak font-size 0
                             \tweak transparent ##t
                             gqs''
                         >32 * 4/3
@@ -1748,7 +1740,7 @@ class GlissandoHandler(Handler):
         name="Glissando Handler",
     ):
         self.glissando_style = glissando_style
-        self.line_style = line_style
+        self.line_style = f"#'{line_style}"
         self._count = count
         self.forget = forget
         self.apply_to = apply_to
@@ -3110,6 +3102,11 @@ class PitchHandler(Handler):
                     else:
                         microtonal_indices_to_pitch[str(i)] = _
                         pitches[i] = 0
+            for pitch_index, pitch_value in enumerate(
+                pitches
+            ):  # find way to add cent when 1/4 is false
+                if isinstance(pitch_value, JIPitch):
+                    pitches[pitch_index] = pitch_value.pitch
             if self.apply_all is False:
                 new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
             else:
@@ -3174,8 +3171,11 @@ class PitchHandler(Handler):
                                     microtones.tune_to_ratio(head, ratio)
                                     leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
+                            marks_strings = r""
+                            for marks_string in marks[::-1]:
+                                marks_strings += fr"{marks_string.contents[0][24:-1]}"
                             column = abjad.Markup(
-                                fr"\markup \center-column {marks[::-1]}",
+                                fr"\center-column {{ {marks_strings} }}",
                                 literal=True,
                             )
                             m = abjad.Markup(
@@ -3573,7 +3573,7 @@ class TextSpanHandler(Handler):
             {
                 c'4
                 - \abjad-dashed-line-with-arrow
-                - \tweak bound-details.left.text \markup \concat { \markup \upright pont. \hspace #0.5 }
+                - \tweak bound-details.left.text \markup \concat { \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 1.4
                 - \tweak staff-padding #1.5
                 \startTextSpanOne
@@ -3581,7 +3581,7 @@ class TextSpanHandler(Handler):
                 c'4
                 \stopTextSpanOne
                 - \abjad-dashed-line-with-hook
-                - \tweak bound-details.left.text \markup \concat { \markup \upright pont. \hspace #0.5 }
+                - \tweak bound-details.left.text \markup \concat { \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 3
                 - \tweak staff-padding #1.5
                 \startTextSpanOne
@@ -3735,7 +3735,7 @@ class TextSpanHandler(Handler):
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"\markup \upright {positions(r=1)[0]}", literal=True
+                        fr"\upright {positions(r=1)[0]}", literal=True
                     ),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
@@ -3745,11 +3745,11 @@ class TextSpanHandler(Handler):
                     abjad.get.leaf(run[-1], 1),
                 )
                 abjad.attach(start_span, run[0])
-                abjad.tweak(start_span).staff_padding = span_padding
+                abjad.tweak(start_span).staff_padding = f"#{span_padding}"
             else:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"\markup \upright {positions(r=1)[0]}", literal=True
+                        fr"\upright {positions(r=1)[0]}", literal=True
                     ),
                     style=style + "-with-arrow",
                     command=r"\startTextSpan" + span_command,
@@ -3758,7 +3758,7 @@ class TextSpanHandler(Handler):
                 if self.hooks is True:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            rf"\markup \upright {positions(r=1)[0]}", literal=True
+                            rf"\upright {positions(r=1)[0]}", literal=True
                         ),
                         style=style + "-with-hook",
                         command=r"\startTextSpan" + span_command,
@@ -3767,7 +3767,7 @@ class TextSpanHandler(Handler):
                 else:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            fr"\markup \upright {positions(r=1)[0]}", literal=True
+                            fr"\upright {positions(r=1)[0]}", literal=True
                         ),
                         style="invisible-line",
                         command=r"\startTextSpan" + span_command,
@@ -3782,8 +3782,8 @@ class TextSpanHandler(Handler):
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
                     abjad.get.leaf(run[-1], 1),
                 )
-                abjad.tweak(start_span).staff_padding = span_padding
-                abjad.tweak(stop_span).staff_padding = span_padding
+                abjad.tweak(start_span).staff_padding = f"#{span_padding}"
+                abjad.tweak(stop_span).staff_padding = f"#{span_padding}"
 
     def _apply_position_and_span_to_leaves(
         self, selections, positions, style, span_command, span_padding
@@ -3821,7 +3821,7 @@ class TextSpanHandler(Handler):
                     ] = fr"""\center-column {{ \upright \center-align \vcenter {start_string} }}"""
             start_indicators = [
                 abjad.StartTextSpan(
-                    left_text=abjad.Markup(fr"\markup {start_string}", literal=True),
+                    left_text=abjad.Markup(f"{start_string}", literal=True),
                     style=fr"{style}-with-arrow",
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
@@ -3832,7 +3832,7 @@ class TextSpanHandler(Handler):
             if all(start_string[-1].isdigit() for _ in (0, -1)):
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"""\markup \center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
+                        fr"""\center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
                         literal=True,
                     ),
                     style=r"invisible-line",
@@ -3842,7 +3842,7 @@ class TextSpanHandler(Handler):
             else:
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"""\markup \center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
+                        fr"""\center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
                         literal=True,
                     ),
                     style=r"invisible-line",
@@ -3850,8 +3850,8 @@ class TextSpanHandler(Handler):
                     right_padding=3,
                 )
             for indicator in start_indicators:
-                abjad.tweak(indicator).staff_padding = span_padding
-            abjad.tweak(final_indicator).staff_padding = span_padding
+                abjad.tweak(indicator).staff_padding = f"#{span_padding}"
+            abjad.tweak(final_indicator).staff_padding = f"#{span_padding}"
             abjad.attach(start_indicators[0], ties[0][0])
             for pair in zip(ties[1:], start_indicators[1:]):
                 tie, start_indicator = pair
@@ -3876,9 +3876,7 @@ class TextSpanHandler(Handler):
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
-                left_text=abjad.Markup(
-                    fr"\markup \upright {start_string}", literal=True
-                ),
+                left_text=abjad.Markup(fr"\upright {start_string}", literal=True),
                 style=fr"{style}-with-hook",
                 command=r"\startTextSpan" + span_command,
                 right_padding=3,
@@ -3886,7 +3884,7 @@ class TextSpanHandler(Handler):
             for start_string in start_strings
         ]
         for indicator in start_indicators:
-            abjad.tweak(indicator).staff_padding = span_padding
+            abjad.tweak(indicator).staff_padding = f"#{span_padding}"
         for i, pair in enumerate(zip(runs, start_indicators)):
             run, start_indicator = pair
             abjad.attach(start_indicator, run[0])

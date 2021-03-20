@@ -2,7 +2,7 @@ import pathlib
 
 
 def return_directories(
-    p="/Users/evansdsg2/Scores", ignores=("archive", ".mypy_cache", "squonk")
+    p="/Users/evansdsg2/Scores", ignores=("_archive", ".mypy_cache", "_squonk")
 ):
     build_path = pathlib.Path(p)
     returns = []
