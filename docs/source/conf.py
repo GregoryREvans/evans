@@ -24,12 +24,14 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
     "abjad.ext.sphinx",
     "sphinx_autodoc_typehints",
     "uqbar.sphinx.api",
     "uqbar.sphinx.book",
     "uqbar.sphinx.inheritance",
     "uqbar.sphinx.style",
+    
 ]
 
 html_favicon = "_static/notes.ico"
