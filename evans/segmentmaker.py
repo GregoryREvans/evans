@@ -902,7 +902,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         for i_, item in enumerate(pair):
             offset_pairs[i][i_] = item + initial_offset
     offset_timespans = [
-        abjad.timespan(start_offset=pair[0], stop_offset=pair[1])
+        abjad.Timespan(start_offset=pair[0], stop_offset=pair[1])
         for pair in offset_pairs
     ]
 
