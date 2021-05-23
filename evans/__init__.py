@@ -71,7 +71,12 @@ from .rtm import (
     nested_list_to_rtm,
     rotate_tree,
 )
-from .segmentmaker import NoteheadBracketMaker, SegmentMaker, beam_meter
+from .segmentmaker import (
+    NoteheadBracketMaker,
+    SegmentMaker,
+    annotate_leaves,
+    beam_meter,
+)
 from .sequence import (
     CyclicList,
     MarkovChain,
@@ -158,6 +163,7 @@ __all__ = [
     "add_silences_to_timespan_dict",
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
+    "annotate_leaves",
     "attach",
     "beam_meter",
     "bow_angle_spanner",

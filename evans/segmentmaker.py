@@ -472,6 +472,16 @@ class SegmentMaker:
             container = abjad.Container()
             abjad.attach(literal, container)
             abjad.mutate.wrap(staff, container)
+        for count, group in enumerate(
+            abjad.iterate(self.score_template["Staff Group"]).components(
+                abjad.StaffGroup
+            )
+        ):
+            t = rf"\tag #'group{count + 1}"
+            literal = abjad.LilyPondLiteral(t, format_slot="before")
+            container = abjad.Container()
+            abjad.attach(literal, container)
+            abjad.mutate.wrap(group, container)
 
     def _make_global_context(self):
         print("Making global context ...")
@@ -940,3 +950,11 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_lone_notes=False,
                 selector=abjad.select().leaves(grace=False),
             )
+
+
+def annotate_leaves(score, prototype=abjad.Leaf):
+    for voice in abjad.select(score).components(abjad.Voice):
+        if prototype is not None:
+            abjad.label(voice).with_indices(prototype=prototype)
+        else:
+            abjad.label(voice).with_indices()

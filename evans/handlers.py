@@ -621,6 +621,9 @@ class ClefHandler(Handler):
         self.add_ottavas = add_ottavas
         self.extend_in_direction = extend_in_direction
 
+        if self.clef_shelf is not None:
+            self._default_clef_shelves[self.clef] = self.clef_shelf
+
     def __call__(self, voice):
         self._add_clefs(voice)
         self._add_ottavas(voice)
@@ -2995,6 +2998,7 @@ class PitchHandler(Handler):
         forget=True,
         to_ties=False,
         pitch_count=-1,
+        state=None,
         chord_boolean_count=-1,
         chord_groups_count=-1,
         name="Pitch Handler",
@@ -3009,9 +3013,14 @@ class PitchHandler(Handler):
         self.forget = forget
         self.to_ties = to_ties
         self.name = name
+        self._state = state
         self._pitch_count = pitch_count
         self._chord_boolean_count = chord_boolean_count
         self._chord_groups_count = chord_groups_count
+        if self._state is not None:
+            self._pitch_count = state["pitch_count"]
+            self._chord_boolean_count = state["chord_boolean_count"]
+            self._chord_groups_count = state["chord_groups_count"]
         self._cyc_pitches = sequence.CyclicList(
             self.pitch_list,
             self.forget,
@@ -3242,6 +3251,22 @@ class PitchHandler(Handler):
                         abjad.attach(before_grace, new_leaf)
                     abjad.mutate.replace(old_leaf, new_leaf)
 
+    def make_persistent_copy(self, state_dict):
+        copied_handler = type(self)(
+            pitch_list=self.pitch_list,
+            allow_chord_duplicates=self.allow_chord_duplicates,
+            apply_all=self.apply_all,
+            apply_all_spelling=self.apply_all_spelling,
+            as_ratios=self.as_ratios,
+            chord_boolean_vector=self.chord_boolean_vector,
+            chord_groups=self.chord_groups,
+            forget=self.forget,
+            to_ties=self.to_ties,
+            state=state_dict,
+            name=self.name,
+        )
+        return copied_handler
+
     def name(self):
         return self.name
 
@@ -3325,6 +3350,15 @@ class RhythmHandler(Handler):
     def _make_music(self, durations):
         selections = self._make_basic_rhythm(durations)
         return selections
+
+    def make_persistent_copy(self, state_dict):
+        new_handler = type(self)(
+            rmaker=self.rmaker,
+            forget=self.forget,
+            state=state_dict,
+            name=self.name,
+        )
+        return new_handler
 
     def name(self):
         return self.name
