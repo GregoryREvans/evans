@@ -609,7 +609,7 @@ class SegmentMaker:
         result = abjad.persist.as_pdf(
             score_file,
             pdf_path,
-            align_tags=79,
+            # align_tags=79,
         )
         success = result[3]
         if success is False:
@@ -955,6 +955,6 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 def annotate_leaves(score, prototype=abjad.Leaf):
     for voice in abjad.select(score).components(abjad.Voice):
         if prototype is not None:
-            abjad.label(voice).with_indices(prototype=prototype)
+            abjad.Label(voice).with_indices(prototype=prototype)
         else:
-            abjad.label(voice).with_indices()
+            abjad.Label(voice).with_indices()
