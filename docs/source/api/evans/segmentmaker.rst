@@ -113,6 +113,9 @@ segmentmaker
 .. autosummary::
    :nosignatures:
 
+   ~annotate_leaves
    ~beam_meter
+
+.. autofunction:: annotate_leaves
 
 .. autofunction:: beam_meter

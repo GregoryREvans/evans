@@ -1305,10 +1305,6 @@ sequence
 
    .. container:: inherited
 
-      .. automethod:: Sequence.zebra
-
-   .. container:: inherited
-
       .. automethod:: Sequence.zip
 
    .. automethod:: Sequence.zipped_bifurcation

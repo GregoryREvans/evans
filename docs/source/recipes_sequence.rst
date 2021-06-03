@@ -51,9 +51,7 @@ First Example
     >>> abjad.override(score).SpanBar.stencil = False
     >>> abjad.override(score).Stem.stencil = False
     >>> abjad.override(score).TimeSignature.stencil = False
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 20)
-    ... )
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 20)"
     ...
 
 ::
@@ -159,9 +157,7 @@ Second Example
     >>> abjad.override(score).SpanBar.stencil = False
     >>> abjad.override(score).Stem.stencil = False
     >>> abjad.override(score).TimeSignature.stencil = False
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 20)
-    ... )
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 20)"
     ...
 
 ::
@@ -223,9 +219,7 @@ Third Example
     >>> abjad.override(score).SpanBar.stencil = False
     >>> abjad.override(score).Stem.stencil = False
     >>> abjad.override(score).TimeSignature.stencil = False
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 20)
-    ... )
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 20)"
     ...
 
 ::

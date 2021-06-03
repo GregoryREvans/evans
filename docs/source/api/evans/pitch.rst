@@ -36,7 +36,14 @@ pitch
    .. autosummary::
       :nosignatures:
 
+      __add__
+      __lt__
+      __lte__
+      __mod__
+      __mul__
       __str__
+      __sub__
+      __truediv__
       name
       octave
       pitch_class
@@ -47,6 +54,8 @@ pitch
 
    .. rubric:: Special methods
       :class: class-header
+
+   .. automethod:: JIPitch.__add__
 
    .. container:: inherited
 
@@ -72,15 +81,23 @@ pitch
 
       .. automethod:: JIPitch.__le__
 
-   .. container:: inherited
+   .. automethod:: JIPitch.__lt__
 
-      .. automethod:: JIPitch.__lt__
+   .. automethod:: JIPitch.__lte__
+
+   .. automethod:: JIPitch.__mod__
+
+   .. automethod:: JIPitch.__mul__
 
    .. container:: inherited
 
       .. automethod:: JIPitch.__repr__
 
    .. automethod:: JIPitch.__str__
+
+   .. automethod:: JIPitch.__sub__
+
+   .. automethod:: JIPitch.__truediv__
 
    .. raw:: html
 

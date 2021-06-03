@@ -588,6 +588,7 @@ handlers
       :nosignatures:
 
       __call__
+      make_persistent_copy
       name
       state
 
@@ -611,6 +612,8 @@ handlers
    .. rubric:: Methods
       :class: class-header
 
+   .. automethod:: PitchHandler.make_persistent_copy
+
    .. automethod:: PitchHandler.name
 
    .. automethod:: PitchHandler.state
@@ -628,6 +631,7 @@ handlers
       :nosignatures:
 
       __call__
+      make_persistent_copy
       name
       return_state
 
@@ -650,6 +654,8 @@ handlers
 
    .. rubric:: Methods
       :class: class-header
+
+   .. automethod:: RhythmHandler.make_persistent_copy
 
    .. automethod:: RhythmHandler.name
 

@@ -400,6 +400,7 @@ SegmentMaker with supporting classes and functions.
 .. autosummary::
    :nosignatures:
 
+   ~evans.segmentmaker.annotate_leaves
    ~evans.segmentmaker.beam_meter
 
 .. raw:: html
@@ -466,8 +467,6 @@ Sequence classes and functions.
    :nosignatures:
 
    ~evans.spanners.BowAnglePoint
-   ~evans.spanners.Damping
-   ~evans.spanners.DampingComponent
 
 .. raw:: html
 

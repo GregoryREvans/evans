@@ -77,16 +77,14 @@ Create and override staff:
     >>> row = abjad.TwelveToneRow(intersection_1 + intersection_2)
     >>> staff = abjad.Staff([abjad.Note(_, (1, 8)) for _ in row])
     >>> abjad.attach(abjad.TimeSignature((6, 8)), staff[0])
-    >>> abjad.label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
+    >>> abjad.Label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
     >>> abjad.override(staff).Beam.stencil = "##f"
     >>> abjad.override(staff).Flag.stencil = "##f"
     >>> abjad.override(staff).Stem.stencil = "##f"
     >>> abjad.override(staff).text_script.staff_padding = 4
     >>> abjad.override(staff).TimeSignature.stencil = "##f"
     >>> score = abjad.Score([staff])
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 20)
-    ... )
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 20)"
 
 Show score:
 
@@ -136,7 +134,7 @@ Iterate over hexachords, combining with hexachord inversion transposed six semit
     ...     abjad.attach(abjad.Clef("bass"), staff[0])
     ...     abjad.attach(abjad.Clef("treble"), staff[4])
     ...     abjad.ottava(staff[8:])
-    ...     abjad.label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
+    ...     abjad.Label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
     ...     abjad.override(staff).text_script.staff_padding = 7
     ...     group.append(staff)
     ...
@@ -151,17 +149,19 @@ Add staff group to score and override settings:
     >>> abjad.override(score).Stem.stencil = "##f"
     >>> abjad.override(score).TimeSignature.stencil = "##f"
     >>> abjad.override(score).StaffGrouper.staff_staff_spacing = "#'((basic-distance . 20) (minimum-distance . 20) (padding . 2))"
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment((1, 45))
-    >>> abjad.label(group[0][:6]).color_leaves("red")
-    >>> abjad.label(group[0][6:]).color_leaves("blue")
-    >>> abjad.label(group[1][:6]).color_leaves("blue")
-    >>> abjad.label(group[1][6:]).color_leaves("red")
-    >>> abjad.label(group[2][:6]).color_leaves("blue")
-    >>> abjad.label(group[2][6:]).color_leaves("red")
-    >>> abjad.label(group[3][:6]).color_leaves("red")
-    >>> abjad.label(group[3][6:]).color_leaves("blue")
-    >>> file = abjad.LilyPondFile.new(
-    ...     score,
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 45)"
+    >>> abjad.Label(group[0][:6]).color_leaves("#red")
+    >>> abjad.Label(group[0][6:]).color_leaves("#blue")
+    >>> abjad.Label(group[1][:6]).color_leaves("#blue")
+    >>> abjad.Label(group[1][6:]).color_leaves("#red")
+    >>> abjad.Label(group[2][:6]).color_leaves("#blue")
+    >>> abjad.Label(group[2][6:]).color_leaves("#red")
+    >>> abjad.Label(group[3][:6]).color_leaves("#red")
+    >>> abjad.Label(group[3][6:]).color_leaves("#blue")
+    >>> score_block = abjad.Block(name="score")
+    >>> score_block.items.append(score)
+    >>> file = abjad.LilyPondFile(
+    ...     items=[score_block],
     ...     includes=["abjad.ily"],
     ... )
     ...
@@ -239,29 +239,30 @@ Attach extra attachments and override score settings:
     >>> abjad.override(staff).Flag.stencil = "##f"
     >>> abjad.override(staff).Stem.stencil = "##f"
     >>> abjad.override(staff).TimeSignature.stencil = "##f"
-    >>> abjad.setting(staff).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 25)
-    ... )
+    >>> abjad.setting(staff).proportional_notation_duration = "#(ly:make-moment 1 25)"
     ...
     >>> colors = [
-    ...     "red",
-    ...     "blue",
-    ...     "red",
-    ...     "blue",
-    ...     "red",
-    ...     "blue",
+    ...     "#red",
+    ...     "#blue",
+    ...     "#red",
+    ...     "#blue",
+    ...     "#red",
+    ...     "#blue",
     ... ]
     ...
     >>> leaf_group = abjad.select(staff).leaves().partition_by_counts([11], cyclic=True, overhang=True,)
     >>> for color, leaves in zip(colors, leaf_group):
-    ...     abjad.label(leaves).color_leaves(color)
+    ...     abjad.Label(leaves).color_leaves(color)
     ...
-    >>> file = abjad.LilyPondFile.new(
-    ...     staff,
+    >>> score_block = abjad.Block(name="score")
+    >>> score_block.items.append(staff)
+    >>> paper_block = abjad.Block(name="paper")
+    >>> paper_block.items.append("indent = 0")
+    >>> file = abjad.LilyPondFile(
+    ...     items=[paper_block, score_block],
     ...     includes=["abjad.ily"]
     ... )
     ...
-    >>> file.paper_block.items.append("indent = 0")
 
 Show file:
 
@@ -322,9 +323,7 @@ Override staff settings:
     >>> abjad.override(staff).text_script.staff_padding = 4
     >>> abjad.override(staff).TimeSignature.stencil = "##f"
     >>> score = abjad.Score([staff])
-    >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment(
-    ...     (1, 20)
-    ... )
+    >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 20)"
 
 Show score:
 
@@ -356,19 +355,23 @@ Define tone row and row permutations:
     ...
     >>> labels = [
     ...     abjad.Markup(
-    ...         "P",
+    ...         r"\markup P",
+    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
-    ...         "I",
+    ...         r"\markup I",
+    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
-    ...         "R",
+    ...         r"\markup R",
+    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
-    ...         "IR",
+    ...         r"\markup IR",
+    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ... ]
@@ -389,7 +392,7 @@ Define rotation distances and iterate through permutations, creating charts:
     ...         [_.number for _ in perm[6:]],
     ...     ]
     ...     margin_markups = [
-    ...         abjad.StartMarkup(markup=label.box()),
+    ...         abjad.StartMarkup(markup=label),
     ...         abjad.StartMarkup(markup="I"),
     ...         abjad.StartMarkup(markup="II"),
     ...         abjad.StartMarkup(markup="III"),
@@ -402,23 +405,24 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             abjad.PitchClassSegment(hexachords[0]).rotate(r),
     ...             abjad.PitchClassSegment(hexachords[1]).rotate(r),
     ...             abjad.PitchClassSegment(hexachords[0])
-    ...             .rotate(r, stravinsky=True)
+    ...             .rotate(r) # transpose to zero since stravinsky keyword is removed
     ...             .transpose(hexachords[0][0]),
     ...             abjad.PitchClassSegment(hexachords[1])
-    ...             .rotate(r, stravinsky=True)
+    ...             .rotate(r) # transpose to zero since stravinsky keyword is removed
     ...             .transpose(hexachords[1][0]),
     ...         ]
     ...         names = [
-    ...             abjad.Markup("α", direction=abjad.Up).box(),
-    ...             abjad.Markup("β", direction=abjad.Up).box(),
-    ...             abjad.Markup("γ", direction=abjad.Up).box(),
-    ...             abjad.Markup("δ", direction=abjad.Up).box(),
+    ...             abjad.Markup(r"\markup \box α", literal=True, direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box β", literal=True, direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box γ", literal=True, direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box δ", literal=True, direction=abjad.Up),
     ...         ]
     ...         for set, name in zip(sets, names):
     ...             voice = abjad.Voice([abjad.Note(_, (1, 16)) for _ in set])
     ...             for leaf in abjad.iterate(voice).leaves():
     ...                 mark = abjad.Markup(
-    ...                     abjad.NumberedPitchClass(leaf.written_pitch),
+    ...                     f"\markup {abjad.NumberedPitchClass(leaf.written_pitch)}",
+    ...                     literal=True,
     ...                     direction=abjad.Up,
     ...                 )
     ...                 abjad.tweak(mark).staff_padding = "3"
@@ -435,7 +439,7 @@ Define rotation distances and iterate through permutations, creating charts:
     ...     abjad.override(score).Stem.stencil = "##f"
     ...     abjad.override(score).TimeSignature.stencil = "##f"
     ...     abjad.override(score).StaffGrouper.staff_staff_spacing = "#'((basic-distance . 10) (minimum-distance . 10) (padding . 2))"
-    ...     abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment((1, 25))
+    ...     abjad.setting(score).proportional_notation_duration = r"#(ly:make-moment 1 25)"
     ...     file.items.append(score)
 
 Show file of chart scores:
@@ -468,19 +472,19 @@ Show file of chart scores:
         >>> perms = [
         ...     (
         ...         row,
-        ...         abjad.StartMarkup(abjad.Markup("P").box()),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box P", literal=True)),
         ...     ),
         ...     (
         ...         row.retrograde(),
-        ...         abjad.StartMarkup(abjad.Markup("R").box()),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box R", literal=True)),
         ...     ),
         ...     (
         ...         row.invert(),
-        ...         abjad.StartMarkup(abjad.Markup("I").box()),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box I", literal=True)),
         ...     ),
         ...     (
         ...         row.invert().retrograde(),
-        ...         abjad.StartMarkup(abjad.Markup("RI").box()),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box RI", literal=True)),
         ...     ),
         ... ]
         ...
@@ -505,8 +509,8 @@ Show file of chart scores:
         ...     ):
         ...         pc_set = abjad.PitchClassSet([_.written_pitch for _ in trichord])
         ...         set_class = abjad.SetClass.from_pitch_class_set(pc_set)
-        ...         abjad.attach(abjad.Markup(set_class), trichord[0])
-        ...         abjad.label(trichord).color_leaves(cyc_tuple[counter])
+        ...         abjad.attach(abjad.Markup(f"\markup {set_class}", literal=True), trichord[0])
+        ...         abjad.Label(trichord).color_leaves(cyc_tuple[counter])
         ...         counter += 1
         ...         abjad.override(staff).text_script.staff_padding = 4
         ...     group.append(staff)
@@ -517,29 +521,29 @@ Show file of chart scores:
     ::
 
         >>> abjad.attach(
-        ...     abjad.Markup.concat(
-        ...         [abjad.Markup("P"), abjad.Markup("7").sub()], direction=abjad.Up
-        ...     ).parenthesize(),
+        ...     abjad.Markup(
+        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.Up, literal=True,
+        ...     ),
         ...     abjad.select(group[0]).leaf(0),
         ... )
         ...
         >>> abjad.attach(
-        ...     abjad.Markup.concat(
-        ...         [abjad.Markup("RI"), abjad.Markup("6").sub()], direction=abjad.Up
+        ...     abjad.Markup(
+        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.Up, literal=True,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(3),
         ... )
         ...
         >>> abjad.attach(
-        ...     abjad.Markup.concat(
-        ...         [abjad.Markup("R"), abjad.Markup("1").sub()], direction=abjad.Up
+        ...     abjad.Markup(
+        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.Up, literal=True,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(6),
         ... )
         ...
         >>> abjad.attach(
-        ...     abjad.Markup.concat(
-        ...         [abjad.Markup("I"), abjad.Markup("0").sub()], direction=abjad.Up
+        ...     abjad.Markup(
+        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.Up, literal=True,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(9),
         ... )
@@ -554,9 +558,11 @@ Show file of chart scores:
         ... ).StaffGrouper.staff_staff_spacing = (
         ...     "#'((basic-distance . 20) (minimum-distance . 20) (padding . 2))"
         ... )
-        >>> abjad.setting(score).proportional_notation_duration = abjad.SchemeMoment((1, 45))
-        >>> file = abjad.LilyPondFile.new(
-        ...     score, includes=["abjad.ily"]
+        >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 45)"
+        >>> score_block = abjad.Block(name="score")
+        >>> score_block.items.append(score)
+        >>> file = abjad.LilyPondFile(
+        ...     items=[score_block], includes=["abjad.ily"]
         ... )
         ...
 
@@ -613,7 +619,7 @@ Initialize note objects from pitch list:
     >>> abjad.override(staff).Flag.stencil = "##f"
     >>> abjad.override(staff).Stem.stencil = "##f"
     >>> abjad.override(staff).TimeSignature.stencil = "##f"
-    >>> abjad.setting(staff).proportional_notation_duration = abjad.SchemeMoment((1, 25))
+    >>> abjad.setting(staff).proportional_notation_duration = r"#(ly:make-moment 1 25)"
 
 Show score:
 

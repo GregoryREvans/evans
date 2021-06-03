@@ -14,7 +14,7 @@ PygmentsBridge.latex_formatter = CustomLatexFormatter
 ### CORE ###
 
 add_function_parentheses = True
-copyright = "2018-2020, Gregory Rowland Evans"
+copyright = "2018-2021, Gregory Rowland Evans"
 exclude_patterns = []
 
 extensions = [
@@ -24,6 +24,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
     "abjad.ext.sphinx",
     "sphinx_autodoc_typehints",
     "uqbar.sphinx.api",
