@@ -296,10 +296,10 @@ class SegmentMaker:
                 r"\stopStaff \startStaff", format_slot="after"
             )
             rest_literal = abjad.LilyPondLiteral(
-                r"\once \override Rest.color = #white", "before"
+                r"\once \override Rest.transparent = ##t", "before"
             )
             mult_rest_literal = abjad.LilyPondLiteral(
-                r"\once \override MultiMeasureRest.color = #white", "before"
+                r"\once \override MultiMeasureRest.transparent = ##t", "before"
             )
             penultimate_rest = container[0]
             final_rest = container[-1]
