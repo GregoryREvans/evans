@@ -129,6 +129,7 @@ class SegmentMaker:
         segment_name=None,
         tempo=((1, 4), 90),
         time_signatures=None,
+        transpose_from_sounding_pitch=None,
         tuplet_bracket_noteheads=True,
     ):
         self.abbreviations = abbreviations
@@ -153,6 +154,7 @@ class SegmentMaker:
         self.segment_name = segment_name
         self.tempo = tempo
         self.time_signatures = time_signatures
+        self.transpose_from_sounding_pitch = transpose_from_sounding_pitch
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
 
     def __str__(self):
@@ -259,7 +261,8 @@ class SegmentMaker:
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
-            # abjad.iterpitches.transpose_from_sounding_pitch(voice)
+            if self.transpose_from_sounding_pitch is True:
+                abjad.iterpitches.transpose_from_sounding_pitch(voice)
             if handler is not None:
                 handler(voice)
 
