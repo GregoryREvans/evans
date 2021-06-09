@@ -75,6 +75,7 @@ from .segmentmaker import (
     NoteheadBracketMaker,
     SegmentMaker,
     annotate_leaves,
+    annotate_time,
     beam_meter,
 )
 from .sequence import (
@@ -164,6 +165,7 @@ __all__ = [
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
     "annotate_leaves",
+    "annotate_time",
     "attach",
     "beam_meter",
     "bow_angle_spanner",

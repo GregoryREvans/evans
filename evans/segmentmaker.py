@@ -127,7 +127,7 @@ class SegmentMaker:
         score_includes=None,
         score_template=None,
         segment_name=None,
-        tempo=((1, 4), 90),
+        tempo=None,
         time_signatures=None,
         transpose_from_sounding_pitch=None,
         tuplet_bracket_noteheads=True,
@@ -195,9 +195,9 @@ class SegmentMaker:
         else:
             names = [_ for _ in range(len(self.instruments))]
 
-        metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
         # metro = abjad.MetronomeMark(custom_markup=metro.make_tempo_equation_markup())#remove if broken
         if self.tempo is not None:
+            metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
             for staff in abjad.iterate(
                 self.score_template["Global Context"]
             ).components(abjad.Staff):
@@ -961,3 +961,7 @@ def annotate_leaves(score, prototype=abjad.Leaf):
             abjad.Label(voice).with_indices(prototype=prototype)
         else:
             abjad.Label(voice).with_indices()
+
+
+def annotate_time(context):
+    abjad.Label(context).with_start_offsets(clock_time=True)
