@@ -216,8 +216,8 @@ class SegmentMaker:
                 leaf1 = abjad.select(staff).leaves()[0]
                 abjad.attach(markup2, leaf1)
 
-        bar_line = abjad.BarLine(self.barline)
         if self.barline is not None:
+            bar_line = abjad.BarLine(self.barline)
             for voice in abjad.iterate(self.score_template["Staff Group"]).components(
                 abjad.Staff  # was Voice
             ):
