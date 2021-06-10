@@ -36,6 +36,8 @@ def metric_modulation(
     right_note=(abjad.Note("c'8.")),
     modulated_beat=(abjad.Note("c'4")),
     rounded=None,
+    font_size=None,
+    leaf_scale=(0.6, 0.6),
 ):
     r"""
     Makes metric modulation markup.
@@ -217,17 +219,21 @@ def metric_modulation(
         l_tempo=left_speed, l_note=left_note, r_note=right_note
     )
     returned_speed = float(modulation_speed * compare_speed(left_note, modulated_beat))
+    if font_size is not None:
+        size = fr"  \override #'(font-size . {font_size})"
+    else:
+        size = r"  \huge"
     if returned_speed % 1 == 0.0:
         met = abjad.MetronomeMark.make_tempo_equation_markup(
             abjad.get.duration(modulated_beat), int(returned_speed)
         )
         mod = abjad.MetricModulation(
-            left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
+            left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
         )
         mark = abjad.LilyPondLiteral(
             [
                 r"^ \markup {",
-                r"  \huge",
+                size,
                 r"  \concat {",
                 f"      {str(met)[8:]}",
                 r"      \hspace #1",
@@ -248,12 +254,12 @@ def metric_modulation(
                 quicktions.Fraction(round(returned_speed)).limit_denominator(),
             )
             mod = abjad.MetricModulation(
-                left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
+                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
             )
             mark = abjad.LilyPondLiteral(
                 [
                     r"^ \markup {",
-                    r"  \huge",
+                    size,
                     r"  \concat {",
                     "       c.",
                     r"      \hspace #1",
@@ -274,12 +280,12 @@ def metric_modulation(
                 quicktions.Fraction(returned_speed).limit_denominator(),
             )
             mod = abjad.MetricModulation(
-                left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
+                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
             )
             mark = abjad.LilyPondLiteral(
                 [
                     r"^ \markup {",
-                    r"  \huge",
+                    size,
                     r"  \concat {",
                     f"      {str(met)[8:]}",
                     r"      \hspace #1",
