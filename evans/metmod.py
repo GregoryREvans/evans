@@ -35,6 +35,7 @@ def metric_modulation(
     left_note=(abjad.Note("c'8")),
     right_note=(abjad.Note("c'8.")),
     modulated_beat=(abjad.Note("c'4")),
+    rounded=None,
 ):
     r"""
     Makes metric modulation markup.
@@ -241,29 +242,56 @@ def metric_modulation(
         )
         return mark
     else:
-        met = abjad.MetronomeMark.make_tempo_equation_markup(
-            abjad.get.duration(modulated_beat),
-            quicktions.Fraction(returned_speed).limit_denominator(),
-        )
-        mod = abjad.MetricModulation(
-            left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
-        )
-        mark = abjad.LilyPondLiteral(
-            [
-                r"^ \markup {",
-                r"  \huge",
-                r"  \concat {",
-                f"      {str(met)[8:]}",
-                r"      \hspace #1",
-                r"      \upright [",
-                f"      {str(mod)[8:]}",
-                r"      \hspace #0.5",
-                r"      \upright ]",
-                r"  }",
-                r"}",
-            ],
-            format_slot="after",
-        )
+        if rounded is True:
+            met = abjad.MetronomeMark.make_tempo_equation_markup(
+                abjad.get.duration(modulated_beat),
+                quicktions.Fraction(round(returned_speed)).limit_denominator(),
+            )
+            mod = abjad.MetricModulation(
+                left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
+            )
+            mark = abjad.LilyPondLiteral(
+                [
+                    r"^ \markup {",
+                    r"  \huge",
+                    r"  \concat {",
+                    "       c.",
+                    r"      \hspace #1",
+                    f"      {str(met)[8:]}",
+                    r"      \hspace #1",
+                    r"      \upright [",
+                    f"      {str(mod)[8:]}",
+                    r"      \hspace #0.5",
+                    r"      \upright ]",
+                    r"  }",
+                    r"}",
+                ],
+                format_slot="after",
+            )
+        else:
+            met = abjad.MetronomeMark.make_tempo_equation_markup(
+                abjad.get.duration(modulated_beat),
+                quicktions.Fraction(returned_speed).limit_denominator(),
+            )
+            mod = abjad.MetricModulation(
+                left_rhythm=left_note, right_rhythm=right_note, scale=(0.6, 0.6)
+            )
+            mark = abjad.LilyPondLiteral(
+                [
+                    r"^ \markup {",
+                    r"  \huge",
+                    r"  \concat {",
+                    f"      {str(met)[8:]}",
+                    r"      \hspace #1",
+                    r"      \upright [",
+                    f"      {str(mod)[8:]}",
+                    r"      \hspace #0.5",
+                    r"      \upright ]",
+                    r"  }",
+                    r"}",
+                ],
+                format_slot="after",
+            )
         return mark
 
 
