@@ -3132,10 +3132,13 @@ class PitchHandler(Handler):
                         )
                         indicators = abjad.get.indicators(leaf)
                         before_grace = abjad.get.before_grace_container(leaf)
+                        multiplier = leaf.multiplier
                         for indicator in indicators:
                             abjad.attach(indicator, replacement_chord)
                         if before_grace is not None:
                             abjad.attach(before_grace, replacement_chord)
+                        if multiplier is not None:
+                            replacement_chord.multiplier = multiplier
                         abjad.mutate.replace(leaf, replacement_chord)
                         new_leaves[i] = replacement_chord
             for index in microtonal_indices_to_pitch:
@@ -3245,10 +3248,13 @@ class PitchHandler(Handler):
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.get.indicators(old_leaf)
                     before_grace = abjad.get.before_grace_container(old_leaf)
+                    multiplier = old_leaf.multiplier
                     for indicator in indicators:
                         abjad.attach(indicator, new_leaf)
                     if before_grace is not None:
                         abjad.attach(before_grace, new_leaf)
+                    if multiplier is not None:
+                        new_leaf.multiplier = multiplier
                     abjad.mutate.replace(old_leaf, new_leaf)
 
     def make_persistent_copy(self, state_dict):
