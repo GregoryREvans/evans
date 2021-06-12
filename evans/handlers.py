@@ -2411,15 +2411,15 @@ class OnBeatGraceHandler(Handler):
                             \slash
                             \voiceOne
                             \tweak NoteHead.style #'harmonic
-                            fs'''8
+                            fs'''8 * 2/25
                             [
                             (
                             \tweak NoteHead.style #'harmonic
-                            af'''16
+                            af'''16 * 4/25
                             \tweak NoteHead.style #'harmonic
-                            fqs'''16
+                            fqs'''16 * 4/25
                             \tweak NoteHead.style #'harmonic
-                            g'''16
+                            g'''16 * 4/25
                             )
                             ]
                         }
