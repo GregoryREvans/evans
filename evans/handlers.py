@@ -2453,6 +2453,7 @@ class OnBeatGraceHandler(Handler):
         attack_number_forget=False,
         durations_forget=False,
         font_size=(-4),
+        forced_multiplier=None,
         leaf_duration=(1, 28),
         boolean_vector=[1],
         vector_forget=False,
@@ -2462,6 +2463,7 @@ class OnBeatGraceHandler(Handler):
         name="On Beat Grace Handler",
     ):
         self.font_size = font_size
+        self.forced_multiplier = forced_multiplier
         self.leaf_duration = leaf_duration
         self._attack_count = attack_count
         self._durations_count = durations_count
@@ -2502,6 +2504,9 @@ class OnBeatGraceHandler(Handler):
                     do_not_beam=False,
                     font_size=self.font_size,
                 )
+        if self.forced_multiplier is not None:
+            for grace in abjad.select(selections).leaves(grace=True):
+                grace.multiplier = abjad.Multiplier(self.forced_multiplier)
 
     def name(self):
         return self.name
