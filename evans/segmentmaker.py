@@ -580,9 +580,10 @@ class SegmentMaker:
         for staff in abjad.select(self.score_template["Staff Group"]).components(
             abjad.Staff  # was voice double check for older scores
         ):
-            grand_pause = abjad.mutate.split(staff[:], self.time_signatures)[-1]
+            main_voice = abjad.select(staff).components(abjad.Voice)[0]
+            grand_pause = abjad.select(main_voice).leaves().group_by_measure()[-1]
             for _ in grand_pause:
-                staff.remove(_)
+                main_voice.remove(_)
 
     def _render_file(self):
         print("Rendering file ...")
