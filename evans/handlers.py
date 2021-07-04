@@ -3954,6 +3954,32 @@ class TextSpanHandler(Handler):
         )
 
 
+class TranspositionHandler(Handler):
+    def __init__(
+        self,
+        transposition_list=("+P8",),
+        forget=False,
+        count=-1,
+        name="Transposition Handler",
+    ):
+        self.transposition_list = transposition_list
+        self.forget = forget
+        self._count = count
+        self.name = name
+        self.cyc_transpositions = sequence.CyclicList(
+            transposition_list, self.forget, self._count
+        )
+
+    def __call__(self, selections):
+        self.transpose_leaves(selections)
+
+    def transpose_leaves(self, selections):
+        ties = abjad.select(selections).logical_ties(pitched=True)
+        transpositions = self.cyc_transpositions(r=len(ties))
+        for tie, interval in zip(ties, transpositions):
+            abjad.mutate.transpose(tie, interval)
+
+
 class TrillHandler(Handler):
     r"""
     Trill Handler

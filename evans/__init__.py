@@ -39,6 +39,7 @@ from .handlers import (
     SlurHandler,
     TempoSpannerHandler,
     TextSpanHandler,
+    TranspositionHandler,
     TrillHandler,
 )
 from .metmod import (
@@ -161,6 +162,7 @@ __all__ = [
     "TimespanSimultaneity",
     "TimespanSpecifier",
     "TrillHandler",
+    "TranspositionHandler",
     "add_silences_to_timespan_dict",
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
