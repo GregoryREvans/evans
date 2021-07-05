@@ -4055,7 +4055,12 @@ class TrillHandler(Handler):
                     base_pitch = old_chord.written_pitches[0]
                     trill_pitch = old_chord.written_pitches[-1]
                     new_leaf = abjad.Note(base_pitch, old_chord.written_duration)
+                    indicators = abjad.get.indicators(old_chord)
+                    for indicator in indicators:
+                        abjad.attach(indicator, new_leaf)
 
+                    parent = abjad.get.parentage(old_chord).parent
+                    parent[parent.index(old_chord)] = new_leaf
                     trill_start = abjad.StartTrillSpan(pitch=trill_pitch)
                     trill_stop = abjad.StopTrillSpan()
                     abjad.attach(trill_start, new_leaf)
@@ -4065,12 +4070,6 @@ class TrillHandler(Handler):
                         abjad.attach(trill_stop, next_leaf)
                     else:
                         continue
-                    indicators = abjad.get.indicators(old_chord)
-                    for indicator in indicators:
-                        abjad.attach(indicator, new_leaf)
-
-                    parent = abjad.get.parentage(old_chord).parent
-                    parent[parent.index(old_chord)] = new_leaf
 
                     tail = abjad.select(tie).leaves()[1:]
                     for leaf in tail:
