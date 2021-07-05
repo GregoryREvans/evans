@@ -4056,17 +4056,9 @@ class TrillHandler(Handler):
                     trill_pitch = old_chord.written_pitches[-1]
                     new_leaf = abjad.Note(base_pitch, old_chord.written_duration)
 
-                    trill_start = abjad.LilyPondLiteral(
-                        r"\pitchedTrill", format_slot="before"
-                    )
-                    trill_literal = abjad.LilyPondLiteral(
-                        fr"\startTrillSpan {trill_pitch}", format_slot="after"
-                    )
-                    trill_stop = abjad.LilyPondLiteral(
-                        r"\stopTrillSpan", format_slot="after"
-                    )
+                    trill_start = abjad.StartTrillSpan(pitch=trill_pitch)
+                    trill_stop = abjad.StopTrillSpan()
                     abjad.attach(trill_start, new_leaf)
-                    abjad.attach(trill_literal, new_leaf)
                     last_leaf = tie[-1]
                     next_leaf = abjad.get.leaf(last_leaf, 1)
                     if next_leaf is not None:
