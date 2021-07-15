@@ -561,7 +561,10 @@ class SegmentMaker:
                     if duration_preprocessor is not None:  # EXPERIMENTAL
                         duration_group = duration_preprocessor(duration_group)
                     new_leaves = music_command.callables[0].callable(duration_group)
-                    temp_container.append(new_leaves)
+                    if isinstance(new_leaves, list):
+                        temp_container.extend(new_leaves)
+                    else:
+                        temp_container.append(new_leaves)
                     abjad.mutate.replace(measure_group.leaves(), temp_container[:])
 
                 relevant_measures = (
