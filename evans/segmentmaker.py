@@ -10,7 +10,7 @@ import baca
 import quicktions
 
 from . import consort
-from .commands import HandlerCommand, RhythmCommand
+from .commands import HandlerCommand, MusicCommand, RhythmCommand
 from .sequence import flatten
 
 
@@ -118,6 +118,7 @@ class SegmentMaker:
         current_directory=None,
         cutaway=True,
         fermata="scripts.ushortfermata",
+        fermata_measures=None,
         instruments=None,
         names=None,
         name_staves=True,
@@ -143,6 +144,7 @@ class SegmentMaker:
         self.current_directory = current_directory
         self.cutaway = cutaway
         self.fermata = fermata
+        self.fermata_measures = fermata_measures
         self.instruments = instruments
         self.names = names
         self.name_staves = name_staves
@@ -401,10 +403,22 @@ class SegmentMaker:
             return
         print("Calling commands ...")
         self.commands = flatten(self.commands)
+        rhythm_commands_booleans = []
+        for c in self.commands:
+            if isinstance(c, RhythmCommand):
+                rhythm_commands_booleans.append(True)
+            else:
+                rhythm_commands_booleans.append(False)
+        if not any(rhythm_commands_booleans):
+            self._fill_score_with_rests()
+            self._add_ending_skips()
         for group_type, group in itertools.groupby(self.commands, lambda _: type(_)):
             if group_type == RhythmCommand:
                 rhythm_group = [_ for _ in group]
                 self._make_containers(rhythm_group)
+            elif group_type == MusicCommand:
+                music_command_group = [_ for _ in group]
+                self._interpret_music_commands(music_command_group)
             elif group_type == HandlerCommand:
                 handler_group = [_ for _ in group]
                 self.call_handlers(handler_group)
@@ -485,6 +499,95 @@ class SegmentMaker:
             container = abjad.Container()
             abjad.attach(literal, container)
             abjad.mutate.wrap(group, container)
+
+    def _fill_score_with_rests(self):
+        temp_leaf_maker = abjad.LeafMaker()
+        for voice in abjad.select(self.score_template).components(abjad.Voice):
+            durations = [
+                abjad.Duration(time_signature)
+                for time_signature in self.time_signatures[:-1]
+            ]
+            none_list = [None]
+            full_voice_rests = temp_leaf_maker(none_list, durations)
+            voice.extend(full_voice_rests)
+        if self.fermata_measures is not None:
+            for voice in abjad.select(self.score_template).components(abjad.Voice):
+                measures = abjad.select(voice).leaves().group_by_measure()
+                for fermata_index in self.fermata_measures:
+                    make_fermata_measure(measures[fermata_index])
+
+        g_c = self.score_template["Global Context"]
+        measures = abjad.select(g_c).leaves().group_by_measure()
+        if self.fermata_measures is not None:
+            for fermata_index in self.fermata_measures:
+                make_fermata_measure(measures[fermata_index])
+                self.time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
+
+    def _interpret_music_commands(self, music_commands):
+        for music_command in music_commands:
+            if music_command.threaded_commands is None:
+                command_location = music_command.location
+                command_voice_name = command_location[0]
+                command_measures = command_location[1]
+                duration_preprocessor = music_command.preprocessor
+
+                relevant_voice = self.score_template[command_voice_name]
+                if isinstance(command_measures, int):
+                    relevant_measure_indices = [command_measures]
+                elif isinstance(command_measures, tuple):
+                    relevant_measure_indices = [
+                        _ for _ in range(command_measures[0], command_measures[1])
+                    ]
+                else:
+                    relevant_measure_indices = command_measures
+                relevant_measures = (
+                    abjad.select(relevant_voice)
+                    .leaves()
+                    .group_by_measure()
+                    .get(relevant_measure_indices)
+                )
+                measure_durations = [
+                    abjad.get.duration(measure) for measure in relevant_measures
+                ]
+                measure_groups = relevant_measures.group_by_contiguity()
+                group_sizes = [len(g) for g in measure_groups]
+                duration_groups = abjad.Sequence(measure_durations).partition_by_counts(
+                    group_sizes
+                )
+                for measure_group, duration_group in zip(
+                    measure_groups, duration_groups
+                ):
+                    temp_container = abjad.Container()
+                    if duration_preprocessor is not None:  # EXPERIMENTAL
+                        duration_group = duration_preprocessor(duration_group)
+                    new_leaves = music_command.callables[0].callable(duration_group)
+                    temp_container.append(new_leaves)
+                    abjad.mutate.replace(measure_group.leaves(), temp_container[:])
+
+                relevant_measures = (
+                    abjad.select(relevant_voice)
+                    .leaves()
+                    .group_by_measure()
+                    .get(relevant_measure_indices)
+                )
+
+                for _callable in music_command.callables[1:]:
+                    application_site = _callable.selector(relevant_measures)
+                    _callable.callable(application_site)
+
+                relevant_measures = (
+                    abjad.select(relevant_voice)
+                    .leaves()
+                    .group_by_measure()
+                    .get(relevant_measure_indices)
+                )
+
+                for _attachment in music_command.attachments:
+                    attachment_site = _attachment.selector(relevant_measures)
+                    abjad.attach(_attachment.indicator, attachment_site)
+
+            elif isinstance(music_command.threaded_commands, list):
+                self._interpret_music_commands(music_command.threaded_commands)
 
     def _make_global_context(self):
         print("Making global context ...")
@@ -966,3 +1069,44 @@ def annotate_leaves(score, prototype=abjad.Leaf):
 
 def annotate_time(context):
     abjad.Label(context).with_start_offsets(clock_time=True)
+
+
+def make_fermata_measure(selection):
+    duration = abjad.Duration((1, 4))
+    skip = abjad.MultimeasureRest(1, multiplier=duration)
+    transparent_command = abjad.LilyPondLiteral(
+        r"\stopStaff \once \override MultiMeasureRest.transparent = ##t",
+        format_slot="before",
+    )
+    temp_container = abjad.Container()
+    temp_container.append(skip)
+    original_leaves = selection.leaves()
+    if abjad.get.has_indicator(original_leaves[0], abjad.TimeSignature):
+        regular_rest = abjad.Rest(1, multiplier=duration / 2)
+        first_skip = abjad.Skip(1, multiplier=duration / 2)
+        temp_container = abjad.Container()
+        temp_container.extend([first_skip, regular_rest])
+        new_sig = abjad.TimeSignature((1, 4))
+        abjad.attach(new_sig, temp_container[0])
+        transparent_sig = abjad.LilyPondLiteral(
+            r"\stopStaff \once \override TimeSignature.transparent = ##t",
+            format_slot="before",
+        )
+        transparent_rest = abjad.LilyPondLiteral(
+            r"\stopStaff \once \override Rest.transparent = ##t",
+            format_slot="before",
+        )
+        abjad.attach(transparent_sig, temp_container[0])
+        abjad.attach(transparent_rest, temp_container[1])
+    else:
+        start_command = abjad.LilyPondLiteral(
+            r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
+            format_slot="before",
+        )
+        stop_command = abjad.LilyPondLiteral(
+            r"\stopStaff \startStaff", format_slot="after"
+        )
+        abjad.attach(start_command, temp_container[0])
+        abjad.attach(stop_command, temp_container[0])
+    abjad.attach(transparent_command, temp_container[0])
+    abjad.mutate.replace(original_leaves, temp_container[:])

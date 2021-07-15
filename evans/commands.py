@@ -169,6 +169,104 @@ class HandlerCommand:
         return abjad.storage(self)
 
 
+class Attachment:
+    def __init__(
+        self,
+        indicator,
+        selector=None,
+    ):
+        self.indicator = indicator
+        self.selector = selector
+
+
+class Callable:
+    def __init__(
+        self,
+        callable,
+        selector=None,
+    ):
+        self.callable = callable
+        self.selector = selector
+
+
+class MusicCommand:
+    r"""
+    evans.MusicCommand(
+        ("Voice 1", (1, 3)),
+        evans_rhythm_handler_builder(
+            rhythm_handler,
+            rest_selector,
+        ),
+        pitch_handler,
+        evans.Attachment(
+            abjad.Dynamic("p"),
+            abjad.select().leaf(0, pitched=True),
+        ),
+        evans.attachment(
+            abjad.Markup(r"\evans-custom-markup", literal=True, direction=abjad.Up),
+            abjad.select().leaf(0, pitched=True),
+        ),
+        text_span_handler,
+        preprocessor=evans.Sequence().fuse((1, 2))
+    )
+    """
+
+    def __init__(
+        self,
+        location,
+        *args,
+        attachments=None,
+        callables=None,
+        preprocessor=None,
+    ):
+        self.location = location
+        self.preprocessor = preprocessor
+        self.attachments = []
+        if attachments is not None:
+            self.attachments = attachments
+        self.callables = []
+        if callables is not None:
+            self.callables = callables
+        self.threaded_commands = None
+
+        for arg in args:
+            if isinstance(arg, Attachment):
+                self.attachments.append(arg)
+            elif isinstance(arg, Callable):
+                self.callables.append(arg)
+            else:
+                if not hasattr(arg, "__call__"):
+                    new_attachment = Attachment(
+                        arg,
+                        abjad.select().leaf(0, pitched=True),
+                    )
+                    self.attachments.append(new_attachment)
+                elif hasattr(arg, "__call__"):
+                    new_callable = Callable(
+                        arg,
+                        abjad.select().leaves(),
+                    )
+                    self.callables.append(new_callable)
+
+        if isinstance(self.location, list):
+            threaded_commands = []
+            for location_ in self.location:
+                new_command = type(self)(
+                    location_,
+                    attachments=self.attachments,
+                    callables=self.callables,
+                    preprocessor=self.preprocessor,
+                )
+                threaded_commands.append(new_command)
+            self.threaded_commands = threaded_commands
+
+    def __str__(self):
+        return abjad.storage(self)
+
+    def __repr__(self):
+        return abjad.storage(self)
+
+
 class RhythmCommand:
     def __init__(self, voice_name, timespan, handler):
         self.voice_name = voice_name

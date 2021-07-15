@@ -4,8 +4,11 @@ Evans API
 The personal Abjad library of Gregory Rowland Evans.
 """
 from .commands import (
+    Attachment,
+    Callable,
     Command,
     HandlerCommand,
+    MusicCommand,
     RhythmCommand,
     attach,
     call,
@@ -116,10 +119,12 @@ from .timespan import (
 
 __all__ = [
     "ArticulationHandler",
+    "Attachment",
     "BendHandler",
     "BisbigliandoHandler",
     "BowAngleHandler",
     "BowAnglePoint",
+    "Callable",
     "ClefHandler",
     "Command",
     "CompositeHandler",
@@ -133,6 +138,7 @@ __all__ = [
     "JIPitch",
     "LogicalTieCollection",
     "MarkovChain",
+    "MusicCommand",
     "NoteheadBracketMaker",
     "NoteheadHandler",
     "OnBeatGraceHandler",
