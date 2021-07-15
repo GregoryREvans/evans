@@ -368,6 +368,46 @@ class SegmentMaker:
             if abjad.StopBeam() in abjad.get.indicators(trem[-1]):
                 abjad.detach(abjad.StopBeam(), trem[-1])
 
+    def beam_score_without_splitting(target):
+        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        sigs = []
+        for skip in global_skips:
+            for indicator in abjad.get.indicators(skip):
+                if isinstance(indicator, abjad.TimeSignature):
+                    sigs.append(indicator)
+        print("Beaming meter ...")
+        for voice in abjad.iterate(target["Staff Group"]).components(abjad.Voice):
+            measures = abjad.select(voice[:]).group_by_measure()
+            for i, shard in enumerate(measures):
+                met = abjad.Meter(sigs[i].pair)
+                inventories = [
+                    x
+                    for x in enumerate(
+                        abjad.Meter(sigs[i].pair).depthwise_offset_inventory
+                    )
+                ]
+                if sigs[i].denominator == 4:
+                    beam_meter(
+                        components=shard[:],
+                        meter=met,
+                        offset_depth=inventories[-1][0],
+                        include_rests=SegmentMaker.beaming,
+                        # include_rests=False,
+                    )
+                else:
+                    beam_meter(
+                        components=shard[:],
+                        meter=met,
+                        offset_depth=inventories[-2][0],
+                        include_rests=SegmentMaker.beaming,
+                        # include_rests=False,
+                    )
+        for trem in abjad.select(target).components(abjad.TremoloContainer):
+            if abjad.StartBeam() in abjad.get.indicators(trem[0]):
+                abjad.detach(abjad.StartBeam(), trem[0])
+            if abjad.StopBeam() in abjad.get.indicators(trem[-1]):
+                abjad.detach(abjad.StopBeam(), trem[-1])
+
     def _break_pages(self):
         print("Breaking pages ...")
         if self.page_break_counts is not None:
@@ -541,8 +581,7 @@ class SegmentMaker:
                 else:
                     relevant_measure_indices = command_measures
                 relevant_measures = (
-                    abjad.select(relevant_voice)
-                    .leaves()
+                    abjad.select(relevant_voice[:])
                     .group_by_measure()
                     .get(relevant_measure_indices)
                 )
@@ -565,7 +604,10 @@ class SegmentMaker:
                         temp_container.extend(new_leaves)
                     else:
                         temp_container.append(new_leaves)
-                    abjad.mutate.replace(measure_group.leaves(), temp_container[:])
+                    if not isinstance(measure_group[0][0], abjad.Tuplet):
+                        abjad.mutate.replace(measure_group.rests(), temp_container[:])
+                    else:
+                        abjad.mutate.replace(measure_group.tuplets(), temp_container[:])
 
                 relevant_measures = (
                     abjad.select(relevant_voice)
@@ -587,7 +629,11 @@ class SegmentMaker:
 
                 for _attachment in music_command.attachments:
                     attachment_site = _attachment.selector(relevant_measures)
-                    abjad.attach(_attachment.indicator, attachment_site)
+                    if isinstance(attachment_site, (list, abjad.Selection)):
+                        for site in attachment_site:
+                            abjad.attach(_attachment.indicator, site)
+                    else:
+                        abjad.attach(_attachment.indicator, attachment_site)
 
             elif isinstance(music_command.threaded_commands, list):
                 self._interpret_music_commands(music_command.threaded_commands)
@@ -632,9 +678,19 @@ class SegmentMaker:
         for voice in abjad.iterate(self.score_template["Staff Group"]).components(
             abjad.Staff  # was Voice
         ):
-            leaves = abjad.select(voice).leaves(grace=False)
-            shards = abjad.mutate.split(leaves, self.time_signatures)
-            for shard in shards[:-1]:
+            rhythm_commands_booleans = []
+            for c in self.commands:
+                if isinstance(c, RhythmCommand):
+                    rhythm_commands_booleans.append(True)
+                else:
+                    rhythm_commands_booleans.append(False)
+            if any(rhythm_commands_booleans):
+                leaves = abjad.select(voice).leaves(grace=False)
+                shards = abjad.mutate.split(leaves, self.time_signatures)
+            else:
+                leaves = abjad.select(voice).components()[2:]
+                shards = leaves.group_by_measure()
+            for i, shard in enumerate(shards[:-1]):
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
                     continue
                 indicators = abjad.get.indicators(shard[0])
@@ -772,6 +828,48 @@ class SegmentMaker:
                         boundary_depth=inventories[-2][0],
                         rewrite_tuplets=False,
                     )
+
+    def rewrite_meter_without_splitting(target):
+        print("Rewriting meter ...")
+        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        sigs = []
+        for skip in global_skips:
+            for indicator in abjad.get.indicators(skip):
+                if isinstance(indicator, abjad.TimeSignature):
+                    sigs.append(indicator)
+        for voice in abjad.select(target["Staff Group"]).components(abjad.Voice):
+            voice_dur = abjad.get.duration(voice)
+            time_signatures = sigs
+            durations = [_.duration for _ in time_signatures]
+            sig_dur = sum(durations)
+            assert voice_dur == sig_dur, (voice_dur, sig_dur)
+            shards = abjad.select(voice[:]).group_by_measure()
+            for i, shard in enumerate(shards):
+                if not all(
+                    isinstance(leaf, (abjad.Rest, abjad.MultimeasureRest, abjad.Skip))
+                    for leaf in abjad.select(shard).leaves()
+                ):
+                    time_signature = sigs[i]
+                    inventories = [
+                        x
+                        for x in enumerate(
+                            abjad.Meter(time_signature.pair).depthwise_offset_inventory
+                        )
+                    ]
+                    if time_signature.denominator == 4:
+                        abjad.Meter.rewrite_meter(
+                            shard,
+                            time_signature,
+                            boundary_depth=inventories[-1][0],
+                            rewrite_tuplets=False,
+                        )
+                    else:
+                        abjad.Meter.rewrite_meter(
+                            shard,
+                            time_signature,
+                            boundary_depth=inventories[-2][0],
+                            rewrite_tuplets=False,
+                        )
 
     def transform_brackets(target):
         print("Transforming brackets ...")
