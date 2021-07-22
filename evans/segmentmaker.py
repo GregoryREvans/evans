@@ -11,7 +11,7 @@ import quicktions
 
 from . import consort
 from .commands import HandlerCommand, MusicCommand, RhythmCommand
-from .sequence import flatten
+from .sequence import Sequence, flatten
 
 
 class NoteheadBracketMaker:
@@ -377,8 +377,10 @@ class SegmentMaker:
                     sigs.append(indicator)
         print("Beaming meter ...")
         for voice in abjad.iterate(target["Staff Group"]).components(abjad.Voice):
-            measures = abjad.select(voice[:]).group_by_measure()
+            measures = abjad.select(voice[:]).leaves().group_by_measure()
             for i, shard in enumerate(measures):
+                top_level_components = get_top_level_components_from_leaves(shard)
+                shard = abjad.Selection(top_level_components)
                 met = abjad.Meter(sigs[i].pair)
                 inventories = [
                     x
@@ -582,6 +584,7 @@ class SegmentMaker:
                     relevant_measure_indices = command_measures
                 relevant_measures = (
                     abjad.select(relevant_voice[:])
+                    .leaves()
                     .group_by_measure()
                     .get(relevant_measure_indices)
                 )
@@ -596,6 +599,7 @@ class SegmentMaker:
                 for measure_group, duration_group in zip(
                     measure_groups, duration_groups
                 ):
+                    measure_group = measure_group.flatten()
                     temp_container = abjad.Container()
                     if duration_preprocessor is not None:  # EXPERIMENTAL
                         duration_group = duration_preprocessor(duration_group)
@@ -604,10 +608,19 @@ class SegmentMaker:
                         temp_container.extend(new_leaves)
                     else:
                         temp_container.append(new_leaves)
-                    if not isinstance(measure_group[0][0], abjad.Tuplet):
-                        abjad.mutate.replace(measure_group.rests(), temp_container[:])
+                    group_parents = [
+                        abjad.get.parentage(_).parent for _ in measure_group
+                    ]
+                    group_parents_booleans = [
+                        isinstance(_, abjad.Tuplet) for _ in group_parents
+                    ]
+                    if not any(group_parents_booleans):
+                        abjad.mutate.replace(measure_group, temp_container[:])
                     else:
-                        abjad.mutate.replace(measure_group.tuplets(), temp_container[:])
+                        top_level_components = get_top_level_components_from_leaves(
+                            measure_group
+                        )
+                        abjad.mutate.replace(top_level_components, temp_container[:])
 
                 relevant_measures = (
                     abjad.select(relevant_voice)
@@ -843,13 +856,15 @@ class SegmentMaker:
             durations = [_.duration for _ in time_signatures]
             sig_dur = sum(durations)
             assert voice_dur == sig_dur, (voice_dur, sig_dur)
-            shards = abjad.select(voice[:]).group_by_measure()
+            shards = abjad.select(voice[:]).leaves().group_by_measure()
             for i, shard in enumerate(shards):
                 if not all(
                     isinstance(leaf, (abjad.Rest, abjad.MultimeasureRest, abjad.Skip))
                     for leaf in abjad.select(shard).leaves()
                 ):
                     time_signature = sigs[i]
+                    top_level_components = get_top_level_components_from_leaves(shard)
+                    shard = abjad.Selection(top_level_components)
                     inventories = [
                         x
                         for x in enumerate(
@@ -1211,3 +1226,59 @@ def make_fermata_measure(selection):
         abjad.attach(stop_command, temp_container[0])
     abjad.attach(transparent_command, temp_container[0])
     abjad.mutate.replace(original_leaves, temp_container[:])
+
+
+def get_top_level_components_from_leaves(leaves):
+    out = []
+    for leaf in leaves:
+        parent = abjad.get.parentage(leaf).parent
+        if isinstance(parent, (abjad.Voice, abjad.Staff)):
+            if leaf not in out:
+                out.append(leaf)
+        else:
+            sub_out = get_top_level_components_from_leaves([parent])
+            for sub_leaf in sub_out:
+                if sub_leaf not in out:
+                    out.append(sub_leaf)
+    return out
+
+
+def make_score_template(instruments, groups):
+    name_counts = {_.name: 1 for _ in instruments}
+    sub_group_counter = 1
+    score = abjad.Score(
+        [
+            abjad.Staff(name="Global Context", lilypond_type="TimeSignatureContext"),
+            abjad.StaffGroup(name="Staff Group"),
+        ],
+        name="Score",
+    )
+    grouped_voices = Sequence(instruments).grouper(groups)
+    for item in grouped_voices:
+        if isinstance(item, list):
+            sub_group = abjad.StaffGroup(name=f"sub group {sub_group_counter}")
+            sub_group_counter += 1
+            for sub_item in item:
+                if 1 < instruments.count(sub_item):
+                    name_string = f"{sub_item.name} {name_counts[sub_item.name]}"
+                else:
+                    name_string = f"{sub_item.name}"
+                staff = abjad.Staff(
+                    [abjad.Voice(name=f"{name_string} voice")],
+                    name=f"{name_string} staff",
+                )
+                sub_group.append(staff)
+                name_counts[sub_item.name] += 1
+            score["Staff Group"].append(sub_group)
+        else:
+            if 1 < instruments.count(item):
+                name_string = f"{item.name} {name_counts[item.name]}"
+            else:
+                name_string = f"{item.name}"
+            staff = abjad.Staff(
+                [abjad.Voice(name=f"{name_string} voice")],
+                name=f"{name_string} staff",
+            )
+            score["Staff Group"].append(staff)
+            name_counts[item.name] += 1
+    return score

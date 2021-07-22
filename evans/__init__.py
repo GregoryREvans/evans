@@ -81,6 +81,8 @@ from .segmentmaker import (
     annotate_leaves,
     annotate_time,
     beam_meter,
+    get_top_level_components_from_leaves,
+    make_score_template,
 )
 from .sequence import (
     CyclicList,
@@ -191,11 +193,13 @@ __all__ = [
     "flatten_tree_level",
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
+    "get_top_level_components_from_leaves",
     "herz_combination_tone_ratios",
     "human_sorted_keys",
     "intercalate_silences",
     "iterate_nwise",
     "julia_set",
+    "make_score_template",
     "make_showable_list",
     "make_split_list",
     "metric_modulation",
