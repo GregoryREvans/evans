@@ -1256,7 +1256,7 @@ def make_score_template(instruments, groups):
     grouped_voices = Sequence(instruments).grouper(groups)
     for item in grouped_voices:
         if isinstance(item, list):
-            sub_group = abjad.StaffGroup(name=f"sub group {sub_group_counter}")
+            sub_group = abjad.StaffGroup(name=f"sub group {sub_group_counter}", lilypond_type="PianoStaff")
             sub_group_counter += 1
             for sub_item in item:
                 if 1 < instruments.count(sub_item):
