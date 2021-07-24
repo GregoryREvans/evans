@@ -235,13 +235,13 @@ class MusicCommand:
             elif isinstance(arg, Callable):
                 self.callables.append(arg)
             else:
-                if not hasattr(arg, "__call__"):
+                if not callable(arg):
                     new_attachment = Attachment(
                         arg,
                         abjad.select().leaf(0, pitched=True),
                     )
                     self.attachments.append(new_attachment)
-                elif hasattr(arg, "__call__"):
+                elif callable(arg):
                     new_callable = Callable(
                         arg,
                         abjad.select().leaves(),

@@ -30,25 +30,42 @@ def flatten_tree_level(rtm, recurse=False):
             >>> print(abjad.lilypond(staff))
             \new Staff
             {
+                \evans-not-yet-pitched-coloring
                 c'2
-                \times 4/7 {
-                    \times 2/3 {
+                \times 4/7
+                {
+                    \times 2/3
+                    {
+                        \evans-not-yet-pitched-coloring
                         c'8
+                        \evans-not-yet-pitched-coloring
                         c'8
+                        \evans-not-yet-pitched-coloring
                         c'8
                     }
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'8
                 }
+                \evans-not-yet-pitched-coloring
                 c'8
-                \times 2/3 {
+                \times 2/3
+                {
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'8
                 }
+                \evans-not-yet-pitched-coloring
                 c'4
+                \evans-not-yet-pitched-coloring
                 c'4
+                \evans-not-yet-pitched-coloring
                 c'8
             }
 
@@ -72,24 +89,41 @@ def flatten_tree_level(rtm, recurse=False):
             >>> print(abjad.lilypond(staff))
             \new Staff
             {
+                \evans-not-yet-pitched-coloring
                 c'2
-                \times 4/7 {
-                    \times 2/3 {
+                \times 4/7
+                {
+                    \times 2/3
+                    {
+                        \evans-not-yet-pitched-coloring
                         c'8
+                        \evans-not-yet-pitched-coloring
                         c'8
+                        \evans-not-yet-pitched-coloring
                         c'8
                     }
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'8
                 }
-                \times 8/9 {
+                \times 8/9
+                {
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'8
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'4
+                    \evans-not-yet-pitched-coloring
                     c'8
                 }
             }

@@ -589,3 +589,36 @@ nebenStimmeStart =
 
 hauptStimmeStop = \stopTextSpan
 nebenStimmeStop = \stopTextSpan
+
+
+%%% MATERIAL ANNOTATION SPANNER %%%
+
+evansStartTextSpanMaterialAnnotation = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "MaterialAnnotation"
+    )
+
+evansStopTextSpanMaterialAnnotation = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "MaterialAnnotation"
+    )
+
+%%% RHYTHM ANNOTATION SPANNER %%%
+
+evansStartTextSpanRhythmAnnotation = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "RhythmAnnotation"
+    )
+
+evansStopTextSpanRhythmAnnotation = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "RhythmAnnotation"
+    )
+
+evans-text-spanner-left-text = #(
+    define-music-function
+    (parser location string music)
+    (string? ly:music?)
+    #{
+    \tweak bound-details.left.text \markup \concat {
+        \upright #string \hspace #0.5
+        }
+    $music
+    #}
+    )

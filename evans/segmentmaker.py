@@ -4,9 +4,9 @@ SegmentMaker with supporting classes and functions.
 import datetime
 import itertools
 import os
+import pathlib
 
 import abjad
-import baca
 import quicktions
 
 from . import consort
@@ -564,6 +564,13 @@ class SegmentMaker:
             for fermata_index in self.fermata_measures:
                 make_fermata_measure(measures[fermata_index])
                 self.time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
+        for skip in abjad.select(self.score_template["Global Context"]).leaves():
+            blue_literal = abjad.LilyPondLiteral(
+                r"\evans-time-signature-color #'blue",
+            )
+            abjad.attach(
+                blue_literal, skip, tag=abjad.Tag("ANNOTATION"), deactivate=False
+            )
 
     def _interpret_music_commands(self, music_commands):
         for music_command in music_commands:
@@ -781,20 +788,23 @@ class SegmentMaker:
             literal = abjad.LilyPondLiteral("", "closing")
             abjad.attach(literal, container, tag=None)
         directory = self.current_directory
-        pdf_path = baca.Path(f"{directory}/illustration.pdf")
+        pdf_path = pathlib.Path(f"{directory}/illustration.pdf")
+        ly_path = pathlib.Path(f"{directory}/illustration.ly")
         if pdf_path.exists():
             pdf_path.unlink()
-        print(f"Persisting {pdf_path.trim()} ...")
-        result = abjad.persist.as_pdf(
+        if ly_path.exists():
+            ly_path.unlink()
+        print("Persisting ...")  # was f"Persisting {baca.trim(pdf_path)} ..."
+        abjad.persist.as_ly(
             score_file,
-            pdf_path,
+            ly_path,
             # align_tags=79,
         )
-        success = result[3]
-        if success is False:
-            print("LilyPond failed!")
+        if ly_path.exists():
+            print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
+            os.system(f"run-lilypond {ly_path}")
         if pdf_path.exists():
-            print(f"Opening {pdf_path.trim()} ...")
+            print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
             os.system(f"open {pdf_path}")
         with open(f"{directory}/illustration.ly") as pointer_1:
             score_lines = pointer_1.readlines()
@@ -1244,6 +1254,7 @@ def get_top_level_components_from_leaves(leaves):
 
 
 def make_score_template(instruments, groups):
+    assert sum(groups) == len(instruments)
     name_counts = {_.name: 1 for _ in instruments}
     sub_group_counter = 1
     score = abjad.Score(
@@ -1256,7 +1267,9 @@ def make_score_template(instruments, groups):
     grouped_voices = Sequence(instruments).grouper(groups)
     for item in grouped_voices:
         if isinstance(item, list):
-            sub_group = abjad.StaffGroup(name=f"sub group {sub_group_counter}", lilypond_type="PianoStaff")
+            sub_group = abjad.StaffGroup(
+                name=f"sub group {sub_group_counter}", lilypond_type="PianoStaff"
+            )
             sub_group_counter += 1
             for sub_item in item:
                 if 1 < instruments.count(sub_item):

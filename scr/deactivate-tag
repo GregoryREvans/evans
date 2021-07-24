@@ -1,0 +1,43 @@
+#! /usr/bin/env python
+import pathlib
+import sys
+
+import abjad
+import baca
+
+
+def return_files(file_path):
+    if file_path == ".":
+        build_path = pathlib.Path(file_path)
+        returns = []
+        for file in sorted(build_path.iterdir()):
+            if file.is_dir():
+                continue
+            else:
+                returns.append(file)
+        return returns
+    else:
+        return [pathlib.Path(file_path)]
+
+def process(file_path, tag_string, undo):
+    tag = abjad.Tag(tag_string)
+    if undo is True:
+        baca.activate(file_path, tag)
+    else:
+        baca.deactivate(file_path, tag)
+
+def toggle_tags(file_path, tag_string, undo):
+    files = return_files(file_path)
+    for file in files:
+        process(file, tag_string, undo)
+
+
+if __name__ == "__main__":
+    tag_string = sys.argv[1]
+    target = sys.argv[2]
+    try:
+        if sys.argv[3] == "--undo":
+            undo = True
+    except:
+        undo = None
+    toggle_tags(target, tag_string, undo)
