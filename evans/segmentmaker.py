@@ -11,6 +11,7 @@ import quicktions
 
 from . import consort
 from .commands import HandlerCommand, MusicCommand, RhythmCommand
+from .handlers import PitchHandler
 from .sequence import Sequence, flatten
 
 
@@ -43,12 +44,14 @@ class NoteheadBracketMaker:
             >>> print(abjad.lilypond(staff))
             \new Staff
             {
-                \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) "4")
-                \times 2/3 {
+                \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 3 2) (ly:make-duration 2 0))
+                \times 2/3
+                {
                     c'4.
                     \tweak text #tuplet-number::calc-fraction-text
-                    \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) "8")
-                    \times 3/2 {
+                    \tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text 2 3) (ly:make-duration 3 0))
+                    \times 3/2
+                    {
                         cs'8
                         d'8
                     }
@@ -70,6 +73,16 @@ class NoteheadBracketMaker:
         return abjad.storage(self)
 
     def _assemble_notehead(self, head_dur):
+        duration_map = {
+            "1": "0",
+            "2": "1",
+            "4": "2",
+            "8": "3",
+            "16": "4",
+            "32": "5",
+            "64": "6",
+            "128": "7",
+        }
         pair = head_dur.pair
         dot_parts = []
         while 1 < pair[0]:
@@ -77,10 +90,12 @@ class NoteheadBracketMaker:
             dot_parts.append(dot_part)
             head_dur -= abjad.Duration(dot_part)
             pair = head_dur.pair
-        duration_string = f"{pair[1]}"
+        duration_string = duration_map[f"{pair[1]}"]
+        dot_string = ""
         for _ in dot_parts:
-            duration_string += "."
-        return duration_string
+            dot_string += "."
+
+        return duration_string, len(dot_string)
 
     def _transform_brackets(self, selections):
         for tuplet in abjad.select(selections).components(abjad.Tuplet):
@@ -95,10 +110,10 @@ class NoteheadBracketMaker:
             tuplet_dur = sum(inner_durs)
             imp_num, imp_den = tuplet.implied_prolation.pair
             head_dur = tuplet_dur / imp_den
-            dur_string = self._assemble_notehead(head_dur)
+            dur_pair = self._assemble_notehead(head_dur)
             abjad.tweak(
                 tuplet
-            ).TupletNumber.text = f'#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den} {imp_num}) "{dur_string}")'
+            ).TupletNumber.text = f"#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den} {imp_num}) (ly:make-duration {dur_pair[0]} {dur_pair[1]}))"
 
 
 class SegmentMaker:
@@ -263,6 +278,23 @@ class SegmentMaker:
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
+            out_of_range_pitches = abjad.iterpitches.iterate_out_of_range(voice)
+            for leaf in out_of_range_pitches:
+                out_of_range_color = abjad.LilyPondLiteral(
+                    r"\evans-pitch-out-of-range-coloring"
+                )
+                abjad.attach(
+                    out_of_range_color, leaf, tag=abjad.Tag("PITCH"), deactivate=False
+                )
+            for leaf in abjad.select(voice).leaves(pitched=True):
+                pitched_annotation = abjad.get.annotation(leaf, "pitched")
+                if pitched_annotation is None:
+                    unpitch_color = abjad.LilyPondLiteral(
+                        r"\evans-not-yet-pitched-coloring"
+                    )
+                    abjad.attach(
+                        unpitch_color, leaf, tag=abjad.Tag("PITCH"), deactivate=False
+                    )
             if self.transpose_from_sounding_pitch is True:
                 abjad.iterpitches.transpose_from_sounding_pitch(voice)
             if handler is not None:
@@ -552,6 +584,7 @@ class SegmentMaker:
             none_list = [None]
             full_voice_rests = temp_leaf_maker(none_list, durations)
             voice.extend(full_voice_rests)
+
         if self.fermata_measures is not None:
             for voice in abjad.select(self.score_template).components(abjad.Voice):
                 measures = abjad.select(voice).leaves().group_by_measure()
@@ -571,6 +604,9 @@ class SegmentMaker:
             abjad.attach(
                 blue_literal, skip, tag=abjad.Tag("ANNOTATION"), deactivate=False
             )
+
+        for voice in abjad.select(self.score_template).components(abjad.Voice):
+            beautify_tuplets(voice)
 
     def _interpret_music_commands(self, music_commands):
         for music_command in music_commands:
@@ -621,6 +657,7 @@ class SegmentMaker:
                     group_parents_booleans = [
                         isinstance(_, abjad.Tuplet) for _ in group_parents
                     ]
+                    beautify_tuplets(temp_container)
                     if not any(group_parents_booleans):
                         abjad.mutate.replace(measure_group, temp_container[:])
                     else:
@@ -629,25 +666,38 @@ class SegmentMaker:
                         )
                         abjad.mutate.replace(top_level_components, temp_container[:])
 
-                relevant_measures = (
-                    abjad.select(relevant_voice)
-                    .leaves()
-                    .group_by_measure()
-                    .get(relevant_measure_indices)
-                )
+                SegmentMaker.rewrite_meter_without_splitting(
+                    self.score_template
+                )  # EXPERIMENTAL
 
                 for _callable in music_command.callables[1:]:
+                    relevant_measures = (
+                        abjad.select(relevant_voice)
+                        .leaves()
+                        .group_by_measure()
+                        .get(relevant_measure_indices)
+                    )
                     application_site = _callable.selector(relevant_measures)
                     _callable.callable(application_site)
-
-                relevant_measures = (
-                    abjad.select(relevant_voice)
-                    .leaves()
-                    .group_by_measure()
-                    .get(relevant_measure_indices)
-                )
+                    if isinstance(_callable.callable, PitchHandler):
+                        relevant_measures = (
+                            abjad.select(relevant_voice)
+                            .leaves()
+                            .group_by_measure()
+                            .get(relevant_measure_indices)
+                        )
+                        for leaf in abjad.select(relevant_measures).leaves(
+                            pitched=True
+                        ):
+                            abjad.annotate(leaf, "pitched", True)
 
                 for _attachment in music_command.attachments:
+                    relevant_measures = (
+                        abjad.select(relevant_voice)
+                        .leaves()
+                        .group_by_measure()
+                        .get(relevant_measure_indices)
+                    )
                     attachment_site = _attachment.selector(relevant_measures)
                     if isinstance(attachment_site, (list, abjad.Selection)):
                         for site in attachment_site:
@@ -853,7 +903,6 @@ class SegmentMaker:
                     )
 
     def rewrite_meter_without_splitting(target):
-        print("Rewriting meter ...")
         global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
@@ -1295,3 +1344,19 @@ def make_score_template(instruments, groups):
             score["Staff Group"].append(staff)
             name_counts[item.name] += 1
     return score
+
+
+def beautify_tuplets(target):
+    for tuplet in abjad.select(target).components(abjad.Tuplet):
+        tuplet.denominator = 2
+        if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
+            if tuplet.diminution() is True:
+                tuplet.toggle_prolation()
+        if tuplet.multiplier.pair[0] % tuplet.multiplier.pair[1] > 1:
+            if tuplet.augmentation() is True:
+                tuplet.toggle_prolation()
+        tuplet.normalize_multiplier()
+        if tuplet.trivializable() is True:
+            tuplet.trivialize()
+        if tuplet.trivial() is True:
+            tuplet.hide = True

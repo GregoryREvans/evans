@@ -236,9 +236,24 @@ class MusicCommand:
                 self.callables.append(arg)
             else:
                 if not callable(arg):
+                    if type(arg) == abjad.Articulation:
+
+                        def selector(selections):
+                            run_ties = (
+                                abjad.select(selections)
+                                .runs()
+                                .logical_ties(pitched=True)
+                            )
+                            ties_first_leaves = abjad.Selection(
+                                [_[0] for _ in run_ties]
+                            )
+                            return ties_first_leaves
+
+                    else:
+                        selector = abjad.select().leaf(0, pitched=True)
                     new_attachment = Attachment(
                         arg,
-                        abjad.select().leaf(0, pitched=True),
+                        selector,
                     )
                     self.attachments.append(new_attachment)
                 elif callable(arg):

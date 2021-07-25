@@ -2089,6 +2089,7 @@ class IntermittentVoiceHandler(Handler):
                         {
                             \times 2/3
                             {
+                                \voiceOne
                                 af'8
                                 aqf'4
                             }
@@ -2104,6 +2105,7 @@ class IntermittentVoiceHandler(Handler):
                         }
                         \context Voice = "intermittent_voice"
                         {
+                            \voiceOne
                             a'8
                         }
                     >>
@@ -2120,6 +2122,7 @@ class IntermittentVoiceHandler(Handler):
                             \tweak text #tuplet-number::calc-fraction-text
                             \times 4/3
                             {
+                                \voiceOne
                                 aqs'4
                                 a'8
                             }
@@ -2407,6 +2410,8 @@ class OnBeatGraceHandler(Handler):
                         \context Voice = "On_Beat_Grace_Container"
                         {
                             \set fontSize = #-4
+                            \slash
+                            \voiceOne
                             \tweak NoteHead.style #'harmonic
                             fs'''8 * 2/25
                             [
@@ -3139,14 +3144,7 @@ class PitchHandler(Handler):
                         before_grace = abjad.get.before_grace_container(leaf)
                         multiplier = leaf.multiplier
                         for indicator in indicators:
-                            if isinstance(indicator, abjad.LilyPondLiteral):
-                                if (
-                                    indicator.argument
-                                    == r"\evans-not-yet-pitched-coloring"
-                                ):
-                                    continue
-                            else:
-                                abjad.attach(indicator, replacement_chord)
+                            abjad.attach(indicator, replacement_chord)
                         if before_grace is not None:
                             abjad.attach(before_grace, replacement_chord)
                         if multiplier is not None:
@@ -3262,11 +3260,7 @@ class PitchHandler(Handler):
                     before_grace = abjad.get.before_grace_container(old_leaf)
                     multiplier = old_leaf.multiplier
                     for indicator in indicators:
-                        if isinstance(indicator, abjad.LilyPondLiteral):
-                            if indicator.argument == r"\evans-not-yet-pitched-coloring":
-                                continue
-                        else:
-                            abjad.attach(indicator, new_leaf)
+                        abjad.attach(indicator, new_leaf)
                     if before_grace is not None:
                         abjad.attach(before_grace, new_leaf)
                     if multiplier is not None:
@@ -3367,9 +3361,6 @@ class RhythmHandler(Handler):
                 self.state = self.rmaker.state
         else:
             selections = self.rmaker(durations)
-        for leaf in abjad.select(selections).leaves(pitched=True):
-            color_literal = abjad.LilyPondLiteral(r"\evans-not-yet-pitched-coloring")
-            abjad.attach(color_literal, leaf)
         return selections
 
     def _make_music(self, durations):

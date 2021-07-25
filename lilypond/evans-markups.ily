@@ -91,3 +91,40 @@ evans-counterclockwise-arc = \markup {
 \translate #'(0 . 0.75)
 \scale #'(0.4 . 0.4) \concat {\translate #'(0 . 0.3) - \translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o}
 } %}
+
+
+%%% rehearsal mark %%%
+
+rehearsal-mark-markup = #(
+    define-music-function
+    (string font-size h-align)
+    (string? number? number?)
+    #{
+    - \tweak font-size #font-size
+    - \markup
+    \with-dimensions-from \null
+    \halign #h-align
+    \override #'(box-padding . 0.5)
+    \override #'(font-name . "Bell MT Std")
+    \box
+    { \combine \halign #0 #string \halign #0 \transparent "O" }
+    #}
+    )
+
+%%% boxed markups %%%
+
+boxed-markup = #(
+    define-music-function
+    (string font-size)
+    (string? number?)
+    #{
+    - \tweak font-size #font-size
+    ^ \markup
+    \override #'(style . "box")
+    \override #'(box-padding . 0.5)
+    \whiteout
+    \box
+    \italic
+    #string
+    #}
+    )

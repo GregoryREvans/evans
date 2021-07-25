@@ -81,6 +81,7 @@ from .segmentmaker import (
     annotate_leaves,
     annotate_time,
     beam_meter,
+    beautify_tuplets,
     get_top_level_components_from_leaves,
     make_score_template,
 )
@@ -178,6 +179,7 @@ __all__ = [
     "annotate_time",
     "attach",
     "beam_meter",
+    "beautify_tuplets",
     "bow_angle_spanner",
     "calculate_metric_modulation",
     "calculate_tempo_modulated_duration",
