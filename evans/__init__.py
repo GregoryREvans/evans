@@ -45,6 +45,7 @@ from .handlers import (
     TranspositionHandler,
     TrillHandler,
 )
+from .layout import Breaks, Page, System
 from .metmod import (
     calculate_metric_modulation,
     calculate_tempo_modulated_duration,
@@ -102,7 +103,7 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import BowAnglePoint, bow_angle_spanner
+from .spanners import BowAnglePoint, DurationLine, bow_angle_spanner
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -127,11 +128,13 @@ __all__ = [
     "BisbigliandoHandler",
     "BowAngleHandler",
     "BowAnglePoint",
+    "Breaks",
     "Callable",
     "ClefHandler",
     "Command",
     "CompositeHandler",
     "CyclicList",
+    "DurationLine",
     "DynamicHandler",
     "GettatoHandler",
     "GlissandoHandler",
@@ -145,6 +148,7 @@ __all__ = [
     "NoteheadBracketMaker",
     "NoteheadHandler",
     "OnBeatGraceHandler",
+    "Page",
     "PitchClassSegment",
     "PitchClassSet",
     "PitchHandler",
@@ -164,6 +168,7 @@ __all__ = [
     "Sequence",
     "SilentTimespan",
     "SlurHandler",
+    "System",
     "TempoSpannerHandler",
     "TextSpanHandler",
     "TimespanCollection",

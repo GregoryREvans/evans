@@ -278,23 +278,36 @@ class SegmentMaker:
             abjad.attach(
                 inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
             )
-            out_of_range_pitches = abjad.iterpitches.iterate_out_of_range(voice)
-            for leaf in out_of_range_pitches:
-                out_of_range_color = abjad.LilyPondLiteral(
-                    r"\evans-pitch-out-of-range-coloring"
-                )
-                abjad.attach(
-                    out_of_range_color, leaf, tag=abjad.Tag("PITCH"), deactivate=False
-                )
-            for leaf in abjad.select(voice).leaves(pitched=True):
-                pitched_annotation = abjad.get.annotation(leaf, "pitched")
-                if pitched_annotation is None:
-                    unpitch_color = abjad.LilyPondLiteral(
-                        r"\evans-not-yet-pitched-coloring"
+            rhythm_commands_booleans = []
+            for c in self.commands:
+                if isinstance(c, RhythmCommand):
+                    rhythm_commands_booleans.append(True)
+                else:
+                    rhythm_commands_booleans.append(False)
+            if not any(rhythm_commands_booleans):
+                out_of_range_pitches = abjad.iterpitches.iterate_out_of_range(voice)
+                for leaf in out_of_range_pitches:
+                    out_of_range_color = abjad.LilyPondLiteral(
+                        r"\evans-pitch-out-of-range-coloring"
                     )
                     abjad.attach(
-                        unpitch_color, leaf, tag=abjad.Tag("PITCH"), deactivate=False
+                        out_of_range_color,
+                        leaf,
+                        tag=abjad.Tag("PITCH"),
+                        deactivate=False,
                     )
+                for leaf in abjad.select(voice).leaves(pitched=True):
+                    pitched_annotation = abjad.get.annotation(leaf, "pitched")
+                    if pitched_annotation is None:
+                        unpitch_color = abjad.LilyPondLiteral(
+                            r"\evans-not-yet-pitched-coloring"
+                        )
+                        abjad.attach(
+                            unpitch_color,
+                            leaf,
+                            tag=abjad.Tag("PITCH"),
+                            deactivate=False,
+                        )
             if self.transpose_from_sounding_pitch is True:
                 abjad.iterpitches.transpose_from_sounding_pitch(voice)
             if handler is not None:

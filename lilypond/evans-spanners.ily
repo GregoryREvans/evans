@@ -502,6 +502,26 @@ baca-colored-bracketed-mixed-number-metric-modulation-tuplet-rhs = #(
     #}
     )
 
+%%% color phrasing slur spanner %%%
+
+color-span =
+#(define-music-function (parser location y-lower y-upper color)
+     (number? number? color?)
+    #{
+      \once\override PhrasingSlur.stencil =
+        $(lambda (grob)
+          (let* (
+            (area (ly:slur::print grob))
+              (X-ext (ly:stencil-extent area X))
+              (Y-ext (ly:stencil-extent area Y)))
+            (set! Y-ext (cons y-lower y-upper))
+            (ly:grob-set-property! grob 'layer -10)
+            (ly:make-stencil (list 'color color
+              (ly:stencil-expr (ly:round-filled-box X-ext Y-ext 0))
+              X-ext Y-ext))))
+      \once\override PhrasingSlur.Y-offset = #0
+    #})
+
 %%% Haupt and Neben stimmen %%%
 
 hauptStart = \markup {

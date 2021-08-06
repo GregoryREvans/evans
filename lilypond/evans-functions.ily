@@ -10,6 +10,21 @@ staff-line-count = #(
     #}
     )
 
+%%% duration line style %%%
+
+duration-line-style = #(
+    define-music-function (parser location music) (ly:music?)
+    #{
+    \once \omit Stem
+    \once \omit Flag
+    \once \omit Beam
+    \once \omit Dots
+    \once \override DurationLine.style = #'line
+    \once \override NoteHead.duration-log = 2
+    $music
+    #}
+    )
+
 %%% flat ties %%%
 
 #(define ((flared-tie coords) grob)
@@ -99,5 +114,17 @@ normal-accidentals = #(
     \set suggestAccidentals = ##f
     \revert Voice.AccidentalSuggestion.font-size
     \revert Voice.AccidentalSuggestion.parenthesized
+    #}
+    )
+
+%%% evans new spacing section %%%
+evans-new-spacing-section = #(
+    define-music-function
+    (parser location n d music)
+    (number? number? ly:music?)
+    #{
+    \set Score.proportionalNotationDuration = #(ly:make-moment n d)
+    \newSpacingSection
+    $music
     #}
     )
