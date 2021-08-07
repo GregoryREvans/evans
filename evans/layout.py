@@ -41,17 +41,21 @@ class Breaks:
         self.x_offsets = CyclicList([_.x_offset for _ in systems], forget=False)
 
     def make_score(self):
-        score = abjad.Score(name="score")
+        score = abjad.Score(name="Score")
         abjad.setting(score).currentBarNumber = self.bar_number
-        layout_context = abjad.Staff(name="layout")  # , lilypond_type="LayoutContext")
+        global_context = abjad.Staff(
+            name="Global Context", lilypond_type="TimeSignatureContext"
+        )
+        layout_context = abjad.Staff(name="Layout", lilypond_type="LayoutContext")
         for time_signature in self.time_signatures:
             multiplier = abjad.Multiplier(time_signature.pair)
             skip = abjad.Skip((1, 1), multiplier=multiplier)
             layout_context.append(skip)
-        score.append(layout_context)
+        global_context.append(layout_context)
+        score.append(global_context)
         return score
 
-    def make_document_layout(self):
+    def make_document_layout(self, path):
         score = self.make_score()
         leaves = abjad.select(score).leaves()
         no_breaks_literal = abjad.LilyPondLiteral(
@@ -103,7 +107,9 @@ class Breaks:
                 fr"\evans-system-X-offset #{x_offset}", format_slot="after"
             )
             abjad.attach(x_offset_literal, relevant_leaf)
-        return score
+        with open(f"{path}/layout.ly", "w") as fp:
+            s = abjad.lilypond(score)
+            fp.writelines(s)
 
 
 class Page:
@@ -132,3 +138,17 @@ class System:
         self.lbsd = lbsd
         self.measures = measures
         self.x_offset = x_offset
+
+
+def reduce_fermata_measures(time_signatures, fermata_measures):
+    new_time_signatures = [_ for _ in time_signatures[:-1]]
+    for fermata_index in fermata_measures:
+        new_time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
+    return new_time_signatures
+
+
+def join_time_signature_lists(nested_time_sigatures):
+    out = []
+    for time_signature_list in nested_time_sigatures:
+        out.extend(time_signature_list)
+    return out

@@ -45,7 +45,13 @@ from .handlers import (
     TranspositionHandler,
     TrillHandler,
 )
-from .layout import Breaks, Page, System
+from .layout import (
+    Breaks,
+    Page,
+    System,
+    join_time_signature_lists,
+    reduce_fermata_measures,
+)
 from .metmod import (
     calculate_metric_modulation,
     calculate_tempo_modulated_duration,
@@ -212,6 +218,7 @@ __all__ = [
     "metric_modulation",
     "mixed_number",
     "nested_list_to_rtm",
+    "reduce_fermata_measures",
     "relative_ratios",
     "replace",
     "return_cent_markup",
@@ -227,4 +234,5 @@ __all__ = [
     "to_nearest_twelfth_tone",
     "tonnetz",
     "tune_to_ratio",
+    "join_time_signature_lists",
 ]

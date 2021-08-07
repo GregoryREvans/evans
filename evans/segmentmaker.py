@@ -147,6 +147,7 @@ class SegmentMaker:
         time_signatures=None,
         transpose_from_sounding_pitch=None,
         tuplet_bracket_noteheads=True,
+        with_layout=False,
     ):
         self.abbreviations = abbreviations
         self.add_final_grand_pause = add_final_grand_pause
@@ -173,6 +174,7 @@ class SegmentMaker:
         self.time_signatures = time_signatures
         self.transpose_from_sounding_pitch = transpose_from_sounding_pitch
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
+        self.with_layout = with_layout
 
     def __str__(self):
         return abjad.storage(self)
@@ -610,13 +612,6 @@ class SegmentMaker:
             for fermata_index in self.fermata_measures:
                 make_fermata_measure(measures[fermata_index])
                 self.time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
-        for skip in abjad.select(self.score_template["Global Context"]).leaves():
-            blue_literal = abjad.LilyPondLiteral(
-                r"\evans-time-signature-color #'blue",
-            )
-            abjad.attach(
-                blue_literal, skip, tag=abjad.Tag("ANNOTATION"), deactivate=False
-            )
 
         for voice in abjad.select(self.score_template).components(abjad.Voice):
             beautify_tuplets(voice)
@@ -833,49 +828,105 @@ class SegmentMaker:
     def _render_file(self):
         print("Rendering file ...")
         abjad.SegmentMaker.comment_measure_numbers(self.score_template)
-        score_block = abjad.Block(name="score")
-        score_block.items.append(self.score_template)
-        score_file = abjad.LilyPondFile(
-            items=[score_block], includes=self.score_includes
-        )
-        for leaf in abjad.iterate(self.score_template).leaves():
-            literal = abjad.LilyPondLiteral("", "absolute_before")
-            abjad.attach(literal, leaf, tag=None)
-        for container in abjad.iterate(self.score_template).components(abjad.Container):
-            if hasattr(container, "_main_leaf"):
-                literal = abjad.LilyPondLiteral("", "absolute_after")
-                abjad.attach(literal, container, tag=None)
-            else:
+        if self.with_layout is False:
+            score_block = abjad.Block(name="score")
+            score_block.items.append(self.score_template)
+            score_file = abjad.LilyPondFile(
+                items=[score_block], includes=self.score_includes
+            )
+            for leaf in abjad.iterate(self.score_template).leaves():
                 literal = abjad.LilyPondLiteral("", "absolute_before")
+                abjad.attach(literal, leaf, tag=None)
+            for container in abjad.iterate(self.score_template).components(
+                abjad.Container
+            ):
+                if hasattr(container, "_main_leaf"):
+                    literal = abjad.LilyPondLiteral("", "absolute_after")
+                    abjad.attach(literal, container, tag=None)
+                else:
+                    literal = abjad.LilyPondLiteral("", "absolute_before")
+                    abjad.attach(literal, container, tag=None)
+                literal = abjad.LilyPondLiteral("", "closing")
                 abjad.attach(literal, container, tag=None)
-            literal = abjad.LilyPondLiteral("", "closing")
-            abjad.attach(literal, container, tag=None)
-        directory = self.current_directory
-        pdf_path = pathlib.Path(f"{directory}/illustration.pdf")
-        ly_path = pathlib.Path(f"{directory}/illustration.ly")
-        if pdf_path.exists():
-            pdf_path.unlink()
-        if ly_path.exists():
-            ly_path.unlink()
-        print("Persisting ...")  # was f"Persisting {baca.trim(pdf_path)} ..."
-        abjad.persist.as_ly(
-            score_file,
-            ly_path,
-            # align_tags=79,
-        )
-        if ly_path.exists():
-            print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
-            os.system(f"run-lilypond {ly_path}")
-        if pdf_path.exists():
-            print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
-            os.system(f"open {pdf_path}")
-        with open(f"{directory}/illustration.ly") as pointer_1:
-            score_lines = pointer_1.readlines()
-            build_path = self.current_directory.parent.with_name("build")
-            build_path /= "score"
-            lines = score_lines[14:-1]  # was 15:-1
-            with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
-                fp.writelines(lines)
+            directory = self.current_directory
+            pdf_path = pathlib.Path(f"{directory}/illustration.pdf")
+            ly_path = pathlib.Path(f"{directory}/illustration.ly")
+            if pdf_path.exists():
+                pdf_path.unlink()
+            if ly_path.exists():
+                ly_path.unlink()
+            print("Persisting ...")  # was f"Persisting {baca.trim(pdf_path)} ..."
+            abjad.persist.as_ly(
+                score_file,
+                ly_path,
+                # align_tags=79,
+            )
+            if ly_path.exists():
+                print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
+                os.system(f"run-lilypond {ly_path}")
+            if pdf_path.exists():
+                print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
+                os.system(f"open {pdf_path}")
+            with open(f"{directory}/illustration.ly") as pointer_1:
+                score_lines = pointer_1.readlines()
+                build_path = self.current_directory.parent.with_name("build")
+                build_path /= "score"
+                lines = score_lines[14:-1]  # was 15:-1
+                with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
+                    fp.writelines(lines)
+        else:
+            score_block = abjad.Block(name="score")
+            parallel_container = abjad.Container(simultaneous=True)
+            parallel_container.append(self.score_template)
+            score_block.items.append(parallel_container)
+            score_file = abjad.LilyPondFile(
+                items=[score_block], includes=self.score_includes
+            )
+            for leaf in abjad.iterate(self.score_template).leaves():
+                literal = abjad.LilyPondLiteral("", "absolute_before")
+                abjad.attach(literal, leaf, tag=None)
+            for container in abjad.iterate(self.score_template).components(
+                abjad.Container
+            ):
+                if hasattr(container, "_main_leaf"):
+                    literal = abjad.LilyPondLiteral("", "absolute_after")
+                    abjad.attach(literal, container, tag=None)
+                else:
+                    literal = abjad.LilyPondLiteral("", "absolute_before")
+                    abjad.attach(literal, container, tag=None)
+                literal = abjad.LilyPondLiteral("", "closing")
+                abjad.attach(literal, container, tag=None)
+            directory = self.current_directory
+            pdf_path = pathlib.Path(f"{directory}/illustration.pdf")
+            ly_path = pathlib.Path(f"{directory}/illustration.ly")
+            if pdf_path.exists():
+                pdf_path.unlink()
+            if ly_path.exists():
+                ly_path.unlink()
+            print("Persisting ...")  # was f"Persisting {baca.trim(pdf_path)} ..."
+            file_string = abjad.lilypond(score_file)
+            file_strings = file_string.splitlines(keepends=True)
+            file_string_pre = file_strings[:8]
+            file_string_mid = r"""      { \include "layout.ly" }"""
+            file_string_post = file_strings[8:]
+            with open(f"{directory}/illustration.ly", "w") as fp_pointer:
+                final_string = file_string_pre
+                final_string.extend(file_string_mid)
+                final_string.extend(file_string_post)
+                fp_pointer.writelines(final_string)
+            if ly_path.exists():
+                print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
+                os.system(f"run-lilypond {ly_path}")
+            if pdf_path.exists():
+                print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
+                os.system(f"open {pdf_path}")
+            # with open(f"{directory}/illustration.ly") as pointer_1:
+            #     score_lines = pointer_1.readlines()
+            #     build_path = self.current_directory.parent.with_name("build")
+            #     build_path /= "score"
+            #     lines = score_lines[14:-1]  # was 15:-1
+            #     with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
+            #         fp.writelines(lines)
 
     def rewrite_meter(target):
         print("Rewriting meter ...")
@@ -1263,7 +1314,7 @@ def make_fermata_measure(selection):
     duration = abjad.Duration((1, 4))
     skip = abjad.MultimeasureRest(1, multiplier=duration)
     transparent_command = abjad.LilyPondLiteral(
-        r"\stopStaff \once \override MultiMeasureRest.transparent = ##t",
+        r"\once \override MultiMeasureRest.transparent = ##t",
         format_slot="before",
     )
     temp_container = abjad.Container()
@@ -1277,11 +1328,11 @@ def make_fermata_measure(selection):
         new_sig = abjad.TimeSignature((1, 4))
         abjad.attach(new_sig, temp_container[0])
         transparent_sig = abjad.LilyPondLiteral(
-            r"\stopStaff \once \override TimeSignature.transparent = ##t",
+            r"\once \override Score.TimeSignature.transparent = ##t",
             format_slot="before",
         )
         transparent_rest = abjad.LilyPondLiteral(
-            r"\stopStaff \once \override Rest.transparent = ##t",
+            r"\once \override Rest.transparent = ##t",
             format_slot="before",
         )
         abjad.attach(transparent_sig, temp_container[0])
