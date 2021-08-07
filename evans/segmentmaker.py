@@ -904,11 +904,11 @@ class SegmentMaker:
             if ly_path.exists():
                 ly_path.unlink()
             print("Persisting ...")  # was f"Persisting {baca.trim(pdf_path)} ..."
-            file_string = abjad.lilypond(score_file)
+            file_string = abjad.lilypond(score_file, tags=True)
             file_strings = file_string.splitlines(keepends=True)
-            file_string_pre = file_strings[:8]
+            file_string_pre = file_strings[:14]
             file_string_mid = r"""      { \include "layout.ly" }"""
-            file_string_post = file_strings[8:]
+            file_string_post = file_strings[14:]
             with open(f"{directory}/illustration.ly", "w") as fp_pointer:
                 final_string = file_string_pre
                 final_string.extend(file_string_mid)
@@ -920,13 +920,13 @@ class SegmentMaker:
             if pdf_path.exists():
                 print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
                 os.system(f"open {pdf_path}")
-            # with open(f"{directory}/illustration.ly") as pointer_1:
-            #     score_lines = pointer_1.readlines()
-            #     build_path = self.current_directory.parent.with_name("build")
-            #     build_path /= "score"
-            #     lines = score_lines[14:-1]  # was 15:-1
-            #     with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
-            #         fp.writelines(lines)
+            with open(f"{directory}/illustration.ly") as pointer_1:
+                score_lines = pointer_1.readlines()
+                build_path = self.current_directory.parent.with_name("build")
+                build_path /= "score"
+                lines = score_lines[15:-3]
+                with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
+                    fp.writelines(lines)
 
     def rewrite_meter(target):
         print("Rewriting meter ...")
