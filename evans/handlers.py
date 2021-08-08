@@ -3383,6 +3383,85 @@ class RhythmHandler(Handler):
         return abjad.OrderedDict([("state", self.rmaker.state)])
 
 
+class ScordaturaHandler(Handler):
+    r"""
+    Scordatura Handler
+
+    .. container:: example
+
+        >>> handler = evans.ScordaturaHandler()
+        >>> staff = abjad.Staff("a,,4 a,,4 a,,4 a,,4 a,,4 a,,4 a,,4 a,,4")
+        >>> abjad.attach(abjad.Clef("bass"), staff[0])
+        >>> handler(staff[1:-1])
+        >>> block = abjad.Block(name="score")
+        >>> block.items.append(staff)
+        >>> path = "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        >>> file = abjad.LilyPondFile(items=[block], includes=[path])
+        >>> abjad.show(file) # doctest: +SKIP
+
+        .. docs::
+
+            >>> print(abjad.lilypond(staff))
+            \new Staff
+            {
+                \clef "bass"
+                a,,4
+                c,4
+                - \abjad-dashed-line-with-hook
+                - \tweak bound-details.left.text \markup \concat { IV \hspace #0.5 }
+                \startTextSpan
+                c,4
+                c,4
+                c,4
+                c,4
+                c,4
+                a,,4
+                \stopTextSpan
+            }
+
+    """
+
+    def __init__(
+        self,
+        string_number="IV",
+        default_pitch="c,",
+        new_pitch="a,,",
+        name="ScordaturaHandler",
+    ):
+        self.string_number = string_number
+        self.default_pitch = default_pitch
+        self.new_pitch = new_pitch
+        self.name = name
+
+    def __call__(self, selections):
+        leaves = abjad.select(selections).leaves()
+        interval = self._find_transposition()
+        abjad.mutate.transpose(leaves, interval)
+        start, stop = self._make_spanner()
+        abjad.attach(start, leaves[0])
+        abjad.attach(stop, abjad.get.leaf(leaves[-1], 1))
+
+    def _find_transposition(self):
+        interval = abjad.NamedInterval.from_pitch_carriers(
+            self.new_pitch, self.default_pitch
+        )
+        return interval
+
+    def _make_spanner(self):
+        start_spanner = abjad.StartTextSpan(
+            left_text=abjad.Markup(self.string_number),
+            style="dashed-line-with-hook",
+        )
+        stop_spanner = abjad.StopTextSpan()
+        return start_spanner, stop_spanner
+
+    def name(self):
+        return self.name
+
+    def state(self):
+        return f"STATE not maintained for {type(self)}"
+
+
 # add style option for \slurDotted and \slurDashed and \slurSolid
 class SlurHandler(Handler):
     r"""

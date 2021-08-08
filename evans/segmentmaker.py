@@ -914,6 +914,8 @@ class SegmentMaker:
                 final_string.extend(file_string_mid)
                 final_string.extend(file_string_post)
                 fp_pointer.writelines(final_string)
+            layout_path = pathlib.Path(f"{directory}/layout.py")
+            os.system(f"python {layout_path}")
             if ly_path.exists():
                 print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
                 os.system(f"run-lilypond {ly_path}")

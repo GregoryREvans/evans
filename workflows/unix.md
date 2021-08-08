@@ -108,3 +108,14 @@ git checkout [file]
 	reverts to last pushed version
 
 ***git checkout . reverts the entire repository not pwd***
+
+<br />
+
+`ps -ef | grep Python` <br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;`ps -ef` (gives running processes) <br />
+&nbsp;&nbsp;&nbsp;&nbsp;``| grep Python` (piped to grep shows processes matching key) <br />
+<br />
+`kill [process id]` (pid) (kills given process) <br />
+<br />
+top (shows running processes dynamically like activity monitor) <br />
