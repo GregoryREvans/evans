@@ -35,8 +35,12 @@ class Breaks:
         self.bar_number = bar_number
         self.default_spacing = default_spacing
         self.lbsd = CyclicList([_.lbsd for _ in systems], forget=False)
-        self.spacing = CyclicList(spacing, forget=False)
-        self.spacing_indices = [_[0] - 1 for _ in spacing]
+        if spacing is not None:
+            self.spacing = CyclicList(spacing, forget=False)
+            self.spacing_indices = [_[0] - 1 for _ in spacing]
+        else:
+            self.spacing = []
+            self.spacing_indices = []
         self.time_signatures = time_signatures
         self.x_offsets = CyclicList([_.x_offset for _ in systems], forget=False)
 
