@@ -13,7 +13,7 @@ on:
 env:
   LILYPOND: /tmp/lilypond
   LILYPOND_URL: http://lilypond.org/download/binaries/linux-64/
-  LILYPOND_SOURCE: lilypond-2.19.84-1.linux-64.sh
+  LILYPOND_SOURCE: lilypond-2.23.2-1.linux-64.sh
   ABJAD: /tmp/abjad
   RMAKERS: /tmp/abjad-ext-rmakers
   MICROTONES: /tmp/abjad-ext-microtones
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
 
     steps:
     - uses: actions/checkout@v2
