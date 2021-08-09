@@ -1258,7 +1258,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
     for t in tup_list:
         if isinstance(abjad.get.parentage(t).components[1], abjad.Tuplet) is False:
             first_leaf = abjad.select(t).leaf(0)
-            if not abjad.get.has_indicator(first_leaf, abjad.StartBeam()):
+            if not hasattr(first_leaf._overrides, "Beam"):
                 abjad.beam(
                     t[:],
                     beam_rests=include_rests,
