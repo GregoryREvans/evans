@@ -863,7 +863,9 @@ class SegmentMaker:
             )
             if ly_path.exists():
                 print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
-                os.system(f"run-lilypond {ly_path}")
+                os.system(
+                    f"run-lilypond {ly_path} >/dev/null 2>&1"
+                )  # >/dev/null 2>&1 surpresses output
             if pdf_path.exists():
                 print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
                 os.system(f"open {pdf_path}")
@@ -918,7 +920,9 @@ class SegmentMaker:
             os.system(f"python {layout_path}")
             if ly_path.exists():
                 print("Rendering ...")  # was f"Opening {baca.trim(pdf_path)} ..."
-                os.system(f"run-lilypond {ly_path}")
+                os.system(
+                    f"run-lilypond {ly_path} >/dev/null 2>&1"
+                )  # >/dev/null 2>&1 surpresses output
             if pdf_path.exists():
                 print("Opening ...")  # was f"Opening {baca.trim(pdf_path)} ..."
                 os.system(f"open {pdf_path}")

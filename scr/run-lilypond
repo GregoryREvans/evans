@@ -1,5 +1,5 @@
 lilypond \
     --include="/Users/evansdsg2/abjad/docs/source/_stylesheets" \
     --include="/Users/evansdsg2/evans/lilypond" \
-    --include="/Users/evansdsg2/baca/ly" \
+    --include="/Users/evansdsg2/baca/lilypond" \
     $1

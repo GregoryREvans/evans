@@ -547,7 +547,7 @@ class Sequence(baca.Sequence):
 
         """
         comb = self.combinations(size, as_set=True)
-        multiples = [Sequence(_).divide_all()[0] for _ in comb]
+        multiples = [Sequence(_).dividend()[0] for _ in comb]
         segment = RatioSet(multiples).constrain_to_octave().sorted()
         return RatioSet(segment).to_sequence()
 
@@ -564,7 +564,7 @@ class Sequence(baca.Sequence):
 
         """
         comb = self.combinations(size, as_set=True)
-        multiples = [Sequence(_).multiply_all()[0] for _ in comb]
+        multiples = [Sequence(_).product()[0] for _ in comb]
         segment = RatioSet(multiples).constrain_to_octave().sorted()
         return RatioSet(segment).to_sequence()
 
@@ -581,7 +581,7 @@ class Sequence(baca.Sequence):
 
         """
         comb = self.combinations(size, as_set=True)
-        multiples = [Sequence(_).subtract_all()[0] for _ in comb]
+        multiples = [Sequence(_).difference()[0] for _ in comb]
         segment = PitchClassSet(multiples).sorted()
         return PitchClassSet(segment).to_sequence()
 
@@ -730,13 +730,13 @@ class Sequence(baca.Sequence):
             returned_sequence = flatten(returned_sequence)
         return type(self)(returned_sequence)
 
-    def divide_all(self):
+    def dividend(self):
         """
 
         .. container:: example
 
             >>> l = [1, 2, 3, 4]
-            >>> evans.Sequence(l).divide_all()
+            >>> evans.Sequence(l).dividend()
             Sequence([0.041666666666666664])
 
         """
@@ -1375,12 +1375,12 @@ class Sequence(baca.Sequence):
             returned_seq.append(_ * x)
         return type(self)(returned_seq)
 
-    def multiply_all(self):
+    def product(self):
         """
 
         .. container:: example
 
-            >>> evans.Sequence([7, 8, 9, 10]).multiply_all()
+            >>> evans.Sequence([7, 8, 9, 10]).product()
             Sequence([5040])
 
         """
@@ -1880,13 +1880,13 @@ class Sequence(baca.Sequence):
             seq = type(self)(returned_list)
         return seq
 
-    def subtract_all(self):
+    def difference(self):
         """
 
         .. container:: example
 
             >>> l = [1, 2, 3, 4]
-            >>> evans.Sequence(l).subtract_all()
+            >>> evans.Sequence(l).difference()
             Sequence([-8])
 
         """

@@ -938,7 +938,7 @@ sequence
       combinations
       derive_added_sequences
       derive_multiplied_sequences
-      divide_all
+      dividend
       e_bonacci_cycle
       e_dovan_cycle
       feigenbaum_bifurcations
@@ -959,7 +959,7 @@ sequence
       mirror
       mod
       multiply
-      multiply_all
+      product
       multiply_sequences
       n_bonacci_cycle
       normalize_to_indices
@@ -980,7 +980,7 @@ sequence
       rotate
       stack_intervals
       stack_pitches
-      subtract_all
+      difference
       transpose
       warp
       zipped_bifurcation
@@ -1073,7 +1073,7 @@ sequence
 
    .. automethod:: Sequence.derive_multiplied_sequences
 
-   .. automethod:: Sequence.divide_all
+   .. automethod:: Sequence.dividend
 
    .. container:: inherited
 
@@ -1149,7 +1149,7 @@ sequence
 
    .. automethod:: Sequence.multiply
 
-   .. automethod:: Sequence.multiply_all
+   .. automethod:: Sequence.product
 
    .. automethod:: Sequence.multiply_sequences
 
@@ -1281,7 +1281,7 @@ sequence
 
    .. automethod:: Sequence.stack_pitches
 
-   .. automethod:: Sequence.subtract_all
+   .. automethod:: Sequence.difference
 
    .. container:: inherited
 
