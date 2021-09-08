@@ -827,7 +827,7 @@ class SegmentMaker:
 
     def _render_file(self):
         print("Rendering file ...")
-        abjad.SegmentMaker.comment_measure_numbers(self.score_template)
+        # abjad.SegmentMaker.comment_measure_numbers(self.score_template)
         if self.with_layout is False:
             score_block = abjad.Block(name="score")
             score_block.items.append(self.score_template)

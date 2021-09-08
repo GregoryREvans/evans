@@ -4,7 +4,7 @@ Rhythm tree functions.
 import abjad
 from abjadext import rmakers
 
-from .sequence import Sequence
+from .sequence import CyclicList, Sequence, flatten
 
 
 def flatten_tree_level(rtm, recurse=False):
@@ -714,3 +714,35 @@ class RhythmTreeQuantizer:
     def _quantize_rhythm_tree(self, rtm_container):
         layers = self._return_layers(rtm_container)
         self._recursive_operation(layers)
+
+
+def helianthated_rtm(divisions, beats):
+    s = Sequence(divisions).helianthate(-1, 1)
+    s_ = Sequence(flatten(Sequence(beats).helianthate(-1, 1)))
+
+    c_s_ = CyclicList(s_, forget=False)
+    beats = c_s_(r=len(s))
+
+    out_ = []
+
+    for x, y in zip(beats, s):
+        temp = [x, y]
+        out_.append(temp)
+
+    out = Sequence(out_).partition_by_counts(
+        [len(divisions)], cyclic=True, overhang=True
+    )
+
+    final_out = []
+
+    for rtm_list in out:
+        final_temp = [1, rtm_list]
+        final_out.append(final_temp)
+
+    rtm_out = []
+
+    for _ in final_out:
+        rtm = nested_list_to_rtm(_)
+        rtm_out.append(rtm)
+
+    return rtm_out

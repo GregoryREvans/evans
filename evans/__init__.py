@@ -80,6 +80,7 @@ from .rtm import (
     flatten_tree_level,
     funnel_inner_tree_to_x,
     funnel_tree_to_x,
+    helianthated_rtm,
     nested_list_to_rtm,
     rotate_tree,
 )
@@ -209,6 +210,7 @@ __all__ = [
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
     "get_top_level_components_from_leaves",
+    "helianthated_rtm",
     "herz_combination_tone_ratios",
     "human_sorted_keys",
     "intercalate_silences",
