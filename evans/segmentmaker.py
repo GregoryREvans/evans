@@ -568,6 +568,36 @@ class SegmentMaker:
             string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
             fp.writelines(string)
 
+    @staticmethod
+    def comment_measure_numbers(score):
+        """
+        Comments measure numbers in ``score``.
+        """
+        offset_to_measure_number = {}
+        for context in abjad.Iteration(score).components(abjad.Context):
+            if not context.simultaneous:
+                break
+        site = abjad.Tag("evans.SegmentMaker.comment_measure_numbers()")
+        measures = abjad.Selection(context).leaves().group_by_measure()
+        for i, measure in enumerate(measures):
+            measure_number = i + 1
+            first_leaf = abjad.Selection(measure).leaf(0)
+            start_offset = first_leaf._get_timespan().start_offset
+            offset_to_measure_number[start_offset] = measure_number
+        for leaf in abjad.Iteration(score).leaves():
+            offset = leaf._get_timespan().start_offset
+            measure_number = offset_to_measure_number.get(offset, None)
+            if measure_number is None:
+                continue
+            context = abjad.Parentage(leaf).get(abjad.Context)
+            if context.name is None:
+                string = f"% [{context.lilypond_type} measure {measure_number}]"
+            else:
+                string = f"% [{context.name} measure {measure_number}]"
+            literal = abjad.LilyPondLiteral(string, "absolute_before")
+            tag = abjad.Tag("COMMENT_MEASURE_NUMBERS").append(site)
+            abjad.attach(literal, leaf, tag=tag)
+
     def _extract_parts(self):
         print("Extracting parts ...")
         for count, staff in enumerate(
@@ -624,6 +654,15 @@ class SegmentMaker:
                 command_measures = command_location[1]
                 duration_preprocessor = music_command.preprocessor
 
+                global_context = self.score_template["Global Context"]
+                global_leaves = abjad.select(global_context).leaves(abjad.Skip)
+                signatures = [
+                    abjad.get.indicator(_, abjad.TimeSignature) for _ in global_leaves
+                ]
+                non_reduced_fractions = [
+                    abjad.NonreducedFraction(_) for _ in signatures
+                ]
+
                 relevant_voice = self.score_template[command_voice_name]
                 if isinstance(command_measures, int):
                     relevant_measure_indices = [command_measures]
@@ -640,7 +679,7 @@ class SegmentMaker:
                     .get(relevant_measure_indices)
                 )
                 measure_durations = [
-                    abjad.get.duration(measure) for measure in relevant_measures
+                    non_reduced_fractions[_] for _ in relevant_measure_indices
                 ]
                 measure_groups = relevant_measures.group_by_contiguity()
                 group_sizes = [len(g) for g in measure_groups]
@@ -827,7 +866,7 @@ class SegmentMaker:
 
     def _render_file(self):
         print("Rendering file ...")
-        # abjad.SegmentMaker.comment_measure_numbers(self.score_template)
+        type(self).comment_measure_numbers(self.score_template)
         if self.with_layout is False:
             score_block = abjad.Block(name="score")
             score_block.items.append(self.score_template)
@@ -1261,15 +1300,15 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
     tup_list = [tup for tup in abjad.select(components).components(abjad.Tuplet)]
     for t in tup_list:
         if isinstance(abjad.get.parentage(t).components[1], abjad.Tuplet) is False:
-            first_leaf = abjad.select(t).leaf(0)
-            if not hasattr(first_leaf._overrides, "Beam"):
-                abjad.beam(
-                    t[:],
-                    beam_rests=include_rests,
-                    stemlet_length=0.75,
-                    beam_lone_notes=False,
-                    selector=abjad.select().leaves(grace=False),
-                )
+            # first_leaf = abjad.select(t).leaf(0)
+            # if not hasattr(first_leaf._overrides, "Beam"):
+            abjad.beam(
+                t[:],
+                beam_rests=include_rests,
+                stemlet_length=0.75,
+                beam_lone_notes=False,
+                selector=abjad.select().leaves(grace=False),
+            )
         else:
             continue
 
@@ -1359,7 +1398,7 @@ def make_fermata_measure(selection):
     abjad.mutate.replace(original_leaves, temp_container[:])
 
 
-def get_top_level_components_from_leaves(leaves):
+def get_top_level_components_from_leaves(leaves):  # TODO:
     out = []
     for leaf in leaves:
         parent = abjad.get.parentage(leaf).parent

@@ -15,6 +15,7 @@ from .commands import (
     detach,
     duplicate,
     replace,
+    skeleton,
 )
 from .consort import (
     LogicalTieCollection,
@@ -228,6 +229,7 @@ __all__ = [
     "return_cent_markup",
     "return_vertical_moment_ties",
     "rotate_tree",
+    "skeleton",
     "sorted_keys",
     "talea_timespans",
     "to_digit",

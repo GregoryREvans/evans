@@ -293,3 +293,26 @@ class RhythmCommand:
 
     def __repr__(self):
         return abjad.storage(self)
+
+
+class AssertDuration:
+    def __init__(self, selections):
+        self.selections = selections
+
+    def __call__(self, duration):
+        assert abjad.get.duration(self.selections) == duration
+        return self.selections
+
+
+def skeleton(argument):
+    if isinstance(argument, str):
+        string = f"{{ {argument} }}"
+        container = abjad.parse(string)
+        selection = abjad.mutate.eject_contents(container)
+    elif isinstance(argument, abjad.Selection):
+        selection = argument
+    else:
+        message = "evans.skeleton() accepts string or selection,"
+        message += " not {repr(argument)}."
+        raise TypeError(message)
+    return AssertDuration(selection)
