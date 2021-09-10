@@ -111,6 +111,12 @@ class Breaks:
                 fr"\evans-system-X-offset #{x_offset}", format_slot="after"
             )
             abjad.attach(x_offset_literal, relevant_leaf)
+        for leaf in leaves:
+            if not abjad.get.has_indicator(
+                leaf, abjad.LilyPondLiteral(r"\break", format_slot="after")
+            ):
+                no_break = abjad.LilyPondLiteral(r"\noBreak", format_slot="after")
+                abjad.attach(no_break, leaf)
         with open(f"{path}/layout.ly", "w") as fp:
             s = abjad.lilypond(score)
             fp.writelines(s)

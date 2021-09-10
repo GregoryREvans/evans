@@ -299,8 +299,8 @@ class Skeleton:
     def __init__(self, string):
         self.selections = self.skeleton(string)
 
-    def __call__(self, duration):
-        assert abjad.get.duration(self.selections) == duration
+    def __call__(self, durations):
+        assert abjad.get.duration(self.selections) == sum(durations)
         return self.selections
 
     @staticmethod
