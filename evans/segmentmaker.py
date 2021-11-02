@@ -1046,6 +1046,13 @@ class SegmentMaker:
                             boundary_depth=inventories[-1][0],
                             rewrite_tuplets=False,
                         )
+                    elif time_signature.denominator == 16: # experimental
+                        abjad.Meter.rewrite_meter(
+                            shard,
+                            time_signature,
+                            boundary_depth=inventories[0][0],
+                            rewrite_tuplets=False,
+                        )
                     else:
                         abjad.Meter.rewrite_meter(
                             shard,

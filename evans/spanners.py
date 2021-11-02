@@ -218,7 +218,7 @@ def bow_angle_spanner(
         _format_leaf(leaf, leaves)
 
 
-class DurationLine:
+class DurationLine: # don't forget to force notehead shape
 
     ### CLASS VARIABLES ###
 

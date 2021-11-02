@@ -1,4 +1,5 @@
 \include "evans-articulations.ily"
+\include "evans-beam.ily"
 \include "evans-coloring.ily"
 \include "evans-functions.ily"
 \include "evans-grobs.ily"
