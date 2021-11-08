@@ -148,6 +148,7 @@ class SegmentMaker:
         transpose_from_sounding_pitch=None,
         tuplet_bracket_noteheads=True,
         with_layout=False,
+        extra_rewrite=True,
     ):
         self.abbreviations = abbreviations
         self.add_final_grand_pause = add_final_grand_pause
@@ -175,6 +176,7 @@ class SegmentMaker:
         self.transpose_from_sounding_pitch = transpose_from_sounding_pitch
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.with_layout = with_layout
+        self.extra_rewrite = extra_rewrite
 
     def __str__(self):
         return abjad.storage(self)
@@ -713,9 +715,10 @@ class SegmentMaker:
                         )
                         abjad.mutate.replace(top_level_components, temp_container[:])
 
-                SegmentMaker.rewrite_meter_without_splitting(
-                    self.score_template
-                )  # EXPERIMENTAL
+                if self.extra_rewrite is True:
+                    SegmentMaker.rewrite_meter_without_splitting(
+                        self.score_template
+                    )  # EXPERIMENTAL
 
                 for _callable in music_command.callables[1:]:
                     relevant_measures = (
@@ -1046,7 +1049,7 @@ class SegmentMaker:
                             boundary_depth=inventories[-1][0],
                             rewrite_tuplets=False,
                         )
-                    elif time_signature.denominator == 16: # experimental
+                    elif time_signature.denominator == 16:  # experimental
                         abjad.Meter.rewrite_meter(
                             shard,
                             time_signature,
@@ -1478,3 +1481,5 @@ def beautify_tuplets(target):
             tuplet.trivialize()
         if tuplet.trivial() is True:
             tuplet.hide = True
+        for rest_group in abjad.select(tuplet).rests().group_by_contiguity():
+            abjad.mutate.fuse(rest_group)  # EXPERIMENTAL

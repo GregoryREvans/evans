@@ -300,8 +300,13 @@ class Skeleton:
         self.selections = self.skeleton(string)
 
     def __call__(self, durations):
-        assert abjad.get.duration(self.selections) == sum(durations)
-        return self.selections
+        if abjad.get.duration(self.selections) == abjad.Duration(sum(durations)):
+            return self.selections
+        else:
+            message = (
+                f"sel: {abjad.get.duration(self.selections)}, dur: {sum(durations)}"
+            )
+            raise Exception(message)
 
     @staticmethod
     def skeleton(argument):

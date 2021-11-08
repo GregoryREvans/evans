@@ -3409,6 +3409,7 @@ class ScordaturaHandler(Handler):
                 c,4
                 - \abjad-dashed-line-with-hook
                 - \tweak bound-details.left.text \markup \concat { IV \hspace #0.5 }
+                - \tweak staff-padding 1
                 \startTextSpan
                 c,4
                 c,4
@@ -3427,11 +3428,13 @@ class ScordaturaHandler(Handler):
         default_pitch="c,",
         new_pitch="a,,",
         name="ScordaturaHandler",
+        padding=1,
     ):
         self.string_number = string_number
         self.default_pitch = default_pitch
         self.new_pitch = new_pitch
         self.name = name
+        self.padding = padding
 
     def __call__(self, selections):
         leaves = abjad.select(selections).leaves()
@@ -3452,6 +3455,7 @@ class ScordaturaHandler(Handler):
             left_text=abjad.Markup(self.string_number),
             style="dashed-line-with-hook",
         )
+        abjad.tweak(start_spanner).staff_padding = self.padding
         stop_spanner = abjad.StopTextSpan()
         return start_spanner, stop_spanner
 
