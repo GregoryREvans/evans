@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 import abjad
 
 from .sequence import CyclicList
@@ -79,6 +81,7 @@ class Breaks:
         for i, leaf in enumerate(leaves):
             # literal = abjad.LilyPondLiteral(r"\noBreak", format_slot="before")
             # abjad.attach(literal, leaf)
+            test_case = i + 1
             if i in self.spacing_indices:
                 space = self.spacing(r=1)[0][1]
                 spacing_string = fr"\evans-new-spacing-section #{space[0]} #{space[1]}"
@@ -87,7 +90,15 @@ class Breaks:
                 )
                 abjad.attach(spacing_literal, leaf)
             else:
-                spacing_string = fr"\evans-new-spacing-section #{self.default_spacing[0]} #{self.default_spacing[1]}"
+                if test_case in self.system_break_indices:
+                    default_frac = Fraction(
+                        self.default_spacing[0], self.default_spacing[1]
+                    )
+                    multiplier = Fraction(35, 24)
+                    new_frac = default_frac * multiplier
+                    spacing_string = fr"\evans-new-spacing-section #{new_frac.numerator} #{new_frac.denominator}"
+                else:
+                    spacing_string = fr"\evans-new-spacing-section #{self.default_spacing[0]} #{self.default_spacing[1]}"
                 spacing_literal = abjad.LilyPondLiteral(
                     spacing_string, format_slot="before"
                 )

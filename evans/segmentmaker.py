@@ -300,18 +300,18 @@ class SegmentMaker:
                         tag=abjad.Tag("PITCH"),
                         deactivate=False,
                     )
-                for leaf in abjad.select(voice).leaves(pitched=True):
-                    pitched_annotation = abjad.get.annotation(leaf, "pitched")
-                    if pitched_annotation is None:
-                        unpitch_color = abjad.LilyPondLiteral(
-                            r"\evans-not-yet-pitched-coloring"
-                        )
-                        abjad.attach(
-                            unpitch_color,
-                            leaf,
-                            tag=abjad.Tag("PITCH"),
-                            deactivate=False,
-                        )
+                # for leaf in abjad.select(voice).leaves(pitched=True): # remove?
+                #     pitched_annotation = abjad.get.annotation(leaf, "pitched")
+                #     if pitched_annotation is None:
+                #         unpitch_color = abjad.LilyPondLiteral(
+                #             r"\evans-not-yet-pitched-coloring"
+                #         )
+                #         abjad.attach(
+                #             unpitch_color,
+                #             leaf,
+                #             tag=abjad.Tag("PITCH"),
+                #             deactivate=False,
+                #         )
             if self.transpose_from_sounding_pitch is True:
                 abjad.iterpitches.transpose_from_sounding_pitch(voice)
             if handler is not None:
