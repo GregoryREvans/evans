@@ -38,6 +38,7 @@ def metric_modulation(
     rounded=None,
     font_size=None,
     leaf_scale=(0.6, 0.6),
+    raise_value=None,
 ):
     r"""
     Makes metric modulation markup.
@@ -230,39 +231,12 @@ def metric_modulation(
         mod = abjad.MetricModulation(
             left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
         )
-        mark = abjad.LilyPondLiteral(
-            [
-                r"^ \markup {",
-                size,
-                r"  \concat {",
-                f"      {str(met)[8:]}",
-                r"      \hspace #1",
-                r"      \upright [",
-                f"      {str(mod)[8:]}",
-                r"      \hspace #0.5",
-                r"      \upright ]",
-                r"  }",
-                r"}",
-            ],
-            format_slot="after",
-        )
-        return mark
-    else:
-        if rounded is True:
-            met = abjad.MetronomeMark.make_tempo_equation_markup(
-                abjad.get.duration(modulated_beat),
-                quicktions.Fraction(round(returned_speed)).limit_denominator(),
-            )
-            mod = abjad.MetricModulation(
-                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
-            )
+        if raise_value is None:
             mark = abjad.LilyPondLiteral(
                 [
                     r"^ \markup {",
                     size,
                     r"  \concat {",
-                    "       c.",
-                    r"      \hspace #1",
                     f"      {str(met)[8:]}",
                     r"      \hspace #1",
                     r"      \upright [",
@@ -275,17 +249,11 @@ def metric_modulation(
                 format_slot="after",
             )
         else:
-            met = abjad.MetronomeMark.make_tempo_equation_markup(
-                abjad.get.duration(modulated_beat),
-                quicktions.Fraction(returned_speed).limit_denominator(),
-            )
-            mod = abjad.MetricModulation(
-                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
-            )
             mark = abjad.LilyPondLiteral(
                 [
                     r"^ \markup {",
                     size,
+                    fr"  \raise #{raise_value} \with-dimensions-from \null",
                     r"  \concat {",
                     f"      {str(met)[8:]}",
                     r"      \hspace #1",
@@ -298,6 +266,98 @@ def metric_modulation(
                 ],
                 format_slot="after",
             )
+        return mark
+    else:
+        if rounded is True:
+            met = abjad.MetronomeMark.make_tempo_equation_markup(
+                abjad.get.duration(modulated_beat),
+                quicktions.Fraction(round(returned_speed)).limit_denominator(),
+            )
+            mod = abjad.MetricModulation(
+                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
+            )
+            if raise_value is None:
+                mark = abjad.LilyPondLiteral(
+                    [
+                        r"^ \markup {",
+                        size,
+                        r"  \concat {",
+                        "       c.",
+                        r"      \hspace #1",
+                        f"      {str(met)[8:]}",
+                        r"      \hspace #1",
+                        r"      \upright [",
+                        f"      {str(mod)[8:]}",
+                        r"      \hspace #0.5",
+                        r"      \upright ]",
+                        r"  }",
+                        r"}",
+                    ],
+                    format_slot="after",
+                )
+            else:
+                mark = abjad.LilyPondLiteral(
+                    [
+                        r"^ \markup {",
+                        size,
+                        fr"  \raise #{raise_value} \with-dimensions-from \null",
+                        r"  \concat {",
+                        "       c.",
+                        r"      \hspace #1",
+                        f"      {str(met)[8:]}",
+                        r"      \hspace #1",
+                        r"      \upright [",
+                        f"      {str(mod)[8:]}",
+                        r"      \hspace #0.5",
+                        r"      \upright ]",
+                        r"  }",
+                        r"}",
+                    ],
+                    format_slot="after",
+                )
+        else:
+            met = abjad.MetronomeMark.make_tempo_equation_markup(
+                abjad.get.duration(modulated_beat),
+                quicktions.Fraction(returned_speed).limit_denominator(),
+            )
+            mod = abjad.MetricModulation(
+                left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
+            )
+            if raise_value is None:
+                mark = abjad.LilyPondLiteral(
+                    [
+                        r"^ \markup {",
+                        size,
+                        r"  \concat {",
+                        f"      {str(met)[8:]}",
+                        r"      \hspace #1",
+                        r"      \upright [",
+                        f"      {str(mod)[8:]}",
+                        r"      \hspace #0.5",
+                        r"      \upright ]",
+                        r"  }",
+                        r"}",
+                    ],
+                    format_slot="after",
+                )
+            else:
+                mark = abjad.LilyPondLiteral(
+                    [
+                        r"^ \markup {",
+                        size,
+                        fr"  \raise #{raise_value} \with-dimensions-from \null",
+                        r"  \concat {",
+                        f"      {str(met)[8:]}",
+                        r"      \hspace #1",
+                        r"      \upright [",
+                        f"      {str(mod)[8:]}",
+                        r"      \hspace #0.5",
+                        r"      \upright ]",
+                        r"  }",
+                        r"}",
+                    ],
+                    format_slot="after",
+                )
         return mark
 
 
