@@ -232,7 +232,7 @@ Attach extra attachments and override score settings:
 ::
 
     >>> abjad.attach(abjad.Clef("bass"), staff[0])
-    >>> for note in abjad.select(staff).leaves():
+    >>> for note in abjad.Selection(staff).leaves():
     ...     if note.written_pitch == "c'":
     ...         abjad.attach(abjad.Clef("treble"), note)
     ...
@@ -254,7 +254,7 @@ Attach extra attachments and override score settings:
     ...     "#blue",
     ... ]
     ...
-    >>> leaf_group = abjad.select(staff).leaves().partition_by_counts([11], cyclic=True, overhang=True,)
+    >>> leaf_group = abjad.Selection(staff).leaves().partition_by_counts([11], cyclic=True, overhang=True,)
     >>> for color, leaves in zip(colors, leaf_group):
     ...     abjad.label.color_leaves(leaves, color)
     ...
@@ -267,7 +267,7 @@ Attach extra attachments and override score settings:
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
-    ...         paper_block
+    ...         paper_block,
     ...         score_block,
     ...     ],
     ... )
@@ -435,7 +435,7 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             abjad.attach(name, voice[0])
     ...             abjad.attach(abjad.TimeSignature((6, 16)), voice[0])
     ...             staff.append(voice)
-    ...         abjad.attach(m, abjad.select(staff).leaf(0))
+    ...         abjad.attach(m, abjad.Selection(staff).leaf(0))
     ...         group.append(staff)
     ...     score.append(group)
     ...     abjad.override(score).Beam.stencil = "##f"
@@ -503,7 +503,7 @@ Show file of chart scores:
         ...     staff = abjad.Staff([abjad.Note(_, (1, 16)) for _ in perm[0]])
         ...     abjad.attach(perm[1], staff[0])
         ...     for trichord in (
-        ...         abjad.select(staff)
+        ...         abjad.Selection(staff)
         ...         .leaves()
         ...         .partition_by_counts(
         ...             [3],
@@ -528,28 +528,28 @@ Show file of chart scores:
         ...     abjad.Markup(
         ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.Up,
         ...     ),
-        ...     abjad.select(group[0]).leaf(0),
+        ...     abjad.Selection(group[0]).leaf(0),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
         ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.Up,
         ...     ).parenthesize(),
-        ...     abjad.select(group[0]).leaf(3),
+        ...     abjad.Selection(group[0]).leaf(3),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
         ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.Up,
         ...     ).parenthesize(),
-        ...     abjad.select(group[0]).leaf(6),
+        ...     abjad.Selection(group[0]).leaf(6),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
         ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.Up,
         ...     ).parenthesize(),
-        ...     abjad.select(group[0]).leaf(9),
+        ...     abjad.Selection(group[0]).leaf(9),
         ... )
         ...
         >>> score.append(group)

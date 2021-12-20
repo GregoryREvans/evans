@@ -563,7 +563,7 @@ def return_vertical_moment_ties(score):
             new_moment_notes.append(note)
         if 0 < len(new_moment_notes):
             new_moment.append(
-                [_ for _ in abjad.select(new_moment_notes).logical_ties()]
+                [_ for _ in abjad.Selection(new_moment_notes).logical_ties()]
             )
             new_moments.append(new_moment)
     flat_moments = flatten(new_moments)

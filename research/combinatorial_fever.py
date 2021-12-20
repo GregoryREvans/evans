@@ -109,8 +109,8 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 rhythm_tree_container = rhythm_tree_list[0]
                 r = rhythm_tree_container(pair)
                 m = abjad.Markup(fr"\markup {pattern}", direction=abjad.Up)
-                abjad.attach(m, abjad.select(r).leaves()[0])
-                abjad.attach(time_signature, abjad.select(r).leaves()[0])
+                abjad.attach(m, abjad.Selection(r).leaves()[0])
+                abjad.attach(time_signature, abjad.Selection(r).leaves()[0])
                 print("adding parsed funnel to staff ...")
                 parsed_patterns.extend(r)
             print("adding staff to staff group ...")
@@ -118,7 +118,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
             scheme = abjad.SchemeMoment((1, 50))
             abjad.setting(score).proportional_notation_duration = scheme
             new_brackets = evans.NoteheadBracketMaker()
-            for staff in abjad.select(score).components(abjad.Staff):
+            for staff in abjad.Selection(score).components(abjad.Staff):
                 new_brackets(staff)
             abjad.override(score).TupletBracket.bracket_visibility = True
             print("rendering staff group ...")
@@ -132,9 +132,9 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                     abjad.Block(name="header"),
                 ],
             )
-            file.layout_block.items.append("indent = 0")
-            file.header_block.items.append("tagline = ##f")
-            file.header_block.items.append(f'title = "{title}"')
+            file["layout"].items.append("indent = 0")
+            file["header"].items.append("tagline = ##f")
+            file["header"].items.append(f'title = "{title}"')
             abjad.show(file)
 
 

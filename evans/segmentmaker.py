@@ -1319,7 +1319,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.Selection().leaves(grace=False),
+                selector=lambda _: abjad.Selection(_).leaves(grace=False),
             )
         else:
             continue
@@ -1353,7 +1353,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.Selection().leaves(grace=False),
+                selector=lambda _: abjad.Selection(_).leaves(grace=False),
             )
 
 

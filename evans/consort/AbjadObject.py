@@ -96,4 +96,4 @@ class AbjadObject:
 
     def _get_format_specification(self):
 
-        return abjad.FormatSpecification(client=self)
+        return abjad.FormatSpecification()

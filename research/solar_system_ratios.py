@@ -82,6 +82,6 @@ file = abjad.LilyPondFile(
         abjad.Block(name="layout"),
     ],
 )
-file.layout_block.items.append(r'\accidentalStyle "dodecaphonic"')
+file["layout"].items.append(r'\accidentalStyle "dodecaphonic"')
 
 abjad.show(file)

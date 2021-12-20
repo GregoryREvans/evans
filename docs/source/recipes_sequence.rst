@@ -61,7 +61,7 @@ First Example
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),
     ...         abjad.Block(name="layout"),
@@ -69,7 +69,7 @@ First Example
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")
-    >>> file.layout_block.items.append(r'\accidentalStyle "dodecaphonic"')
+    >>> file["layout"].items.append(r'\accidentalStyle "dodecaphonic"')
     >>> abjad.show(file)
 
 
@@ -170,7 +170,7 @@ Second Example
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),
     ...         abjad.Block(name="layout"),
@@ -178,7 +178,7 @@ Second Example
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")
-    >>> file.layout_block.items.append(r'\accidentalStyle "dodecaphonic"')
+    >>> file["layout"].items.append(r'\accidentalStyle "dodecaphonic"')
     >>> abjad.show(file)
 
 
@@ -235,7 +235,7 @@ Third Example
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),
     ...         abjad.Block(name="layout"),
@@ -243,5 +243,5 @@ Third Example
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")
-    >>> file.layout_block.items.append(r'\accidentalStyle "dodecaphonic"')
+    >>> file["layout"].items.append(r'\accidentalStyle "dodecaphonic"')
     >>> abjad.show(file)

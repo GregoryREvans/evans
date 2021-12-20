@@ -416,11 +416,10 @@ class TimespanCollection(AbjadObject):
         if timespans:
             values.append(timespans)
         names = []
-        return abjad.FormatSpecification(
-            client=self,
-            storage_format_args_values=values,
-            storage_format_keyword_names=names,
-        )
+        out = abjad.FormatSpecification()
+        out.storage_format_args_values = values
+        out.storage_format_keyword_names = names
+        return out
 
     ### PUBLIC METHODS ###
 

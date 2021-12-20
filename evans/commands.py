@@ -41,7 +41,7 @@ class Command:
             >>> command = evans.Command(
             ...     command="attach",
             ...     indicator=abjad.Markup(r"\markup *", direction="up"),
-            ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
+            ...     selector=lambda _: abjad.Selection(_).leaves(pitched=True).get([1])[0],
             ...     voice_name="staff one"
             ... )
             ...
@@ -108,7 +108,7 @@ class Command:
 
 def attach(voice_name, indicator, selector=None):
     if selector is None:
-        selector = abjad.select().leaf(0)
+        selector = lambda _: abjad.Selection(_).leaf(0)
     return Command(
         command="attach",
         indicator=indicator,
@@ -119,7 +119,7 @@ def attach(voice_name, indicator, selector=None):
 
 def detach(voice_name, indicator, selector=None):
     if selector is None:
-        selector = abjad.select().leaf(0)
+        selector = lambda _: abjad.Selection(_).leaf(0)
     return Command(
         command="detach",
         indicator=indicator,
@@ -130,7 +130,7 @@ def detach(voice_name, indicator, selector=None):
 
 def replace(voice_name, contents, selector=None):
     if selector is None:
-        selector = abjad.select().leaf(0)
+        selector = lambda _: abjad.Selection(_).leaf(0)
     return Command(
         command="replace",
         contents=contents,
@@ -141,7 +141,7 @@ def replace(voice_name, contents, selector=None):
 
 def call(voice_name, callable, selector=None):
     if selector is None:
-        selector = abjad.select().leaf(0)
+        selector = lambda _: abjad.Selection(_).leaf(0)
     return Command(
         command="call",
         callable=callable,
@@ -203,11 +203,11 @@ class MusicCommand:
         pitch_handler,
         evans.Attachment(
             abjad.Dynamic("p"),
-            abjad.select().leaf(0, pitched=True),
+            lambda _: abjad.Selection(_).leaf(0, pitched=True),
         ),
         evans.attachment(
             abjad.Markup(r"\evans-custom-markup", direction=abjad.Up),
-            abjad.select().leaf(0, pitched=True),
+            lambda _: abjad.Selection(_).leaf(0, pitched=True),
         ),
         text_span_handler,
         preprocessor=evans.Sequence().fuse((1, 2))
@@ -243,7 +243,7 @@ class MusicCommand:
 
                         def selector(selections):
                             run_ties = (
-                                abjad.select(selections)
+                                abjad.Selection(selections)
                                 .runs()
                                 .logical_ties(pitched=True)
                             )
@@ -253,7 +253,7 @@ class MusicCommand:
                             return ties_first_leaves
 
                     else:
-                        selector = abjad.select().leaf(0, pitched=True)
+                        selector = lambda _: abjad.Selection(_).leaf(0, pitched=True)
                     new_attachment = Attachment(
                         arg,
                         selector,
@@ -262,7 +262,7 @@ class MusicCommand:
                 elif callable(arg):
                     new_callable = Callable(
                         arg,
-                        abjad.select().leaves(),
+                        lambda _: abjad.Selection(_).leaves(),
                     )
                     self.callables.append(new_callable)
 

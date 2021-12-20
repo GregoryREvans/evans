@@ -65,7 +65,7 @@ class AddSpannerAnchor:
 #
 # DEMO 3#
 staff = abjad.Staff("c'4 c'4 c'4 r4 c'4 c'4 r8 c'8 c'4 r1")
-selections = abjad.select(staff[:])
+selections = abjad.Selection(staff[:])
 handler = DynamicHandler(
     dynamic_list=["f", "mp", "p", "mf", "ff"],
     flare_boolean_vector=[1, 0, 0, 1],
@@ -73,11 +73,11 @@ handler = DynamicHandler(
     forget=False,
     name="dynamic_handler_one",
 )
-for run in abjad.select(selections).runs():
-    ties = abjad.select(run).logical_ties()
+for run in abjad.Selection(selections).runs():
+    ties = abjad.Selection(run).logical_ties()
     maker = AddSpannerAnchor(leaf=ties[-1][-1], anchor_dur=abjad.Duration(1, 16))
     maker.add_spanner_anchor()
-    new_ties = ties + abjad.select([abjad.LogicalTie(items=maker.calc_anchor()[-1])])
+    new_ties = ties + abjad.Selection([abjad.LogicalTie(items=maker.calc_anchor()[-1])])
     print("NEW TIES")
     print(new_ties)
     print("TIE 0")
