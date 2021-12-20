@@ -90,52 +90,52 @@ class TimespanMaker:
             >>> print(abjad.storage(timespan_list))
             abjad.TimespanList(
                 [
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((0, 1)),
                         stop_offset=abjad.Offset((3, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 8)),
                         stop_offset=abjad.Offset((1, 1)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((11, 8)),
                         stop_offset=abjad.Offset((15, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((15, 8)),
                         stop_offset=abjad.Offset((21, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((23, 8)),
                         stop_offset=abjad.Offset((13, 4)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((13, 4)),
                         stop_offset=abjad.Offset((31, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((17, 4)),
                         stop_offset=abjad.Offset((19, 4)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((19, 4)),
                         stop_offset=abjad.Offset((11, 2)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((23, 4)),
                         stop_offset=abjad.Offset((49, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((49, 8)),
                         stop_offset=abjad.Offset((27, 4)),
                         annotation='A',
@@ -196,367 +196,367 @@ class TimespanMaker:
             >>> print(abjad.storage(timespanlist))
             abjad.TimespanList(
                 [
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((0, 1)),
                         stop_offset=abjad.Offset((3, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 8)),
                         stop_offset=abjad.Offset((1, 2)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 4)),
                         stop_offset=abjad.Offset((1, 1)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 1)),
                         stop_offset=abjad.Offset((11, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 2)),
                         stop_offset=abjad.Offset((7, 4)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((2, 1)),
                         stop_offset=abjad.Offset((19, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((19, 8)),
                         stop_offset=abjad.Offset((5, 2)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((11, 4)),
                         stop_offset=abjad.Offset((3, 1)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 1)),
                         stop_offset=abjad.Offset((27, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 2)),
                         stop_offset=abjad.Offset((15, 4)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((4, 1)),
                         stop_offset=abjad.Offset((35, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((35, 8)),
                         stop_offset=abjad.Offset((9, 2)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((19, 4)),
                         stop_offset=abjad.Offset((5, 1)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 1)),
                         stop_offset=abjad.Offset((43, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((11, 2)),
                         stop_offset=abjad.Offset((23, 4)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((6, 1)),
                         stop_offset=abjad.Offset((51, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((51, 8)),
                         stop_offset=abjad.Offset((13, 2)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((27, 4)),
                         stop_offset=abjad.Offset((7, 1)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 1)),
                         stop_offset=abjad.Offset((59, 8)),
                         annotation='A',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 8)),
                         stop_offset=abjad.Offset((5, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 8)),
                         stop_offset=abjad.Offset((1, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((9, 8)),
                         stop_offset=abjad.Offset((11, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((13, 8)),
                         stop_offset=abjad.Offset((2, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((2, 1)),
                         stop_offset=abjad.Offset((17, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((19, 8)),
                         stop_offset=abjad.Offset((21, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((21, 8)),
                         stop_offset=abjad.Offset((3, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((25, 8)),
                         stop_offset=abjad.Offset((27, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((29, 8)),
                         stop_offset=abjad.Offset((4, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((4, 1)),
                         stop_offset=abjad.Offset((33, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((35, 8)),
                         stop_offset=abjad.Offset((37, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((37, 8)),
                         stop_offset=abjad.Offset((5, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((41, 8)),
                         stop_offset=abjad.Offset((43, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((45, 8)),
                         stop_offset=abjad.Offset((6, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((6, 1)),
                         stop_offset=abjad.Offset((49, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((51, 8)),
                         stop_offset=abjad.Offset((53, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((53, 8)),
                         stop_offset=abjad.Offset((7, 1)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((57, 8)),
                         stop_offset=abjad.Offset((59, 8)),
                         annotation='B',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 2)),
                         stop_offset=abjad.Offset((3, 4)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 1)),
                         stop_offset=abjad.Offset((11, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((11, 8)),
                         stop_offset=abjad.Offset((3, 2)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 4)),
                         stop_offset=abjad.Offset((2, 1)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((2, 1)),
                         stop_offset=abjad.Offset((19, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 2)),
                         stop_offset=abjad.Offset((11, 4)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 1)),
                         stop_offset=abjad.Offset((27, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((27, 8)),
                         stop_offset=abjad.Offset((7, 2)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((15, 4)),
                         stop_offset=abjad.Offset((4, 1)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((4, 1)),
                         stop_offset=abjad.Offset((35, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((9, 2)),
                         stop_offset=abjad.Offset((19, 4)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 1)),
                         stop_offset=abjad.Offset((43, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((43, 8)),
                         stop_offset=abjad.Offset((11, 2)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((23, 4)),
                         stop_offset=abjad.Offset((6, 1)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((6, 1)),
                         stop_offset=abjad.Offset((51, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((13, 2)),
                         stop_offset=abjad.Offset((27, 4)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 1)),
                         stop_offset=abjad.Offset((59, 8)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((59, 8)),
                         stop_offset=abjad.Offset((15, 2)),
                         annotation='C',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 4)),
                         stop_offset=abjad.Offset((1, 2)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 2)),
                         stop_offset=abjad.Offset((7, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((1, 1)),
                         stop_offset=abjad.Offset((5, 4)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 2)),
                         stop_offset=abjad.Offset((15, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((15, 8)),
                         stop_offset=abjad.Offset((2, 1)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((9, 4)),
                         stop_offset=abjad.Offset((5, 2)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 2)),
                         stop_offset=abjad.Offset((23, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((3, 1)),
                         stop_offset=abjad.Offset((13, 4)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 2)),
                         stop_offset=abjad.Offset((31, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((31, 8)),
                         stop_offset=abjad.Offset((4, 1)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((17, 4)),
                         stop_offset=abjad.Offset((9, 2)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((9, 2)),
                         stop_offset=abjad.Offset((39, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((5, 1)),
                         stop_offset=abjad.Offset((21, 4)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((11, 2)),
                         stop_offset=abjad.Offset((47, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((47, 8)),
                         stop_offset=abjad.Offset((6, 1)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((25, 4)),
                         stop_offset=abjad.Offset((13, 2)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((13, 2)),
                         stop_offset=abjad.Offset((55, 8)),
                         annotation='D',
                         ),
-                    abjad.AnnotatedTimespan(
+                    abjad.Timespan(
                         start_offset=abjad.Offset((7, 1)),
                         stop_offset=abjad.Offset((29, 4)),
                         annotation='D',
@@ -596,7 +596,7 @@ class TimespanMaker:
             if max_duration is not None:
                 stop = (max_duration + start) if count > max_duration else stop
             timespan_list.append(
-                abjad.AnnotatedTimespan(
+                abjad.Timespan(
                     start_offset=(start, denominator),
                     stop_offset=(stop, denominator),
                     annotation=voice_name,
@@ -674,7 +674,7 @@ def make_showable_list(timespan_lists):
                     annotation=str(i + 1),
                 )
             else:
-                new_span = abjad.AnnotatedTimespan(
+                new_span = abjad.Timespan(
                     start_offset=timespan.start_offset,
                     stop_offset=timespan.stop_offset,
                     annotation=str(i + 1),
@@ -738,7 +738,7 @@ def talea_timespans(talea, advancement=0):
                 start_offset=start, stop_offset=stop, annotation=None
             )
         else:
-            timespan = abjad.AnnotatedTimespan(
+            timespan = abjad.Timespan(
                 start_offset=start, stop_offset=stop, annotation=None
             )
         timespans.append(timespan)
