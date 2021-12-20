@@ -1,7 +1,7 @@
 import abjad
 
 ts_list = abjad.TimespanList()
-spans = [abjad.AnnotatedTimespan(0, 2, "hello"), abjad.AnnotatedTimespan(0, 2, "world")]
+spans = [abjad.Timespan(0, 2, "hello"), abjad.Timespan(0, 2, "world")]
 for _ in spans:
     ts_list.append(_)
 location = [abjad.Offset(1)]

@@ -356,22 +356,18 @@ Define tone row and row permutations:
     >>> labels = [
     ...     abjad.Markup(
     ...         r"\markup P",
-    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup I",
-    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup R",
-    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup IR",
-    ...         literal=True,
     ...         direction=abjad.Up,
     ...     ),
     ... ]
@@ -412,17 +408,16 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             .transpose(hexachords[1][0]),
     ...         ]
     ...         names = [
-    ...             abjad.Markup(r"\markup \box α", literal=True, direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box β", literal=True, direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box γ", literal=True, direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box δ", literal=True, direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box α", direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box β", direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box γ", direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box δ", direction=abjad.Up),
     ...         ]
     ...         for set, name in zip(sets, names):
     ...             voice = abjad.Voice([abjad.Note(_, (1, 16)) for _ in set])
     ...             for leaf in abjad.iterate(voice).leaves():
     ...                 mark = abjad.Markup(
     ...                     f"\markup {abjad.NumberedPitchClass(leaf.written_pitch)}",
-    ...                     literal=True,
     ...                     direction=abjad.Up,
     ...                 )
     ...                 abjad.tweak(mark).staff_padding = "3"
@@ -472,19 +467,19 @@ Show file of chart scores:
         >>> perms = [
         ...     (
         ...         row,
-        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box P", literal=True)),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box P")),
         ...     ),
         ...     (
         ...         row.retrograde(),
-        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box R", literal=True)),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box R")),
         ...     ),
         ...     (
         ...         row.invert(),
-        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box I", literal=True)),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box I")),
         ...     ),
         ...     (
         ...         row.invert().retrograde(),
-        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box RI", literal=True)),
+        ...         abjad.StartMarkup(abjad.Markup(r"\markup \box RI")),
         ...     ),
         ... ]
         ...
@@ -509,7 +504,7 @@ Show file of chart scores:
         ...     ):
         ...         pc_set = abjad.PitchClassSet([_.written_pitch for _ in trichord])
         ...         set_class = abjad.SetClass.from_pitch_class_set(pc_set)
-        ...         abjad.attach(abjad.Markup(f"\markup {set_class}", literal=True), trichord[0])
+        ...         abjad.attach(abjad.Markup(f"\markup {set_class}"), trichord[0])
         ...         abjad.Label(trichord).color_leaves(cyc_tuple[counter])
         ...         counter += 1
         ...         abjad.override(staff).text_script.staff_padding = 4
@@ -522,28 +517,28 @@ Show file of chart scores:
 
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.Up, literal=True,
+        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.Up,
         ...     ),
         ...     abjad.select(group[0]).leaf(0),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.Up, literal=True,
+        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.Up,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(3),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.Up, literal=True,
+        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.Up,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(6),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.Up, literal=True,
+        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.Up,
         ...     ).parenthesize(),
         ...     abjad.select(group[0]).leaf(9),
         ... )

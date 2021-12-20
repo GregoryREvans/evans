@@ -8,7 +8,7 @@ import subprocess
 import typing
 
 import sphinx
-from abjad import AnnotatedTimespan, TimespanList
+from abjad import Timespan, TimespanList
 from docutils.nodes import (
     Element,
     FixedTextElement,
@@ -267,7 +267,7 @@ class LilyPondExtension(Extension):
         else:
             illustration = illustrate(self.illustrable, **self.keywords)
         if isinstance(self.illustrable, TimespanList):
-            if isinstance(self.illustrable[0], AnnotatedTimespan):
+            if isinstance(self.illustrable[0], Timespan):
                 illustration = illustrate(self.illustrable, scale=0.5, key="annotation")
             else:
                 illustration = illustrate(self.illustrable, scale=0.5)

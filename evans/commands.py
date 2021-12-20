@@ -40,7 +40,7 @@ class Command:
             >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])
             >>> command = evans.Command(
             ...     command="attach",
-            ...     indicator=abjad.Markup(r"\markup *", direction="up", literal=True),
+            ...     indicator=abjad.Markup(r"\markup *", direction="up"),
             ...     selector=abjad.select().leaves(pitched=True).get([1])[0],
             ...     voice_name="staff one"
             ... )
@@ -203,7 +203,7 @@ class MusicCommand:
             abjad.select().leaf(0, pitched=True),
         ),
         evans.attachment(
-            abjad.Markup(r"\evans-custom-markup", literal=True, direction=abjad.Up),
+            abjad.Markup(r"\evans-custom-markup", direction=abjad.Up),
             abjad.select().leaf(0, pitched=True),
         ),
         text_span_handler,

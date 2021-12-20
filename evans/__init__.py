@@ -112,7 +112,7 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import BowAnglePoint, DurationLine, bow_angle_spanner
+from .spanners import DurationLine
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -136,7 +136,6 @@ __all__ = [
     "BendHandler",
     "BisbigliandoHandler",
     "BowAngleHandler",
-    "BowAnglePoint",
     "Breaks",
     "Callable",
     "ClefHandler",
@@ -196,7 +195,6 @@ __all__ = [
     "attach",
     "beam_meter",
     "beautify_tuplets",
-    "bow_angle_spanner",
     "calculate_metric_modulation",
     "calculate_tempo_modulated_duration",
     "call",

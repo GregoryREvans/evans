@@ -18,7 +18,7 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=True)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up, literal=True)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -32,7 +32,7 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=False)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up, literal=True)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -346,9 +346,7 @@ def return_cent_markup(
         cent_string = f"{remainder}"
     else:
         cent_string = f"+{remainder}"
-    mark = abjad.Markup(
-        fr"\markup \center-align {cent_string}", direction=abjad.Up, literal=True
-    )
+    mark = abjad.Markup(fr"\markup \center-align {cent_string}", direction=abjad.Up)
     return mark
 
 
@@ -408,7 +406,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up, literal=True)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up)
         ...     abjad.attach(markup, tie[0])
         ...
         >>> handler(vm_ties)
@@ -487,7 +485,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up, literal=True)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up)
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
         ...

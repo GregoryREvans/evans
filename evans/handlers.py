@@ -1238,13 +1238,11 @@ class DynamicHandler(Handler):
                                     mark_text = abjad.Markup(
                                         fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
                                         direction=abjad.Down,
-                                        literal=True,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
                                         direction=abjad.Down,
-                                        literal=True,
                                     )
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
                 else:
@@ -1323,13 +1321,11 @@ class DynamicHandler(Handler):
                                     mark_text = abjad.Markup(
                                         fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
                                         direction=abjad.Down,
-                                        literal=True,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         fr"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
                                         direction=abjad.Down,
-                                        literal=True,
                                     )
                                 abjad.attach(mark_text, abjad.select(run).leaf(0))
             else:
@@ -1649,7 +1645,6 @@ class GettatoHandler(Handler):
                     mark = abjad.Markup(
                         fr"\markup {{ \hspace #1 throw ({repetitions})}}",
                         direction=abjad.Up,
-                        literal=True,
                     )
                     abjad.attach(mark, sel[0])
                 elif a == "drop":
@@ -1661,7 +1656,6 @@ class GettatoHandler(Handler):
                     mark = abjad.Markup(
                         fr"\markup {{ \hspace #1 drop ({repetitions})}}",
                         direction=abjad.Up,
-                        literal=True,
                     )
                     abjad.attach(mark, sel[0])
                 else:
@@ -3198,12 +3192,10 @@ class PitchHandler(Handler):
                                 marks_strings += fr"{marks_string.contents[0][24:-1]}"
                             column = abjad.Markup(
                                 fr"\center-column {{ {marks_strings} }}",
-                                literal=True,
                             )
                             m = abjad.Markup(
                                 fr"\markup \center-align {column}",
                                 direction=abjad.Up,
-                                literal=True,
                             )
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf)
@@ -3868,7 +3860,7 @@ class TextSpanHandler(Handler):
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"\upright {positions(r=1)[0]}", literal=True
+                        fr"\upright {positions(r=1)[0]}",
                     ),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
@@ -3882,7 +3874,7 @@ class TextSpanHandler(Handler):
             else:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        fr"\upright {positions(r=1)[0]}", literal=True
+                        fr"\upright {positions(r=1)[0]}",
                     ),
                     style=style + "-with-arrow",
                     command=r"\startTextSpan" + span_command,
@@ -3891,7 +3883,7 @@ class TextSpanHandler(Handler):
                 if self.hooks is True:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            rf"\upright {positions(r=1)[0]}", literal=True
+                            rf"\upright {positions(r=1)[0]}",
                         ),
                         style=style + "-with-hook",
                         command=r"\startTextSpan" + span_command,
@@ -3900,7 +3892,7 @@ class TextSpanHandler(Handler):
                 else:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            fr"\upright {positions(r=1)[0]}", literal=True
+                            fr"\upright {positions(r=1)[0]}",
                         ),
                         style="invisible-line",
                         command=r"\startTextSpan" + span_command,
@@ -3954,7 +3946,7 @@ class TextSpanHandler(Handler):
                     ] = fr"""\center-column {{ \upright \center-align \vcenter {start_string} }}"""
             start_indicators = [
                 abjad.StartTextSpan(
-                    left_text=abjad.Markup(f"{start_string}", literal=True),
+                    left_text=abjad.Markup(f"{start_string}"),
                     style=fr"{style}-with-arrow",
                     command=r"\startTextSpan" + span_command,
                     right_padding=1.4,
@@ -3966,7 +3958,6 @@ class TextSpanHandler(Handler):
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
                         fr"""\center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
-                        literal=True,
                     ),
                     style=r"invisible-line",
                     command=r"\startTextSpan" + span_command,
@@ -3976,7 +3967,6 @@ class TextSpanHandler(Handler):
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
                         fr"""\center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
-                        literal=True,
                     ),
                     style=r"invisible-line",
                     command=r"\startTextSpan" + span_command,
@@ -4009,7 +3999,7 @@ class TextSpanHandler(Handler):
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
-                left_text=abjad.Markup(fr"\upright {start_string}", literal=True),
+                left_text=abjad.Markup(fr"\upright {start_string}"),
                 style=fr"{style}-with-hook",
                 command=r"\startTextSpan" + span_command,
                 right_padding=3,

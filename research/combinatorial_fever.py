@@ -108,9 +108,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 rhythm_tree_list = parser(pattern)
                 rhythm_tree_container = rhythm_tree_list[0]
                 r = rhythm_tree_container(pair)
-                m = abjad.Markup(
-                    fr"\markup {pattern}", direction=abjad.Up, literal=True
-                )
+                m = abjad.Markup(fr"\markup {pattern}", direction=abjad.Up)
                 abjad.attach(m, abjad.select(r).leaves()[0])
                 abjad.attach(time_signature, abjad.select(r).leaves()[0])
                 print("adding parsed funnel to staff ...")

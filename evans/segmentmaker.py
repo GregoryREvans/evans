@@ -197,8 +197,7 @@ class SegmentMaker:
             abbreviations = []
             abb = self.abbreviations
             mark_abbreviations = [
-                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}", literal=True)
-                for _ in abb
+                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
             ]
             for x in mark_abbreviations:
                 abbreviations.append(abjad.MarginMarkup(markup=x))
@@ -208,8 +207,7 @@ class SegmentMaker:
             names = []
             nm = self.names
             mark_names = [
-                abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}", literal=True)
-                for _ in nm
+                abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
             ]
             for x in mark_names:
                 names.append(abjad.StartMarkup(markup=x))
@@ -226,9 +224,7 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(
-                fr"\markup \bold {{ {self.rehearsal_mark} }}", literal=True
-            )
+            markup=abjad.Markup(fr"\markup \bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate(
@@ -340,7 +336,6 @@ class SegmentMaker:
             markup = abjad.Markup(
                 rf"""\markup \center-align \musicglyph #"{self.fermata}" """,
                 direction=abjad.Up,
-                literal=True,
             )
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
@@ -1255,9 +1250,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=["\#(set-default-paper-size \"a4\" \'letter)", r"#(set-global-staff-size 16)", "\\include \'abjad.ily\'", score],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -1358,13 +1351,13 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 def annotate_leaves(score, prototype=abjad.Leaf):
     for voice in abjad.select(score).components(abjad.Voice):
         if prototype is not None:
-            abjad.Label(voice).with_indices(prototype=prototype)
+            abjad.label.with_indices(voice, prototype=prototype)
         else:
-            abjad.Label(voice).with_indices()
+            abjad.label.with_indices(voice)
 
 
 def annotate_time(context):
-    abjad.Label(context).with_start_offsets(clock_time=True)
+    abjad.label.with_start_offsets(context, clock_time=True)
 
 
 def make_fermata_measure(selection):
