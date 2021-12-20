@@ -108,7 +108,10 @@ class Command:
 
 def attach(voice_name, indicator, selector=None):
     if selector is None:
-        selector = lambda _: abjad.Selection(_).leaf(0)
+
+        def selector(_):
+            return abjad.Selection(_).leaf(0)
+
     return Command(
         command="attach",
         indicator=indicator,
@@ -119,7 +122,10 @@ def attach(voice_name, indicator, selector=None):
 
 def detach(voice_name, indicator, selector=None):
     if selector is None:
-        selector = lambda _: abjad.Selection(_).leaf(0)
+
+        def selector(_):
+            return abjad.Selection(_).leaf(0)
+
     return Command(
         command="detach",
         indicator=indicator,
@@ -130,7 +136,10 @@ def detach(voice_name, indicator, selector=None):
 
 def replace(voice_name, contents, selector=None):
     if selector is None:
-        selector = lambda _: abjad.Selection(_).leaf(0)
+
+        def selector(_):
+            return abjad.Selection(_).leaf(0)
+
     return Command(
         command="replace",
         contents=contents,
@@ -141,7 +150,10 @@ def replace(voice_name, contents, selector=None):
 
 def call(voice_name, callable, selector=None):
     if selector is None:
-        selector = lambda _: abjad.Selection(_).leaf(0)
+
+        def selector(_):
+            return abjad.Selection(_).leaf(0)
+
     return Command(
         command="call",
         callable=callable,
@@ -253,7 +265,10 @@ class MusicCommand:
                             return ties_first_leaves
 
                     else:
-                        selector = lambda _: abjad.Selection(_).leaf(0, pitched=True)
+
+                        def selector(_):
+                            return abjad.Selection(_).leaf(0, pitched=True)
+
                     new_attachment = Attachment(
                         arg,
                         selector,
