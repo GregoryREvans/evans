@@ -77,5 +77,5 @@ for n in range(2, 13):
     abjad.attach(sig, first_leaf)
     abjad.persist.as_ly(
         score,
-        f"/Users/evansdsg2/evans/research/pitch_patterns/divisions_of_{n}.ly",
+        f"/Users/gregoryevans/evans/research/pitch_patterns/divisions_of_{n}.ly",
     )

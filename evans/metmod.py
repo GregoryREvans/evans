@@ -58,11 +58,12 @@ def metric_modulation(
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -100,11 +101,12 @@ def metric_modulation(
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -142,11 +144,12 @@ def metric_modulation(
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -184,11 +187,12 @@ def metric_modulation(
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 

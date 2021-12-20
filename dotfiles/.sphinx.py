@@ -8,7 +8,7 @@ import subprocess
 import typing
 
 import sphinx
-from abjad import Timespan, TimespanList
+from abjad import TimespanList
 from docutils.nodes import (
     Element,
     FixedTextElement,
@@ -267,7 +267,7 @@ class LilyPondExtension(Extension):
         else:
             illustration = illustrate(self.illustrable, **self.keywords)
         if isinstance(self.illustrable, TimespanList):
-            if isinstance(self.illustrable[0], Timespan):
+            if self.illustrable[0].annotation is not None:
                 illustration = illustrate(self.illustrable, scale=0.5, key="annotation")
             else:
                 illustration = illustrate(self.illustrable, scale=0.5)
@@ -276,7 +276,6 @@ class LilyPondExtension(Extension):
             illustration.score_block.items.append(block)
         if illustration.header_block:
             if getattr(illustration.header_block, "tagline") is False:
-                # default.ily stylesheet already sets tagline = ##f
                 delattr(illustration.header_block, "tagline")
             if illustration.header_block.empty():
                 illustration.items.remove(illustration.header_block)
@@ -286,7 +285,7 @@ class LilyPondExtension(Extension):
             illustration.items.remove(illustration.paper_block)
         token = LilyPondVersionToken("2.19.83")
         illustration._lilypond_version_token = token
-        stylesheet = self.stylesheet or "default.ily"
+        stylesheet = self.stylesheet or "abjad.ily"
         if self.no_stylesheet:
             stylesheet = None
         if stylesheet and not illustration.includes:

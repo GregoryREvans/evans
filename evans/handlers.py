@@ -48,9 +48,12 @@ class ArticulationHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -131,7 +134,7 @@ class ArticulationHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("count", self._cyc_articulations.state()),
                 ("vector_count", self.articulation_boolean_vector.state()),
@@ -157,9 +160,12 @@ class BendHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -219,7 +225,7 @@ class BendHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("bend_count", self.bend_amounts.state()),
                 ("vector_count", self.boolean_vector.state()),
@@ -256,9 +262,12 @@ class BisbigliandoHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -397,7 +406,7 @@ class BisbigliandoHandler(Handler):
             self._treat_tie(value, tie)
 
     def state(self):
-        state_dict = abjad.OrderedDict()
+        state_dict = dict()
         state_dict["boolean_vector_count"] = self.boolean_vector.count
         state_dict["fingering_list_count"] = self.fingering_list.count
         return state_dict
@@ -416,13 +425,14 @@ class BowAngleHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "abjad.ily",
-        ...         "/Users/evansdsg2/evans/lilypond/evans-markups.ily",
-        ...         "/Users/evansdsg2/evans/lilypond/evans-spanners.ily",
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/evans/lilypond/evans-markups.ily\'",
+        ...         "\\include \'Users/gregoryevans/evans/lilypond/evans-spanners.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -551,9 +561,12 @@ class ClefHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -858,9 +871,12 @@ class CompositeHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -913,7 +929,7 @@ class CompositeHandler(Handler):
         return self.rhythm_handler.return_state()
 
     def state(self):
-        state_dict = abjad.OrderedDict()
+        state_dict = dict()
         for _ in self.attachment_handlers:
             state_dict[_.name] = _.state()
         return state_dict
@@ -947,9 +963,12 @@ class DynamicHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -1376,7 +1395,7 @@ class DynamicHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("count_1", self._cyc_dynamics.state()),
                 ("count_2", self._cyc_flare_boolean_vector.state()),
@@ -1403,9 +1422,12 @@ class GettatoHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -1673,7 +1695,7 @@ class GettatoHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("attack_count", self.attacks.state()),
                 ("action_count", self.actions.state()),
@@ -1700,9 +1722,12 @@ class GlissandoHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -1845,7 +1870,7 @@ class GlissandoHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict([("count", self.boolean_vector.state())])
+        return dict([("count", self.boolean_vector.state())])
 
 
 class GraceHandler(Handler):
@@ -1865,9 +1890,12 @@ class GraceHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -2010,7 +2038,7 @@ class GraceHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("vector_count", self._cyc_boolean_vector.state()),
                 ("gesture_count", self._cyc_gesture_lengths.state()),
@@ -2059,9 +2087,12 @@ class IntermittentVoiceHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2194,9 +2225,12 @@ class NoteheadHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2302,7 +2336,7 @@ class NoteheadHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("count", self._cyc_noteheads.state()),
                 ("head_vector_count", self.head_boolean_vector.state()),
@@ -2385,9 +2419,12 @@ class OnBeatGraceHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2508,7 +2545,7 @@ class OnBeatGraceHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("attack_count", self.attacks.state()),
                 ("vector_count", self.boolean_vector.state()),
@@ -2534,9 +2571,12 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2564,9 +2604,12 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2596,9 +2639,12 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2629,9 +2675,12 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -2659,9 +2708,13 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2693,9 +2746,13 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2740,9 +2797,13 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2785,9 +2846,13 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2842,9 +2907,13 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -2922,9 +2991,14 @@ class PitchHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score, abjad.Block(name="layout")],
-        ...     includes=["ekmelos-ji-accidental-markups.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
+        ...         score,
+        ...         abjad.Block(name="layout"),
+        ...     ],
         ... )
         >>> style = '"dodecaphonic"'
         >>> file.layout_block.items.append(fr"\accidentalStyle {style}")
@@ -3073,15 +3147,15 @@ class PitchHandler(Handler):
         if self.as_ratios is True:
             self.apply_all = True
         leaf_maker = abjad.LeafMaker()
-        old_ties = [tie for tie in abjad.iterate(selections).logical_ties(pitched=True)]
+        old_ties = [tie for tie in abjad.iterate.logical_ties(selections, pitched=True)]
         if len(old_ties) > 0:
             collect = self._collect_pitches_durations_leaves(old_ties)
             pitches, durations, old_leaves = collect
-            microtonal_indices_to_pitch = abjad.OrderedDict()
+            microtonal_indices_to_pitch = dict()
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
                     _.sort()
-                    nested_indices_to_pitch = abjad.OrderedDict()
+                    nested_indices_to_pitch = dict()
                     for i_, sub_ in enumerate(_):
                         if self.apply_all is False:
                             if isinstance(sub_, str):
@@ -3128,7 +3202,7 @@ class PitchHandler(Handler):
                     zip(new_leaves, microtonal_indices_to_pitch.values())
                 ):
                     leaf, pitch = pair
-                    if isinstance(pitch, abjad.OrderedDict):
+                    if isinstance(pitch, dict):
                         replacement_chord = abjad.Chord()
                         replacement_chord.written_duration = leaf.written_duration
                         replacement_chord.note_heads = abjad.NoteHeadList(
@@ -3202,7 +3276,7 @@ class PitchHandler(Handler):
                     else:
                         if self.as_ratios is False:
                             temp = microtonal_indices_to_pitch[index]
-                            if isinstance(temp, abjad.OrderedDict):
+                            if isinstance(temp, dict):
                                 temp = microtonal_indices_to_pitch[index]["1"]
                             microtones.apply_alteration(
                                 leaf.note_head,
@@ -3211,7 +3285,7 @@ class PitchHandler(Handler):
                             )
                         else:
                             temp = microtonal_indices_to_pitch[index]
-                            if isinstance(temp, abjad.OrderedDict):
+                            if isinstance(temp, dict):
                                 temp = microtonal_indices_to_pitch[index]["1"]
                             factors = []
                             for _ in microtones.ji._prime_factors(
@@ -3279,7 +3353,7 @@ class PitchHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("pitch_count", self._cyc_pitches.state()),
                 ("chord_boolean_count", self._cyc_chord_boolean_vector.state()),
@@ -3313,9 +3387,12 @@ class RhythmHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -3372,7 +3449,7 @@ class RhythmHandler(Handler):
         return self.name
 
     def return_state(self):
-        return abjad.OrderedDict([("state", self.rmaker.state)])
+        return dict([("state", self.rmaker.state)])
 
 
 class ScordaturaHandler(Handler):
@@ -3387,8 +3464,8 @@ class ScordaturaHandler(Handler):
         >>> handler(staff[1:-1])
         >>> block = abjad.Block(name="score")
         >>> block.items.append(staff)
-        >>> path = "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"
-        >>> file = abjad.LilyPondFile(items=[block], includes=[path])
+        >>> path = "/Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily"
+        >>> file = abjad.LilyPondFile(items=[f"\\include {path}", block])
         >>> abjad.show(file) # doctest: +SKIP
 
         .. docs::
@@ -3472,9 +3549,12 @@ class SlurHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -3536,7 +3616,7 @@ class SlurHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict([("count", self.boolean_vector.state())])
+        return dict([("count", self.boolean_vector.state())])
 
 
 class TempoSpannerHandler(Handler):
@@ -3558,12 +3638,13 @@ class TempoSpannerHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=[
-        ...         "abjad.ily",
-        ...         "/Users/evansdsg2/evans/lilypond/evans-spanners.ily",
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\include \'Users/gregoryevans/evans/lilypond/evans-spanners.ily\'",
+        ...         score,
         ...     ],
-        ...     global_staff_size=16,
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -3664,7 +3745,7 @@ class TempoSpannerHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict([("count", self.boolean_vector.state())])
+        return dict([("count", self.boolean_vector.state())])
 
 
 class TextSpanHandler(Handler):
@@ -3685,9 +3766,12 @@ class TextSpanHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -4020,7 +4104,7 @@ class TextSpanHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict(
+        return dict(
             [
                 ("count_1", self._cyc_span_one_positions.state()),
                 ("count_2", self._cyc_span_two_positions.state()),
@@ -4068,9 +4152,12 @@ class TrillHandler(Handler):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -4123,8 +4210,7 @@ class TrillHandler(Handler):
         for tie, bool in zip(ties, vector(r=len(ties))):
             if bool == 1:
                 if all(
-                    isinstance(leaf, abjad.Chord)
-                    for leaf in abjad.iterate(tie).leaves()
+                    isinstance(leaf, abjad.Chord) for leaf in abjad.iterate.leaves(tie)
                 ):
                     last_leaf = tie[-1]
                     next_leaf = abjad.get.leaf(last_leaf, 1)
@@ -4162,4 +4248,4 @@ class TrillHandler(Handler):
         return self.name
 
     def state(self):
-        return abjad.OrderedDict([("count", self.boolean_vector.state())])
+        return dict([("count", self.boolean_vector.state())])

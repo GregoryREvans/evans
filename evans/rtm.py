@@ -142,9 +142,12 @@ def nested_list_to_rtm(nested_list):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -204,9 +207,12 @@ def rotate_tree(rtm_string, n=1):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -272,9 +278,12 @@ def rotate_tree(rtm_string, n=1):
     >>> moment = "#(ly:make-moment 1 25)"
     >>> abjad.setting(score).proportional_notation_duration = moment
     >>> file = abjad.LilyPondFile(
-    ...     items=[score],
-    ...     includes=["abjad.ily"],
-    ...     global_staff_size=16,
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         score,
+    ...     ],
     ... )
     ...
     >>> abjad.show(file) # doctest: +SKIP
@@ -430,9 +439,12 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -525,9 +537,12 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
             >>> moment = "#(ly:make-moment 1 25)"
             >>> abjad.setting(score).proportional_notation_duration = moment
             >>> file = abjad.LilyPondFile(
-            ...     items=[score],
-            ...     includes=["abjad.ily"],
-            ...     global_staff_size=16,
+            ...     items=[
+            ...         "#(set-default-paper-size \"a4\" \'portrait)",
+            ...         r"#(set-global-staff-size 16)",
+            ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+            ...         score,
+            ...     ],
             ... )
             ...
             >>> abjad.show(file) # doctest: +SKIP
@@ -594,9 +609,12 @@ class RTMMaker(rmakers.RhythmMaker):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP

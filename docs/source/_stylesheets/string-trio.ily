@@ -2,7 +2,7 @@
 
 #(set-global-staff-size 16)
 
-\include "/Users/evansdsg2/evans/docs/source/_stylesheets/default.ily"
+\include "/Users/gregoryevans/evans/docs/source/_stylesheets/abjad.ily"
 
 \paper {
     print-first-page-number = ##f

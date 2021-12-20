@@ -74,12 +74,12 @@ abjad.setting(score).proportional_notation_duration = moment
 
 file = abjad.LilyPondFile(
     items=[
+        '#(set-default-paper-size "a4" \'letter)',
+        r"#(set-global-staff-size 16)",
+        "\\include 'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily'",
+        "\\include '/Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily'",
         score,
         abjad.Block(name="layout"),
-    ],
-    includes=[
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily",
-        "/Users/evansdsg2/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily",
     ],
 )
 file.layout_block.items.append(r'\accidentalStyle "dodecaphonic"')

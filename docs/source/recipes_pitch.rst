@@ -77,7 +77,7 @@ Create and override staff:
     >>> row = abjad.TwelveToneRow(intersection_1 + intersection_2)
     >>> staff = abjad.Staff([abjad.Note(_, (1, 8)) for _ in row])
     >>> abjad.attach(abjad.TimeSignature((6, 8)), staff[0])
-    >>> abjad.Label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
+    >>> abjad.label.with_intervals(staff, prototype=abjad.NumberedIntervalClass)
     >>> abjad.override(staff).Beam.stencil = "##f"
     >>> abjad.override(staff).Flag.stencil = "##f"
     >>> abjad.override(staff).Stem.stencil = "##f"
@@ -134,7 +134,7 @@ Iterate over hexachords, combining with hexachord inversion transposed six semit
     ...     abjad.attach(abjad.Clef("bass"), staff[0])
     ...     abjad.attach(abjad.Clef("treble"), staff[4])
     ...     abjad.ottava(staff[8:])
-    ...     abjad.Label(staff).with_intervals(prototype=abjad.NumberedIntervalClass)
+    ...     abjad.label.with_intervals(staff, prototype=abjad.NumberedIntervalClass)
     ...     abjad.override(staff).text_script.staff_padding = 7
     ...     group.append(staff)
     ...
@@ -150,19 +150,23 @@ Add staff group to score and override settings:
     >>> abjad.override(score).TimeSignature.stencil = "##f"
     >>> abjad.override(score).StaffGrouper.staff_staff_spacing = "#'((basic-distance . 20) (minimum-distance . 20) (padding . 2))"
     >>> abjad.setting(score).proportional_notation_duration = "#(ly:make-moment 1 45)"
-    >>> abjad.Label(group[0][:6]).color_leaves("#red")
-    >>> abjad.Label(group[0][6:]).color_leaves("#blue")
-    >>> abjad.Label(group[1][:6]).color_leaves("#blue")
-    >>> abjad.Label(group[1][6:]).color_leaves("#red")
-    >>> abjad.Label(group[2][:6]).color_leaves("#blue")
-    >>> abjad.Label(group[2][6:]).color_leaves("#red")
-    >>> abjad.Label(group[3][:6]).color_leaves("#red")
-    >>> abjad.Label(group[3][6:]).color_leaves("#blue")
+    >>> abjad.label.color_leaves(group[0][:6], "#red")
+    >>> abjad.label.color_leaves(group[0][6:], "#blue")
+    >>> abjad.label.color_leaves(group[1][:6], "#blue")
+    >>> abjad.label.color_leaves(group[1][6:], "#red")
+    >>> abjad.label.color_leaves(group[2][:6], "#blue")
+    >>> abjad.label.color_leaves(group[2][6:], "#red")
+    >>> abjad.label.color_leaves(group[3][:6], "#red")
+    >>> abjad.label.color_leaves(group[3][6:], "#blue")
     >>> score_block = abjad.Block(name="score")
     >>> score_block.items.append(score)
     >>> file = abjad.LilyPondFile(
-    ...     items=[score_block],
-    ...     includes=["abjad.ily"],
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         score_block,
+    ...     ],
     ... )
     ...
 
@@ -252,15 +256,20 @@ Attach extra attachments and override score settings:
     ...
     >>> leaf_group = abjad.select(staff).leaves().partition_by_counts([11], cyclic=True, overhang=True,)
     >>> for color, leaves in zip(colors, leaf_group):
-    ...     abjad.Label(leaves).color_leaves(color)
+    ...     abjad.label.color_leaves(leaves, color)
     ...
     >>> score_block = abjad.Block(name="score")
     >>> score_block.items.append(staff)
     >>> paper_block = abjad.Block(name="paper")
     >>> paper_block.items.append("indent = 0")
     >>> file = abjad.LilyPondFile(
-    ...     items=[paper_block, score_block],
-    ...     includes=["abjad.ily"]
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         paper_block
+    ...         score_block,
+    ...     ],
     ... )
     ...
 
@@ -415,7 +424,7 @@ Define rotation distances and iterate through permutations, creating charts:
     ...         ]
     ...         for set, name in zip(sets, names):
     ...             voice = abjad.Voice([abjad.Note(_, (1, 16)) for _ in set])
-    ...             for leaf in abjad.iterate(voice).leaves():
+    ...             for leaf in abjad.iterate.leaves(voice):
     ...                 mark = abjad.Markup(
     ...                     f"\markup {abjad.NumberedPitchClass(leaf.written_pitch)}",
     ...                     direction=abjad.Up,
@@ -505,7 +514,7 @@ Show file of chart scores:
         ...         pc_set = abjad.PitchClassSet([_.written_pitch for _ in trichord])
         ...         set_class = abjad.SetClass.from_pitch_class_set(pc_set)
         ...         abjad.attach(abjad.Markup(f"\markup {set_class}"), trichord[0])
-        ...         abjad.Label(trichord).color_leaves(cyc_tuple[counter])
+        ...         abjad.label.color_leaves(trichord, cyc_tuple[counter])
         ...         counter += 1
         ...         abjad.override(staff).text_script.staff_padding = 4
         ...     group.append(staff)
@@ -557,7 +566,12 @@ Show file of chart scores:
         >>> score_block = abjad.Block(name="score")
         >>> score_block.items.append(score)
         >>> file = abjad.LilyPondFile(
-        ...     items=[score_block], includes=["abjad.ily"]
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
 

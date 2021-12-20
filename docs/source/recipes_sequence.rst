@@ -57,12 +57,15 @@ First Example
 ::
 
     >>> file = abjad.LilyPondFile(
-    ...     items=[score, abjad.Block(name="paper"), abjad.Block(name="layout")],
-    ...     includes=[
-    ...         "abjad.ily",
-    ...         "ekmelos-ji-accidental-markups.ily",
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         score,
+    ...         abjad.Block(name="paper"),
+    ...         abjad.Block(name="layout"),
     ...     ],
-    ...     global_staff_size=16,
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")
@@ -163,12 +166,15 @@ Second Example
 ::
 
     >>> file = abjad.LilyPondFile(
-    ...     items=[score, abjad.Block(name="paper"), abjad.Block(name="layout")],
-    ...     includes=[
-    ...         "abjad.ily",
-    ...         "ekmelos-ji-accidental-markups.ily",
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         score,
+    ...         abjad.Block(name="paper"),
+    ...         abjad.Block(name="layout"),
     ...     ],
-    ...     global_staff_size=16,
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")
@@ -225,12 +231,15 @@ Third Example
 ::
 
     >>> file = abjad.LilyPondFile(
-    ...     items=[score, abjad.Block(name="paper"), abjad.Block(name="layout")],
-    ...     includes=[
-    ...         "abjad.ily",
-    ...         "ekmelos-ji-accidental-markups.ily",
+    ...     items=[
+    ...         "#(set-default-paper-size \"a4\" \'portrait)",
+    ...         r"#(set-global-staff-size 16)",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'"
+    ...         score,
+    ...         abjad.Block(name="paper"),
+    ...         abjad.Block(name="layout"),
     ...     ],
-    ...     global_staff_size=16,
     ... )
     ...
     >>> file.paper_block.items.append("indent = 0")

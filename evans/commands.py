@@ -49,9 +49,12 @@ class Command:
             >>> moment = "#(ly:make-moment 1 25)"
             >>> abjad.setting(score).proportional_notation_duration = moment
             >>> file = abjad.LilyPondFile(
-            ...     items=[score],
-            ...     includes=["abjad.ily"],
-            ...     global_staff_size=16,
+            ...     items=[
+            ...         "#(set-default-paper-size \"a4\" \'portrait)",
+            ...         r"#(set-global-staff-size 16)",
+            ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+            ...         score,
+            ...     ],
             ... )
             ...
             >>> abjad.show(file) # doctest: +SKIP

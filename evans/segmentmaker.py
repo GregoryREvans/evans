@@ -32,9 +32,12 @@ class NoteheadBracketMaker:
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=[score],
-        ...     includes=["abjad.ily"],
-        ...     global_staff_size=16,
+        ...     items=[
+        ...         "#(set-default-paper-size \"a4\" \'portrait)",
+        ...         r"#(set-global-staff-size 16)",
+        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         score,
+        ...     ],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -98,8 +101,8 @@ class NoteheadBracketMaker:
         return duration_string, len(dot_string)
 
     def _transform_brackets(self, selections):
-        for tuplet in abjad.select(selections).components(abjad.Tuplet):
-            for rest_group in abjad.select(tuplet).rests().group_by_contiguity():
+        for tuplet in abjad.Selection(selections).components(abjad.Tuplet):
+            for rest_group in abjad.Selection(tuplet).rests().group_by_contiguity():
                 abjad.mutate.fuse(rest_group)
             inner_durs = []
             for _ in tuplet[:]:
@@ -187,10 +190,10 @@ class SegmentMaker:
     def _add_attachments(self):
         print("Adding attachments ...")
         if self.colophon is not None:
-            last_voice = abjad.select(self.score_template).components(abjad.Voice)[
+            last_voice = abjad.Selection(self.score_template).components(abjad.Voice)[
                 -1
             ]  #
-            colophon_leaf = abjad.select(last_voice).leaves()[-2]  #
+            colophon_leaf = abjad.Selection(last_voice).leaves()[-2]  #
             abjad.attach(self.colophon, colophon_leaf)
 
         if self.abbreviations is not None:
@@ -217,38 +220,40 @@ class SegmentMaker:
         # metro = abjad.MetronomeMark(custom_markup=metro.make_tempo_equation_markup())#remove if broken
         if self.tempo is not None:
             metro = abjad.MetronomeMark(self.tempo[0], self.tempo[1])
-            for staff in abjad.iterate(
-                self.score_template["Global Context"]
-            ).components(abjad.Staff):
-                leaf1 = abjad.select(staff).leaves()[0]
+            for staff in abjad.iterate.components(
+                self.score_template["Global Context"],
+                abjad.Staff,
+            ):
+                leaf1 = abjad.Selection(staff).leaves()[0]
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
             markup=abjad.Markup(fr"\markup \bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
-            for staff in abjad.iterate(
-                self.score_template["Global Context"]
-            ).components(abjad.Staff):
-                leaf1 = abjad.select(staff).leaves()[0]
+            for staff in abjad.iterate.components(
+                self.score_template["Global Context"],
+                abjad.Staff,
+            ):
+                leaf1 = abjad.Selection(staff).leaves()[0]
                 abjad.attach(markup2, leaf1)
 
         if self.barline is not None:
             bar_line = abjad.BarLine(self.barline)
-            for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.Staff  # was Voice
+            for voice in abjad.iterate.components(
+                self.score_template["Staff Group"], abjad.Staff
             ):
                 if self.barline == "|.":
-                    last_leaf = abjad.select(voice).leaves()[-1]
+                    last_leaf = abjad.Selection(voice).leaves()[-1]
                     abjad.attach(bar_line, last_leaf)
                 else:
-                    last_leaf = abjad.select(voice).leaves()[-3]
+                    last_leaf = abjad.Selection(voice).leaves()[-3]
                     abjad.attach(bar_line, last_leaf)
 
         if self.clef_handlers is None:
             self.clef_handlers = [
                 None
-                for _ in abjad.select(self.score_template["Staff Group"]).components(
+                for _ in abjad.Selection(self.score_template["Staff Group"]).components(
                     abjad.Staff
                 )
             ]
@@ -257,11 +262,11 @@ class SegmentMaker:
             names,
             self.instruments,
             self.clef_handlers,
-            abjad.select(self.score_template["Staff Group"]).components(
+            abjad.Selection(self.score_template["Staff Group"]).components(
                 abjad.Staff
             ),  # was Voice
         ):
-            first_leaf = abjad.select(voice).leaves()[0]
+            first_leaf = abjad.Selection(voice).leaves()[0]
             if self.name_staves is True:
                 if not isinstance(abbrev, int):
                     abjad.attach(
@@ -296,7 +301,7 @@ class SegmentMaker:
                         tag=abjad.Tag("PITCH"),
                         deactivate=False,
                     )
-                # for leaf in abjad.select(voice).leaves(pitched=True): # remove?
+                # for leaf in abjad.Selection(voice).leaves(pitched=True): # remove?
                 #     pitched_annotation = abjad.get.annotation(leaf, "pitched")
                 #     if pitched_annotation is None:
                 #         unpitch_color = abjad.LilyPondLiteral(
@@ -315,7 +320,7 @@ class SegmentMaker:
 
     def _add_ending_skips(self):
         print("Adding ending skips ...")
-        last_skip = abjad.select(self.score_template["Global Context"]).leaves()[-1]
+        last_skip = abjad.Selection(self.score_template["Global Context"]).leaves()[-1]
         override_command = abjad.LilyPondLiteral(
             r"\once \override Score.TimeSignature.stencil = ##f", format_slot="before"
         )
@@ -323,7 +328,7 @@ class SegmentMaker:
             override_command, last_skip, tag=abjad.Tag("applying ending skips")
         )
 
-        for voice in abjad.select(self.score_template["Staff Group"]).components(
+        for voice in abjad.Selection(self.score_template["Staff Group"]).components(
             abjad.Voice
         ):
             container = abjad.Container()
@@ -374,14 +379,14 @@ class SegmentMaker:
             voice.append(container[:])
 
     def beam_score(target):
-        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        global_skips = [_ for _ in abjad.Selection(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
             for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
         print("Beaming meter ...")
-        for voice in abjad.iterate(target["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.iterate.components(target["Staff Group"], abjad.Voice):
             for i, shard in enumerate(abjad.mutate.split(voice[:], sigs)):
                 met = abjad.Meter(sigs[i].pair)
                 inventories = [
@@ -406,22 +411,22 @@ class SegmentMaker:
                         include_rests=SegmentMaker.beaming,
                         # include_rests=False,
                     )
-        for trem in abjad.select(target).components(abjad.TremoloContainer):
+        for trem in abjad.Selection(target).components(abjad.TremoloContainer):
             if abjad.StartBeam() in abjad.get.indicators(trem[0]):
                 abjad.detach(abjad.StartBeam(), trem[0])
             if abjad.StopBeam() in abjad.get.indicators(trem[-1]):
                 abjad.detach(abjad.StopBeam(), trem[-1])
 
     def beam_score_without_splitting(target):
-        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        global_skips = [_ for _ in abjad.Selection(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
             for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
         print("Beaming meter ...")
-        for voice in abjad.iterate(target["Staff Group"]).components(abjad.Voice):
-            measures = abjad.select(voice[:]).leaves().group_by_measure()
+        for voice in abjad.iterate.components(target["Staff Group"], abjad.Voice):
+            measures = abjad.Selection(voice[:]).leaves().group_by_measure()
             for i, shard in enumerate(measures):
                 top_level_components = get_top_level_components_from_leaves(shard)
                 shard = abjad.Selection(top_level_components)
@@ -448,7 +453,7 @@ class SegmentMaker:
                         include_rests=SegmentMaker.beaming,
                         # include_rests=False,
                     )
-        for trem in abjad.select(target).components(abjad.TremoloContainer):
+        for trem in abjad.Selection(target).components(abjad.TremoloContainer):
             if abjad.StartBeam() in abjad.get.indicators(trem[0]):
                 abjad.detach(abjad.StartBeam(), trem[0])
             if abjad.StopBeam() in abjad.get.indicators(trem[-1]):
@@ -458,7 +463,7 @@ class SegmentMaker:
         print("Breaking pages ...")
         if self.page_break_counts is not None:
             lit = abjad.LilyPondLiteral(r"\pageBreak", format_slot="absolute_after")
-            result = abjad.select(self.score_template["Global Context"]).components(
+            result = abjad.Selection(self.score_template["Global Context"]).components(
                 abjad.Skip
             )
             result = result.partition_by_counts(
@@ -470,13 +475,13 @@ class SegmentMaker:
 
     def _cache_persistent_info(self):
         print("Caching persistent info ...")
-        info = abjad.OrderedDict()
+        info = dict()
         for i, voice in enumerate(
-            abjad.select(self.score_template["Staff Group"]).components(
+            abjad.Selection(self.score_template["Staff Group"]).components(
                 abjad.Staff
             )  # was Voice
         ):
-            penultimate_rest = abjad.select(voice).leaves()[-2]
+            penultimate_rest = abjad.Selection(voice).leaves()[-2]
             persistent_attachments = abjad.get.indicators(penultimate_rest)
             info[f"Voice {i + 1}"] = persistent_attachments
         with open(f"{self.current_directory}/.persistent.py", "w") as fp:
@@ -518,7 +523,7 @@ class SegmentMaker:
 
     def call_handlers(self, commands):  # bypasses grace notes?
         print("Calling handlers ...")
-        handler_to_value = abjad.OrderedDict()
+        handler_to_value = dict()
         voice_names = sorted(set(_.voice_name for _ in commands))
         command_groups = []
         for handler_type, command_group in itertools.groupby(
@@ -527,16 +532,16 @@ class SegmentMaker:
             group = [_ for _ in command_group]
             command_groups.append(group)
         for group in command_groups:
-            voice_collections = abjad.OrderedDict()
+            voice_collections = dict()
             global_collection = consort.LogicalTieCollection()
-            for tie in abjad.select(
+            for tie in abjad.Selection(
                 self.score_template["Global Context"]
             ).logical_ties():
                 global_collection.insert(tie)
             voice_collections["Global Context"] = global_collection
-            for voice in abjad.select(self.score_template).components(abjad.Voice):
+            for voice in abjad.Selection(self.score_template).components(abjad.Voice):
                 collection = consort.LogicalTieCollection()
-                for tie in abjad.select(voice).logical_ties():
+                for tie in abjad.Selection(voice).logical_ties():
                     collection.insert(tie)
                 voice_collections[voice.name] = collection
             for v_name in voice_names:
@@ -598,7 +603,7 @@ class SegmentMaker:
     def _extract_parts(self):
         print("Extracting parts ...")
         for count, staff in enumerate(
-            abjad.iterate(self.score_template["Staff Group"]).components(abjad.Staff)
+            abjad.iterate.components(self.score_template["Staff Group"], abjad.Staff)
         ):
             t = rf"\tag #'voice{count + 1}"
             literal = abjad.LilyPondLiteral(t, format_slot="before")
@@ -606,8 +611,8 @@ class SegmentMaker:
             abjad.attach(literal, container)
             abjad.mutate.wrap(staff, container)
         for count, group in enumerate(
-            abjad.iterate(self.score_template["Staff Group"]).components(
-                abjad.StaffGroup
+            abjad.iterate.components(
+                self.score_template["Staff Group"], abjad.StaffGroup
             )
         ):
             t = rf"\tag #'group{count + 1}"
@@ -618,7 +623,7 @@ class SegmentMaker:
 
     def _fill_score_with_rests(self):
         temp_leaf_maker = abjad.LeafMaker()
-        for voice in abjad.select(self.score_template).components(abjad.Voice):
+        for voice in abjad.Selection(self.score_template).components(abjad.Voice):
             durations = [
                 abjad.Duration(time_signature)
                 for time_signature in self.time_signatures[:-1]
@@ -628,19 +633,19 @@ class SegmentMaker:
             voice.extend(full_voice_rests)
 
         if self.fermata_measures is not None:
-            for voice in abjad.select(self.score_template).components(abjad.Voice):
-                measures = abjad.select(voice).leaves().group_by_measure()
+            for voice in abjad.Selection(self.score_template).components(abjad.Voice):
+                measures = abjad.Selection(voice).leaves().group_by_measure()
                 for fermata_index in self.fermata_measures:
                     make_fermata_measure(measures[fermata_index])
 
         g_c = self.score_template["Global Context"]
-        measures = abjad.select(g_c).leaves().group_by_measure()
+        measures = abjad.Selection(g_c).leaves().group_by_measure()
         if self.fermata_measures is not None:
             for fermata_index in self.fermata_measures:
                 make_fermata_measure(measures[fermata_index])
                 self.time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
 
-        for voice in abjad.select(self.score_template).components(abjad.Voice):
+        for voice in abjad.Selection(self.score_template).components(abjad.Voice):
             beautify_tuplets(voice)
 
     def _interpret_music_commands(self, music_commands):
@@ -652,7 +657,7 @@ class SegmentMaker:
                 duration_preprocessor = music_command.preprocessor
 
                 global_context = self.score_template["Global Context"]
-                global_leaves = abjad.select(global_context).leaves(abjad.Skip)
+                global_leaves = abjad.Selection(global_context).leaves(abjad.Skip)
                 signatures = [
                     abjad.get.indicator(_, abjad.TimeSignature) for _ in global_leaves
                 ]
@@ -670,7 +675,7 @@ class SegmentMaker:
                 else:
                     relevant_measure_indices = command_measures
                 relevant_measures = (
-                    abjad.select(relevant_voice[:])
+                    abjad.Selection(relevant_voice[:])
                     .leaves()
                     .group_by_measure()
                     .get(relevant_measure_indices)
@@ -717,7 +722,7 @@ class SegmentMaker:
 
                 for _callable in music_command.callables[1:]:
                     relevant_measures = (
-                        abjad.select(relevant_voice)
+                        abjad.Selection(relevant_voice)
                         .leaves()
                         .group_by_measure()
                         .get(relevant_measure_indices)
@@ -726,19 +731,19 @@ class SegmentMaker:
                     _callable.callable(application_site)
                     if isinstance(_callable.callable, PitchHandler):
                         relevant_measures = (
-                            abjad.select(relevant_voice)
+                            abjad.Selection(relevant_voice)
                             .leaves()
                             .group_by_measure()
                             .get(relevant_measure_indices)
                         )
-                        for leaf in abjad.select(relevant_measures).leaves(
+                        for leaf in abjad.Selection(relevant_measures).leaves(
                             pitched=True
                         ):
                             abjad.annotate(leaf, "pitched", True)
 
                 for _attachment in music_command.attachments:
                     relevant_measures = (
-                        abjad.select(relevant_voice)
+                        abjad.Selection(relevant_voice)
                         .leaves()
                         .group_by_measure()
                         .get(relevant_measure_indices)
@@ -771,7 +776,7 @@ class SegmentMaker:
             return container
 
         voice_names = sorted(set(_.voice_name for _ in commands))
-        handler_to_value = abjad.OrderedDict()
+        handler_to_value = dict()
         for voice_name in voice_names:
             voice_commands = [_ for _ in commands if _.voice_name == voice_name]
             voice_commands.sort(key=lambda _: _.timespan)
@@ -790,8 +795,8 @@ class SegmentMaker:
 
     def _make_mm_rests(self):
         print("Making MM rests ...")
-        for voice in abjad.iterate(self.score_template["Staff Group"]).components(
-            abjad.Staff  # was Voice
+        for voice in abjad.iterate.components(
+            self.score_template["Staff Group"], abjad.Staff
         ):
             rhythm_commands_booleans = []
             for c in self.commands:
@@ -800,10 +805,10 @@ class SegmentMaker:
                 else:
                     rhythm_commands_booleans.append(False)
             if any(rhythm_commands_booleans):
-                leaves = abjad.select(voice).leaves(grace=False)
+                leaves = abjad.Selection(voice).leaves(grace=False)
                 shards = abjad.mutate.split(leaves, self.time_signatures)
             else:
-                leaves = abjad.select(voice).components()[2:]
+                leaves = abjad.Selection(voice).components()[2:]
                 shards = leaves.group_by_measure()
             for i, shard in enumerate(shards[:-1]):
                 if not all(isinstance(leaf, abjad.Rest) for leaf in shard):
@@ -848,17 +853,17 @@ class SegmentMaker:
         if self.add_final_grand_pause is True:
             return
         print("Removing final grand pause ...")
-        for staff in abjad.select(self.score_template["Global Context"]).components(
+        for staff in abjad.Selection(self.score_template["Global Context"]).components(
             abjad.Staff
         ):
             grand_pause = abjad.mutate.split(staff[:], self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
-        for staff in abjad.select(self.score_template["Staff Group"]).components(
+        for staff in abjad.Selection(self.score_template["Staff Group"]).components(
             abjad.Staff  # was voice double check for older scores
         ):
-            main_voice = abjad.select(staff).components(abjad.Voice)[0]
-            grand_pause = abjad.select(main_voice).leaves().group_by_measure()[-1]
+            main_voice = abjad.Selection(staff).components(abjad.Voice)[0]
+            grand_pause = abjad.Selection(main_voice).leaves().group_by_measure()[-1]
             for _ in grand_pause:
                 main_voice.remove(_)
 
@@ -868,14 +873,16 @@ class SegmentMaker:
         if self.with_layout is False:
             score_block = abjad.Block(name="score")
             score_block.items.append(self.score_template)
+            assembled_includes = [f"\\include '{path}'" for path in self.score_includes]
+            assembled_includes.append(score_block)
             score_file = abjad.LilyPondFile(
-                items=[score_block], includes=self.score_includes
+                items=assembled_includes,
             )
-            for leaf in abjad.iterate(self.score_template).leaves():
+            for leaf in abjad.iterate.leaves(self.score_template):
                 literal = abjad.LilyPondLiteral("", "absolute_before")
                 abjad.attach(literal, leaf, tag=None)
-            for container in abjad.iterate(self.score_template).components(
-                abjad.Container
+            for container in abjad.iterate.components(
+                self.score_template, abjad.Container
             ):
                 if hasattr(container, "_main_leaf"):
                     literal = abjad.LilyPondLiteral("", "absolute_after")
@@ -918,14 +925,16 @@ class SegmentMaker:
             parallel_container = abjad.Container(simultaneous=True)
             parallel_container.append(self.score_template)
             score_block.items.append(parallel_container)
+            assembled_includes = [f"\\include '{path}'" for path in self.score_includes]
+            assembled_includes.append(score_block)
             score_file = abjad.LilyPondFile(
-                items=[score_block], includes=self.score_includes
+                items=assembled_includes,
             )
-            for leaf in abjad.iterate(self.score_template).leaves():
+            for leaf in abjad.iterate.leaves(self.score_template):
                 literal = abjad.LilyPondLiteral("", "absolute_before")
                 abjad.attach(literal, leaf, tag=None)
-            for container in abjad.iterate(self.score_template).components(
-                abjad.Container
+            for container in abjad.iterate.components(
+                self.score_template, abjad.Container
             ):
                 if hasattr(container, "_main_leaf"):
                     literal = abjad.LilyPondLiteral("", "absolute_after")
@@ -973,13 +982,13 @@ class SegmentMaker:
 
     def rewrite_meter(target):
         print("Rewriting meter ...")
-        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        global_skips = [_ for _ in abjad.Selection(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
             for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
-        for voice in abjad.select(target["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.Selection(target["Staff Group"]).components(abjad.Voice):
             voice_dur = abjad.get.duration(voice)
             time_signatures = sigs[:-1]
             durations = [_.duration for _ in time_signatures]
@@ -1010,23 +1019,23 @@ class SegmentMaker:
                     )
 
     def rewrite_meter_without_splitting(target):
-        global_skips = [_ for _ in abjad.select(target["Global Context"]).leaves()]
+        global_skips = [_ for _ in abjad.Selection(target["Global Context"]).leaves()]
         sigs = []
         for skip in global_skips:
             for indicator in abjad.get.indicators(skip):
                 if isinstance(indicator, abjad.TimeSignature):
                     sigs.append(indicator)
-        for voice in abjad.select(target["Staff Group"]).components(abjad.Voice):
+        for voice in abjad.Selection(target["Staff Group"]).components(abjad.Voice):
             voice_dur = abjad.get.duration(voice)
             time_signatures = sigs
             durations = [_.duration for _ in time_signatures]
             sig_dur = sum(durations)
             assert voice_dur == sig_dur, (voice_dur, sig_dur)
-            shards = abjad.select(voice[:]).leaves().group_by_measure()
+            shards = abjad.Selection(voice[:]).leaves().group_by_measure()
             for i, shard in enumerate(shards):
                 if not all(
                     isinstance(leaf, (abjad.Rest, abjad.MultimeasureRest, abjad.Skip))
-                    for leaf in abjad.select(shard).leaves()
+                    for leaf in abjad.Selection(shard).leaves()
                 ):
                     time_signature = sigs[i]
                     top_level_components = get_top_level_components_from_leaves(shard)
@@ -1061,7 +1070,7 @@ class SegmentMaker:
 
     def transform_brackets(target):
         print("Transforming brackets ...")
-        for tuplet in abjad.select(target).components(abjad.Tuplet):
+        for tuplet in abjad.Selection(target).components(abjad.Tuplet):
             if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
                 if tuplet.diminution() is True:
                     tuplet.toggle_prolation()
@@ -1145,10 +1154,10 @@ class SegmentMaker:
     def _extract_voice_info(self, score):
         score_pitches = []
         score_durations = []
-        for voice in abjad.select(score).components(abjad.Voice):
+        for voice in abjad.Selection(score).components(abjad.Voice):
             pitches = []
             durations = []
-            for tie in abjad.select(voice).logical_ties():
+            for tie in abjad.Selection(voice).logical_ties():
                 dur = abjad.get.duration(tie)
                 durations.append(str(dur))
                 if isinstance(tie[0], abjad.Rest):
@@ -1250,7 +1259,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
         >>> file = abjad.LilyPondFile(
-        ...     items=["\#(set-default-paper-size \"a4\" \'letter)", r"#(set-global-staff-size 16)", "\\include \'abjad.ily\'", score],
+        ...     items=["#(set-default-paper-size \"a4\" \'portrait)", r"#(set-global-staff-size 16)", "\\include \'abjad.ily\'", score],
         ... )
         ...
         >>> abjad.show(file) # doctest: +SKIP
@@ -1300,23 +1309,23 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         for pair in offset_pairs
     ]
 
-    tup_list = [tup for tup in abjad.select(components).components(abjad.Tuplet)]
+    tup_list = [tup for tup in abjad.Selection(components).components(abjad.Tuplet)]
     for t in tup_list:
         if isinstance(abjad.get.parentage(t).components[1], abjad.Tuplet) is False:
-            # first_leaf = abjad.select(t).leaf(0)
+            # first_leaf = abjad.Selection(t).leaf(0)
             # if not hasattr(first_leaf._overrides, "Beam"):
             abjad.beam(
                 t[:],
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.select().leaves(grace=False),
+                selector=abjad.Selection().leaves(grace=False),
             )
         else:
             continue
 
     non_tup_list = []
-    for leaf in abjad.select(components).leaves():
+    for leaf in abjad.Selection(components).leaves():
         if isinstance(abjad.get.parentage(leaf).components[1], abjad.Tuplet) is False:
             non_tup_list.append(leaf)
 
@@ -1326,7 +1335,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 
     for i, span in enumerate(offset_timespans):
         for group in (
-            abjad.select(non_tup_list[:])
+            abjad.Selection(non_tup_list[:])
             .leaves()
             .group_by(
                 predicate=lambda x: abjad.get.timespan(x).happens_during_timespan(span)
@@ -1336,7 +1345,7 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beamed_groups[i].append(group[:])
 
     for subgroup in beamed_groups:
-        subgrouper = abjad.select(subgroup).group_by_contiguity()
+        subgrouper = abjad.Selection(subgroup).group_by_contiguity()
         for beam_group in subgrouper:
             # if not all(isinstance(leaf, abjad.Rest) for leaf in beam_group)
             abjad.beam(
@@ -1344,12 +1353,12 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
                 beam_rests=include_rests,
                 stemlet_length=0.75,
                 beam_lone_notes=False,
-                selector=abjad.select().leaves(grace=False),
+                selector=abjad.Selection().leaves(grace=False),
             )
 
 
 def annotate_leaves(score, prototype=abjad.Leaf):
-    for voice in abjad.select(score).components(abjad.Voice):
+    for voice in abjad.Selection(score).components(abjad.Voice):
         if prototype is not None:
             abjad.label.with_indices(voice, prototype=prototype)
         else:
@@ -1461,7 +1470,7 @@ def make_score_template(instruments, groups):
 
 
 def beautify_tuplets(target):
-    for tuplet in abjad.select(target).components(abjad.Tuplet):
+    for tuplet in abjad.Selection(target).components(abjad.Tuplet):
         tuplet.denominator = 2
         if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
             if tuplet.diminution() is True:
@@ -1474,5 +1483,5 @@ def beautify_tuplets(target):
             tuplet.trivialize()
         if tuplet.trivial() is True:
             tuplet.hide = True
-        for rest_group in abjad.select(tuplet).rests().group_by_contiguity():
+        for rest_group in abjad.Selection(tuplet).rests().group_by_contiguity():
             abjad.mutate.fuse(rest_group)  # EXPERIMENTAL

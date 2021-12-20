@@ -123,10 +123,14 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
             abjad.override(score).TupletBracket.bracket_visibility = True
             print("rendering staff group ...")
             file = abjad.LilyPondFile(
-                items=[score, abjad.Block(name="layout"), abjad.Block(name="header")],
-                includes=["/Users/evansdsg2/abjad/docs/source/_stylesheets/abjad.ily"],
-                global_staff_size=14,
-                default_paper_size=("11x17landscape", "portrait"),
+                items=[
+                    '#(set-default-paper-size "a4" \'11x17landscape)',
+                    r"#(set-global-staff-size 14)",
+                    "\\include 'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily'",
+                    score,
+                    abjad.Block(name="layout"),
+                    abjad.Block(name="header"),
+                ],
             )
             file.layout_block.items.append("indent = 0")
             file.header_block.items.append("tagline = ##f")
