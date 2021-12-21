@@ -19,7 +19,6 @@ env:
   MICROTONES: /tmp/abjad-ext-microtones
   TSMAKERS: /tmp/tsmakers
   BACA: /tmp/baca
-  MYPYPATH: "/tmp/abjad:/tmp/abjad-ext-rmakers:/tmp/abjad-ext-microtones:/tmp/tsmakers:/tmp/baca:/tmp/ide"
 
 jobs:
   build:
