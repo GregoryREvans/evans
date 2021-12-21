@@ -6,8 +6,6 @@ pip install --upgrade flake8
 echo ""
 pip install --upgrade isort
 echo ""
-pip install --upgrade mypy
-echo ""
 pip install --upgrade pytest
 echo ""
 pip install --upgrade pytest-cov
