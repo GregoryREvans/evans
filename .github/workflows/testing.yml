@@ -60,7 +60,7 @@ jobs:
 
     - name: Install microtones
       run: |
-        git clone -b greg/dev https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES
+        git clone https://github.com/GregoryREvans/abjad-ext-microtones.git $MICROTONES
         pip install -e $MICROTONES
 
     - name: Install tsmakers
