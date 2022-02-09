@@ -2,6 +2,9 @@
 Command classes.
 """
 import abjad
+from abjadext import rmakers
+
+from .handlers import RhythmHandler
 
 
 class Command:
@@ -298,6 +301,61 @@ class MusicCommand:
 
     def __repr__(self):
         return abjad.storage(self)
+
+
+def music(
+    location,
+    rmaker,
+    *args,
+    forget=False,
+    preprocessor=None,
+    rewrite_meter=None,
+):
+    commands = []
+    arguments = []
+    for arg in args:
+        if issubclass(arg.__class__, rmakers.Command):
+            commands.append(arg)
+        else:
+            arguments.append(arg)
+    if rewrite_meter is not None:
+        stack = rmakers.stack(
+            rmaker,
+            *commands,
+            rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.extract_trivial(),
+            rmakers.RewriteMeterCommand(
+                boundary_depth=rewrite_meter, reference_meters=[abjad.Meter((4, 4))]
+            ),
+            preprocessor=preprocessor,
+        )
+        handler = RhythmHandler(
+            stack,
+            forget=forget,
+        )
+    else:
+        stack = rmakers.stack(
+            rmaker,
+            *commands,
+            rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.extract_trivial(),
+            preprocessor=preprocessor,
+        )
+        handler = RhythmHandler(
+            stack,
+            forget=forget,
+        )
+
+    out = MusicCommand(
+        location,
+        handler,
+        *arguments,
+    )
+    return out
 
 
 class RhythmCommand:

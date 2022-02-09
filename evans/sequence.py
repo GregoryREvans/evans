@@ -807,6 +807,32 @@ class Sequence(baca.Sequence):
         return class_(sequence)
 
     @classmethod
+    def equal_divisions(
+        class_, fundamental_frequency, interval_of_repetition, number_of_divisions
+    ):
+        """
+
+        .. container:: example
+
+            >>> evans.Sequence.equal_divisions(fundamental_frequency=440, interval_of_repetition=5/2, number_of_divisions=13)
+            Sequence([440, 472.13201032057583, 506.6105344757916, 543.6069320264475, 583.3050764587438, 625.9022690424179, 671.6102194254697, 720.6560978390684, 773.2836641421384, 829.7544793170199, 890.3492054373801, 955.3690005692673, 1025.1370155380173, 1099.9999999999986])
+
+        .. container:: example
+
+            >>> evans.Sequence.equal_divisions(fundamental_frequency=440, interval_of_repetition=3, number_of_divisions=30)
+            Sequence([440, 456.41164681329826, 473.4354348791521, 491.0941965749178, 509.4116159072997, 528.412260277441, 548.1216134308273, 568.5661096361954, 589.7731691392869, 611.7712349389996, 634.589810935259, 658.2595014997754, 682.8120525227575, 708.2803939906365, 734.6986841519048, 762.102355330305, 790.5281614468134, 820.0142273141569, 850.6000997699742, 882.3268007172038, 915.2368821428361, 949.3744831888192, 984.7853893516657, 1021.5170938901565, 1059.6188615235021, 1099.1417945053952, 1140.138901162571, 1182.665166989803, 1226.777628396683, 1272.5354492050965, 1319.9999999999964])
+
+        """
+        step = interval_of_repetition ** quicktions.Fraction(1, number_of_divisions)
+        out = [fundamental_frequency]
+        for i in range(number_of_divisions):
+            degree = i + 1
+            step_size = step ** degree
+            freq = fundamental_frequency * step_size
+            out.append(freq)
+        return class_(out)
+
+    @classmethod
     def feigenbaum_bifurcations(
         class_, fertility=3.59785, initial_state=0.5, iterations=10
     ):

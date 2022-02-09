@@ -15,6 +15,7 @@ from .commands import (
     call,
     detach,
     duplicate,
+    music,
     replace,
 )
 from .consort import (
