@@ -29,7 +29,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
         ):
             permutation = list(permutation)
             print(permutation)
-            title = fr"Mutations of {permutation}"
+            title = rf"Mutations of {permutation}"
             final_patterns = []
             parsed_patterns = abjad.Staff(lilypond_type="RhythmicStaff")
             for num_indices in range(len(permutation) + 1):
@@ -108,7 +108,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 rhythm_tree_list = parser(pattern)
                 rhythm_tree_container = rhythm_tree_list[0]
                 r = rhythm_tree_container(pair)
-                m = abjad.Markup(fr"\markup {pattern}", direction=abjad.Up)
+                m = abjad.Markup(rf"\markup {pattern}", direction=abjad.Up)
                 abjad.attach(m, abjad.Selection(r).leaves()[0])
                 abjad.attach(time_signature, abjad.Selection(r).leaves()[0])
                 print("adding parsed funnel to staff ...")

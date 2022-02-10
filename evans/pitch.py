@@ -346,7 +346,7 @@ def return_cent_markup(
         cent_string = f"{remainder}"
     else:
         cent_string = f"+{remainder}"
-    mark = abjad.Markup(fr"\markup \center-align {cent_string}", direction=abjad.Up)
+    mark = abjad.Markup(rf"\markup \center-align {cent_string}", direction=abjad.Up)
     return mark
 
 

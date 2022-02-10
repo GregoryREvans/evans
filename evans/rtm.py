@@ -642,7 +642,7 @@ class RTMMaker(rmakers.RhythmMaker):
     def __init__(self, rtm, tie_across_divisions=False):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
-        self._state = -1
+        self.state = -1
 
     def __str__(self):
         return abjad.storage(self)
@@ -659,8 +659,8 @@ class RTMMaker(rmakers.RhythmMaker):
         selections = self._rtm_maker(divisions, starting_index=starting_index)
 
         if previous_state is not None:
-            self._state += len(selections)
-            self._state %= len(self.rtm)
+            self.state += len(selections)
+            self.state %= len(self.rtm)
 
         return selections
 
@@ -682,6 +682,9 @@ class RTMMaker(rmakers.RhythmMaker):
                 last_leaf = abjad.Selection(selection_).leaves()[-1]
                 abjad.attach(abjad.Tie(), last_leaf)
         return selections
+
+    # def state(self):
+    #     return self.state
 
 
 class RhythmTreeQuantizer:

@@ -70,12 +70,12 @@ class Breaks:
         abjad.attach(no_breaks_literal, leaves[0])
         lbsd_values = self.lbsd(r=1)[0]
         lbsd_literal = abjad.LilyPondLiteral(
-            fr"\evans-lbsd #{lbsd_values[0]} #'{lbsd_values[1]}", format_slot="before"
+            rf"\evans-lbsd #{lbsd_values[0]} #'{lbsd_values[1]}", format_slot="before"
         )
         abjad.attach(lbsd_literal, leaves[0])
         x_offset = self.x_offsets(r=1)[0]
         x_offset_literal = abjad.LilyPondLiteral(
-            fr"\evans-system-X-offset #{x_offset}", format_slot="before"
+            rf"\evans-system-X-offset #{x_offset}", format_slot="before"
         )
         abjad.attach(x_offset_literal, leaves[0])
         for i, leaf in enumerate(leaves):
@@ -84,7 +84,7 @@ class Breaks:
             test_case = i + 1
             if i in self.spacing_indices:
                 space = self.spacing(r=1)[0][1]
-                spacing_string = fr"\evans-new-spacing-section #{space[0]} #{space[1]}"
+                spacing_string = rf"\evans-new-spacing-section #{space[0]} #{space[1]}"
                 spacing_literal = abjad.LilyPondLiteral(
                     spacing_string, format_slot="before"
                 )
@@ -96,9 +96,9 @@ class Breaks:
                     )
                     multiplier = Fraction(35, 24)
                     new_frac = default_frac * multiplier
-                    spacing_string = fr"\evans-new-spacing-section #{new_frac.numerator} #{new_frac.denominator}"
+                    spacing_string = rf"\evans-new-spacing-section #{new_frac.numerator} #{new_frac.denominator}"
                 else:
-                    spacing_string = fr"\evans-new-spacing-section #{self.default_spacing[0]} #{self.default_spacing[1]}"
+                    spacing_string = rf"\evans-new-spacing-section #{self.default_spacing[0]} #{self.default_spacing[1]}"
                 spacing_literal = abjad.LilyPondLiteral(
                     spacing_string, format_slot="before"
                 )
@@ -113,13 +113,13 @@ class Breaks:
             abjad.attach(literal, relevant_leaf)
             lbsd_values = self.lbsd(r=1)[0]
             lbsd_literal = abjad.LilyPondLiteral(
-                fr"\evans-lbsd #{lbsd_values[0]} #'{lbsd_values[1]}",
+                rf"\evans-lbsd #{lbsd_values[0]} #'{lbsd_values[1]}",
                 format_slot="after",
             )
             abjad.attach(lbsd_literal, relevant_leaf)
             x_offset = self.x_offsets(r=1)[0]
             x_offset_literal = abjad.LilyPondLiteral(
-                fr"\evans-system-X-offset #{x_offset}", format_slot="after"
+                rf"\evans-system-X-offset #{x_offset}", format_slot="after"
             )
             abjad.attach(x_offset_literal, relevant_leaf)
         for leaf in leaves:

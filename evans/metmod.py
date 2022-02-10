@@ -225,7 +225,7 @@ def metric_modulation(
     )
     returned_speed = float(modulation_speed * compare_speed(left_note, modulated_beat))
     if font_size is not None:
-        size = fr"  \override #'(font-size . {font_size})"
+        size = rf"  \override #'(font-size . {font_size})"
     else:
         size = r"  \huge"
     if returned_speed % 1 == 0.0:
@@ -257,7 +257,7 @@ def metric_modulation(
                 [
                     r"^ \markup {",
                     size,
-                    fr"  \raise #{raise_value} \with-dimensions-from \null",
+                    rf"  \raise #{raise_value} \with-dimensions-from \null",
                     r"  \concat {",
                     f"      {str(met)[8:]}",
                     r"      \hspace #1",
@@ -304,7 +304,7 @@ def metric_modulation(
                     [
                         r"^ \markup {",
                         size,
-                        fr"  \raise #{raise_value} \with-dimensions-from \null",
+                        rf"  \raise #{raise_value} \with-dimensions-from \null",
                         r"  \concat {",
                         "       c.",
                         r"      \hspace #1",
@@ -349,7 +349,7 @@ def metric_modulation(
                     [
                         r"^ \markup {",
                         size,
-                        fr"  \raise #{raise_value} \with-dimensions-from \null",
+                        rf"  \raise #{raise_value} \with-dimensions-from \null",
                         r"  \concat {",
                         f"      {str(met)[8:]}",
                         r"      \hspace #1",

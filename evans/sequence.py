@@ -827,7 +827,7 @@ class Sequence(baca.Sequence):
         out = [fundamental_frequency]
         for i in range(number_of_divisions):
             degree = i + 1
-            step_size = step ** degree
+            step_size = step**degree
             freq = fundamental_frequency * step_size
             out.append(freq)
         return class_(out)
@@ -1662,7 +1662,7 @@ class Sequence(baca.Sequence):
         n_list = list(self.items)
         seq = []
         for n in n_list:
-            x = (n + 1) * (3 * n ** 2 + 3 * n + 1)
+            x = (n + 1) * (3 * n**2 + 3 * n + 1)
             seq.append(x)
         return type(self)(seq)
 

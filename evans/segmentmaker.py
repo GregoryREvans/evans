@@ -200,7 +200,7 @@ class SegmentMaker:
             abbreviations = []
             abb = self.abbreviations
             mark_abbreviations = [
-                abjad.Markup(fr"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
+                abjad.Markup(rf"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
             ]
             for x in mark_abbreviations:
                 abbreviations.append(abjad.MarginMarkup(markup=x))
@@ -210,7 +210,7 @@ class SegmentMaker:
             names = []
             nm = self.names
             mark_names = [
-                abjad.Markup(fr"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
+                abjad.Markup(rf"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
             ]
             for x in mark_names:
                 names.append(abjad.StartMarkup(markup=x))
@@ -228,7 +228,7 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(fr"\markup \bold {{ {self.rehearsal_mark} }}")
+            markup=abjad.Markup(rf"\markup \bold {{ {self.rehearsal_mark} }}")
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate.components(
