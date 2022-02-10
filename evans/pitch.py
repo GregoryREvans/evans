@@ -1258,35 +1258,7 @@ def tune_to_ratio(
     note_head.written_pitch = pitch
 
 
-
 class Loop(abjad.CyclicTuple):
-    """
-    Loop. Temporarily stolen from baca.
-    ..  container:: example
-        >>> loop = evans.Loop([0, 2, 4], intervals=[1])
-        >>> loop
-        Loop([NamedPitch("c'"), NamedPitch("d'"), NamedPitch("e'")], intervals=CyclicTuple([1]))
-        >>> for i in range(12):
-        ...     loop[i]
-        NamedPitch("c'")
-        NamedPitch("d'")
-        NamedPitch("e'")
-        NamedPitch("cs'")
-        NamedPitch("ef'")
-        NamedPitch("f'")
-        NamedPitch("d'")
-        NamedPitch("e'")
-        NamedPitch("fs'")
-        NamedPitch("ef'")
-        NamedPitch("f'")
-        NamedPitch("g'")
-        >>> isinstance(loop, abjad.CyclicTuple)
-        True
-    ..  container:: example
-        >>> command = evans.loop([0, 2, 4], [1])
-        >>> command
-        PitchCommand()
-    """
 
     ### CLASS VARIABLES ###
 
@@ -1308,9 +1280,6 @@ class Loop(abjad.CyclicTuple):
     ### SPECIAL METHODS ###
 
     def __getitem__(self, i) -> abjad.Pitch:
-        """
-        Gets pitch ``i`` cyclically with intervals.
-        """
         if isinstance(i, slice):
             raise NotImplementedError
         iteration = i // len(self)
@@ -1326,16 +1295,10 @@ class Loop(abjad.CyclicTuple):
 
     @property
     def intervals(self):
-        """
-        Gets intervals.
-        """
         return self._intervals
 
     @property
     def items(self):
-        """
-        Gets items.
-        """
         return self._items
 
 
@@ -1344,8 +1307,5 @@ def loop(
     intervals: baca.typing.Sequence,
     selector=baca.selectors.plts(exclude=baca.const.HIDDEN),
 ) -> baca.PitchCommand:
-    """
-    Loops ``items`` at ``intervals``. Temporarily stolen from baca.
-    """
     loop = Loop(items=items, intervals=intervals)
     return baca.pitches(loop, selector=selector)
