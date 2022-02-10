@@ -1,9 +1,11 @@
 """
 Pitch functions.
 """
+import collections
 import math
 
 import abjad
+import baca
 import quicktions
 
 from .sequence import RatioSegment, flatten
@@ -1254,3 +1256,96 @@ def tune_to_ratio(
                 pitch -= 0.5
                 remainder = 50 + remainder
     note_head.written_pitch = pitch
+
+
+
+class Loop(abjad.CyclicTuple):
+    """
+    Loop. Temporarily stolen from baca.
+    ..  container:: example
+        >>> loop = evans.Loop([0, 2, 4], intervals=[1])
+        >>> loop
+        Loop([NamedPitch("c'"), NamedPitch("d'"), NamedPitch("e'")], intervals=CyclicTuple([1]))
+        >>> for i in range(12):
+        ...     loop[i]
+        NamedPitch("c'")
+        NamedPitch("d'")
+        NamedPitch("e'")
+        NamedPitch("cs'")
+        NamedPitch("ef'")
+        NamedPitch("f'")
+        NamedPitch("d'")
+        NamedPitch("e'")
+        NamedPitch("fs'")
+        NamedPitch("ef'")
+        NamedPitch("f'")
+        NamedPitch("g'")
+        >>> isinstance(loop, abjad.CyclicTuple)
+        True
+    ..  container:: example
+        >>> command = evans.loop([0, 2, 4], [1])
+        >>> command
+        PitchCommand()
+    """
+
+    ### CLASS VARIABLES ###
+
+    __slots__ = ("_intervals", "_items")
+
+    ### INITIALIZER ###
+
+    def __init__(self, items=None, *, intervals=None):
+        if items is not None:
+            assert isinstance(items, collections.abc.Iterable), repr(items)
+            items = [abjad.NamedPitch(_) for _ in items]
+            items = abjad.CyclicTuple(items)
+        abjad.CyclicTuple.__init__(self, items=items)
+        if intervals is not None:
+            assert isinstance(items, collections.abc.Iterable), repr(items)
+            intervals = abjad.CyclicTuple(intervals)
+        self._intervals = intervals
+
+    ### SPECIAL METHODS ###
+
+    def __getitem__(self, i) -> abjad.Pitch:
+        """
+        Gets pitch ``i`` cyclically with intervals.
+        """
+        if isinstance(i, slice):
+            raise NotImplementedError
+        iteration = i // len(self)
+        if self.intervals is None:
+            transposition = 0
+        else:
+            transposition = sum(self.intervals[:iteration])
+        pitch_ = abjad.CyclicTuple(list(self))[i]
+        pitch = type(pitch_)(pitch_.number + transposition)
+        return pitch
+
+    ### PUBLIC PROPERTIES ###
+
+    @property
+    def intervals(self):
+        """
+        Gets intervals.
+        """
+        return self._intervals
+
+    @property
+    def items(self):
+        """
+        Gets items.
+        """
+        return self._items
+
+
+def loop(
+    items: baca.typing.Sequence,
+    intervals: baca.typing.Sequence,
+    selector=baca.selectors.plts(exclude=baca.const.HIDDEN),
+) -> baca.PitchCommand:
+    """
+    Loops ``items`` at ``intervals``. Temporarily stolen from baca.
+    """
+    loop = Loop(items=items, intervals=intervals)
+    return baca.pitches(loop, selector=selector)

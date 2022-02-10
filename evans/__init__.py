@@ -64,8 +64,10 @@ from .metmod import (
 )
 from .pitch import (
     JIPitch,
+    Loop,
     combination_tones,
     herz_combination_tone_ratios,
+    loop,
     return_cent_markup,
     return_vertical_moment_ties,
     to_nearest_eighth_tone,
@@ -152,6 +154,7 @@ __all__ = [
     "IntermittentVoiceHandler",
     "JIPitch",
     "LogicalTieCollection",
+    "Loop",
     "MarkovChain",
     "MusicCommand",
     "NoteheadBracketMaker",
@@ -217,6 +220,7 @@ __all__ = [
     "intercalate_silences",
     "iterate_nwise",
     "julia_set",
+    "loop",
     "make_score_template",
     "make_showable_list",
     "make_split_list",

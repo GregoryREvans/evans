@@ -3263,7 +3263,7 @@ class PitchHandler(Handler):
                         if 0 < len(marks):
                             marks_strings = r""
                             for marks_string in marks[::-1]:
-                                marks_strings += rf"{marks_string.contents[0][24:-1]}"
+                                marks_strings += rf"{marks_string.string[24:-1]}"
                             column = abjad.Markup(
                                 rf"\center-column {{ {marks_strings} }}",
                             )
