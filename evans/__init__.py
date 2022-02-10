@@ -222,6 +222,7 @@ __all__ = [
     "make_split_list",
     "metric_modulation",
     "mixed_number",
+    "music",
     "nested_list_to_rtm",
     "reduce_fermata_measures",
     "relative_ratios",

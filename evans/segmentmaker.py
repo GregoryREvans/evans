@@ -576,7 +576,7 @@ class SegmentMaker:
         Comments measure numbers in ``score``.
         """
         offset_to_measure_number = {}
-        for context in abjad.Iteration(score).components(abjad.Context):
+        for context in abjad.iterate.components(score, abjad.Context):
             if not context.simultaneous:
                 break
         site = abjad.Tag("evans.SegmentMaker.comment_measure_numbers()")
@@ -586,7 +586,7 @@ class SegmentMaker:
             first_leaf = abjad.Selection(measure).leaf(0)
             start_offset = first_leaf._get_timespan().start_offset
             offset_to_measure_number[start_offset] = measure_number
-        for leaf in abjad.Iteration(score).leaves():
+        for leaf in abjad.iterate.leaves(score):
             offset = leaf._get_timespan().start_offset
             measure_number = offset_to_measure_number.get(offset, None)
             if measure_number is None:
@@ -873,7 +873,7 @@ class SegmentMaker:
         if self.with_layout is False:
             score_block = abjad.Block(name="score")
             score_block.items.append(self.score_template)
-            assembled_includes = [f"\\include '{path}'" for path in self.score_includes]
+            assembled_includes = [f'\\include "{path}"' for path in self.score_includes]
             assembled_includes.append(score_block)
             score_file = abjad.LilyPondFile(
                 items=assembled_includes,
@@ -917,7 +917,7 @@ class SegmentMaker:
                 score_lines = pointer_1.readlines()
                 build_path = self.current_directory.parent.with_name("build")
                 build_path /= "score"
-                lines = score_lines[14:-1]  # was 15:-1
+                lines = score_lines[11:-1]  # was 15:-1
                 with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                     fp.writelines(lines)
         else:
@@ -925,7 +925,7 @@ class SegmentMaker:
             parallel_container = abjad.Container(simultaneous=True)
             parallel_container.append(self.score_template)
             score_block.items.append(parallel_container)
-            assembled_includes = [f"\\include '{path}'" for path in self.score_includes]
+            assembled_includes = [f'\\include "{path}"' for path in self.score_includes]
             assembled_includes.append(score_block)
             score_file = abjad.LilyPondFile(
                 items=assembled_includes,

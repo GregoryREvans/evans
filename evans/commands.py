@@ -327,7 +327,10 @@ def music(
             rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
             rmakers.extract_trivial(),
             rmakers.RewriteMeterCommand(
-                boundary_depth=rewrite_meter, reference_meters=[abjad.Meter((4, 4))]
+                boundary_depth=rewrite_meter,
+                reference_meters=[
+                    abjad.Meter((4, 4))
+                ],  # reference meters is for constructing special offset inventories (i.e. akasha 6/8)
             ),
             preprocessor=preprocessor,
         )
