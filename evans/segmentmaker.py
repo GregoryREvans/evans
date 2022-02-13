@@ -149,6 +149,7 @@ class SegmentMaker:
         tempo=None,
         time_signatures=None,
         transpose_from_sounding_pitch=None,
+        transparent_fermatas=True,
         tuplet_bracket_noteheads=True,
         with_layout=False,
         extra_rewrite=True,
@@ -177,6 +178,7 @@ class SegmentMaker:
         self.tempo = tempo
         self.time_signatures = time_signatures
         self.transpose_from_sounding_pitch = transpose_from_sounding_pitch
+        self.transparent_fermatas = transparent_fermatas
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.with_layout = with_layout
         self.extra_rewrite = extra_rewrite
@@ -636,7 +638,9 @@ class SegmentMaker:
             for voice in abjad.Selection(self.score_template).components(abjad.Voice):
                 measures = abjad.Selection(voice).leaves().group_by_measure()
                 for fermata_index in self.fermata_measures:
-                    make_fermata_measure(measures[fermata_index])
+                    make_fermata_measure(
+                        measures[fermata_index], transparent=self.transparent_fermatas
+                    )
 
         g_c = self.score_template["Global Context"]
         measures = abjad.Selection(g_c).leaves().group_by_measure()
@@ -917,7 +921,7 @@ class SegmentMaker:
                 score_lines = pointer_1.readlines()
                 build_path = self.current_directory.parent.with_name("build")
                 build_path /= "score"
-                lines = score_lines[11:-1]  # was 15:-1
+                lines = score_lines[14:-1]  # was 15:-1
                 with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                     fp.writelines(lines)
         else:
@@ -976,7 +980,7 @@ class SegmentMaker:
                 score_lines = pointer_1.readlines()
                 build_path = self.current_directory.parent.with_name("build")
                 build_path /= "score"
-                lines = score_lines[15:-3]
+                lines = score_lines[12:14] + score_lines[15:-3]
                 with open(f"{build_path}/{self.segment_name}.ly", "w") as fp:
                     fp.writelines(lines)
 
@@ -1369,7 +1373,7 @@ def annotate_time(context):
     abjad.label.with_start_offsets(context, clock_time=True)
 
 
-def make_fermata_measure(selection):
+def make_fermata_measure(selection, transparent=True):
     duration = abjad.Duration((1, 4))
     skip = abjad.MultimeasureRest(1, multiplier=duration)
     transparent_command = abjad.LilyPondLiteral(
@@ -1397,15 +1401,16 @@ def make_fermata_measure(selection):
         abjad.attach(transparent_sig, temp_container[0])
         abjad.attach(transparent_rest, temp_container[1])
     else:
-        start_command = abjad.LilyPondLiteral(
-            r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
-            format_slot="before",
-        )
-        stop_command = abjad.LilyPondLiteral(
-            r"\stopStaff \startStaff", format_slot="after"
-        )
-        abjad.attach(start_command, temp_container[0])
-        abjad.attach(stop_command, temp_container[0])
+        if transparent is True:
+            start_command = abjad.LilyPondLiteral(
+                r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
+                format_slot="before",
+            )
+            stop_command = abjad.LilyPondLiteral(
+                r"\stopStaff \startStaff", format_slot="after"
+            )
+            abjad.attach(start_command, temp_container[0])
+            abjad.attach(stop_command, temp_container[0])
     abjad.attach(transparent_command, temp_container[0])
     abjad.mutate.replace(original_leaves, temp_container[:])
 
