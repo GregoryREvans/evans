@@ -1,14 +1,14 @@
 import abjad
-import baca
+import evans
 from abjadext import rmakers
 
 rmaker = rmakers.talea([1, 3, 2, 4, 5], 8, extra_counts=[1, 0, 1, 1, 2, 3, 4])
 
 
 def quarters(divisions):
-    divisions = baca.Sequence(divisions)
-    divisions = baca.Sequence(baca.Sequence(_).quarters() for _ in divisions)
-    divisions = baca.Sequence(divisions).flatten(depth=-1)
+    divisions = evans.BacaSequence(divisions)
+    divisions = evans.BacaSequence(evans.BacaSequence(_).quarters() for _ in divisions)
+    divisions = evans.BacaSequence(divisions).flatten(depth=-1)
     return divisions
 
 

@@ -96,6 +96,7 @@ from .segmentmaker import (
     beam_meter,
     beautify_tuplets,
     get_top_level_components_from_leaves,
+    global_to_voice,
     make_score_template,
 )
 from .sequence import (
@@ -245,4 +246,5 @@ __all__ = [
     "tonnetz",
     "tune_to_ratio",
     "join_time_signature_lists",
+    "global_to_voice",
 ]

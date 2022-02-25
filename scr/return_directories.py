@@ -14,4 +14,4 @@ def return_directories(
             continue
         else:
             returns.append(score)
-    return returns
+    returns

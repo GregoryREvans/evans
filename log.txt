@@ -1,0 +1,48 @@
+All done! ✨ 🍰 ✨
+44 files would be left unchanged.
+docs/source/conf.py [94mOK[0m
+dotfiles/.sphinx.py [94mOK[0m
+dotfiles/get-pip.py [94mOK[0m
+dotfiles/test_segments.py [94mOK[0m
+evans/__init__.py [94mOK[0m
+evans/commands.py [94mOK[0m
+evans/consort/AbjadObject.py [94mOK[0m
+evans/consort/AbjadValueObject.py [94mOK[0m
+evans/consort/LogicalTieCollection.py [94mOK[0m
+evans/consort/RatioPartsExpression.py [94mOK[0m
+evans/consort/TimespanCollection.py [94mOK[0m
+evans/consort/TimespanCollectionNode.py [94mOK[0m
+evans/consort/TimespanSimultaneity.py [94mOK[0m
+evans/consort/__init__.py [94mOK[0m
+evans/consort/iterate_nwise.py [94mOK[0m
+evans/consort/rotate.py [94mOK[0m
+evans/handlers.py [94mOK[0m
+evans/layout.py [94mOK[0m
+evans/metmod.py [94mOK[0m
+evans/pitch.py [94mOK[0m
+evans/rtm.py [94mOK[0m
+evans/segmentmaker.py [94mOK[0m
+evans/sequence.py [94mOK[0m
+evans/spanners.py [94mOK[0m
+evans/timespan.py [94mOK[0m
+research/AddSpannerAnchor.py [94mOK[0m
+research/HEJI_classes.py [94mOK[0m
+research/auto_voice_leading.py [94mOK[0m
+research/combinatorial_fever.py [94mOK[0m
+research/equal_division_ratio_difference.py [94mOK[0m
+research/meter_fitting.py [94mOK[0m
+research/meter_offsets.py [94mOK[0m
+research/pattern/pattern_test_1.py [94mOK[0m
+research/pitch_patterns/generalized_pitch_mutations.py [94mOK[0m
+research/solar_system_ratios.py [94mOK[0m
+research/stack_operations.py [94mOK[0m
+research/timespan_splitting.py [94mOK[0m
+research/union_intersection/complement.py [94mOK[0m
+research/union_intersection/old_list_intersection.py [94mOK[0m
+research/union_intersection/scale.py [94mOK[0m
+research/union_intersection/scale_union_intersection.py [94mOK[0m
+research/union_intersection/unique_intersection_union.py [94mOK[0m
+scr/return_directories.py [94mOK[0m
+setup.py [94mOK[0m
+
+1244 passed, 0 failed out of 1244 tests in 1 module.

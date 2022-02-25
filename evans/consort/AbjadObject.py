@@ -1,4 +1,5 @@
 import abjad
+import black
 
 
 class AbjadObject:
@@ -23,7 +24,9 @@ class AbjadObject:
         """
 
         if format_specification in ("", "storage"):
-            return abjad.storage(self)
+            string = str(self)
+            string = black.format_str(string, mode=black.mode.Mode())
+            return string
         return str(self)
 
     def __getstate__(self):
@@ -61,10 +64,10 @@ class AbjadObject:
         Returns string.
         """
 
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __setstate__(self, state):
         r"""Sets state of Abjad object.

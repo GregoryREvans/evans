@@ -7,6 +7,7 @@ import os
 import pathlib
 
 import abjad
+import black
 import quicktions
 
 from . import consort
@@ -70,10 +71,10 @@ class NoteheadBracketMaker:
         return self._transform_brackets(selections)
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def _assemble_notehead(self, head_dur):
         duration_map = {
@@ -184,10 +185,10 @@ class SegmentMaker:
         self.extra_rewrite = extra_rewrite
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def _add_attachments(self):
         print("Adding attachments ...")
@@ -487,8 +488,11 @@ class SegmentMaker:
             persistent_attachments = abjad.get.indicators(penultimate_rest)
             info[f"Voice {i + 1}"] = persistent_attachments
         with open(f"{self.current_directory}/.persistent.py", "w") as fp:
-            info_format = abjad.storage(info)
-            string = f"import abjad\ninfo = {info_format}"
+            info_format_string = str(info)
+            info_format_string = black.format_str(
+                info_format_string, mode=black.mode.Mode()
+            )
+            string = f"import abjad\ninfo = {info_format_string}"
             fp.writelines(string)
 
     def _call_commands(self):
@@ -568,8 +572,9 @@ class SegmentMaker:
                     handler(selection)
                     handler_to_value[handler.name] = handler.state()
         with open(f"{self.current_directory}/.handlers.py", "w") as fp:
-            handler_to_value_format = abjad.storage(handler_to_value)
-            string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
+            handler_string = str(handler_to_value)
+            string = black.format_str(handler_string, mode=black.mode.Mode())
+            string = f"import abjad\nhandler_to_value = {string}"
             fp.writelines(string)
 
     @staticmethod
@@ -689,7 +694,7 @@ class SegmentMaker:
                 ]
                 measure_groups = relevant_measures.group_by_contiguity()
                 group_sizes = [len(g) for g in measure_groups]
-                duration_groups = abjad.Sequence(measure_durations).partition_by_counts(
+                duration_groups = Sequence(measure_durations).partition_by_counts(
                     group_sizes
                 )
                 for measure_group, duration_group in zip(
@@ -793,8 +798,9 @@ class SegmentMaker:
                 voice.append(container[:])
                 handler_to_value[handler.name] = handler.return_state()
         with open(f"{self.current_directory}/.rhythm.py", "w") as fp:
-            handler_to_value_format = abjad.storage(handler_to_value)
-            string = f"import abjad\nhandler_to_value = {handler_to_value_format}"
+            handler_string = str(handler_to_value)
+            string = black.format_str(handler_string, mode=black.mode.Mode())
+            string = f"import abjad\nhandler_to_value = {string}"
             fp.writelines(string)
 
     def _make_mm_rests(self):
@@ -1127,19 +1133,19 @@ class SegmentMaker:
         with open(f"{self.current_directory}/.optimization", "a") as fp:
 
             segment_time = f"Segment runtime: {segment_time} "
-            segment_time += abjad.String("second").pluralize(segment_time)
+            segment_time += abjad.string.pluralize("second", segment_time)
 
             pre_handlers_time = f" Pre-handlers runtime: {self.pre_handlers_time} "
-            pre_handlers_time += abjad.String("second").pluralize(
-                self.pre_handlers_time
+            pre_handlers_time += abjad.string.pluralize(
+                "second", self.pre_handlers_time
             )
 
             handlers_time = f" Handlers runtime: {self.handlers_time} "
-            handlers_time += abjad.String("second").pluralize(self.handlers_time)
+            handlers_time += abjad.string.pluralize("second", self.handlers_time)
 
             post_handlers_time = f" Post-handlers runtime: {self.post_handlers_time} "
-            post_handlers_time += abjad.String("second").pluralize(
-                self.post_handlers_time
+            post_handlers_time += abjad.string.pluralize(
+                "second", self.post_handlers_time
             )
 
             lines = []
@@ -1255,7 +1261,8 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
         >>> tuplet = abjad.Tuplet((2, 3), "c'8 r8 c'8")
         >>> post_tuplet_notes = abjad.Staff("c'8 c'8 c'8")
         >>> staff = abjad.Staff()
-        >>> for _ in [pre_tuplet_notes[:], tuplet, post_tuplet_notes[:]]:
+        >>> combined = pre_tuplet_notes[:] + [tuplet] + post_tuplet_notes[:]
+        >>> for _ in combined:
         ...     staff.append(_)
         ...
         >>> evans.beam_meter(components=staff[:], meter=abjad.Meter((4, 4)), offset_depth=1)
@@ -1490,3 +1497,95 @@ def beautify_tuplets(target):
             tuplet.hide = True
         for rest_group in abjad.Selection(tuplet).rests().group_by_contiguity():
             abjad.mutate.fuse(rest_group)  # EXPERIMENTAL
+
+
+# TODO: make functional without segment_maker
+# def _extract_voice_info(self, score):
+#     score_pitches = []
+#     score_durations = []
+#     for voice in abjad.Selection(score).components(abjad.Voice):
+#         pitches = []
+#         durations = []
+#         for tie in abjad.Selection(voice).logical_ties():
+#             dur = abjad.get.duration(tie)
+#             durations.append(str(dur))
+#             if isinstance(tie[0], abjad.Rest):
+#                 sub_pitches = ["Rest()"]
+#             else:
+#                 if abjad.get.annotation(tie[0], "ratio"):
+#                     sub_pitches = [abjad.get.annotation(tie[0], "ratio")]
+#                 else:
+#                     sub_pitches = [p.hertz for p in abjad.get.pitches(tie[0])]
+#             if 1 < len(sub_pitches):
+#                 pitches.append([str(s) for s in sub_pitches])
+#             elif 0 == len(sub_pitches):
+#                 pitches.append("Rest()")
+#             else:
+#                 pitches.append(str(sub_pitches[0]))
+#         score_pitches.append(pitches)
+#         score_durations.append(durations)
+#     return [_ for _ in zip(score_pitches, score_durations)]
+#
+# def _make_sc_file(self):
+#     info = self._extract_voice_info(self.score_template)
+#     lines = "s.boot;\ns.quit;\n\n("
+#
+#     for i, voice in enumerate(info):
+#         lines += f"\n\t// voice {i + 1}\n\t\tPbind(\n\t\t\t\\freq, Pseq(\n"
+#
+#         lines += "\t\t\t\t[\n"
+#         for chord in voice[0]:
+#             lines += "\t\t\t\t\t[\n"
+#             if isinstance(chord, list):
+#                 for _ in chord:
+#                     if _ == "Rest()":
+#                         lines += f"\t\t\t\t\t\t{_},\n"
+#                     else:
+#                         if _[0] == "[":
+#                             lines += f"\t\t\t\t\t\t{_[2:-2]},\n"
+#                         else:
+#                             lines += f"\t\t\t\t\t\t{_},\n"
+#             else:
+#                 if chord == "Rest()":
+#                     lines += f"\t\t\t\t\t\t{chord},\n"
+#                 else:
+#                     if chord[0] == "[":
+#                         lines += f"\t\t\t\t\t\t{chord[2:-2]},\n"
+#                     else:
+#                         lines += f"\t\t\t\t\t\t{chord},\n"
+#             lines += "\t\t\t\t\t],\n"
+#         lines += "\t\t\t\t],\n"
+#         lines += "\t\t\t),\n"
+#         lines += "\t\t\t\\dur, Pseq(\n\t\t\t\t[\n"
+#         for dur in voice[1]:
+#             lines += f"\t\t\t\t\t{quicktions.Fraction(dur) * 4} * {quicktions.Fraction(60, self.tempo[-1])},\n"
+#         lines += "\t\t\t\t]\n"
+#         lines += "\t\t\t,1),\n"
+#         lines += "\t\t\t\\legato, 1,\n\t\t).play;"
+#
+#     lines += ")"
+#
+#     with open(
+#         f'{self.current_directory}/voice_to_sc_{str(datetime.datetime.now()).replace(" ", "-").replace(":", "-").replace(".", "-")}.scd',
+#         "w",
+#     ) as fp:
+#         fp.writelines(lines)
+
+
+def global_to_voice(score):
+    global_context = score["Global Context"]
+    measures = abjad.Selection(global_context).leaves().group_by_measure()
+    voices = abjad.Selection(score).components(abjad.Voice)
+    for i, measure in enumerate(measures):
+        indicators = []
+        for leaf in measure.leaves():
+            for indicator in abjad.get.indicators(leaf):
+                if not isinstance(
+                    indicator, (abjad.TimeSignature, abjad.MetronomeMark)
+                ):
+                    indicators.append(indicator)
+                    abjad.detach(indicator, leaf)
+        for voice in voices:
+            target = abjad.Selection(voice).leaves().group_by_measure().get([i]).leaf(0)
+            for _indicator in indicators:
+                abjad.attach(_indicator, target)

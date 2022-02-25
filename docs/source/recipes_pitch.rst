@@ -17,7 +17,7 @@ Define helper function for creating interval cycles:
     ...         val = returned_list[-1] + interval
     ...         val %= 12
     ...         returned_list.append(val)
-    ...     return returned_list
+    ...     returned_list
 
 Define helper function to intersect cycles:
 
@@ -36,7 +36,7 @@ Define helper function to intersect cycles:
     ...             returned_list.append(value)
     ...         else:
     ...             returned_list.append(None)
-    ...     return returned_list
+    ...     returned_list
 
 Create first intersection:
 

@@ -25,7 +25,7 @@ class DurationLine:  # don't forget to force notehead shape
     ### SPECIAL METHODS ###
 
     def __repr__(self):
-        return abjad.StorageFormatManager(self).get_repr_format()
+        return f"<{type(self).__name__}()>"
 
     def __str__(self):
         return r"\-"

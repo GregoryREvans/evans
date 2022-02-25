@@ -645,10 +645,10 @@ class RTMMaker(rmakers.RhythmMaker):
         self.state = -1
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __call__(self, divisions, previous_state=-1):
         starting_index = -1

@@ -230,27 +230,8 @@ class TimespanCollection(AbjadObject):
             ...     ])
             >>> timespan = abjad.Timespan(5, 10)
             >>> result = timespan_collection - timespan
-            >>> print(abjad.storage(timespan_collection))
-            evans.TimespanCollection(
-                [
-                    abjad.Timespan(
-                        start_offset=abjad.Offset((-2, 1)),
-                        stop_offset=abjad.Offset((5, 1)),
-                        ),
-                    abjad.Timespan(
-                        start_offset=abjad.Offset((0, 1)),
-                        stop_offset=abjad.Offset((5, 1)),
-                        ),
-                    abjad.Timespan(
-                        start_offset=abjad.Offset((10, 1)),
-                        stop_offset=abjad.Offset((12, 1)),
-                        ),
-                    abjad.Timespan(
-                        start_offset=abjad.Offset((10, 1)),
-                        stop_offset=abjad.Offset((16, 1)),
-                        ),
-                    ]
-                )
+            >>> timespan_collection
+            <TimespanCollection()>
 
         Operates in place and returns timespan collection.
         """

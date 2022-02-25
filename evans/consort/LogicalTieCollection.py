@@ -15,31 +15,9 @@ class LogicalTieCollection(AbjadObject):
         >>> for tie in logical_ties:
         ...     logical_tie_collection.insert(tie)
         ...
-        >>> print(abjad.storage(logical_tie_collection))
-        evans.LogicalTieCollection(
-            [
-                abjad.LogicalTie(
-                    [
-                        abjad.Note("c'4"),
-                        ]
-                    ),
-                abjad.LogicalTie(
-                    [
-                        abjad.Note("c'4"),
-                        ]
-                    ),
-                abjad.LogicalTie(
-                    [
-                        abjad.Note("c'4"),
-                        ]
-                    ),
-                abjad.LogicalTie(
-                    [
-                        abjad.Note("c'4"),
-                        ]
-                    ),
-                ]
-            )
+        >>> string = str(logical_tie_collection)
+        >>> print(string)
+        <LogicalTieCollection()>
 
     """
 
@@ -98,14 +76,14 @@ class LogicalTieCollection(AbjadObject):
             ...     logical_tie_collection.insert(tie)
             ...
             >>> logical_tie_collection[-1]
-            LogicalTie([Note("c'4")])
+            LogicalTie(items=[Note("c'4")])
 
             >>> for logical_tie in logical_tie_collection[:3]:
             ...     logical_tie
             ...
-            LogicalTie([Note("c'4")])
-            LogicalTie([Note("c'4")])
-            LogicalTie([Note("c'4")])
+            LogicalTie(items=[Note("c'4")])
+            LogicalTie(items=[Note("c'4")])
+            LogicalTie(items=[Note("c'4")])
 
         Returns logical_tie or logical_ties.
         """
@@ -166,10 +144,10 @@ class LogicalTieCollection(AbjadObject):
             >>> for logical_tie in logical_tie_collection:
             ...     logical_tie
             ...
-            LogicalTie([Note("c'4.")])
-            LogicalTie([Note("c'8")])
-            LogicalTie([Note("c'4..")])
-            LogicalTie([Note("c'16")])
+            LogicalTie(items=[Note("c'4.")])
+            LogicalTie(items=[Note("c'8")])
+            LogicalTie(items=[Note("c'4..")])
+            LogicalTie(items=[Note("c'16")])
 
         Returns generator.
         """
@@ -444,7 +422,7 @@ class LogicalTieCollection(AbjadObject):
             >>> for x in logical_tie_collection.find_logical_ties_overlapping_offset(0.5):
             ...     x
             ...
-            LogicalTie([Note("c'2")])
+            LogicalTie(items=[Note("c'2")])
 
         Returns tuple of 0 or more logical_ties.
         """
@@ -488,8 +466,8 @@ class LogicalTieCollection(AbjadObject):
             >>> for x in logical_tie_collection.find_logical_ties_intersecting_timespan(timespan):
             ...     x
             ...
-            LogicalTie([Note("c'2")])
-            LogicalTie([Note("c'4")])
+            LogicalTie(items=[Note("c'2")])
+            LogicalTie(items=[Note("c'4")])
 
         Returns tuple of 0 or more logical_ties.
         """
@@ -634,8 +612,8 @@ class LogicalTieCollection(AbjadObject):
             >>> for x in logical_tie_collection:
             ...     x
             ...
-            LogicalTie([Note("c'2")])
-            LogicalTie([Note("c'2")])
+            LogicalTie(items=[Note("c'2")])
+            LogicalTie(items=[Note("c'2")])
 
         `logical_ties` may be a single logical_tie or an iterable of logical_ties.
 
@@ -666,7 +644,7 @@ class LogicalTieCollection(AbjadObject):
             >>> for logical_tie in logical_tie_collection:
             ...     logical_tie
             ...
-            LogicalTie([Note("c'4")])
+            LogicalTie(items=[Note("c'4")])
 
         """
         if self._is_logical_tie(logical_ties):

@@ -370,20 +370,20 @@ def return_vertical_moment_ties(score):
         >>> for tie in evans.return_vertical_moment_ties(score):
         ...     tie
         ...
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("c'4")])
-        LogicalTie([Note("cs'4")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("cs'4")])
-        LogicalTie([Note("c'2")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("cs'2")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("d'8")])
-        LogicalTie([Note("c'4")])
-        LogicalTie([Note("d'8")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("c'4")])
+        LogicalTie(items=[Note("cs'4")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("cs'4")])
+        LogicalTie(items=[Note("c'2")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("cs'2")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("d'8")])
+        LogicalTie(items=[Note("c'4")])
+        LogicalTie(items=[Note("d'8")])
 
     ..  container:: example
 

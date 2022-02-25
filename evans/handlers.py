@@ -17,7 +17,7 @@ class Handler:
     """
 
     def __repr__(self):
-        return abjad.StorageFormatManager(self).get_repr_format()
+        return f"<{type(self).__name__}()>"
 
 
 class ArticulationHandler(Handler):
@@ -2186,7 +2186,9 @@ class IntermittentVoiceHandler(Handler):
         container = abjad.Container(simultaneous=True)
         original_voice = abjad.Voice(name=self._find_parent(selections))
         intermittent_voice = abjad.Voice(name="intermittent_voice")
-        intermittent_voice.append(self._make_components(duration)[:])
+        new_components = self._make_components(duration)[:]
+        for new_component in new_components:
+            intermittent_voice.append(new_component)
         abjad.mutate.wrap(selections, original_voice)
         abjad.mutate.wrap(original_voice, container)
         container.append(intermittent_voice)

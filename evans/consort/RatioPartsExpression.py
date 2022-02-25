@@ -14,10 +14,7 @@ class RatioPartsExpression(AbjadObject):
         ...     parts=(0, 2),
         ... )
         >>> print(repr(expression))
-        evans.RatioPartsExpression(
-            parts=(0, 2),
-            ratio=abjad.Ratio((1, 2, 1)),
-            )
+        <RatioPartsExpression()>
 
         >>> timespan = abjad.Timespan(
         ...     start_offset=abjad.Duration(1, 2),
@@ -89,11 +86,8 @@ class RatioPartsExpression(AbjadObject):
 
             >>> ratio = [-1, 2, -1, 1, -1]
             >>> expression = evans.RatioPartsExpression.from_sequence(ratio)
-            >>> print(abjad.storage(expression))
-            evans.RatioPartsExpression(
-                parts=(1, 3),
-                ratio=abjad.Ratio((1, 2, 1, 1, 1)),
-            )
+            >>> expression
+            <RatioPartsExpression()>
 
         Returns new ratio parts expression.
         """

@@ -2,7 +2,7 @@ from fractions import Fraction
 
 import abjad
 
-from .sequence import CyclicList
+from .sequence import CyclicList, Sequence
 
 
 class Breaks:
@@ -22,13 +22,11 @@ class Breaks:
             self.pages.append(page)
             for system in page.systems:
                 systems.append(system)
-        self._page_break_indices = abjad.Sequence(
-            [_.total_measures for _ in self.pages]
-        )
+        self._page_break_indices = Sequence([_.total_measures for _ in self.pages])
         self.page_break_indices = abjad.math.cumulative_sums(self._page_break_indices)[
             1:
         ]
-        self._system_break_indices = abjad.Sequence(
+        self._system_break_indices = Sequence(
             [_.system_break_indices for _ in self.pages]
         ).flatten()
         self.system_break_indices = abjad.math.cumulative_sums(

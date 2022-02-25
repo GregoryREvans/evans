@@ -15,7 +15,7 @@ def return_files(file_path):
                 continue
             else:
                 returns.append(file)
-        return returns
+        returns
     else:
         return [pathlib.Path(file_path)]
 

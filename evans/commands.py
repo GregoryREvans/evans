@@ -29,10 +29,10 @@ class Command:
         self.target_voice_name = target_voice_name
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __call__(self, score):
         r"""
@@ -181,10 +181,10 @@ class HandlerCommand:
         self.handler = handler
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
 
 class Attachment:
@@ -297,10 +297,10 @@ class MusicCommand:
             self.threaded_commands = threaded_commands
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
 
 def music(
@@ -368,10 +368,10 @@ class RhythmCommand:
         self.handler = handler
 
     def __str__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
     def __repr__(self):
-        return abjad.storage(self)
+        return f"<{type(self).__name__}()>"
 
 
 class Skeleton:
