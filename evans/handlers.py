@@ -3154,6 +3154,8 @@ class PitchHandler(Handler):
             collect = self._collect_pitches_durations_leaves(old_ties)
             pitches, durations, old_leaves = collect
             microtonal_indices_to_pitch = dict()
+            JIPitch_indices = []
+            JIPitch_cents = []
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
                     _.sort()
@@ -3196,8 +3198,32 @@ class PitchHandler(Handler):
             ):  # find way to add cent when 1/4 is false
                 if isinstance(pitch_value, JIPitch):
                     pitches[pitch_index] = pitch_value.pitch
+                    # experimental
+                    JIPitch_indices.append(
+                        (
+                            pitch_index,
+                            f"{pitch_value.fundamental.hertz} * {pitch_value.ratio}",
+                        )
+                    )
+                    if pitch_value.with_quarter_tones is False:
+                        cent_deviation = pitch_value.deviation
+                        cent_string = (
+                            rf'\markup \center-column {{ "{str(cent_deviation)}" }}'
+                        )
+                        if -1 < cent_deviation:
+                            cent_string = cent_string[:26] + "+" + cent_string[26:]
+                        JIPitch_cents.append(
+                            (pitch_index, abjad.Markup(cent_string, direction=abjad.Up))
+                        )
             if self.apply_all is False:
                 new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+                # experimental
+                for JIPitch_index in JIPitch_indices:
+                    abjad.annotate(
+                        new_leaves[JIPitch_index[0]], "ratio", JIPitch_index[1]
+                    )
+                for JIPitch_cent in JIPitch_cents:
+                    abjad.attach(JIPitch_cent[1], new_leaves[JIPitch_cent[0]])
             else:
                 new_leaves = old_leaves
                 for i, pair in enumerate(
