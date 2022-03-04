@@ -1,132 +1,15 @@
-import datetime
 import pathlib
+from fractions import Fraction
 
 import abjad
 import evans
-import quicktions
 
 ###
 ###
 ###
 
-
-def sort_voices(nested_input_list, voice_dict, prefill=True):
-    def helper(values):
-        already_used = []
-        out = {}
-        for value in values:
-            out[values[0][1][0][0]] = values[0][0]
-            already_used.append(values[0][1][0][0])
-            values.remove(values[0])
-            for value_ in values:
-                for term in value_[1]:
-                    if term[0] in already_used:
-                        value_[1].remove(term)
-            if 1 < len(values):
-                values = sorted(values, key=lambda _: _[1][1])
-            else:
-                out[values[0][1][0][0]] = values[0][0]
-        return out
-
-    for i in range(len(voice_dict)):
-        voice_dict[f"voice {i + 1}"].append(nested_input_list[0][i])
-
-    for chord in nested_input_list[1:]:
-        ratio_closeness_values = []
-        for ratio in chord:
-            temp_vals = [
-                (voice, abs(voice_dict[voice][-1] - ratio)) for voice in voice_dict
-            ]
-            sorted_temp_vals = sorted(temp_vals, key=lambda _: _[1])
-            ratio_closeness_values.append((ratio, sorted_temp_vals))
-        sorted_ratio_closeness_values = sorted(
-            ratio_closeness_values, key=lambda _: _[1][1]
-        )
-        distribution_dict = helper(sorted_ratio_closeness_values)
-        for key in distribution_dict.keys():
-            voice_dict[key].append(distribution_dict[key])
-
-    return voice_dict
-
-
-def _extract_voice_info(score):
-    score_pitches = []
-    score_durations = []
-    for voice in abjad.Selection(score).components(abjad.Voice):
-        pitches = []
-        durations = []
-        for tie in abjad.Selection(voice).logical_ties():
-            dur = abjad.get.duration(tie)
-            durations.append(str(dur))
-            if isinstance(tie[0], abjad.Rest):
-                sub_pitches = ["Rest()"]
-            else:
-                if abjad.get.annotation(tie[0], "ratio"):
-                    sub_pitches = [abjad.get.annotation(tie[0], "ratio")]
-                else:
-                    sub_pitches = [p.hertz for p in abjad.get.pitches(tie[0])]
-            if 1 < len(sub_pitches):
-                pitches.append([str(s) for s in sub_pitches])
-            elif 0 == len(sub_pitches):
-                pitches.append("Rest()")
-            else:
-                pitches.append(str(sub_pitches[0]))
-        score_pitches.append(pitches)
-        score_durations.append(durations)
-    return [_ for _ in zip(score_pitches, score_durations)]
-
-
-def make_sc_file(score, tempo, current_directory):
-
-    info = _extract_voice_info(score)
-    lines = "s.boot;\ns.quit;\n\n("
-
-    for i, voice in enumerate(info):
-        lines += f"\n\t// voice {i + 1}\n\t\tPbind(\n\t\t\t\\freq, Pseq(\n"
-
-        lines += "\t\t\t\t[\n"
-        for chord in voice[0]:
-            lines += "\t\t\t\t\t[\n"
-            if isinstance(chord, list):
-                for _ in chord:
-                    if _ == "Rest()":
-                        lines += f"\t\t\t\t\t\t{_},\n"
-                    else:
-                        if _[0] == "[":
-                            lines += f"\t\t\t\t\t\t{_[2:-2]},\n"
-                        else:
-                            lines += f"\t\t\t\t\t\t{_},\n"
-            else:
-                if chord == "Rest()":
-                    lines += f"\t\t\t\t\t\t{chord},\n"
-                else:
-                    if chord[0] == "[":
-                        lines += f"\t\t\t\t\t\t{chord[2:-2]},\n"
-                    else:
-                        lines += f"\t\t\t\t\t\t{chord},\n"
-            lines += "\t\t\t\t\t],\n"
-        lines += "\t\t\t\t],\n"
-        lines += "\t\t\t),\n"
-        lines += "\t\t\t\\dur, Pseq(\n\t\t\t\t[\n"
-        for dur in voice[1]:
-            lines += f"\t\t\t\t\t{quicktions.Fraction(dur) * 4} * {quicktions.Fraction(60, tempo[-1])},\n"
-        lines += "\t\t\t\t]\n"
-        lines += "\t\t\t,1),\n"
-        lines += f"\t\t\t\\amp, {1 / len(info)},\n"
-        lines += "\t\t\t\\legato, 1,\n\t\t).play;"
-
-    lines += ")"
-
-    with open(
-        f'{current_directory}/voice_to_sc_{str(datetime.datetime.now()).replace(" ", "-").replace(":", "-").replace(".", "-")}.scd',
-        "w",
-    ) as fp:
-        fp.writelines(lines)
-
-
-###
-###
-###
+tempo_pair = ((1, 4), 10)
+metronome_mark = abjad.MetronomeMark(tempo_pair[0], tempo_pair[1])
 
 # trio 1
 voices = {
@@ -137,7 +20,24 @@ voices = {
 
 s = evans.RatioSegment(["1/1", "6/5", "3/2"])
 
-instructions = ["3/2", "4/5", "3/2", "4/5", "3/2", "4/5", "3/2", "4/5"]
+instructions = [
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+    "3/2",
+    "4/5",
+]
 
 out = [s]
 
@@ -149,60 +49,7 @@ out_ = []
 for sub_list in out:
     out_.append(list(sub_list))
 
-voicewise_ratios = sort_voices(out_, voices)
-
-handlers = []
-fundamentals = ["c,", "c", "c'"]
-voice_length = 0
-for fundamental, voice in zip(fundamentals, voicewise_ratios):
-    handlers.append(
-        evans.PitchHandler(
-            [evans.JIPitch(fundamental, ratio) for ratio in voicewise_ratios[voice]],
-            forget=False,
-        )
-    )
-    voice_length = len(voicewise_ratios[voice])
-
-handlers.reverse()
-
-fundamentals = ["c'1", "c1", "c,1"]
-
-group = abjad.StaffGroup(
-    [
-        abjad.Staff(
-            [abjad.Voice([abjad.Note(fundamentals[i_]) for i in range(voice_length)])]
-        )
-        for i_, voice in enumerate(voicewise_ratios)
-    ]
-)
-abjad.attach(abjad.Clef("bass"), group[-1][0][0])
-
-for handler, staff in zip(handlers, group):
-    handler(staff)
-
-
-# trio 2
-voices = {
-    "voice 1": [],
-    "voice 2": [],
-    "voice 3": [],
-}
-
-s = evans.RatioSegment(["1/1", "7/6", "3/2"])
-
-instructions = ["2/3", "5/4", "2/3", "5/4", "2/3", "5/4", "2/3", "5/4"]
-
-out = [s]
-
-for i in instructions:
-    new = out[-1].multiply(i)
-    out.append(new)
-
-out_ = []
-for sub_list in out:
-    out_.append(list(sub_list))
-
-voicewise_ratios = sort_voices(out_, voices)
+voicewise_ratios = evans.sort_voices(out_, voices)
 
 handlers = []
 fundamentals = ["c", "c'", "c'"]
@@ -218,24 +65,226 @@ for fundamental, voice in zip(fundamentals, voicewise_ratios):
 
 handlers.reverse()
 
-fundamentals = ["c'1", "c1", "c,1"]
+maker = abjad.LeafMaker()
+durations = [abjad.Duration((10, 4)) for _ in range(len(out_))]
+leaves_1 = [abjad.Rest((3, 8))] + [maker(["c'"], durations)]
+leaves_2 = [abjad.Rest((3, 4))] + [maker(["c'"], durations)] + [abjad.Rest((3, 4))]
+leaves_3 = [maker(["c"], durations)]
+
+group = abjad.StaffGroup(
+    [
+        abjad.Staff([abjad.Voice(leaves_1, name="violin 3")]),
+        abjad.Staff([abjad.Voice(leaves_2, name="violin 4")]),
+        abjad.Staff([abjad.Voice(leaves_3, name="viola 2")]),
+    ]
+)
+abjad.attach(abjad.Clef("treble"), group[0][0][0])
+abjad.attach(abjad.Clef("treble"), group[1][0][0])
+abjad.attach(abjad.Clef("alto"), group[2][0][0])
+
+
+# trio 2
+voices = {
+    "voice 1": [],
+    "voice 2": [],
+    "voice 3": [],
+}
+
+s = evans.RatioSegment(["1/1", "7/6", "3/2"])
+
+instructions = [
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+    "2/3",
+    "5/4",
+]
+
+out = [s]
+
+for i in instructions:
+    new = out[-1].multiply(i)
+    out.append(new)
+
+out_ = []
+for sub_list in out:
+    out_.append(list(sub_list))
+
+voicewise_ratios = evans.sort_voices(out_, voices)
+
+handlers_2 = []
+fundamentals = ["c", "c'", "c'"]
+voice_length = 0
+for fundamental, voice in zip(fundamentals, voicewise_ratios):
+    handlers_2.append(
+        evans.PitchHandler(
+            [evans.JIPitch(fundamental, ratio) for ratio in voicewise_ratios[voice]],
+            forget=False,
+        )
+    )
+    voice_length = len(voicewise_ratios[voice])
+
+handlers_2.reverse()
+
+
+durations = [abjad.Duration((10, 4)) for _ in range(len(out_))]
+leaves_1 = [abjad.Rest((1, 8))] + [maker(["c''"], durations)]
+leaves_2 = [abjad.Rest((1, 4))] + [maker(["c''"], durations)]
+leaves_3 = [maker(["c'"], durations)]
 
 group_2 = abjad.StaffGroup(
     [
-        abjad.Staff(
-            [abjad.Voice([abjad.Note(fundamentals[i_]) for i in range(voice_length)])]
-        )
-        for i_, voice in enumerate(voicewise_ratios)
+        abjad.Staff([abjad.Voice(leaves_1, name="bass 1")]),
+        abjad.Staff([abjad.Voice(leaves_2, name="bass 2")]),
+        abjad.Staff([abjad.Voice(leaves_3, name="cello 2")]),
     ]
 )
-abjad.attach(abjad.Clef("bass"), group_2[-1][0][0])
-abjad.attach(abjad.Clef("bass"), group_2[-2][0][0])
+abjad.attach(abjad.Clef("bass"), group_2[0][0][0])
+abjad.attach(abjad.Clef("bass"), group_2[1][0][0])
+abjad.attach(abjad.Clef("bass"), group_2[2][0][0])
 
-for handler, staff in zip(handlers, group_2):
+
+# quartet
+voices = {
+    "voice 1": [],
+    "voice 2": [],
+    "voice 3": [],
+    "voice 4": [],
+}
+
+s = evans.RatioSegment(["1/1", "7/4", "9/8", "3/2"])  # revise
+
+out_ = evans.tonnetz(
+    s,
+    "major",
+    [
+        "p",
+        "l7",
+        "r7",
+        "p",
+        "l11",
+        "r11",
+        "p",
+        "l",
+        "r",
+        "p",
+        "l",
+        "r",
+        "p",
+        "l7",
+        "r7",
+        "p",
+        "l",
+        "r",
+        "l",
+        "r",
+        "l",
+        "r",
+        "l11",
+        "r11",
+        "p",
+        "l",
+    ],
+)  # revise
+
+preamble = [
+    (Fraction("7/4"), Fraction("5/4"), Fraction("3/2"), Fraction("1/1")),
+    (Fraction("11/8"), Fraction("9/4"), Fraction("5/2"), Fraction("3/1")),
+    (Fraction("7/8"), Fraction("3/2"), Fraction("6/5"), Fraction("6/5")),
+    (Fraction("16/12"), Fraction("13/12"), Fraction("11/8"), Fraction("11/8")),
+    (Fraction("9/4"), Fraction("7/2"), Fraction("6/1"), Fraction("2/1")),
+]
+
+out_ = preamble + out_
+
+
+voicewise_ratios = evans.sort_voices(out_, voices)
+
+handlers_3 = []
+fundamentals = ["c''", "c''", "c'", "c"]
+voice_length = 0
+for fundamental, voice in zip(fundamentals, voicewise_ratios):
+    handlers_3.append(
+        evans.PitchHandler(
+            [evans.JIPitch(fundamental, ratio) for ratio in voicewise_ratios[voice]],
+            forget=False,
+        )
+    )
+    voice_length = len(voicewise_ratios[voice])
+
+cyc_durs = evans.CyclicList(
+    [abjad.Duration((5, 4)), abjad.Duration((3, 4)), abjad.Duration((7, 4))],
+    forget=False,
+)
+durations = cyc_durs(r=len(out_))
+
+leaves_1 = [abjad.Rest((2, 1))] + [
+    maker(["c'", "c'", None, "c'", None, "c'", "c'", "c'", None], durations)
+]
+leaves_2 = [abjad.Rest((2, 1))] + [
+    maker(["c'", "c'", None, "c'", None, "c'", "c'", "c'", None], durations)
+]
+leaves_3 = [abjad.Rest((2, 1))] + [
+    maker(["c'", "c'", None, "c'", None, "c'", "c'", "c'", None], durations)
+]
+leaves_4 = [abjad.Rest((2, 1))] + [
+    maker(["c'", "c'", None, "c'", None, "c'", "c'", "c'", None], durations)
+]
+
+quartet_group = abjad.StaffGroup(
+    [
+        abjad.Staff([abjad.Voice(leaves_1, name="violin 1")]),
+        abjad.Staff([abjad.Voice(leaves_2, name="violin 2")]),
+        abjad.Staff([abjad.Voice(leaves_3, name="viola 1")]),
+        abjad.Staff([abjad.Voice(leaves_4, name="cello 1")]),
+    ]
+)
+
+abjad.attach(abjad.Clef("treble"), quartet_group[0][0][0])
+abjad.attach(abjad.Clef("treble"), quartet_group[1][0][0])
+abjad.attach(abjad.Clef("alto"), quartet_group[2][0][0])
+abjad.attach(abjad.Clef("bass"), quartet_group[3][0][0])
+
+
+score = abjad.Score([quartet_group, group, group_2])
+abjad.attach(metronome_mark, group[0][0][0])
+for voice in abjad.Selection(score).components(abjad.Voice):
+    voice_dur = abjad.get.duration(voice)
+    comparison_dur = abjad.get.duration(group[1][0])
+    if voice_dur < comparison_dur:
+        new_dur = comparison_dur - voice_dur
+        rest_leaves = maker([None], [new_dur])
+        for leaf in rest_leaves:
+            voice.append(leaf)
+for voice in abjad.Selection(score).components(abjad.Voice):
+    for i, shard in enumerate(
+        abjad.mutate.split(voice[:], [abjad.Meter((4, 4))], cyclic=True)
+    ):
+        abjad.Meter.rewrite_meter(shard, abjad.Meter((4, 4)))
+    abjad.label.with_start_offsets(voice, clock_time=True)
+
+for handler, staff in zip(handlers, group):
     handler(staff)
 
-score = abjad.Score([group, group_2])
-moment = "#(ly:make-moment 1 25)"
+for handler, staff in zip(handlers_2, group_2):
+    handler(staff)
+
+for handler, staff in zip(handlers_3, quartet_group):
+    handler(staff)
+
+
+moment = "#(ly:make-moment 1 10)"
 abjad.setting(score).proportional_notation_duration = moment
 
 block = abjad.Block(name="score")
@@ -248,15 +297,18 @@ layout.items.append(rf"\accidentalStyle {style}")
 file = abjad.LilyPondFile(
     items=[
         r'\include "/Users/gregoryevans/abjad/abjad/_stylesheets/ekmelos-ji-accidental-markups.ily"',
+        r'\include "/Users/gregoryevans/scores/polillas/polillas/build/score_stylesheet.ily"',
         layout,
         block,
     ]
 )
 
-abjad.show(file)
-
-make_sc_file(
+evans.make_sc_file(
     score=score,
-    tempo=((1, 4), 10),
+    tempo=tempo_pair,
     current_directory=pathlib.Path(__file__).parent,
 )
+
+abjad.mutate.transpose(group_2, abjad.NamedInterval("+P8"))
+
+abjad.show(file)

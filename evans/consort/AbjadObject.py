@@ -66,9 +66,6 @@ class AbjadObject:
 
         return f"<{type(self).__name__}()>"
 
-    def __str__(self):
-        return f"<{type(self).__name__}()>"
-
     def __setstate__(self, state):
         r"""Sets state of Abjad object.
         Returns none.

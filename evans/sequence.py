@@ -918,6 +918,37 @@ class Sequence(collections.abc.Sequence):
 
     ### PUBLIC METHODS ###
 
+    def helianthate(sequence, n=0, m=0):
+        start = list(sequence[:])
+        result = list(sequence[:])
+        assert isinstance(n, int), repr(n)
+        assert isinstance(m, int), repr(m)
+        original_n = n
+        original_m = m
+
+        def _generalized_rotate(argument, n=0):
+            if hasattr(argument, "rotate"):
+                return argument.rotate(n=n)
+            argument_type = type(argument)
+            argument = type(sequence)(argument).rotate(n=n)
+            argument = argument_type(argument)
+            return argument
+
+        i = 0
+        while True:
+            inner = [_generalized_rotate(_, m) for _ in sequence]
+            candidate = _generalized_rotate(inner, n)
+            if candidate == start:
+                break
+            result.extend(candidate)
+            n += original_n
+            m += original_m
+            i += 1
+            if i == 1000:
+                message = "1000 iterations without identity."
+                raise Exception(message)
+        return type(sequence)(result)
+
     def filter(self, predicate=None) -> "Sequence":
         """
         Filters sequence by ``predicate``.

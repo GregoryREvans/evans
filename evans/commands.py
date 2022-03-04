@@ -1,6 +1,9 @@
 """
 Command classes.
 """
+import dataclasses
+import typing
+
 import abjad
 from abjadext import rmakers
 
@@ -375,11 +378,37 @@ class RhythmCommand:
 
 
 class Skeleton:
-    def __init__(self, string):
+    def __init__(self, string, rewrite=False):
         self.selections = self.skeleton(string)
+        self.rewrite = rewrite
 
     def __call__(self, durations):
         if abjad.get.duration(self.selections) == abjad.Duration(sum(durations)):
+            if self.rewrite is True:
+                for i, shard in enumerate(
+                    abjad.Selection(self.selections).partition_by_durations(durations)
+                ):
+                    time_signature = durations[i]
+                    inventories = [
+                        x
+                        for x in enumerate(
+                            abjad.Meter(time_signature.pair).depthwise_offset_inventory
+                        )
+                    ]
+                    if time_signature.denominator == 4:
+                        abjad.Meter.rewrite_meter(
+                            shard,
+                            time_signature,
+                            boundary_depth=inventories[-1][0],
+                            rewrite_tuplets=False,
+                        )
+                    else:
+                        abjad.Meter.rewrite_meter(
+                            shard,
+                            time_signature,
+                            boundary_depth=inventories[-2][0],
+                            rewrite_tuplets=False,
+                        )
             return self.selections
         else:
             message = (
@@ -400,3 +429,65 @@ class Skeleton:
             message += " not {repr(argument)}."
             raise TypeError(message)
         return selection
+
+
+@dataclasses.dataclass(slots=True)
+class RewriteMeterCommand(rmakers.Command):
+    """
+    Rewrite meter command.
+    """
+
+    boundary_depth: int | None = None
+    reference_meters: typing.Sequence[abjad.Meter] = ()
+
+    def __post_init__(self):
+        if self.boundary_depth is not None:
+            assert isinstance(self.boundary_depth, int)
+        self.reference_meters = tuple(self.reference_meters or ())
+        if not all(isinstance(_, abjad.Meter) for _ in self.reference_meters):
+            message = "must be sequence of meters:\n"
+            message += f"   {repr(self.reference_meters)}"
+            raise Exception(message)
+
+    def __call__(self, voice, *, tag: abjad.Tag = abjad.Tag()) -> None:
+        assert isinstance(voice, abjad.Voice), repr(voice)
+        staff = abjad.get.parentage(voice).parent
+        assert isinstance(staff, abjad.Staff), repr(staff)
+        time_signature_voice = staff["TimeSignatureVoice"]
+        assert isinstance(time_signature_voice, abjad.Voice)
+        meters, preferred_meters = [], []
+        for skip in time_signature_voice:
+            time_signature = abjad.get.indicator(skip, abjad.TimeSignature)
+            meter = abjad.Meter(time_signature)
+            meters.append(meter)
+        durations = [abjad.Duration(_) for _ in meters]
+        reference_meters = self.reference_meters or ()
+        command = rmakers.SplitMeasuresCommand()
+        non_tuplets = []
+        for component in voice:
+            if isinstance(component, abjad.Tuplet):
+                new_dur = abjad.get.duration(component)
+                new_mult = abjad.Multiplier(new_dur)
+                new_skip = abjad.Skip((1, 1), multiplier=new_mult)
+                non_tuplets.append(new_skip)
+            else:
+                non_tuplets.append(component)
+        command(non_tuplets, durations=durations)
+        selections = abjad.select.group_by_measure(voice[:])
+        for meter, selection in zip(meters, selections):
+            for reference_meter in reference_meters:
+                if str(reference_meter) == str(meter):
+                    meter = reference_meter
+                    break
+            preferred_meters.append(meter)
+            nontupletted_leaves = []
+            for leaf in abjad.iterate.leaves(selection):
+                if not abjad.get.parentage(leaf).count(abjad.Tuplet):
+                    nontupletted_leaves.append(leaf)
+            rmakers.unbeam()(nontupletted_leaves)
+            abjad.Meter.rewrite_meter(
+                selection,
+                meter,
+                boundary_depth=self.boundary_depth,
+                rewrite_tuplets=False,
+            )
