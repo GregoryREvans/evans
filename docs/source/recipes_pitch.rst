@@ -232,7 +232,7 @@ Attach extra attachments and override score settings:
 ::
 
     >>> abjad.attach(abjad.Clef("bass"), staff[0])
-    >>> for note in abjad.Selection(staff).leaves():
+    >>> for note in abjad.select.leaves(staff):
     ...     if note.written_pitch == "c'":
     ...         abjad.attach(abjad.Clef("treble"), note)
     ...
@@ -254,7 +254,8 @@ Attach extra attachments and override score settings:
     ...     "#blue",
     ... ]
     ...
-    >>> leaf_group = abjad.Selection(staff).leaves().partition_by_counts([11], cyclic=True, overhang=True,)
+    >>> leaf_group = abjad.select.leaves(staff)
+    >>> leaf_group = abjad.select.partition_by_counts(leaf_group, [11], cyclic=True, overhang=True,)
     >>> for color, leaves in zip(colors, leaf_group):
     ...     abjad.label.color_leaves(leaves, color)
     ...
@@ -365,19 +366,19 @@ Define tone row and row permutations:
     >>> labels = [
     ...     abjad.Markup(
     ...         r"\markup P",
-    ...         direction=abjad.Up,
+    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup I",
-    ...         direction=abjad.Up,
+    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup R",
-    ...         direction=abjad.Up,
+    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup IR",
-    ...         direction=abjad.Up,
+    ...         direction=abjad.UP,
     ...     ),
     ... ]
     ...
@@ -417,17 +418,17 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             .transpose(hexachords[1][0]),
     ...         ]
     ...         names = [
-    ...             abjad.Markup(r"\markup \box α", direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box β", direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box γ", direction=abjad.Up),
-    ...             abjad.Markup(r"\markup \box δ", direction=abjad.Up),
+    ...             abjad.Markup(r"\markup \box α", direction=abjad.UP),
+    ...             abjad.Markup(r"\markup \box β", direction=abjad.UP),
+    ...             abjad.Markup(r"\markup \box γ", direction=abjad.UP),
+    ...             abjad.Markup(r"\markup \box δ", direction=abjad.UP),
     ...         ]
     ...         for set, name in zip(sets, names):
     ...             voice = abjad.Voice([abjad.Note(_, (1, 16)) for _ in set])
     ...             for leaf in abjad.iterate.leaves(voice):
     ...                 mark = abjad.Markup(
     ...                     f"\markup {abjad.NumberedPitchClass(leaf.written_pitch)}",
-    ...                     direction=abjad.Up,
+    ...                     direction=abjad.UP,
     ...                 )
     ...                 abjad.tweak(mark).staff_padding = "3"
     ...                 abjad.attach(mark, leaf)
@@ -435,7 +436,7 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             abjad.attach(name, voice[0])
     ...             abjad.attach(abjad.TimeSignature((6, 16)), voice[0])
     ...             staff.append(voice)
-    ...         abjad.attach(m, abjad.Selection(staff).leaf(0))
+    ...         abjad.attach(m, abjad.select.leaf(staff, 0))
     ...         group.append(staff)
     ...     score.append(group)
     ...     abjad.override(score).Beam.stencil = "##f"
@@ -502,15 +503,9 @@ Show file of chart scores:
         ...     cyc_tuple = abjad.CyclicTuple(["red", "blue"])
         ...     staff = abjad.Staff([abjad.Note(_, (1, 16)) for _ in perm[0]])
         ...     abjad.attach(perm[1], staff[0])
-        ...     for trichord in (
-        ...         abjad.Selection(staff)
-        ...         .leaves()
-        ...         .partition_by_counts(
-        ...             [3],
-        ...             cyclic=True,
-        ...             overhang=True,
-        ...         )
-        ...     ):
+        ...     selector = abjad.select.leaves(staff)
+        ...     selector = abjad.select.partition_by_counts(selector, [3], cyclic=True, overhang=True)
+        ...     for trichord in selector:
         ...         pc_set = abjad.PitchClassSet([_.written_pitch for _ in trichord])
         ...         set_class = abjad.SetClass.from_pitch_class_set(pc_set)
         ...         abjad.attach(abjad.Markup(f"\markup {set_class}"), trichord[0])
@@ -526,30 +521,30 @@ Show file of chart scores:
 
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.Up,
+        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.UP,
         ...     ),
-        ...     abjad.Selection(group[0]).leaf(0),
+        ...     abjad.select.leaf(group[0], 0),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.Up,
+        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.UP,
         ...     ).parenthesize(),
-        ...     abjad.Selection(group[0]).leaf(3),
+        ...     abjad.select.leaf(group[0], 3),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.Up,
+        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.UP,
         ...     ).parenthesize(),
-        ...     abjad.Selection(group[0]).leaf(6),
+        ...     abjad.select.leaf(group[0], 6),
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.Up,
+        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.UP,
         ...     ).parenthesize(),
-        ...     abjad.Selection(group[0]).leaf(9),
+        ...     abjad.select.leaf(group[0], 9),
         ... )
         ...
         >>> score.append(group)

@@ -108,9 +108,9 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 rhythm_tree_list = parser(pattern)
                 rhythm_tree_container = rhythm_tree_list[0]
                 r = rhythm_tree_container(pair)
-                m = abjad.Markup(rf"\markup {pattern}", direction=abjad.Up)
-                abjad.attach(m, abjad.Selection(r).leaves()[0])
-                abjad.attach(time_signature, abjad.Selection(r).leaves()[0])
+                m = abjad.Markup(rf"\markup {pattern}", direction=abjad.UP)
+                abjad.attach(m, abjad.select.leaves(r)[0])
+                abjad.attach(time_signature, abjad.select.leaves(r)[0])
                 print("adding parsed funnel to staff ...")
                 parsed_patterns.extend(r)
             print("adding staff to staff group ...")
@@ -118,7 +118,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
             scheme = abjad.SchemeMoment((1, 50))
             abjad.setting(score).proportional_notation_duration = scheme
             new_brackets = evans.NoteheadBracketMaker()
-            for staff in abjad.Selection(score).components(abjad.Staff):
+            for staff in abjad.select.components(score, abjad.Staff):
                 new_brackets(staff)
             abjad.override(score).TupletBracket.bracket_visibility = True
             print("rendering staff group ...")

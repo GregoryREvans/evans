@@ -20,7 +20,7 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=True)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.UP)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -34,7 +34,7 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=False)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.Up)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.UP)
         >>> abjad.attach(mark, note)
         >>> abjad.show(note) # doctest: +SKIP
 
@@ -348,7 +348,7 @@ def return_cent_markup(
         cent_string = f"{remainder}"
     else:
         cent_string = f"+{remainder}"
-    mark = abjad.Markup(rf"\markup \center-align {cent_string}", direction=abjad.Up)
+    mark = abjad.Markup(rf"\markup \center-align {cent_string}", direction=abjad.UP)
     return mark
 
 
@@ -408,7 +408,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.UP)
         ...     abjad.attach(markup, tie[0])
         ...
         >>> handler(vm_ties)
@@ -490,7 +490,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.Up)
+        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.UP)
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
         ...
@@ -565,7 +565,7 @@ def return_vertical_moment_ties(score):
             new_moment_notes.append(note)
         if 0 < len(new_moment_notes):
             new_moment.append(
-                [_ for _ in abjad.Selection(new_moment_notes).logical_ties()]
+                [_ for _ in abjad.select.logical_ties(new_moment_notes)]
             )
             new_moments.append(new_moment)
     flat_moments = flatten(new_moments)
@@ -1305,7 +1305,151 @@ class Loop(abjad.CyclicTuple):
 def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,
-    selector=baca.selectors.plts(exclude=baca.const.HIDDEN),
+    selector=lambda _: baca.select.plts(_, exclude=baca.enums.HIDDEN),
 ) -> baca.PitchCommand:
     loop = Loop(items=items, intervals=intervals)
     return baca.pitches(loop, selector=selector)
+
+
+class ArtificialHarmonic(abjad.Chord):
+
+    ### CLASS VARIABLES ###
+
+    __slots__ = (
+        "style",
+        "is_parenthesized",
+        "with_sounding_pitch",
+        "language",
+        "multiplier",
+        "tag",
+    )
+
+    ### INITIALISER ###
+    def __init__(
+        self,
+        *arguments,
+        style="#'harmonic",
+        is_parenthesized=False,
+        with_sounding_pitch=True,
+        language="english",
+        multiplier=None,
+        tag=None,
+    ):
+        self.style = style
+        self.is_parenthesized = is_parenthesized
+        self.with_sounding_pitch = with_sounding_pitch
+        self._note_heads = abjad.NoteHeadList()
+        if len(arguments) == 1 and isinstance(arguments[0], str):
+            string = f"{{ {arguments[0]} }}"
+            parsed = self._parse_lilypond_string(string, language=language)
+            assert len(parsed) == 1 and isinstance(parsed[0], abjad.Leaf)
+            arguments = tuple([parsed[0]])
+        are_cautionary: list[bool | None] = []
+        are_forced: list[bool | None] = []
+        are_parenthesized: list[bool | None] = []
+        if len(arguments) == 1 and isinstance(arguments[0], abjad.Leaf):
+            leaf = arguments[0]
+            written_pitches = []
+            written_duration = leaf.written_duration
+            if multiplier is None:
+                multiplier = leaf.multiplier
+            # TODO: move to dedicated from_note() constructor:
+            if isinstance(leaf, abjad.Note) and leaf.note_head is not None:
+                written_pitches.append(leaf.note_head.written_pitch)
+                are_cautionary = [leaf.note_head.is_cautionary]
+                are_forced = [leaf.note_head.is_forced]
+                are_parenthesized = [leaf.note_head.is_parenthesized]
+            elif isinstance(leaf, abjad.Chord):
+                written_pitches.extend(_.written_pitch for _ in leaf.note_heads)
+                are_cautionary = [_.is_cautionary for _ in leaf.note_heads]
+                are_forced = [_.is_forced for _ in leaf.note_heads]
+                are_parenthesized = [_.is_parenthesized for _ in leaf.note_heads]
+        # TODO: move to dedicated constructor:
+        elif len(arguments) == 2:
+            written_pitches, written_duration = arguments
+            if isinstance(written_pitches, str):
+                written_pitches = [_ for _ in written_pitches.split() if _]
+            elif isinstance(written_pitches, type(self)):
+                written_pitches = written_pitches.written_pitches
+        elif len(arguments) == 0:
+            written_pitches = [abjad.NamedPitch(_) for _ in [0, 4, 7]]
+            written_duration = abjad.Duration(1, 4)
+        else:
+            raise ValueError(f"can not initialize chord from {arguments!r}.")
+        abjad.Leaf.__init__(self, written_duration, multiplier=multiplier, tag=tag)
+        if not are_cautionary:
+            are_cautionary = [None] * len(written_pitches)
+        if not are_forced:
+            are_forced = [None] * len(written_pitches)
+        if not are_parenthesized:
+            are_parenthesized = [None] * len(written_pitches)
+        for written_pitch, is_cautionary, is_forced, is_parenthesized in zip(
+            written_pitches, are_cautionary, are_forced, are_parenthesized
+        ):
+            if not is_cautionary:
+                is_cautionary = False
+            if not is_forced:
+                is_forced = False
+            if not is_parenthesized:
+                is_parenthesized = False
+            note_head = abjad.NoteHead(
+                written_pitch=written_pitch,
+                is_cautionary=is_cautionary,
+                is_forced=is_forced,
+                is_parenthesized=is_parenthesized,
+            )
+            if isinstance(written_pitch, abjad.NoteHead):
+                note_head.tweaks = copy.deepcopy(written_pitch.tweaks)
+            self._note_heads.append(note_head)
+        if len(arguments) == 1 and isinstance(arguments[0], abjad.Leaf):
+            self._copy_override_and_set_from_leaf(arguments[0])
+
+        self.written_pitches = abjad.PitchSegment(
+            items=(note_head.written_pitch for note_head in self._note_heads),
+            item_class=abjad.NamedPitch,
+        )
+
+        if self.is_parenthesized:
+            first_head = self._note_heads[0]
+            first_head.is_parenthesized = self.is_parenthesized
+            abjad.tweak(self._note_heads[0]).ParenthesesItem__font_size = -4
+
+        if with_sounding_pitch is True:
+            written_pitch_list = [_ for _ in written_pitches]
+            written_pitch_list.append(self.sounding_pitch())
+            self.written_pitches = abjad.PitchSegment(written_pitch_list)
+
+        second_head = self._note_heads[1]
+        abjad.tweak(second_head).style = self.style
+
+        if len(self._note_heads) == 3:
+            third_head = self._note_heads[2]
+            third_head.is_parenthesized = True
+            abjad.tweak(third_head).font_size = -4
+
+    ### PUBLIC METHODS ###
+
+    def sounding_pitch(self):
+        r"Returns the sounding pitch of the harmonic as an |abjad.Pitch|."
+        interval = abs(self.written_pitches[1] - self.written_pitches[0]).semitones
+        sounding_pitch_dict = {
+            1: 48,
+            2: 36,
+            3: 31,
+            4: 28,
+            5: 24,
+            7: 19,
+            9: 28,
+            12: 12,
+            16: 28,
+            19: 19,
+            24: 24,
+            28: 28,
+        }
+        try:
+            sounding_pitch = self.written_pitches[0] + sounding_pitch_dict[interval]
+        except KeyError as err:
+            raise ValueError(
+                "cannot calculate sounding pitch for given interval"
+            ) from err
+        return sounding_pitch

@@ -61,7 +61,7 @@ class Breaks:
 
     def make_document_layout(self, path):
         score = self.make_score()
-        leaves = abjad.Selection(score).leaves()
+        leaves = abjad.select.leaves(score)
         no_breaks_literal = abjad.LilyPondLiteral(
             r"\autoPageBreaksOff", format_slot="before"
         )

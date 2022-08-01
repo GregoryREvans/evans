@@ -2025,9 +2025,9 @@ class Sequence(collections.abc.Sequence):
         if part:
             if overhang is True:
                 result.append(part)
-            elif overhang is abjad.enums.Exact and len(part) == count:
+            elif overhang is abjad.enums.EXACT and len(part) == count:
                 result.append(part)
-            elif overhang is abjad.enums.Exact and len(part) != count:
+            elif overhang is abjad.enums.EXACT and len(part) != count:
                 raise Exception("sequence does not partition exactly.")
         if reversed_:
             result_ = []
@@ -2079,7 +2079,7 @@ class Sequence(collections.abc.Sequence):
         length = len(self)
         counts = ratio.partition_integer(length)
         parts = self.partition_by_counts(
-            counts, cyclic=False, overhang=abjad.enums.Exact
+            counts, cyclic=False, overhang=abjad.enums.EXACT
         )
         return type(self)(parts)
 
@@ -2244,7 +2244,7 @@ class Sequence(collections.abc.Sequence):
         # TODO: make keyword-only:
         cyclic=False,
         overhang=False,
-        allow_part_weights=abjad.enums.Exact,
+        allow_part_weights=abjad.enums.EXACT,
     ) -> "Sequence":
         r"""
         Partitions sequence by ``weights`` exactly.
@@ -2458,7 +2458,7 @@ class Sequence(collections.abc.Sequence):
 
         Returns nested sequence.
         """
-        if allow_part_weights is abjad.enums.Exact:
+        if allow_part_weights is abjad.enums.EXACT:
             candidate = type(self)(self)
             candidate = candidate.split(weights, cyclic=cyclic, overhang=overhang)
             flattened_candidate = candidate.flatten(depth=-1)
@@ -2697,7 +2697,7 @@ class Sequence(collections.abc.Sequence):
                 items.append(item)
         return type(self)(items[start:stop_index])
 
-    def repeat_to_weight(self, weight, allow_total=abjad.enums.Exact) -> "Sequence":
+    def repeat_to_weight(self, weight, allow_total=abjad.enums.EXACT) -> "Sequence":
         """
         Repeats sequence to ``weight``.
 
@@ -2738,7 +2738,7 @@ class Sequence(collections.abc.Sequence):
 
         """
         assert 0 <= weight
-        if allow_total is abjad.enums.Exact:
+        if allow_total is abjad.enums.EXACT:
             sequence_weight = abjad.math.weight(self)
             complete_repetitions = int(
                 math.ceil(float(weight) / float(sequence_weight))

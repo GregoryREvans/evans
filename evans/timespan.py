@@ -361,7 +361,7 @@ def intercalate_silences(rhythm_command_list, voice_names=None):
     silence_maker = handlers.RhythmHandler(
         rmakers.stack(
             rmakers.NoteRhythmMaker(),
-            rmakers.force_rest(lambda _: abjad.Selection(_).leaves(pitched=True)),
+            rmakers.force_rest(lambda _: abjad.select.leaves(_, pitched=True)),
         ),
         name="silence_maker",
     )

@@ -667,7 +667,7 @@ class RTMMaker(rmakers.RhythmMaker):
     @staticmethod
     def _rhythm_cell(duration, rtm):
         rtm_parser = abjad.rhythmtrees.RhythmTreeParser()
-        selection = abjad.Selection(rtm_parser(rtm)[0](duration))
+        selection = rtm_parser(rtm)[0](duration) # WARNING: was previously wrapped in selection
         return selection
 
     def _rtm_maker(self, divisions, starting_index=0):
@@ -679,7 +679,7 @@ class RTMMaker(rmakers.RhythmMaker):
             selections.append(selection)
         for selection_ in selections[:-1]:
             if self.tie_across_divisions is True:
-                last_leaf = abjad.Selection(selection_).leaves()[-1]
+                last_leaf = abjad.select.leaves(selection_)[-1]
                 abjad.attach(abjad.Tie(), last_leaf)
         return selections
 

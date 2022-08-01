@@ -10,7 +10,7 @@ class LogicalTieCollection(AbjadObject):
     ..  container:: example
 
         >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-        >>> logical_ties = abjad.Selection(staff).logical_ties()
+        >>> logical_ties = abjad.select.logical_ties(staff)
         >>> logical_tie_collection = evans.LogicalTieCollection()
         >>> for tie in logical_ties:
         ...     logical_tie_collection.insert(tie)
@@ -42,7 +42,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -70,7 +70,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -136,7 +136,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4. c'8 c'4.. c'16")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -172,7 +172,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -193,7 +193,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -414,7 +414,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'2 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -456,7 +456,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'2 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -512,7 +512,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -553,7 +553,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'4 c'4 c'4 c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -604,7 +604,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'2 c'2")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)
@@ -635,7 +635,7 @@ class LogicalTieCollection(AbjadObject):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'2. c'4")
-            >>> logical_ties = abjad.Selection(staff).logical_ties()
+            >>> logical_ties = abjad.select.logical_ties(staff)
             >>> logical_tie_collection = evans.LogicalTieCollection()
             >>> for tie in logical_ties:
             ...     logical_tie_collection.insert(tie)

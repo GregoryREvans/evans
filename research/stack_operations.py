@@ -13,9 +13,9 @@ def quarters(divisions):
 
 
 commands = [
-    rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
-    rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
-    rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+    rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
+    rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
+    rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
     rmakers.extract_trivial(),
     rmakers.RewriteMeterCommand(
         boundary_depth=-1,

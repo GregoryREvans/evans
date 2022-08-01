@@ -259,7 +259,7 @@ abjad.attach(abjad.Clef("bass"), quartet_group[3][0][0])
 
 score = abjad.Score([quartet_group, group, group_2])
 abjad.attach(metronome_mark, group[0][0][0])
-for voice in abjad.Selection(score).components(abjad.Voice):
+for voice in abjad.select.components(score, abjad.Voice):
     voice_dur = abjad.get.duration(voice)
     comparison_dur = abjad.get.duration(group[1][0])
     if voice_dur < comparison_dur:
@@ -267,7 +267,7 @@ for voice in abjad.Selection(score).components(abjad.Voice):
         rest_leaves = maker([None], [new_dur])
         for leaf in rest_leaves:
             voice.append(leaf)
-for voice in abjad.Selection(score).components(abjad.Voice):
+for voice in abjad.select.components(score, abjad.Voice):
     for i, shard in enumerate(
         abjad.mutate.split(voice[:], [abjad.Meter((4, 4))], cyclic=True)
     ):

@@ -64,6 +64,7 @@ from .metmod import (
     mixed_number,
 )
 from .pitch import (
+    ArtificialHarmonic,
     JIPitch,
     Loop,
     combination_tones,
@@ -119,7 +120,7 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import DurationLine
+from .spanners import BendBefore, DurationLine, Lyrics
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -138,6 +139,7 @@ from .timespan import (
 )
 
 __all__ = [
+    "ArtificialHarmonic",
     "ArticulationHandler",
     "Attachment",
     "BendHandler",

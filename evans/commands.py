@@ -44,10 +44,15 @@ class Command:
         .. container:: example
 
             >>> score = abjad.Score([abjad.Staff("c'4 c'4 c'4 c'4", name="staff one")])
+            >>> def get_leaf_selector(context):
+            ...     pitched_leaves = abjad.select.leaves(context, pitched=True)
+            ...     get_leaves = abjad.select.get(pitched_leaves, [1])[0]
+            ...     return get_leaves
+            ...
             >>> command = evans.Command(
             ...     command="attach",
             ...     indicator=abjad.Markup(r"\markup *", direction="up"),
-            ...     selector=lambda _: abjad.Selection(_).leaves(pitched=True).get([1])[0],
+            ...     selector=get_leaf_selector,
             ...     voice_name="staff one"
             ... )
             ...
@@ -116,7 +121,7 @@ def attach(voice_name, indicator, selector=None):
     if selector is None:
 
         def selector(_):
-            return abjad.Selection(_).leaf(0)
+            return abjad.select.leaf(_, 0)
 
     return Command(
         command="attach",
@@ -130,7 +135,7 @@ def detach(voice_name, indicator, selector=None):
     if selector is None:
 
         def selector(_):
-            return abjad.Selection(_).leaf(0)
+            return abjad.select.leaf(_, 0)
 
     return Command(
         command="detach",
@@ -144,7 +149,7 @@ def replace(voice_name, contents, selector=None):
     if selector is None:
 
         def selector(_):
-            return abjad.Selection(_).leaf(0)
+            return abjad.select.leaf(_, 0)
 
     return Command(
         command="replace",
@@ -158,7 +163,7 @@ def call(voice_name, callable, selector=None):
     if selector is None:
 
         def selector(_):
-            return abjad.Selection(_).leaf(0)
+            return abjad.select.leaf(_, 0)
 
     return Command(
         command="call",
@@ -221,11 +226,11 @@ class MusicCommand:
         pitch_handler,
         evans.Attachment(
             abjad.Dynamic("p"),
-            lambda _: abjad.Selection(_).leaf(0, pitched=True),
+            lambda _: abjad.select.leaf(_, 0, pitched=True),
         ),
         evans.attachment(
-            abjad.Markup(r"\evans-custom-markup", direction=abjad.Up),
-            lambda _: abjad.Selection(_).leaf(0, pitched=True),
+            abjad.Markup(r"\evans-custom-markup", direction=abjad.UP),
+            lambda _: abjad.select.leaf(_, 0, pitched=True),
         ),
         text_span_handler,
         preprocessor=evans.Sequence().fuse((1, 2))
@@ -260,20 +265,15 @@ class MusicCommand:
                     if type(arg) == abjad.Articulation:
 
                         def selector(selections):
-                            run_ties = (
-                                abjad.Selection(selections)
-                                .runs()
-                                .logical_ties(pitched=True)
-                            )
-                            ties_first_leaves = abjad.Selection(
-                                [_[0] for _ in run_ties]
-                            )
+                            runs = abjad.select.runs(selections)
+                            run_ties = abjad.select.logical_ties(selections, pitched=True)
+                            ties_first_leaves = [_[0] for _ in run_ties]
                             return ties_first_leaves
 
                     else:
 
                         def selector(_):
-                            return abjad.Selection(_).leaf(0, pitched=True)
+                            return abjad.select.leaf(_, 0, pitched=True)
 
                     new_attachment = Attachment(
                         arg,
@@ -283,7 +283,7 @@ class MusicCommand:
                 elif callable(arg):
                     new_callable = Callable(
                         arg,
-                        lambda _: abjad.Selection(_).leaves(),
+                        lambda _: abjad.select.leaves(_),
                     )
                     self.callables.append(new_callable)
 
@@ -325,9 +325,9 @@ def music(
         stack = rmakers.stack(
             rmaker,
             *commands,
-            rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
-            rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
-            rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
+            rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
+            rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
             rmakers.extract_trivial(),
             rmakers.RewriteMeterCommand(
                 boundary_depth=rewrite_meter,
@@ -345,9 +345,9 @@ def music(
         stack = rmakers.stack(
             rmaker,
             *commands,
-            rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
-            rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
-            rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+            rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
+            rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
+            rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
             rmakers.extract_trivial(),
             preprocessor=preprocessor,
         )
@@ -386,7 +386,7 @@ class Skeleton:
         if abjad.get.duration(self.selections) == abjad.Duration(sum(durations)):
             if self.rewrite is True:
                 for i, shard in enumerate(
-                    abjad.Selection(self.selections).partition_by_durations(durations)
+                    abjad.select.partition_by_durations(self.selections, durations)
                 ):
                     time_signature = durations[i]
                     inventories = [
@@ -422,10 +422,10 @@ class Skeleton:
             string = f"{{ {argument} }}"
             container = abjad.parse(string)
             selection = abjad.mutate.eject_contents(container)
-        elif isinstance(argument, abjad.Selection):
+        elif isinstance(argument, list):
             selection = argument
         else:
-            message = "evans.skeleton() accepts string or selection,"
+            message = "evans.skeleton() accepts string or list of components,"
             message += " not {repr(argument)}."
             raise TypeError(message)
         return selection

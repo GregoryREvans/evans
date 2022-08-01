@@ -128,3 +128,23 @@ boxed-markup = #(
     #string
     #}
     )
+
+%%% ekmelos markups %%%
+
+normal-pressure = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xe11b
+}
+
+half-pressure = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xf67d
+}
+
+full-pressure = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xe11a
+}

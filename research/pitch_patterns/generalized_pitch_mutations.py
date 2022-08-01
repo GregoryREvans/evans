@@ -73,7 +73,7 @@ for n in range(2, 13):
             staff_group1.append(staff_group2)
         score.append(staff_group1)
     sig = abjad.TimeSignature((n, 4))
-    first_leaf = abjad.Selection(score).leaves()[0]
+    first_leaf = abjad.select.leaves(score)[0]
     abjad.attach(sig, first_leaf)
     abjad.persist.as_ly(
         score,

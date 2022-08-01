@@ -111,7 +111,7 @@ class ArticulationHandler(Handler):
         self.add_articulations(selections)
 
     def add_articulations(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         articulations = self._cyc_articulations(r=len(ties))
         vector = self.articulation_boolean_vector(r=len(ties))
         for tie, articulation, bool in zip(ties, articulations, vector):
@@ -212,7 +212,7 @@ class BendHandler(Handler):
         self.add_bend(selections)
 
     def add_bend(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         vector = self.boolean_vector(r=len(ties))
         amounts = self.bend_amounts(r=len(ties))
         for tie, bool, amount in zip(ties, vector, amounts):
@@ -400,7 +400,7 @@ class BisbigliandoHandler(Handler):
         abjad.attach(stop_literal, abjad.get.leaf(tie[-1], 1))
 
     def add_spanner(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         values = self.boolean_vector(r=len(ties))
         for value, tie in zip(values, ties):
             self._treat_tie(value, tie)
@@ -493,9 +493,9 @@ class BowAngleHandler(Handler):
             return "counterclockwise"
 
     def _add_spanners(self, selections):
-        for run in abjad.Selection(selections).runs():
+        for run in abjad.select.runs(selections):
             numbers = self._cyc_angles(r=len(run) + 1)
-            first_leaf = abjad.Selection(run).leaf(0)
+            first_leaf = abjad.select.leaf(run, 0)
             start_literal = abjad.LilyPondLiteral(
                 [
                     r"- \abjad-solid-line-with-arrow",
@@ -507,7 +507,7 @@ class BowAngleHandler(Handler):
                 format_slot="absolute_after",
             )
             abjad.attach(start_literal, first_leaf)
-            for i, tie in enumerate(abjad.Selection(run).logical_ties()[1:-1]):
+            for i, tie in enumerate(abjad.select.logical_ties(run)[1:-1]):
                 literal = abjad.LilyPondLiteral(
                     [
                         r"\evansStopTextSpanBAD",
@@ -532,8 +532,8 @@ class BowAngleHandler(Handler):
                 ],
                 format_slot="absolute_after",
             )
-            abjad.attach(terminating_literal, abjad.Selection(run).leaf(-1))
-            last_leaf = abjad.get.leaf(abjad.Selection(run).leaf(-1), 1)
+            abjad.attach(terminating_literal, abjad.select.leaf(run, -1))
+            last_leaf = abjad.get.leaf(abjad.select.leaf(run, -1), 1)
             stop_literal = abjad.LilyPondLiteral(
                 r"\evansStopTextSpanBAD", format_slot="absolute_after"
             )
@@ -656,14 +656,14 @@ class ClefHandler(Handler):
             base_clef = self.clef
             first_clef_name = self._extended_range_clefs(clef)[0]
             clef_list = [abjad.Clef(first_clef_name)]
-            abjad.attach(clef_list[0], abjad.Selection(voice).leaves()[0])
+            abjad.attach(clef_list[0], abjad.select.leaves(voice)[0])
             if self.add_extended_clefs is True:
                 allowable_clefs = None
                 if self.allowable_clefs is not None:
                     allowable_clefs = self.allowable_clefs
                 else:
                     allowable_clefs = self._extended_range_clefs(base_clef)
-                for tie in abjad.Selection(voice).logical_ties(pitched=True):
+                for tie in abjad.select.logical_ties(voice, pitched=True):
                     pitches = []
                     for pitch in abjad.get.pitches(tie[0]):
                         pitches.append(pitch.number)
@@ -769,7 +769,7 @@ class ClefHandler(Handler):
             else:
                 converted_clef = self._extended_range_clefs(clef)[0]
                 clef = abjad.Clef(converted_clef)
-                first_leaf = abjad.Selection(voice).leaves()[0]
+                first_leaf = abjad.select.leaves(voice)[0]
                 indicator = abjad.get.indicator(first_leaf, abjad.Clef)
                 if indicator is not None:
                     abjad.detach(indicator, first_leaf)
@@ -778,7 +778,7 @@ class ClefHandler(Handler):
                     abjad.attach(clef, first_leaf)
         else:
             clef = abjad.Clef("treble")
-            first_leaf = abjad.Selection(voice).leaves()[0]
+            first_leaf = abjad.select.leaves(voice)[0]
             abjad.attach(clef, first_leaf)
 
     def _add_ottavas(self, voice):
@@ -787,7 +787,7 @@ class ClefHandler(Handler):
                 active_clef = self.allowable_clefs[-1]
             else:
                 active_clef = self._extended_range_clefs(self.clef)[-1]
-            for tie in abjad.Selection(voice).logical_ties(pitched=True):
+            for tie in abjad.select.logical_ties(voice, pitched=True):
                 current_clef = active_clef
                 if self.ottava_shelf is not None:
                     shelf = self.ottava_shelf
@@ -1173,7 +1173,7 @@ class DynamicHandler(Handler):
         return conversion[dyn]
 
     def _apply_dynamics(self, selections):
-        for run in abjad.Selection(selections).runs():
+        for run in abjad.select.runs(selections):
             hold_first = self._cyc_hold_first_boolean_vector(r=1)[0]
             if hold_first == 0:
                 if len(run) > 1:
@@ -1256,14 +1256,14 @@ class DynamicHandler(Handler):
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
-                                        direction=abjad.Down,
+                                        direction=abjad.DOWN,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
-                                        direction=abjad.Down,
+                                        direction=abjad.DOWN,
                                     )
-                                abjad.attach(mark_text, abjad.Selection(run).leaf(0))
+                                abjad.attach(mark_text, abjad.select.leaf(run, 0))
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
                     if hold_last == 1:
@@ -1339,14 +1339,14 @@ class DynamicHandler(Handler):
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
-                                        direction=abjad.Down,
+                                        direction=abjad.DOWN,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
-                                        direction=abjad.Down,
+                                        direction=abjad.DOWN,
                                     )
-                                abjad.attach(mark_text, abjad.Selection(run).leaf(0))
+                                abjad.attach(mark_text, abjad.select.leaf(run, 0))
             else:
                 start = self._cyc_dynamics(r=1)[0]
                 if start == "niente":
@@ -1372,7 +1372,7 @@ class DynamicHandler(Handler):
     # attach to anchor?
     # maybe just continue instead of replacing?
     def _remove_niente(self, selections):
-        for leaf in abjad.Selection(selections).leaves():
+        for leaf in abjad.select.leaves(selections):
             for dynamic in abjad.get.indicators(leaf, abjad.Dynamic):
                 if dynamic.name == "niente":
                     if dynamic.command == r"\!":
@@ -1634,7 +1634,7 @@ class GettatoHandler(Handler):
         self.add_gettato(selections)
 
     def add_gettato(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         vector = self.boolean_vector(r=len(ties))
         for value, tie in zip(vector, ties):
             if value == 1:
@@ -1645,7 +1645,7 @@ class GettatoHandler(Handler):
                 list_.append(abjad.Chord([repeated_pitch], (1, 32)))
                 for _ in range(repetitions - 1):
                     list_.append(abjad.Note(repeated_pitch, (1, 32)))
-                sel = abjad.Selection(list_)
+                sel = list_
                 abjad.beam(sel)
                 t = abjad.LilyPondLiteral(
                     [
@@ -1655,7 +1655,7 @@ class GettatoHandler(Handler):
                     ],
                     format_slot="before",
                 )
-                for leaf in abjad.Selection(sel).leaves():
+                for leaf in abjad.select.leaves(sel):
                     abjad.attach(t, leaf)
                 a = self.actions(r=1)[0]
                 if a == "throw":
@@ -1666,7 +1666,7 @@ class GettatoHandler(Handler):
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
                         rf"\markup {{ \hspace #1 throw ({repetitions})}}",
-                        direction=abjad.Up,
+                        direction=abjad.UP,
                     )
                     abjad.attach(mark, sel[0])
                 elif a == "drop":
@@ -1677,7 +1677,7 @@ class GettatoHandler(Handler):
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
                         rf"\markup {{ \hspace #1 drop ({repetitions})}}",
-                        direction=abjad.Up,
+                        direction=abjad.UP,
                     )
                     abjad.attach(mark, sel[0])
                 else:
@@ -1776,7 +1776,7 @@ class GlissandoHandler(Handler):
 
     def add_glissando(self, selections):
         if self.apply_to == "runs":
-            runs = abjad.Selection(selections).runs()
+            runs = abjad.select.runs(selections)
             if self.glissando_style == "hide_middle_note_heads":
                 if self.line_style is not None:
                     for run in runs:
@@ -1860,7 +1860,7 @@ class GlissandoHandler(Handler):
                         else:
                             continue
         else:
-            ties = abjad.Selection(selections).logical_ties(pitched=True)
+            ties = abjad.select.logical_ties(selections, pitched=True)
             values = self.boolean_vector(r=len(ties))
             for value, tie in zip(values, ties):
                 if value == 1:
@@ -1963,7 +1963,7 @@ class GraceHandler(Handler):
         self._add_grace_notes(selections)
 
     def _add_grace_notes(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         vectors = self._cyc_boolean_vector(r=len(ties))
         if self.boolean_vector is not None:
             for value, tie in zip(vectors, ties):
@@ -1983,7 +1983,7 @@ class GraceHandler(Handler):
                         grace = abjad.BeforeGraceContainer(
                             grace_list, command=r"\slashedGrace"
                         )
-                        if 1 < len(abjad.Selection(grace).leaves(pitched=True)):
+                        if 1 < len(abjad.select.leaves(grace, pitched=True)):
                             abjad.beam(
                                 grace,
                                 beam_rests=True,
@@ -1995,7 +1995,7 @@ class GraceHandler(Handler):
                             )
                             abjad.attach(
                                 literal_slash,
-                                abjad.Selection(grace).leaves(pitched=True)[0],
+                                abjad.select.leaves(grace, pitched=True)[0],
                             )
                             direction_override = abjad.LilyPondLiteral(
                                 r"\override Stem.direction = #UP", format_slot="before"
@@ -2005,11 +2005,11 @@ class GraceHandler(Handler):
                             )
                             abjad.attach(
                                 direction_override,
-                                abjad.Selection(grace).leaves(pitched=True)[0],
+                                abjad.select.leaves(grace, pitched=True)[0],
                             )
                             abjad.attach(
                                 direction_revert,
-                                abjad.Selection(grace).leaves(pitched=True)[-1],
+                                abjad.select.leaves(grace, pitched=True)[-1],
                             )
                         open_literal = abjad.LilyPondLiteral(
                             r"\scaleDurations #'(1 . 1) {", format_slot="before"
@@ -2063,23 +2063,24 @@ class IntermittentVoiceHandler(Handler):
         ...             8,
         ...             extra_counts=[1, 0, -1],
         ...         ),
-        ...         rmakers.trivialize(lambda _: abjad.Selection(_).tuplets()),
-        ...         rmakers.extract_trivial(lambda _: abjad.Selection(_).tuplets()),
-        ...         rmakers.rewrite_rest_filled(lambda _: abjad.Selection(_).tuplets()),
-        ...         rmakers.rewrite_sustained(lambda _: abjad.Selection(_).tuplets()),
+        ...         rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
+        ...         rmakers.extract_trivial(lambda _: abjad.select.tuplets(_)),
+        ...         rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
+        ...         rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
         ...     ),
         ...     forget=False,
         ... )
         ...
-        >>> ivh = evans.IntermittentVoiceHandler(h, direction=abjad.Up)
-        >>> sel1 = abjad.Selection(s["Voice1"]).leaf(0)
-        >>> sel2 = abjad.Selection(s["Voice1"]).leaf(2)
-        >>> sel3 = abjad.Selection(s["Voice1"]).leaves().get([3, 4])
+        >>> ivh = evans.IntermittentVoiceHandler(h, direction=abjad.UP)
+        >>> sel1 = abjad.select.leaf(s["Voice1"], 0)
+        >>> sel2 = abjad.select.leaf(s["Voice1"], 2)
+        >>> sel3 = abjad.select.leaves(s["Voice1"])
+        >>> sel3_get = abjad.select.get(sel3, [3, 4])
         >>> ivh(sel1)
         >>> ivh(sel2)
         >>> ivh(sel3)
         >>> ph_up = evans.PitchHandler([8, 8.5, 9, 9.5, 9, 8.5], forget=False)
-        >>> for voice in abjad.Selection(s).components(abjad.Voice):
+        >>> for voice in abjad.select.components(s, abjad.Voice):
         ...     if voice.name == "intermittent_voice":
         ...         ph_up(voice)
         ...
@@ -2162,7 +2163,7 @@ class IntermittentVoiceHandler(Handler):
     def __init__(
         self,
         rhythm_handler,
-        direction=abjad.Up,
+        direction=abjad.UP,
     ):
         self.rhythm_handler = rhythm_handler
         self.direction = direction
@@ -2171,11 +2172,11 @@ class IntermittentVoiceHandler(Handler):
         self,
         selections,
     ):
-        selections = abjad.Selection(selections)
+        selections = selections
         self._add_voice(selections)
 
     def _add_voice(self, selections):
-        if self.direction == abjad.Up:
+        if self.direction == abjad.UP:
             literal1 = abjad.LilyPondLiteral(r"\voiceTwo")
             literal2 = abjad.LilyPondLiteral(r"\voiceOne")
         else:
@@ -2192,14 +2193,14 @@ class IntermittentVoiceHandler(Handler):
         abjad.mutate.wrap(selections, original_voice)
         abjad.mutate.wrap(original_voice, container)
         container.append(intermittent_voice)
-        abjad.attach(literal1, abjad.Selection(original_voice).leaf(0))
-        abjad.attach(literal2, abjad.Selection(intermittent_voice).leaf(0))
+        abjad.attach(literal1, abjad.select.leaf(original_voice, 0))
+        abjad.attach(literal2, abjad.select.leaf(intermittent_voice, 0))
         abjad.attach(closing_literal, container)
 
     def _find_parent(self, selections):
-        first_leaf = abjad.Selection(selections).leaf(0)
+        first_leaf = abjad.select.leaf(selections, 0)
         parentage = abjad.get.parentage(first_leaf)
-        parent_voice = abjad.Selection(parentage).components(abjad.Voice)
+        parent_voice = abjad.select.components(parentage, abjad.Voice)
         return parent_voice[0].name
 
     def _make_components(self, duration):
@@ -2297,7 +2298,7 @@ class NoteheadHandler(Handler):
         self.add_noteheads(selections)
 
     def add_noteheads(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         heads = self._cyc_noteheads(r=len(ties))
         head_vector = self.head_boolean_vector(r=len(ties))
         trans_vector = self.transition_boolean_vector(r=len(ties))
@@ -2307,7 +2308,7 @@ class NoteheadHandler(Handler):
                 full_string = string + head
                 style = abjad.LilyPondLiteral(full_string, format_slot="opening")
                 if bool == 1:
-                    for leaf in abjad.Selection(tie).leaves(pitched=True):
+                    for leaf in abjad.select.leaves(tie, pitched=True):
                         abjad.attach(style, leaf)
                 else:
                     continue
@@ -2330,8 +2331,8 @@ class NoteheadHandler(Handler):
                         continue
                 else:
                     continue
-            for run in abjad.Selection(selections).runs():
-                last_tie = abjad.Selection(run).logical_ties(pitched=True)[-1]
+            for run in abjad.select.runs(selections):
+                last_tie = abjad.select.logical_ties(run, pitched=True)[-1]
                 abjad.detach(transition_arrow, last_tie[-1])
 
     def name(self):
@@ -2414,9 +2415,9 @@ class OnBeatGraceHandler(Handler):
         ... )
         ...
         >>> s = abjad.Staff([abjad.Voice("e''4 e''2 e''4", name="Voice1")], name="Staff1")
-        >>> grace_handler(abjad.Selection(s).leaf(1))
-        >>> pitch_handler(abjad.Selection(s).logical_ties(grace=True))
-        >>> head_handler(abjad.Selection(s).logical_ties(grace=True))
+        >>> grace_handler(abjad.select.leaf(s, 1))
+        >>> pitch_handler(abjad.select.logical_ties(s, grace=True))
+        >>> head_handler(abjad.select.logical_ties(s, grace=True))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2521,7 +2522,7 @@ class OnBeatGraceHandler(Handler):
         self.add_grace(selections)
 
     def add_grace(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         vector = self.boolean_vector(r=len(ties))
         for value, tie in zip(vector, ties):
             if value == 1:
@@ -2530,7 +2531,7 @@ class OnBeatGraceHandler(Handler):
                 durs = self.durations(r=repetitions)
                 for _ in durs:
                     list_.append(abjad.Note("c'", (_, 16)))
-                sel = abjad.Selection(list_)
+                sel = list_
                 abjad.on_beat_grace_container(
                     sel,
                     tie[:],
@@ -2540,7 +2541,7 @@ class OnBeatGraceHandler(Handler):
                     font_size=self.font_size,
                 )
         if self.forced_multiplier is not None:
-            for grace in abjad.Selection(selections).leaves(grace=True):
+            for grace in abjad.select.leaves(selections, grace=True):
                 grace.multiplier = abjad.Multiplier(self.forced_multiplier)
 
     def name(self):
@@ -2568,7 +2569,7 @@ class PitchHandler(Handler):
         ...     pitch_list=[1, 2, 3, 4],
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2601,7 +2602,7 @@ class PitchHandler(Handler):
         ...     pitch_list=[1, [2, 3], 4],
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2636,7 +2637,7 @@ class PitchHandler(Handler):
         ...     chord_groups=[2, 4],
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2672,7 +2673,7 @@ class PitchHandler(Handler):
         ...     chord_groups=[2, 4],
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2705,7 +2706,7 @@ class PitchHandler(Handler):
         ...     pitch_list=[1, fractions.Fraction(9, 4), 3, 4],
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -2743,7 +2744,7 @@ class PitchHandler(Handler):
         ...     allow_chord_duplicates=True,
         ...     forget=False,
         ... )
-        >>> handler(abjad.Selection(s).logical_ties())
+        >>> handler(abjad.select.logical_ties(s))
         >>> score = abjad.Score([s])
         >>> moment = "#(ly:make-moment 1 25)"
         >>> abjad.setting(score).proportional_notation_duration = moment
@@ -3213,7 +3214,7 @@ class PitchHandler(Handler):
                         if -1 < cent_deviation:
                             cent_string = cent_string[:26] + "+" + cent_string[26:]
                         JIPitch_cents.append(
-                            (pitch_index, abjad.Markup(cent_string, direction=abjad.Up))
+                            (pitch_index, abjad.Markup(cent_string, direction=abjad.UP))
                         )
             if self.apply_all is False:
                 new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
@@ -3248,10 +3249,12 @@ class PitchHandler(Handler):
                         abjad.mutate.replace(leaf, replacement_chord)
                         new_leaves[i] = replacement_chord
             for index in microtonal_indices_to_pitch:
-                for leaf in abjad.Selection(new_leaves[int(index)]).leaves():
+                for leaf in abjad.select.leaves(new_leaves[int(index)]):
                     leaf_annotation_pitch = [_.hertz for _ in abjad.get.pitches(leaf)]
                     leaf_annotation_ratio = []
                     if isinstance(leaf, abjad.Chord):
+                        leaf_annotation_ratio = [_ for _ in microtonal_indices_to_pitch[index].values()]
+                        leaf_annotation_pitch = [leaf_annotation_pitch[0] for _ in range(len(leaf_annotation_ratio))]
                         marks = []
                         heads = leaf.note_heads
                         for sub_index in microtonal_indices_to_pitch[index]:
@@ -3296,11 +3299,10 @@ class PitchHandler(Handler):
                                 rf"\center-column {{ {marks_strings} }}",
                             )
                             m = abjad.Markup(
-                                rf"\markup \center-align {column}",
-                                direction=abjad.Up,
+                                rf"\markup \center-align {column.string}",
                             )
                             if leaf is abjad.get.logical_tie(leaf).head:
-                                abjad.attach(m, leaf)
+                                abjad.attach(m, leaf, direction=abjad.UP)
                     else:
                         if self.as_ratios is False:
                             temp = microtonal_indices_to_pitch[index]
@@ -3342,7 +3344,7 @@ class PitchHandler(Handler):
                                 )
                                 leaf_annotation_ratio.append(temp)
                             if leaf is abjad.get.logical_tie(leaf).head:
-                                abjad.attach(m, leaf)
+                                abjad.attach(m, leaf, direction=abjad.UP)
                     annotation_string = [
                         f"{x} * {y}"
                         for x, y in zip(leaf_annotation_pitch, leaf_annotation_ratio)
@@ -3534,7 +3536,7 @@ class ScordaturaHandler(Handler):
         self.padding = padding
 
     def __call__(self, selections):
-        leaves = abjad.Selection(selections).leaves()
+        leaves = abjad.select.leaves(selections)
         interval = self._find_transposition()
         abjad.mutate.transpose(leaves, interval)
         start, stop = self._make_spanner()
@@ -3623,15 +3625,15 @@ class SlurHandler(Handler):
 
     def add_slurs(self, selections):
         if self.apply_slur_to == "selections":
-            if len(abjad.Selection(selections).logical_ties(pitched=True)) < 2:
+            if len(abjad.select.logical_ties(selections, pitched=True)) < 2:
                 pass
             if self.boolean_vector(r=1)[0] == 1:
                 abjad.slur(selections[:])
             else:
                 pass
         elif self.apply_slur_to == "runs":
-            for run in abjad.Selection(selections).runs():
-                if len(abjad.Selection(run).logical_ties()) < 2:
+            for run in abjad.select.runs(selections):
+                if len(abjad.select.logical_ties(run)) < 2:
                     continue
                 if self.boolean_vector(r=1)[0] == 1:
                     abjad.slur(run[:])
@@ -3733,7 +3735,7 @@ class TempoSpannerHandler(Handler):
         self.add_spanner(selections)
 
     def add_spanner(self, selections):
-        ties = abjad.Selection(selections).logical_ties()
+        ties = abjad.select.logical_ties(selections)
         value = self.boolean_vector(r=1)[0]
         if value == 1:
             start_temp = self.tempo_list(r=1)[0]
@@ -3765,9 +3767,9 @@ class TempoSpannerHandler(Handler):
                 format_slot="after",
             )
             stopper = abjad.LilyPondLiteral(r"\bacaStopTextSpanMM", format_slot="after")
-            abjad.attach(start_literal, abjad.Selection(ties).leaves()[0])
-            abjad.attach(stop_literal, abjad.Selection(ties).leaves()[-1])
-            abjad.attach(stopper, abjad.get.leaf(abjad.Selection(ties).leaves()[-1], 1))
+            abjad.attach(start_literal, abjad.select.leaves(ties)[0])
+            abjad.attach(stop_literal, abjad.select.leaves(ties)[-1])
+            abjad.attach(stopper, abjad.get.leaf(abjad.select.leaves(ties)[-1], 1))
 
     def name(self):
         return self.name
@@ -3961,14 +3963,14 @@ class TextSpanHandler(Handler):
             pass
 
     def _apply_empty_spanner(self, selections, span_command):
-        first_leaf = abjad.Selection(selections).leaves()[0]
+        first_leaf = abjad.select.leaves(selections)[0]
         stop_indicator = abjad.StopTextSpan(command=r"\stopTextSpan" + span_command)
         abjad.attach(stop_indicator, first_leaf)
 
     def _apply_position_and_span_to_bounds(
         self, selections, positions, style, span_command, span_padding
     ):
-        for run in abjad.Selection(selections).runs():
+        for run in abjad.select.runs(selections):
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
@@ -4025,8 +4027,8 @@ class TextSpanHandler(Handler):
     def _apply_position_and_span_to_leaves(
         self, selections, positions, style, span_command, span_padding
     ):
-        for run in abjad.Selection(selections).runs():
-            ties = abjad.Selection(run).logical_ties(pitched=True)
+        for run in abjad.select.runs(selections):
+            ties = abjad.select.logical_ties(run, pitched=True)
             following_leaf = abjad.get.leaf(ties[-1][-1], 1)
             distance = len(ties) + 1
             start_strings = [positions(r=1)[0] for _ in range(distance)]
@@ -4107,7 +4109,7 @@ class TextSpanHandler(Handler):
     def _apply_position_and_span_to_left(
         self, selections, positions, style, span_command, span_padding
     ):
-        runs = abjad.Selection(selections).runs()
+        runs = abjad.select.runs(selections)
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
             abjad.StartTextSpan(
@@ -4161,7 +4163,7 @@ class TranspositionHandler(Handler):
         self.transpose_leaves(selections)
 
     def transpose_leaves(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         transpositions = self.cyc_transpositions(r=len(ties))
         for tie, interval in zip(ties, transpositions):
             abjad.mutate.transpose(tie, interval)
@@ -4230,10 +4232,10 @@ class TrillHandler(Handler):
         self._apply_trills(selections)
 
     def _apply_trills(self, selections):
-        ties = abjad.Selection(selections).logical_ties(pitched=True)
+        ties = abjad.select.logical_ties(selections, pitched=True)
         if self.only_chords:
-            chords = abjad.Selection(selections).components(abjad.Chord)
-            ties = abjad.Selection(chords).logical_ties(pitched=True)
+            chords = abjad.select.components(selections, abjad.Chord)
+            ties = abjad.select.logical_ties(chords, pitched=True)
         vector = self.boolean_vector
         for tie, bool in zip(ties, vector(r=len(ties))):
             if bool == 1:
@@ -4260,7 +4262,7 @@ class TrillHandler(Handler):
                     trill_start = abjad.StartTrillSpan(pitch=trill_pitch)
                     abjad.attach(trill_start, new_leaf)
 
-                    tail = abjad.Selection(tie).leaves()[1:]
+                    tail = abjad.select.leaves(tie, )[1:]
                     for leaf in tail:
                         new_tail = abjad.Note(base_pitch, leaf.written_duration)
                         indicators = abjad.get.indicators(leaf)
