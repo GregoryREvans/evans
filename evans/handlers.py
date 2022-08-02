@@ -3293,7 +3293,7 @@ class PitchHandler(Handler):
                                     leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
                             marks_strings = r""
-                            raise Exception(marks)
+                            # raise Exception(marks)
                             for marks_string in marks: # WARNING: marks[::-1] reverses order of cent column. test to prove order
                                 marks_strings += rf"{marks_string.string[24:-1]}"
                             column = abjad.Markup(
