@@ -76,7 +76,7 @@ file = abjad.LilyPondFile(
     items=[
         '#(set-default-paper-size "a4" \'letter)',
         r"#(set-global-staff-size 16)",
-        "\\include 'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily'",
+        "\\include 'Users/gregoryevans/abjad/abjad/scm/abjad.ily'",
         "\\include '/Users/gregoryevans/abjad/abjad/_stylesheets/ekmelos-ji-accidental-markups.ily'",
         score,
         abjad.Block(name="layout"),

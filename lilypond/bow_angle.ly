@@ -2,7 +2,7 @@
 \language "english"
 #(set-default-paper-size "11x17landscape")
 #(set-global-staff-size 20)
-\include "/Users/gregoryevans/abjad/abjad/_stylesheets/abjad.ily"
+\include "/Users/gregoryevans/abjad/abjad/scm/abjad.ily"
 \include "evans-markups.ily"
 \include "evans-spanners.ily"
 

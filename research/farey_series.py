@@ -6,11 +6,13 @@ class Term:
         self.x = x
         self.y = y
 
+
 # GCD of a and b
 def gcd(a, b):
     if b == 0:
         return a
     return gcd(b, a % b)
+
 
 # Function to print
 # Farey sequence of order n
@@ -34,16 +36,15 @@ def farey(n):
     # Sorting the term of sequence
     for i in range(len(v)):
         for j in range(i + 1, len(v)):
-            if (v[i].x * v[j].y > v[j].x * v[i].y):
+            if v[i].x * v[j].y > v[j].x * v[i].y:
                 v[i], v[j] = v[j], v[i]
 
     # Explicitly printing first term
-    print("0/1", end = " ")
+    print("0/1", end=" ")
 
     # Printing other terms
     for i in range(len(v)):
-        print("%d/%d" % (v[i].x,
-                        v[i].y), end = " ")
+        print("%d/%d" % (v[i].x, v[i].y), end=" ")
 
     # explicitly printing last term
     print("1/1")

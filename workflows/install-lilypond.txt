@@ -1,0 +1,56 @@
+Install LilyPond
+================
+
+Installing directory-only LilyPond for macOS (2020-04-08)
+=========================================================
+
+Directory-only installs became available sometime during LilyPond's 2.23.x
+development cycle. The "macOS x86 64: LilyPond 2.23.x" link at
+https://lilypond.org/development.html downloads an archive that unzips
+to a single directory named something like lilypond-2.23.8.
+
+Installing this directory-only distribution means mv lilypond-2.23.8 to (say)
+the user home directory and then adding ~/lilypond-2.23.8/bin to the PATH
+environment variable.
+
+The shell will then be able to the find ~/lilypond-2.23.8/bin/lilypond. But the
+operating system will complain when first running a test file ...
+
+   $ lilypond test.ly
+
+... with a modal that says "lilypond cannot be opened because the developer
+cannot be verified" with options only to "Move to Trash" or "Cancel." The
+solution requires using the Finder. Navigate to ~/lilypond-2.23.8/bin. Then
+right-click on "lilypond" and select "Open" from the context menu that results.
+A modal will appear asking whether you are sure you want to open the
+application (even though the developer can not be verified). Click "Open" and
+close the stray terminal window LilyPond opens when it runs. Calling ...
+
+   $ lilypond test.ly
+
+... from the commandline will then fail again, this time a modal that says that
+the developer of ghostscript ("gs") can not be identifier. The solution is the
+same. Use the Finder to navigate to ~/lilypond-2.23.8/libexec. Then right-click
+on "gs" and select "Open" from the context menu that results. Then select
+"Open" in the following modal. Use ctrl-D to quit Ghostscript and the close the
+terminal window it opens when it runs. Then calling ...
+
+   $ lilypond test.ly
+
+... will work.
+
+But the process has to be repeated for covert-ly. Calling ...
+
+   $ convert-ly test.ly
+
+... summons a modal that says that the developer of the copy of "python3.9"
+(bundled with LilyPond) can not be identified. Use the Finder to navigate back to
+~/lilypond-2.23.8/libexec and right-click on python3.9. Select "Open with ..."
+(instead of "Open") in the context menu because macOS claims to not know how to
+open the application. Scroll down and select TextEdit (or any other
+application) to open the file. Close the application after it opens the file.
+Then calling ...
+
+   $ convert-ly test.ly
+
+... will work.

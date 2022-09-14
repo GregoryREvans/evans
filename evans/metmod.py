@@ -61,7 +61,7 @@ def metric_modulation(
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -104,7 +104,7 @@ def metric_modulation(
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -147,7 +147,7 @@ def metric_modulation(
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -190,7 +190,7 @@ def metric_modulation(
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -232,25 +232,27 @@ def metric_modulation(
         met = abjad.MetronomeMark.make_tempo_equation_markup(
             abjad.get.duration(modulated_beat), int(returned_speed)
         )
+        met_string = met.string[8:]
         mod = abjad.MetricModulation(
             left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
         )
+        mod_string = abjad.lilypond(mod)[8:]
         if raise_value is None:
             mark = abjad.LilyPondLiteral(
                 [
                     r"^ \markup {",
                     size,
                     r"  \concat {",
-                    f"      {str(met)[8:]}",
+                    f"      {met_string}",
                     r"      \hspace #1",
                     r"      \upright [",
-                    f"      {str(mod)[8:]}",
+                    f"      {mod_string}",
                     r"      \hspace #0.5",
                     r"      \upright ]",
                     r"  }",
                     r"}",
                 ],
-                format_slot="after",
+                site="after",
             )
         else:
             mark = abjad.LilyPondLiteral(
@@ -259,16 +261,16 @@ def metric_modulation(
                     size,
                     rf"  \raise #{raise_value} \with-dimensions-from \null",
                     r"  \concat {",
-                    f"      {str(met)[8:]}",
+                    f"      {met_string}",
                     r"      \hspace #1",
                     r"      \upright [",
-                    f"      {str(mod)[8:]}",
+                    f"      {mod_string}",
                     r"      \hspace #0.5",
                     r"      \upright ]",
                     r"  }",
                     r"}",
                 ],
-                format_slot="after",
+                site="after",
             )
         return mark
     else:
@@ -277,9 +279,11 @@ def metric_modulation(
                 abjad.get.duration(modulated_beat),
                 quicktions.Fraction(round(returned_speed)).limit_denominator(),
             )
+            met_string = met.string[8:]
             mod = abjad.MetricModulation(
                 left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
             )
+            mod_string = abjad.lilypond(mod)[8:]
             if raise_value is None:
                 mark = abjad.LilyPondLiteral(
                     [
@@ -288,16 +292,16 @@ def metric_modulation(
                         r"  \concat {",
                         "       c.",
                         r"      \hspace #1",
-                        f"      {str(met)[8:]}",
+                        f"      {met_string}",
                         r"      \hspace #1",
                         r"      \upright [",
-                        f"      {str(mod)[8:]}",
+                        f"      {mod_string}",
                         r"      \hspace #0.5",
                         r"      \upright ]",
                         r"  }",
                         r"}",
                     ],
-                    format_slot="after",
+                    site="after",
                 )
             else:
                 mark = abjad.LilyPondLiteral(
@@ -308,41 +312,43 @@ def metric_modulation(
                         r"  \concat {",
                         "       c.",
                         r"      \hspace #1",
-                        f"      {str(met)[8:]}",
+                        f"      {met_string}",
                         r"      \hspace #1",
                         r"      \upright [",
-                        f"      {str(mod)[8:]}",
+                        f"      {mod_string}",
                         r"      \hspace #0.5",
                         r"      \upright ]",
                         r"  }",
                         r"}",
                     ],
-                    format_slot="after",
+                    site="after",
                 )
         else:
             met = abjad.MetronomeMark.make_tempo_equation_markup(
                 abjad.get.duration(modulated_beat),
                 quicktions.Fraction(returned_speed).limit_denominator(),
             )
+            met_string = met.string[8:]
             mod = abjad.MetricModulation(
                 left_rhythm=left_note, right_rhythm=right_note, scale=leaf_scale
             )
+            mod_string = abjad.lilypond(mod)[8:]
             if raise_value is None:
                 mark = abjad.LilyPondLiteral(
                     [
                         r"^ \markup {",
                         size,
                         r"  \concat {",
-                        f"      {str(met)[8:]}",
+                        f"      {met_string}",
                         r"      \hspace #1",
                         r"      \upright [",
-                        f"      {str(mod)[8:]}",
+                        f"      {mod_string}",
                         r"      \hspace #0.5",
                         r"      \upright ]",
                         r"  }",
                         r"}",
                     ],
-                    format_slot="after",
+                    site="after",
                 )
             else:
                 mark = abjad.LilyPondLiteral(
@@ -351,16 +357,16 @@ def metric_modulation(
                         size,
                         rf"  \raise #{raise_value} \with-dimensions-from \null",
                         r"  \concat {",
-                        f"      {str(met)[8:]}",
+                        f"      {met_string}",
                         r"      \hspace #1",
                         r"      \upright [",
-                        f"      {str(mod)[8:]}",
+                        f"      {mod_string}",
                         r"      \hspace #0.5",
                         r"      \upright ]",
                         r"  }",
                         r"}",
                     ],
-                    format_slot="after",
+                    site="after",
                 )
         return mark
 

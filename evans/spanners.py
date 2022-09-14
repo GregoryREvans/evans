@@ -9,7 +9,7 @@ class DurationLine:  # don't forget to force notehead shape
 
     __slots__ = "_tweaks"
 
-    _format_slot = "after"
+    _site = "after"
 
     _time_orientation = abjad.enums.RIGHT
 
@@ -18,9 +18,9 @@ class DurationLine:  # don't forget to force notehead shape
     def __init__(
         self,
         *,
-        tweaks = None,
+        tweaks=None,
     ):
-        if tweaks is not None: # WARNING: tweakinterface removed
+        if tweaks is not None:  # WARNING: tweakinterface removed
             assert isinstance(tweaks, abjad.TweakInterface), repr(tweaks)
         self._tweaks = abjad.TweakInterface.set_tweaks(self, tweaks)
 
@@ -99,7 +99,7 @@ class Lyrics(
 
 class BendBefore:
 
-    _format_slot = "before"
+    _site = "before"
     _is_dataclass = True
     _time_orientation = abjad.RIGHT
 

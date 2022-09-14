@@ -60,7 +60,7 @@ First Example
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),
@@ -169,7 +169,7 @@ Second Example
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),
@@ -234,7 +234,7 @@ Third Example
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
     ...         score,
     ...         abjad.Block(name="paper"),

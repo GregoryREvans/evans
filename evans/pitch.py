@@ -7,6 +7,7 @@ import math
 import abjad
 import baca
 import quicktions
+from abjadext import microtones
 
 from .sequence import RatioSegment, flatten
 
@@ -20,8 +21,8 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=True)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.UP)
-        >>> abjad.attach(mark, note)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}")
+        >>> abjad.attach(mark, note, direction=abjad.UP)
         >>> abjad.show(note) # doctest: +SKIP
 
         .. docs::
@@ -34,8 +35,8 @@ class JIPitch(abjad.Pitch):
 
         >>> pitch = evans.JIPitch("c'", "7/4", with_quarter_tones=False)
         >>> note = abjad.Note(pitch, (1, 4))
-        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}", direction=abjad.UP)
-        >>> abjad.attach(mark, note)
+        >>> mark = abjad.Markup(fr"\markup {str(pitch.deviation)}")
+        >>> abjad.attach(mark, note, direction=abjad.UP)
         >>> abjad.show(note) # doctest: +SKIP
 
         .. docs::
@@ -348,7 +349,9 @@ def return_cent_markup(
         cent_string = f"{remainder}"
     else:
         cent_string = f"+{remainder}"
-    mark = abjad.Markup(rf"\markup \center-align {cent_string}", direction=abjad.UP)
+    mark = abjad.Markup(
+        rf"\markup \center-align {cent_string}"
+    )  # WARNING: previously had direction=abjad.UP maybe remove ^
     return mark
 
 
@@ -408,7 +411,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.UP)
+        ...     markup = abjad.Markup(fr"\markup {string}")
         ...     abjad.attach(markup, tie[0])
         ...
         >>> handler(vm_ties)
@@ -418,7 +421,7 @@ def return_vertical_moment_ties(score):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -437,39 +440,39 @@ def return_vertical_moment_ties(score):
                 \new Staff
                 {
                     cs'4
-                    ^ \markup 1
+                    - \markup 1
                     cs'2
-                    ^ \markup 6
+                    - \markup 6
                     d'4
-                    ^ \markup 12
+                    - \markup 12
                 }
                 \new Staff
                 {
                     d'4
-                    ^ \markup 2
+                    - \markup 2
                     c'4
-                    ^ \markup 5
+                    - \markup 5
                     e'2
-                    ^ \markup 9
+                    - \markup 9
                 }
                 \new Staff
                 {
                     c'8
-                    ^ \markup 0
+                    - \markup 0
                     ef'8
-                    ^ \markup 3
+                    - \markup 3
                     e'8
-                    ^ \markup 4
+                    - \markup 4
                     d'8
-                    ^ \markup 7
+                    - \markup 7
                     ef'8
-                    ^ \markup 8
+                    - \markup 8
                     c'8
-                    ^ \markup 10
+                    - \markup 10
                     cs'8
-                    ^ \markup 11
+                    - \markup 11
                     ef'8
-                    ^ \markup 13
+                    - \markup 13
                 }
             >>
 
@@ -490,7 +493,7 @@ def return_vertical_moment_ties(score):
         >>> numbers = [_ for _ in range(len(vm_ties))]
         >>> for i, tie in zip(numbers, vm_ties):
         ...     string = f"{i}"
-        ...     markup = abjad.Markup(fr"\markup {string}", direction=abjad.UP)
+        ...     markup = abjad.Markup(fr"\markup {string}")
         ...     abjad.attach(markup, tie[0])
         ...     handler(tie)
         ...
@@ -500,7 +503,7 @@ def return_vertical_moment_ties(score):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -519,39 +522,39 @@ def return_vertical_moment_ties(score):
                 \new Staff
                 {
                     d'4
-                    ^ \markup 2
+                    - \markup 2
                     ~
                     d'2
                     cs'4
-                    ^ \markup 11
+                    - \markup 11
                 }
                 \new Staff
                 {
                     cs'4
-                    ^ \markup 1
+                    - \markup 1
                     c'4
-                    ^ \markup 5
+                    - \markup 5
                     ef'2
-                    ^ \markup 8
+                    - \markup 8
                 }
                 \new Staff
                 {
                     c'8
-                    ^ \markup 0
+                    - \markup 0
                     ef'8
-                    ^ \markup 3
+                    - \markup 3
                     e'8
-                    ^ \markup 4
+                    - \markup 4
                     cs'8
-                    ^ \markup 6
+                    - \markup 6
                     d'8
-                    ^ \markup 7
+                    - \markup 7
                     e'8
-                    ^ \markup 9
+                    - \markup 9
                     c'8
-                    ^ \markup 10
+                    - \markup 10
                     d'8
-                    ^ \markup 12
+                    - \markup 12
                 }
             >>
 
@@ -564,9 +567,7 @@ def return_vertical_moment_ties(score):
         for note in moment.start_notes:
             new_moment_notes.append(note)
         if 0 < len(new_moment_notes):
-            new_moment.append(
-                [_ for _ in abjad.select.logical_ties(new_moment_notes)]
-            )
+            new_moment.append([_ for _ in abjad.select.logical_ties(new_moment_notes)])
             new_moments.append(new_moment)
     flat_moments = flatten(new_moments)
     flat_moments.sort(key=lambda _: abjad.get.timespan(_))
@@ -1412,7 +1413,8 @@ class ArtificialHarmonic(abjad.Chord):
         if self.is_parenthesized:
             first_head = self._note_heads[0]
             first_head.is_parenthesized = self.is_parenthesized
-            abjad.tweak(self._note_heads[0]).ParenthesesItem__font_size = -4
+            abjad.tweak(self._note_heads[0], r"\tweak ParenthesesItem.font-size #-4")
+            # was: abjad.tweak(self._note_heads[0]).ParenthesesItem__font_size = -4
 
         if with_sounding_pitch is True:
             written_pitch_list = [_ for _ in written_pitches]
@@ -1420,12 +1422,16 @@ class ArtificialHarmonic(abjad.Chord):
             self.written_pitches = abjad.PitchSegment(written_pitch_list)
 
         second_head = self._note_heads[1]
-        abjad.tweak(second_head).style = self.style
+        abjad.tweak(
+            second_head, rf"\tweak style #{self.style}"
+        )  # was: abjad.tweak(second_head).style = self.style
 
         if len(self._note_heads) == 3:
             third_head = self._note_heads[2]
             third_head.is_parenthesized = True
-            abjad.tweak(third_head).font_size = -4
+            abjad.tweak(
+                third_head, r"\tweak font-size #-4"
+            )  # was: abjad.tweak(third_head).font_size = -4
 
     ### PUBLIC METHODS ###
 
@@ -1453,3 +1459,91 @@ class ArtificialHarmonic(abjad.Chord):
                 "cannot calculate sounding pitch for given interval"
             ) from err
         return sounding_pitch
+
+
+def reduce_list_by_prime_limit(input_list, prime_limit):
+    out = []
+    for i in input_list:
+        factors = microtones.ji._prime_factors(i)
+        booleans = [prime_limit < factor for factor in factors]
+        if any(booleans):
+            continue
+        out.append(i)
+    return out
+
+
+def reduce_list_to_contain_sole_prime(input_list, prime_limit):
+    out = []
+    for i in input_list:
+        factors = microtones.ji._prime_factors(i)
+        booleans = [prime_limit != factor for factor in factors]
+        if any(booleans):
+            continue
+        out.append(i)
+    return out
+
+
+def reduced_spectrum(prime_limit, partial_cap, multiplier_reduction_function):
+    """
+    .. container:: example
+
+        >>> value = evans.reduced_spectrum(
+        ...     prime_limit=29,
+        ...     partial_cap=192,
+        ...     multiplier_reduction_function=evans.reduce_list_by_prime_limit,
+        ...     )
+        ...
+        >>> print(value)
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 38, 39, 40, 42, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58, 60, 63, 64, 65, 66, 68, 69, 70, 72, 75, 76, 77, 78, 80, 81, 84, 85, 87, 88, 90, 91, 92, 95, 96, 98, 99, 100, 102, 104, 105, 108, 110, 112, 114, 115, 116, 117, 119, 120, 121, 125, 126, 128, 130, 132, 133, 135, 136, 138, 140, 143, 144, 145, 147, 150, 152, 153, 154, 156, 160, 161, 162, 165, 168, 169, 170, 171, 174, 175, 176, 180, 182, 184, 187, 189, 190, 192]
+
+    .. container:: example
+
+        >>> value = evans.reduced_spectrum(
+        ...     prime_limit=29,
+        ...     partial_cap=192,
+        ...     multiplier_reduction_function=evans.reduce_list_by_prime_limit,
+        ...     )
+        ...
+        >>> primes = []
+        >>> for i in value:
+        ...     if microtones.ji._is_prime(i):
+        ...         primes.append(i)
+        ...
+        >>> print(primes)
+        [3, 5, 7, 11, 13, 17, 19, 23, 29]
+
+    .. container:: example
+
+        >>> value = evans.reduced_spectrum(
+        ...     prime_limit=29,
+        ...     partial_cap=192,
+        ...     multiplier_reduction_function=evans.reduce_list_to_contain_sole_prime,
+        ...     )
+        ...
+        >>> print(value)
+        [1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 46, 57, 85, 91, 92, 121, 171, 184]
+
+    """
+    out = []
+    numbers_below_prime_limit = [_ for _ in range(1, prime_limit + 1)]
+    numbers_below_partial_cap = [_ for _ in range(1, partial_cap + 1)]
+    primes = [1, 2]
+    for item in numbers_below_prime_limit:
+        if microtones.ji._is_prime(item):
+            primes.append(item)
+    reversed_primes = [_ for _ in primes[::-1]]
+    multipliers = [
+        multiplier_reduction_function(numbers_below_partial_cap, prime)
+        for prime in primes
+    ]
+    for prime, multiplier_set in zip(reversed_primes, multipliers):
+        for multiplier in multiplier_set:
+            out.append(prime * multiplier)
+    out = list(set(out))
+    out.sort()
+    reduced_out = []
+    for i in out:
+        if partial_cap < i:
+            continue
+        reduced_out.append(i)
+    return reduced_out

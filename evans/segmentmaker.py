@@ -36,7 +36,7 @@ class NoteheadBracketMaker:
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -117,8 +117,9 @@ class NoteheadBracketMaker:
             head_dur = tuplet_dur / imp_den
             dur_pair = self._assemble_notehead(head_dur)
             abjad.tweak(
-                tuplet
-            ).TupletNumber.text = f"#(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den} {imp_num}) (ly:make-duration {dur_pair[0]} {dur_pair[1]}))"
+                tuplet,
+                rf"\tweak TupletNumber.text #(tuplet-number::append-note-wrapper(tuplet-number::non-default-tuplet-fraction-text {imp_den} {imp_num}) (ly:make-duration {dur_pair[0]} {dur_pair[1]}))",
+            )
 
 
 class SegmentMaker:
@@ -207,7 +208,7 @@ class SegmentMaker:
                 abjad.Markup(rf"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
             ]
             for x in mark_abbreviations:
-                abbreviations.append(abjad.MarginMarkup(markup=x))
+                abbreviations.append(abjad.ShortInstrumentName(markup=x))
         else:
             abbreviations = [_ for _ in range(len(self.instruments))]
         if self.names is not None:
@@ -217,7 +218,7 @@ class SegmentMaker:
                 abjad.Markup(rf"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
             ]
             for x in mark_names:
-                names.append(abjad.StartMarkup(markup=x))
+                names.append(abjad.InstrumentName(markup=x))
         else:
             names = [_ for _ in range(len(self.instruments))]
 
@@ -257,8 +258,8 @@ class SegmentMaker:
         if self.clef_handlers is None:
             self.clef_handlers = [
                 None
-                for _ in abjad.select.components(self.score_template["Staff Group"],
-                    abjad.Staff
+                for _ in abjad.select.components(
+                    self.score_template["Staff Group"], abjad.Staff
                 )
             ]
         for abbrev, name, inst, handler, voice in zip(
@@ -266,8 +267,8 @@ class SegmentMaker:
             names,
             self.instruments,
             self.clef_handlers,
-            abjad.select.components(self.score_template["Staff Group"],
-                abjad.Staff
+            abjad.select.components(
+                self.score_template["Staff Group"], abjad.Staff
             ),  # was Voice
         ):
             first_leaf = abjad.select.leaves(voice)[0]
@@ -326,14 +327,14 @@ class SegmentMaker:
         print("Adding ending skips ...")
         last_skip = abjad.select.leaves(self.score_template["Global Context"])[-1]
         override_command = abjad.LilyPondLiteral(
-            r"\once \override Score.TimeSignature.stencil = ##f", format_slot="before"
+            r"\once \override Score.TimeSignature.stencil = ##f", site="before"
         )
         abjad.attach(
             override_command, last_skip, tag=abjad.Tag("applying ending skips")
         )
 
-        for voice in abjad.select.components(self.score_template["Staff Group"],
-            abjad.Voice
+        for voice in abjad.select.components(
+            self.score_template["Staff Group"], abjad.Voice
         ):
             container = abjad.Container()
             sig = self.time_signatures[-1]
@@ -344,14 +345,13 @@ class SegmentMaker:
             container.append(mult_rest_leaf)
             markup = abjad.Markup(
                 rf"""\markup \center-align \musicglyph #"{self.fermata}" """,
-                direction=abjad.UP,
             )
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
-                format_slot="before",
+                site="before",
             )
             stop_command = abjad.LilyPondLiteral(
-                r"\stopStaff \startStaff", format_slot="after"
+                r"\stopStaff \startStaff", site="after"
             )
             rest_literal = abjad.LilyPondLiteral(
                 r"\once \override Rest.transparent = ##t", "before"
@@ -361,12 +361,17 @@ class SegmentMaker:
             )
             penultimate_rest = container[0]
             final_rest = container[-1]
-            abjad.attach(markup, final_rest, tag=abjad.Tag("applying ending skips"))
+            abjad.attach(
+                markup,
+                final_rest,
+                tag=abjad.Tag("applying ending skips"),
+                direction=abjad.UP,
+            )
             abjad.attach(
                 start_command, penultimate_rest, tag=abjad.Tag("applying ending skips")
             )
             if self.barline == "|.":
-                stop_command = abjad.LilyPondLiteral(r"\stopStaff", format_slot="after")
+                stop_command = abjad.LilyPondLiteral(r"\stopStaff", site="after")
                 abjad.attach(
                     stop_command, final_rest, tag=abjad.Tag("applying ending skips")
                 )
@@ -434,7 +439,7 @@ class SegmentMaker:
             measures = abjad.select.group_by_measure(leaves)
             for i, shard in enumerate(measures):
                 top_level_components = get_top_level_components_from_leaves(shard)
-                shard = top_level_components # WARNING: was originally wrapped in a selection
+                shard = top_level_components  # WARNING: was originally wrapped in a selection
                 met = abjad.Meter(sigs[i].pair)
                 inventories = [
                     x
@@ -467,9 +472,9 @@ class SegmentMaker:
     def _break_pages(self):
         print("Breaking pages ...")
         if self.page_break_counts is not None:
-            lit = abjad.LilyPondLiteral(r"\pageBreak", format_slot="absolute_after")
-            result = abjad.select.components(self.score_template["Global Context"],
-                abjad.Skip
+            lit = abjad.LilyPondLiteral(r"\pageBreak", site="absolute_after")
+            result = abjad.select.components(
+                self.score_template["Global Context"], abjad.Skip
             )
             result = abjad.select.partition_by_counts(
                 result, self.page_break_counts, cyclic=True, overhang=False
@@ -482,8 +487,8 @@ class SegmentMaker:
         print("Caching persistent info ...")
         info = dict()
         for i, voice in enumerate(
-            abjad.select.components(self.score_template["Staff Group"],
-                abjad.Staff
+            abjad.select.components(
+                self.score_template["Staff Group"], abjad.Staff
             )  # was Voice
         ):
             penultimate_rest = abjad.select.leaves(voice)[-2]
@@ -559,11 +564,11 @@ class SegmentMaker:
                     voice_tie_collection = voice_collections[command.voice_name]
                     target_timespan = command.timespan
                     selection = [
-                            _
-                            for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
-                                target_timespan
-                            )
-                        ]
+                        _
+                        for _ in voice_tie_collection.find_logical_ties_starting_during_timespan(
+                            target_timespan
+                        )
+                    ]
                     if not selection:
                         continue
                     handler = command.handler
@@ -612,7 +617,7 @@ class SegmentMaker:
             abjad.iterate.components(self.score_template["Staff Group"], abjad.Staff)
         ):
             t = rf"\tag #'voice{count + 1}"
-            literal = abjad.LilyPondLiteral(t, format_slot="before")
+            literal = abjad.LilyPondLiteral(t, site="before")
             container = abjad.Container()
             abjad.attach(literal, container)
             abjad.mutate.wrap(staff, container)
@@ -622,7 +627,7 @@ class SegmentMaker:
             )
         ):
             t = rf"\tag #'group{count + 1}"
-            literal = abjad.LilyPondLiteral(t, format_slot="before")
+            literal = abjad.LilyPondLiteral(t, site="before")
             container = abjad.Container()
             abjad.attach(literal, container)
             abjad.mutate.wrap(group, container)
@@ -743,22 +748,32 @@ class SegmentMaker:
                 for _callable in music_command.callables[1:]:
                     leaves = abjad.select.leaves(relevant_voice)
                     measures = abjad.select.group_by_measure(leaves)
-                    relevant_measures = abjad.select.get(measures, relevant_measure_indices)
+                    relevant_measures = abjad.select.get(
+                        measures, relevant_measure_indices
+                    )
                     application_site = _callable.selector(relevant_measures)
                     _callable.callable(application_site)
                     if isinstance(_callable.callable, PitchHandler):
                         leaves = abjad.select.leaves(relevant_voice)
                         measures = abjad.select.group_by_measure(leaves)
-                        relevant_measures = abjad.select.get(measures, relevant_measure_indices)
-                        for leaf in abjad.select.leaves(relevant_measures, pitched=True):
+                        relevant_measures = abjad.select.get(
+                            measures, relevant_measure_indices
+                        )
+                        for leaf in abjad.select.leaves(
+                            relevant_measures, pitched=True
+                        ):
                             abjad.annotate(leaf, "pitched", True)
 
                 for _attachment in music_command.attachments:
                     leaves = abjad.select.leaves(relevant_voice)
                     measures = abjad.select.group_by_measure(leaves)
-                    relevant_measures = abjad.select.get(measures, relevant_measure_indices)
+                    relevant_measures = abjad.select.get(
+                        measures, relevant_measure_indices
+                    )
                     attachment_site = _attachment.selector(relevant_measures)
-                    if isinstance(attachment_site, list): # WARNING: formerly tested against both list and selection
+                    if isinstance(
+                        attachment_site, list
+                    ):  # WARNING: formerly tested against both list and selection
                         for site in attachment_site:
                             abjad.attach(_attachment.indicator, site)
                     else:
@@ -839,10 +854,10 @@ class SegmentMaker:
                 multimeasure_rest = abjad.MultimeasureRest(1, multiplier=(multiplier))
                 start_command = abjad.LilyPondLiteral(
                     r"\stopStaff \once \override Staff.StaffSymbol.line-count = #1 \startStaff",
-                    format_slot="before",
+                    site="before",
                 )
                 stop_command = abjad.LilyPondLiteral(
-                    r"\stopStaff \startStaff", format_slot="after"
+                    r"\stopStaff \startStaff", site="after"
                 )
                 if self.cutaway is True:
                     abjad.attach(
@@ -863,12 +878,15 @@ class SegmentMaker:
         if self.add_final_grand_pause is True:
             return
         print("Removing final grand pause ...")
-        for staff in abjad.select.components(self.score_template["Global Context"], abjad.Staff):
+        for staff in abjad.select.components(
+            self.score_template["Global Context"], abjad.Staff
+        ):
             grand_pause = abjad.mutate.split(staff[:], self.time_signatures)[-1]
             for _ in grand_pause:
                 staff.remove(_)
-        for staff in abjad.select.components(self.score_template["Staff Group"],
-            abjad.Staff  # was voice double check for older scores
+        for staff in abjad.select.components(
+            self.score_template["Staff Group"],
+            abjad.Staff,  # was voice double check for older scores
         ):
             main_voice = abjad.select.components(staff, abjad.Voice)[0]
             leaves = abjad.select.leaves(main_voice)
@@ -1167,7 +1185,9 @@ class SegmentMaker:
         for voice in abjad.select.components(score, abjad.Voice):
             pitches = []
             durations = []
-            for tie in abjad.select.logical_ties(voice, ):
+            for tie in abjad.select.logical_ties(
+                voice,
+            ):
                 dur = abjad.get.duration(tie)
                 durations.append(str(dur))
                 if isinstance(tie[0], abjad.Rest):
@@ -1346,8 +1366,9 @@ def beam_meter(components, meter, offset_depth, include_rests=True):
 
     for i, span in enumerate(offset_timespans):
         leaves = abjad.select.leaves(non_tup_list[:])
-        for group in (
-            abjad.select.group_by(leaves, predicate=lambda x: abjad.get.timespan(x).happens_during_timespan(span))
+        for group in abjad.select.group_by(
+            leaves,
+            predicate=lambda x: abjad.get.timespan(x).happens_during_timespan(span),
         ):
             if abjad.get.timespan(group).happens_during_timespan(span) is True:
                 beamed_groups[i].append(group[:])
@@ -1382,7 +1403,7 @@ def make_fermata_measure(selection, transparent=True):
     skip = abjad.MultimeasureRest(1, multiplier=duration)
     transparent_command = abjad.LilyPondLiteral(
         r"\once \override MultiMeasureRest.transparent = ##t",
-        format_slot="before",
+        site="before",
     )
     temp_container = abjad.Container()
     temp_container.append(skip)
@@ -1396,11 +1417,11 @@ def make_fermata_measure(selection, transparent=True):
         abjad.attach(new_sig, temp_container[0])
         transparent_sig = abjad.LilyPondLiteral(
             r"\once \override Score.TimeSignature.transparent = ##t",
-            format_slot="before",
+            site="before",
         )
         transparent_rest = abjad.LilyPondLiteral(
             r"\once \override Rest.transparent = ##t",
-            format_slot="before",
+            site="before",
         )
         abjad.attach(transparent_sig, temp_container[0])
         abjad.attach(transparent_rest, temp_container[1])
@@ -1408,10 +1429,10 @@ def make_fermata_measure(selection, transparent=True):
         if transparent is True:
             start_command = abjad.LilyPondLiteral(
                 r"\stopStaff \once \override Staff.StaffSymbol.line-count = #0 \startStaff",
-                format_slot="before",
+                site="before",
             )
             stop_command = abjad.LilyPondLiteral(
-                r"\stopStaff \startStaff", format_slot="after"
+                r"\stopStaff \startStaff", site="after"
             )
             abjad.attach(start_command, temp_container[0])
             abjad.attach(stop_command, temp_container[0])
@@ -1563,7 +1584,9 @@ def _extract_voice_info(score):
     for voice in abjad.select.components(score, abjad.Voice):
         pitches = []
         durations = []
-        for tie in abjad.select.logical_ties(voice, ):
+        for tie in abjad.select.logical_ties(
+            voice,
+        ):
             dur = abjad.get.duration(tie)
             durations.append(str(dur))
             if isinstance(tie[0], abjad.Rest):
@@ -1632,3 +1655,25 @@ def make_sc_file(score, tempo, current_directory):
         "w",
     ) as fp:
         fp.writelines(lines)
+
+
+def extract_class_name(instrument_class):
+    instrument_string = str(instrument_class)
+
+    out = ""
+
+    for _ in instrument_string:
+
+        if _ == "<":
+            continue
+
+        if _ == "(":
+            break
+
+        out += _
+
+    word_list = abjad.string.delimit_words(out, separate_caps=True)
+
+    new_out = " ".join(word_list)
+
+    return new_out.lower()

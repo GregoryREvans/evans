@@ -51,7 +51,7 @@ class ArticulationHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -163,7 +163,7 @@ class BendHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -265,7 +265,7 @@ class BisbigliandoHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -278,11 +278,10 @@ class BisbigliandoHandler(Handler):
             \new Staff
             {
                 c''4
+                - \tweak bound-details.left.text \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+                - \tweak bound-details.right.padding #2
                 - \tweak padding #2
                 - \tweak staff-padding #2
-                - \tweak bound-details.right.padding #2
-                - \tweak bound-details.left.text
-                \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
                 \startTrillSpan
                 c''4
                 \stopTrillSpan
@@ -302,11 +301,10 @@ class BisbigliandoHandler(Handler):
                 \startTrillSpan
                 c''4
                 \stopTrillSpan
+                - \tweak bound-details.left.text \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
+                - \tweak bound-details.right.padding #2
                 - \tweak padding #2
                 - \tweak staff-padding #2
-                - \tweak bound-details.right.padding #2
-                - \tweak bound-details.left.text
-                \markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }
                 \startTrillSpan
                 c''4
                 \stopTrillSpan
@@ -354,15 +352,12 @@ class BisbigliandoHandler(Handler):
 
     def _make_start_literal(self):
         markup = r'\markup{ \raise #1 \teeny \musicglyph #"scripts.halfopenvertical" }'
-        start_literal = abjad.LilyPondLiteral(
-            [
-                rf"- \tweak padding #{self.padding}",
-                rf"- \tweak staff-padding #{self.staff_padding}",
-                rf"- \tweak bound-details.right.padding #{self.right_padding}",
-                rf"- \tweak bound-details.left.text {markup}",
-                r"\startTrillSpan",
-            ],
-            format_slot="after",
+        start_literal = abjad.bundle(
+            abjad.StartTrillSpan(),
+            rf"- \tweak padding #{self.padding}",
+            rf"- \tweak staff-padding #{self.staff_padding}",
+            rf"- \tweak bound-details.right.padding #{self.right_padding}",
+            rf"- \tweak bound-details.left.text {markup}",
         )
         return start_literal
 
@@ -374,7 +369,7 @@ class BisbigliandoHandler(Handler):
                 rf"- \tweak bound-details.right.padding #{self.right_padding}",
                 r"- \tweak bound-details.left.text",
             ],
-            format_slot="after",
+            site="after",
         )
         return start_literal_pre
 
@@ -384,16 +379,14 @@ class BisbigliandoHandler(Handler):
         fingering = self.fingering_list(r=1)[0]
         if fingering is None:
             start_literal = self._make_start_literal()
-            stop_literal = abjad.LilyPondLiteral(r"\stopTrillSpan", format_slot="after")
+            stop_literal = abjad.StopTrillSpan()
             abjad.attach(start_literal, tie[0])
             abjad.attach(stop_literal, abjad.get.leaf(tie[-1], 1))
             return
         start_literal_pre = self._make_start_literal_pre()
-        start_literal = abjad.LilyPondLiteral(fingering, format_slot="after")
-        start_literal_post = abjad.LilyPondLiteral(
-            r"\startTrillSpan", format_slot="after"
-        )
-        stop_literal = abjad.LilyPondLiteral(r"\stopTrillSpan", format_slot="after")
+        start_literal = abjad.LilyPondLiteral(fingering, site="after")
+        start_literal_post = abjad.LilyPondLiteral(r"\startTrillSpan", site="after")
+        stop_literal = abjad.StopTrillSpan()
         abjad.attach(start_literal_pre, tie[0])
         abjad.attach(start_literal, tie[0])
         abjad.attach(start_literal_post, tie[0])
@@ -428,7 +421,7 @@ class BowAngleHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         "\\include \'Users/gregoryevans/evans/lilypond/evans-markups.ily\'",
         ...         "\\include \'Users/gregoryevans/evans/lilypond/evans-spanners.ily\'",
         ...         score,
@@ -504,7 +497,7 @@ class BowAngleHandler(Handler):
                     r"- \tweak staff-padding #2",
                     r"\evansStartTextSpanBAD",
                 ],
-                format_slot="absolute_after",
+                site="absolute_after",
             )
             abjad.attach(start_literal, first_leaf)
             for i, tie in enumerate(abjad.select.logical_ties(run)[1:-1]):
@@ -517,7 +510,7 @@ class BowAngleHandler(Handler):
                         r"- \tweak staff-padding #2",
                         r"\evansStartTextSpanBAD",
                     ],
-                    format_slot="absolute_after",
+                    site="absolute_after",
                 )
                 abjad.attach(literal, tie[0])
             terminating_literal = abjad.LilyPondLiteral(
@@ -530,12 +523,12 @@ class BowAngleHandler(Handler):
                     r"- \tweak staff-padding #2",
                     r"\evansStartTextSpanBAD",
                 ],
-                format_slot="absolute_after",
+                site="absolute_after",
             )
             abjad.attach(terminating_literal, abjad.select.leaf(run, -1))
             last_leaf = abjad.get.leaf(abjad.select.leaf(run, -1), 1)
             stop_literal = abjad.LilyPondLiteral(
-                r"\evansStopTextSpanBAD", format_slot="absolute_after"
+                r"\evansStopTextSpanBAD", site="absolute_after"
             )
             abjad.attach(stop_literal, last_leaf)
 
@@ -564,7 +557,7 @@ class ClefHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -874,7 +867,7 @@ class CompositeHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -966,7 +959,7 @@ class DynamicHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -1256,14 +1249,16 @@ class DynamicHandler(Handler):
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
-                                        direction=abjad.DOWN,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
-                                        direction=abjad.DOWN,
                                     )
-                                abjad.attach(mark_text, abjad.select.leaf(run, 0))
+                                abjad.attach(
+                                    mark_text,
+                                    abjad.select.leaf(run, 0),
+                                    direction=abjad.DOWN,
+                                )
                 else:
                     hold_last = self._cyc_hold_last_boolean_vector(r=1)[0]
                     if hold_last == 1:
@@ -1339,14 +1334,16 @@ class DynamicHandler(Handler):
                                 if start.ordinal < stop.ordinal:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "cresc. a {stop.name}" }}""",
-                                        direction=abjad.DOWN,
                                     )
                                 else:
                                     mark_text = abjad.Markup(
                                         rf"""\markup {{ \override #'(style . "box") \override #'(box-padding . 0.5) \italic \box \whiteout \small "dim. a {stop.name}" }}""",
-                                        direction=abjad.DOWN,
                                     )
-                                abjad.attach(mark_text, abjad.select.leaf(run, 0))
+                                abjad.attach(
+                                    mark_text,
+                                    abjad.select.leaf(run, 0),
+                                    direction=abjad.DOWN,
+                                )
             else:
                 start = self._cyc_dynamics(r=1)[0]
                 if start == "niente":
@@ -1425,7 +1422,7 @@ class GettatoHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -1440,10 +1437,10 @@ class GettatoHandler(Handler):
                     \context Voice = "On_Beat_Grace_Container"
                     {
                         \set fontSize = #-4
+                        \once \override Beam.grow-direction = #left
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
-                        \once \override Beam.grow-direction = #left
                         \slash
                         \voiceOne
                         <
@@ -1477,10 +1474,10 @@ class GettatoHandler(Handler):
                     \context Voice = "On_Beat_Grace_Container"
                     {
                         \set fontSize = #-4
+                        \once \override Beam.grow-direction = #right
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
-                        \once \override Beam.grow-direction = #right
                         \slash
                         \voiceOne
                         <
@@ -1518,10 +1515,10 @@ class GettatoHandler(Handler):
                     \context Voice = "On_Beat_Grace_Container"
                     {
                         \set fontSize = #-4
+                        \once \override Beam.grow-direction = #left
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
-                        \once \override Beam.grow-direction = #left
                         \slash
                         \voiceOne
                         <
@@ -1563,10 +1560,10 @@ class GettatoHandler(Handler):
                     \context Voice = "On_Beat_Grace_Container"
                     {
                         \set fontSize = #-4
+                        \once \override Beam.grow-direction = #right
                         \once \override NoteHead.no-ledgers = ##t
                         \once \override Accidental.transparent = ##t
                         \tweak transparent ##t
-                        \once \override Beam.grow-direction = #right
                         \slash
                         \voiceOne
                         <
@@ -1653,7 +1650,7 @@ class GettatoHandler(Handler):
                         r"\once \override Accidental.transparent = ##t",
                         r"\tweak transparent ##t",
                     ],
-                    format_slot="before",
+                    site="before",
                 )
                 for leaf in abjad.select.leaves(sel):
                     abjad.attach(t, leaf)
@@ -1661,25 +1658,23 @@ class GettatoHandler(Handler):
                 if a == "throw":
                     literal = abjad.LilyPondLiteral(
                         r"\once \override Beam.grow-direction = #left",
-                        format_slot="before",
+                        site="before",
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
                         rf"\markup {{ \hspace #1 throw ({repetitions})}}",
-                        direction=abjad.UP,
                     )
-                    abjad.attach(mark, sel[0])
+                    abjad.attach(mark, sel[0], direction=abjad.UP)
                 elif a == "drop":
                     literal = abjad.LilyPondLiteral(
                         r"\once \override Beam.grow-direction = #right",
-                        format_slot="before",
+                        site="before",
                     )
                     abjad.attach(literal, sel[0])
                     mark = abjad.Markup(
                         rf"\markup {{ \hspace #1 drop ({repetitions})}}",
-                        direction=abjad.UP,
                     )
-                    abjad.attach(mark, sel[0])
+                    abjad.attach(mark, sel[0], direction=abjad.UP)
                 else:
                     pass
                 abjad.on_beat_grace_container(
@@ -1725,7 +1720,7 @@ class GlissandoHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -1782,7 +1777,9 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
-                                t = abjad.tweak(self.line_style).style
+                                t = abjad.Tweak(
+                                    rf"- \tweak style {self.line_style}"
+                                )  # was: t = abjad.tweak(self.line_style).style
                                 abjad.glissando(run[:], t, hide_middle_note_heads=True)
                             else:
                                 continue
@@ -1806,7 +1803,9 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
-                                t = abjad.tweak(self.line_style).style
+                                t = abjad.Tweak(
+                                    rf"- \tweak style {self.line_style}"
+                                )  # was: t = abjad.tweak(self.line_style).style
                                 abjad.glissando(
                                     run[:],
                                     t,
@@ -1835,7 +1834,9 @@ class GlissandoHandler(Handler):
                     for run in runs:
                         if self.boolean_vector(r=1)[0] == 1:
                             if len(run) > 1:
-                                t = abjad.tweak(self.line_style).style
+                                t = abjad.Tweak(
+                                    rf"- \tweak style {self.line_style}"
+                                )  # was: t = abjad.tweak(self.line_style).style
                                 abjad.glissando(
                                     run[:],
                                     t,
@@ -1893,7 +1894,7 @@ class GraceHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -1916,8 +1917,8 @@ class GraceHandler(Handler):
                 c'4
                 \scaleDurations #'(1 . 1) {
                 \slashedGrace {
-                    \slash
                     \override Stem.direction = #UP
+                    \slash
                     \override Staff.Stem.stemlet-length = 0
                     c'16
                     [
@@ -1991,17 +1992,17 @@ class GraceHandler(Handler):
                                 stemlet_length=0,
                             )
                             literal_slash = abjad.LilyPondLiteral(
-                                r"\slash", format_slot="before"
+                                r"\slash", site="before"
                             )
                             abjad.attach(
                                 literal_slash,
                                 abjad.select.leaves(grace, pitched=True)[0],
                             )
                             direction_override = abjad.LilyPondLiteral(
-                                r"\override Stem.direction = #UP", format_slot="before"
+                                r"\override Stem.direction = #UP", site="before"
                             )
                             direction_revert = abjad.LilyPondLiteral(
-                                r"\revert Stem.direction", format_slot="after"
+                                r"\revert Stem.direction", site="after"
                             )
                             abjad.attach(
                                 direction_override,
@@ -2012,9 +2013,9 @@ class GraceHandler(Handler):
                                 abjad.select.leaves(grace, pitched=True)[-1],
                             )
                         open_literal = abjad.LilyPondLiteral(
-                            r"\scaleDurations #'(1 . 1) {", format_slot="before"
+                            r"\scaleDurations #'(1 . 1) {", site="before"
                         )
-                        close_literal = abjad.LilyPondLiteral("}", format_slot="after")
+                        close_literal = abjad.LilyPondLiteral("}", site="after")
                         abjad.attach(open_literal, grace)
                         abjad.attach(close_literal, grace)
                         abjad.attach(grace, tie[0])
@@ -2023,9 +2024,9 @@ class GraceHandler(Handler):
                             "c'16", command=r"\slashedGrace"
                         )
                         open_literal = abjad.LilyPondLiteral(
-                            r"\scaleDurations #'(1 . 1) {", format_slot="before"
+                            r"\scaleDurations #'(1 . 1) {", site="before"
                         )
-                        close_literal = abjad.LilyPondLiteral("}", format_slot="after")
+                        close_literal = abjad.LilyPondLiteral("}", site="after")
                         abjad.attach(open_literal, grace)
                         abjad.attach(close_literal, grace)
                         abjad.attach(grace, tie[0])
@@ -2078,7 +2079,7 @@ class IntermittentVoiceHandler(Handler):
         >>> sel3_get = abjad.select.get(sel3, [3, 4])
         >>> ivh(sel1)
         >>> ivh(sel2)
-        >>> ivh(sel3)
+        >>> ivh(sel3_get)
         >>> ph_up = evans.PitchHandler([8, 8.5, 9, 9.5, 9, 8.5], forget=False)
         >>> for voice in abjad.select.components(s, abjad.Voice):
         ...     if voice.name == "intermittent_voice":
@@ -2091,7 +2092,7 @@ class IntermittentVoiceHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2182,8 +2183,11 @@ class IntermittentVoiceHandler(Handler):
         else:
             literal1 = abjad.LilyPondLiteral(r"\voiceOne")
             literal2 = abjad.LilyPondLiteral(r"\voiceTwo")
-        closing_literal = abjad.LilyPondLiteral(r"\oneVoice", format_slot="after")
-        duration = [abjad.get.duration(selections[:])]
+        closing_literal = abjad.LilyPondLiteral(r"\oneVoice", site="after")
+        if isinstance(selections, list):
+            duration = [abjad.get.duration(selections[:])]
+        else:
+            duration = [abjad.get.duration(selections)]
         container = abjad.Container(simultaneous=True)
         original_voice = abjad.Voice(name=self._find_parent(selections))
         intermittent_voice = abjad.Voice(name="intermittent_voice")
@@ -2231,7 +2235,7 @@ class NoteheadHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2306,7 +2310,7 @@ class NoteheadHandler(Handler):
             for tie, head, bool in zip(ties, heads, head_vector):
                 string = str(r"""\tweak NoteHead.style #'""")
                 full_string = string + head
-                style = abjad.LilyPondLiteral(full_string, format_slot="opening")
+                style = abjad.LilyPondLiteral(full_string, site="opening")
                 if bool == 1:
                     for leaf in abjad.select.leaves(tie, pitched=True):
                         abjad.attach(style, leaf)
@@ -2425,7 +2429,7 @@ class OnBeatGraceHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2445,8 +2449,8 @@ class OnBeatGraceHandler(Handler):
                         {
                             \set fontSize = #-4
                             \slash
-                            \voiceOne
                             \tweak NoteHead.style #'harmonic
+                            \voiceOne
                             fs'''8 * 2/25
                             [
                             (
@@ -2577,7 +2581,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2610,7 +2614,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2645,7 +2649,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2681,7 +2685,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -2714,7 +2718,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
         ...     ],
@@ -2752,7 +2756,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
         ...     ],
@@ -2803,7 +2807,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
         ...     ],
@@ -2852,7 +2856,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
         ...     ],
@@ -2913,7 +2917,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
         ...     ],
@@ -2997,7 +3001,7 @@ class PitchHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/ekmelos-ji-accidental-markups.ily\'",
         ...         score,
         ...         abjad.Block(name="layout"),
@@ -3055,7 +3059,7 @@ class PitchHandler(Handler):
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \markup { \one-tridecimal-third-tone-down  }
                 d'''4
-                ^ \markup \center-align { C♯+39 }
+                ^ \markup \center-align { C\raise #0.75 { \hspace #-0.5 \teeny \smaller \sharp}\hspace #-0.5 +39 }
                 \tweak Accidental.stencil #ly:text-interface::print
                 \tweak Accidental.text \markup { \abjad-natural  }
                 g'''4
@@ -3213,9 +3217,7 @@ class PitchHandler(Handler):
                         )
                         if -1 < cent_deviation:
                             cent_string = cent_string[:26] + "+" + cent_string[26:]
-                        JIPitch_cents.append(
-                            (pitch_index, abjad.Markup(cent_string, direction=abjad.UP))
-                        )
+                        JIPitch_cents.append((pitch_index, abjad.Markup(cent_string)))
             if self.apply_all is False:
                 new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
                 # experimental
@@ -3224,7 +3226,9 @@ class PitchHandler(Handler):
                         new_leaves[JIPitch_index[0]], "ratio", JIPitch_index[1]
                     )
                 for JIPitch_cent in JIPitch_cents:
-                    abjad.attach(JIPitch_cent[1], new_leaves[JIPitch_cent[0]])
+                    abjad.attach(
+                        JIPitch_cent[1], new_leaves[JIPitch_cent[0]], direction=abjad.UP
+                    )
             else:
                 new_leaves = old_leaves
                 for i, pair in enumerate(
@@ -3253,8 +3257,13 @@ class PitchHandler(Handler):
                     leaf_annotation_pitch = [_.hertz for _ in abjad.get.pitches(leaf)]
                     leaf_annotation_ratio = []
                     if isinstance(leaf, abjad.Chord):
-                        leaf_annotation_ratio = [_ for _ in microtonal_indices_to_pitch[index].values()]
-                        leaf_annotation_pitch = [leaf_annotation_pitch[0] for _ in range(len(leaf_annotation_ratio))]
+                        leaf_annotation_ratio = [
+                            _ for _ in microtonal_indices_to_pitch[index].values()
+                        ]
+                        leaf_annotation_pitch = [
+                            leaf_annotation_pitch[0]
+                            for _ in range(len(leaf_annotation_ratio))
+                        ]
                         marks = []
                         heads = leaf.note_heads
                         for sub_index in microtonal_indices_to_pitch[index]:
@@ -3294,7 +3303,9 @@ class PitchHandler(Handler):
                         if 0 < len(marks):
                             marks_strings = r""
                             # raise Exception(marks)
-                            for marks_string in marks: # WARNING: marks[::-1] reverses order of cent column. test to prove order
+                            for marks_string in marks[
+                                ::-1
+                            ]:  # WARNING: marks[::-1] reverses order of cent column. test to prove order
                                 marks_strings += rf"{marks_string.string[24:-1]}"
                             column = abjad.Markup(
                                 rf"\center-column {{ {marks_strings} }}",
@@ -3421,7 +3432,7 @@ class RhythmHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -3495,7 +3506,7 @@ class ScordaturaHandler(Handler):
         >>> handler(staff[1:-1])
         >>> block = abjad.Block(name="score")
         >>> block.items.append(staff)
-        >>> path = "/Users/gregoryevans/abjad/abjad/_stylesheets/abjad.ily"
+        >>> path = "/Users/gregoryevans/abjad/abjad/scm/abjad.ily"
         >>> file = abjad.LilyPondFile(items=[f"\\include {path}", block])
         >>> abjad.show(file) # doctest: +SKIP
 
@@ -3507,9 +3518,9 @@ class ScordaturaHandler(Handler):
                 \clef "bass"
                 a,,4
                 c,4
+                - \tweak staff-padding #1
                 - \abjad-dashed-line-with-hook
                 - \tweak bound-details.left.text \markup \concat { IV \hspace #0.5 }
-                - \tweak staff-padding 1
                 \startTextSpan
                 c,4
                 c,4
@@ -3552,12 +3563,14 @@ class ScordaturaHandler(Handler):
 
     def _make_spanner(self):
         start_spanner = abjad.StartTextSpan(
-            left_text=abjad.Markup(self.string_number),
+            left_text=abjad.Markup(rf"\markup {self.string_number}"),
             style="dashed-line-with-hook",
         )
-        abjad.tweak(start_spanner).staff_padding = self.padding
+        start_bundle = abjad.bundle(
+            start_spanner, rf"- \tweak staff-padding #{self.padding}"
+        )
         stop_spanner = abjad.StopTextSpan()
-        return start_spanner, stop_spanner
+        return start_bundle, stop_spanner
 
     def name(self):
         return self.name
@@ -3583,7 +3596,7 @@ class SlurHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -3672,7 +3685,7 @@ class TempoSpannerHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         "\include \'Users/gregoryevans/evans/lilypond/evans-spanners.ily\'",
         ...         score,
         ...     ],
@@ -3752,7 +3765,7 @@ class TempoSpannerHandler(Handler):
                     r"- \tweak font-size #" + f"{self.font_size}",
                     r"\bacaStartTextSpanMM",
                 ],
-                format_slot="after",
+                site="after",
             )
             stop_literal = abjad.LilyPondLiteral(
                 [
@@ -3765,9 +3778,9 @@ class TempoSpannerHandler(Handler):
                     r"- \tweak font-size #" + f"{self.font_size}",
                     r"\bacaStartTextSpanMM",
                 ],
-                format_slot="after",
+                site="after",
             )
-            stopper = abjad.LilyPondLiteral(r"\bacaStopTextSpanMM", format_slot="after")
+            stopper = abjad.LilyPondLiteral(r"\bacaStopTextSpanMM", site="after")
             abjad.attach(start_literal, abjad.select.leaves(ties)[0])
             abjad.attach(stop_literal, abjad.select.leaves(ties)[-1])
             abjad.attach(stopper, abjad.get.leaf(abjad.select.leaves(ties)[-1], 1))
@@ -3800,7 +3813,7 @@ class TextSpanHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -3812,18 +3825,18 @@ class TextSpanHandler(Handler):
             \new Staff
             {
                 c'4
+                - \tweak staff-padding #1.5
                 - \abjad-dashed-line-with-arrow
                 - \tweak bound-details.left.text \markup \concat { \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 1.4
-                - \tweak staff-padding #1.5
                 \startTextSpanOne
                 c'4
                 c'4
                 \stopTextSpanOne
+                - \tweak staff-padding #1.5
                 - \abjad-dashed-line-with-hook
                 - \tweak bound-details.left.text \markup \concat { \upright pont. \hspace #0.5 }
                 - \tweak bound-details.right.padding 3
-                - \tweak staff-padding #1.5
                 \startTextSpanOne
                 r4
                 \stopTextSpanOne
@@ -3975,21 +3988,23 @@ class TextSpanHandler(Handler):
             if len(run) < 2:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        rf"\upright {positions(r=1)[0]}",
+                        rf"\markup \upright {positions(r=1)[0]}",
                     ),
                     style=style + "-with-hook",
                     command=r"\startTextSpan" + span_command,
+                )
+                start_bundle = abjad.bundle(
+                    start_span, rf"- \tweak staff-padding #{span_padding}"
                 )
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
                     abjad.get.leaf(run[-1], 1),
                 )
-                abjad.attach(start_span, run[0])
-                abjad.tweak(start_span).staff_padding = f"#{span_padding}"
+                abjad.attach(start_bundle, run[0])
             else:
                 start_span = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        rf"\upright {positions(r=1)[0]}",
+                        rf"\markup \upright {positions(r=1)[0]}",
                     ),
                     style=style + "-with-arrow",
                     command=r"\startTextSpan" + span_command,
@@ -3998,7 +4013,7 @@ class TextSpanHandler(Handler):
                 if self.hooks is True:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            rf"\upright {positions(r=1)[0]}",
+                            rf"\markup \upright {positions(r=1)[0]}",
                         ),
                         style=style + "-with-hook",
                         command=r"\startTextSpan" + span_command,
@@ -4007,23 +4022,27 @@ class TextSpanHandler(Handler):
                 else:
                     stop_span = abjad.StartTextSpan(
                         left_text=abjad.Markup(
-                            rf"\upright {positions(r=1)[0]}",
+                            rf"\markup \upright {positions(r=1)[0]}",
                         ),
                         style="invisible-line",
                         command=r"\startTextSpan" + span_command,
                         right_padding=3,
                     )
-                abjad.attach(start_span, run[0])
+                start_bundle = abjad.bundle(
+                    start_span, rf"- \tweak staff-padding #{span_padding}"
+                )
+                abjad.attach(start_bundle, run[0])
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command), run[-1]
                 )
-                abjad.attach(stop_span, run[-1])
+                stop_bundle = abjad.bundle(
+                    stop_span, rf"- \tweak staff-padding #{span_padding}"
+                )
+                abjad.attach(stop_bundle, run[-1])
                 abjad.attach(
                     abjad.StopTextSpan(command=r"\stopTextSpan" + span_command),
                     abjad.get.leaf(run[-1], 1),
                 )
-                abjad.tweak(start_span).staff_padding = f"#{span_padding}"
-                abjad.tweak(stop_span).staff_padding = f"#{span_padding}"
 
     def _apply_position_and_span_to_leaves(
         self, selections, positions, style, span_command, span_padding
@@ -4060,19 +4079,24 @@ class TextSpanHandler(Handler):
                         i
                     ] = rf"""\center-column {{ \upright \center-align \vcenter {start_string} }}"""
             start_indicators = [
-                abjad.StartTextSpan(
-                    left_text=abjad.Markup(f"{start_string}"),
-                    style=rf"{style}-with-arrow",
-                    command=r"\startTextSpan" + span_command,
-                    right_padding=1.4,
+                abjad.bundle(
+                    abjad.StartTextSpan(
+                        left_text=abjad.Markup(rf"\markup {start_string}"),
+                        style=rf"{style}-with-arrow",
+                        command=r"\startTextSpan" + span_command,
+                        right_padding=1.4,
+                    ),
+                    rf"- \tweak staff-padding #{span_padding}",
                 )
                 for start_string in start_strings
             ]
-            final_indicator = abjad.StartTextSpan()
+            final_indicator = abjad.bundle(
+                abjad.StartTextSpan(), rf"- \tweak staff-padding #{span_padding}"
+            )
             if all(start_string[-1].isdigit() for _ in (0, -1)):
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        rf"""\center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
+                        rf"""\markup \center-column {{ \center-align \vcenter \upright \fraction {start_strings[-1][0]} {start_strings[-1][-1]} }}""",
                     ),
                     style=r"invisible-line",
                     command=r"\startTextSpan" + span_command,
@@ -4081,15 +4105,12 @@ class TextSpanHandler(Handler):
             else:
                 final_indicator = abjad.StartTextSpan(
                     left_text=abjad.Markup(
-                        rf"""\center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
+                        rf"""\markup \center-column {{ \center-align \upright \vcenter {start_strings[-1]} }}""",
                     ),
                     style=r"invisible-line",
                     command=r"\startTextSpan" + span_command,
                     right_padding=3,
                 )
-            for indicator in start_indicators:
-                abjad.tweak(indicator).staff_padding = f"#{span_padding}"
-            abjad.tweak(final_indicator).staff_padding = f"#{span_padding}"
             abjad.attach(start_indicators[0], ties[0][0])
             for pair in zip(ties[1:], start_indicators[1:]):
                 tie, start_indicator = pair
@@ -4113,16 +4134,17 @@ class TextSpanHandler(Handler):
         runs = abjad.select.runs(selections)
         start_strings = [positions(r=1)[0] for _ in runs]
         start_indicators = [
-            abjad.StartTextSpan(
-                left_text=abjad.Markup(rf"\upright {start_string}"),
-                style=rf"{style}-with-hook",
-                command=r"\startTextSpan" + span_command,
-                right_padding=3,
+            abjad.bundle(
+                abjad.StartTextSpan(
+                    left_text=abjad.Markup(rf"\markup \upright {start_string}"),
+                    style=rf"{style}-with-hook",
+                    command=r"\startTextSpan" + span_command,
+                    right_padding=3,
+                ),
+                rf"- \tweak staff-padding #{span_padding}",
             )
             for start_string in start_strings
         ]
-        for indicator in start_indicators:
-            abjad.tweak(indicator).staff_padding = f"#{span_padding}"
         for i, pair in enumerate(zip(runs, start_indicators)):
             run, start_indicator = pair
             abjad.attach(start_indicator, run[0])
@@ -4186,7 +4208,7 @@ class TrillHandler(Handler):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -4263,7 +4285,9 @@ class TrillHandler(Handler):
                     trill_start = abjad.StartTrillSpan(pitch=trill_pitch)
                     abjad.attach(trill_start, new_leaf)
 
-                    tail = abjad.select.leaves(tie, )[1:]
+                    tail = abjad.select.leaves(
+                        tie,
+                    )[1:]
                     for leaf in tail:
                         new_tail = abjad.Note(base_pitch, leaf.written_duration)
                         indicators = abjad.get.indicators(leaf)

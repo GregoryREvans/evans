@@ -1063,7 +1063,7 @@ class Sequence(collections.abc.Sequence):
         ..  container:: example
 
             >>> staff = abjad.Staff("c'8 d' d' e' e' e'")
-            >>> predicate = lambda _: abjad.PitchSet.from_pitches([_])
+            >>> predicate = lambda _: abjad.PitchSet([_.written_pitch])
             >>> for item in evans.Sequence(staff).group_by(predicate):
             ...     item
             ...
@@ -1861,7 +1861,7 @@ class Sequence(collections.abc.Sequence):
                 >>> parts = sequence.partition_by_counts(
                 ...     [2, 3, 5],
                 ...     cyclic=False,
-                ...     overhang=abjad.Exact,
+                ...     overhang=abjad.EXACT,
                 ...     )
 
                 >>> for part in parts:
@@ -1882,7 +1882,7 @@ class Sequence(collections.abc.Sequence):
                 >>> parts = sequence.partition_by_counts(
                 ...     [2],
                 ...     cyclic=True,
-                ...     overhang=abjad.Exact,
+                ...     overhang=abjad.EXACT,
                 ...     )
 
                 >>> for part in parts:
@@ -2320,7 +2320,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=False,
             ...     overhang=False,
-            ...     allow_part_weights=abjad.Less,
+            ...     allow_part_weights=abjad.LESS,
             ...     ):
             ...     item
             ...
@@ -2336,7 +2336,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=False,
             ...     overhang=True,
-            ...     allow_part_weights=abjad.Less,
+            ...     allow_part_weights=abjad.LESS,
             ...     ):
             ...     item
             ...
@@ -2353,7 +2353,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 5],
             ...     cyclic=True,
             ...     overhang=False,
-            ...     allow_part_weights=abjad.Less,
+            ...     allow_part_weights=abjad.LESS,
             ...     ):
             ...     item
             ...
@@ -2373,7 +2373,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 5],
             ...     cyclic=True,
             ...     overhang=True,
-            ...     allow_part_weights=abjad.Less,
+            ...     allow_part_weights=abjad.LESS,
             ...     ):
             ...     item
             ...
@@ -2395,7 +2395,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=False,
             ...     overhang=False,
-            ...     allow_part_weights=abjad.More,
+            ...     allow_part_weights=abjad.MORE,
             ...     ):
             ...     item
             ...
@@ -2411,7 +2411,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=False,
             ...     overhang=True,
-            ...     allow_part_weights=abjad.More,
+            ...     allow_part_weights=abjad.MORE,
             ...     ):
             ...     item
             ...
@@ -2428,7 +2428,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=True,
             ...     overhang=False,
-            ...     allow_part_weights=abjad.More,
+            ...     allow_part_weights=abjad.MORE,
             ...     ):
             ...     item
             ...
@@ -2446,7 +2446,7 @@ class Sequence(collections.abc.Sequence):
             ...     [10, 4],
             ...     cyclic=True,
             ...     overhang=True,
-            ...     allow_part_weights=abjad.More,
+            ...     allow_part_weights=abjad.MORE,
             ...     ):
             ...     item
             ...
@@ -2466,7 +2466,7 @@ class Sequence(collections.abc.Sequence):
                 return candidate
             else:
                 raise Exception("can not partition exactly.")
-        elif allow_part_weights is abjad.enums.More:
+        elif allow_part_weights is abjad.enums.MORE:
             if not cyclic:
                 return Sequence._partition_sequence_once_by_weights_at_least(
                     self, weights, overhang=overhang
@@ -2475,7 +2475,7 @@ class Sequence(collections.abc.Sequence):
                 return Sequence._partition_sequence_cyclically_by_weights_at_least(
                     self, weights, overhang=overhang
                 )
-        elif allow_part_weights is abjad.enums.Less:
+        elif allow_part_weights is abjad.enums.LESS:
             if not cyclic:
                 return Sequence._partition_sequence_once_by_weights_at_most(
                     self, weights, overhang=overhang
@@ -2713,7 +2713,7 @@ class Sequence(collections.abc.Sequence):
             Repeats sequence to weight of 23 more:
 
             >>> sequence = evans.Sequence([5, -5, -5])
-            >>> sequence.repeat_to_weight(23, allow_total=abjad.More)
+            >>> sequence.repeat_to_weight(23, allow_total=abjad.MORE)
             Sequence([5, -5, -5, 5, -5])
 
         ..  container:: example
@@ -2721,7 +2721,7 @@ class Sequence(collections.abc.Sequence):
             Repeats sequence to weight of 23 or less:
 
             >>> sequence = evans.Sequence([5, -5, -5])
-            >>> sequence.repeat_to_weight(23, allow_total=abjad.Less)
+            >>> sequence.repeat_to_weight(23, allow_total=abjad.LESS)
             Sequence([5, -5, -5, 5])
 
         ..  container:: example
@@ -2763,7 +2763,7 @@ class Sequence(collections.abc.Sequence):
                         break
                 else:
                     break
-        elif allow_total is abjad.enums.Less:
+        elif allow_total is abjad.enums.LESS:
             items = [self[0]]
             i = 1
             while abjad.math.weight(items) < weight:
@@ -2772,7 +2772,7 @@ class Sequence(collections.abc.Sequence):
             if weight < abjad.math.weight(items):
                 items = items[:-1]
             return type(self)(items)
-        elif allow_total is abjad.enums.More:
+        elif allow_total is abjad.enums.MORE:
             items = [self[0]]
             i = 1
             while abjad.math.weight(items) < weight:
@@ -3030,9 +3030,9 @@ class Sequence(collections.abc.Sequence):
                 >>> for item in sequence.reverse(recurse=True):
                 ...     item
                 ...
-                PitchClassSegment(items=[5, 4], item_class=NumberedPitchClass)
+                PitchClassSegment([5, 4])
                 NumberedPitch(3)
-                PitchClassSegment(items=[2, 1], item_class=NumberedPitchClass)
+                PitchClassSegment([2, 1])
 
         """
         if not recurse:
@@ -3204,7 +3204,7 @@ class Sequence(collections.abc.Sequence):
         current_piece: typing.List[typing.Any] = []
         if cyclic:
             weights = Sequence(weights).repeat_to_weight(
-                abjad.math.weight(self), allow_total=abjad.enums.Less
+                abjad.math.weight(self), allow_total=abjad.enums.LESS
             )
         for weight in weights:
             current_piece_weight = abjad.math.weight(current_piece)

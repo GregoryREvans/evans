@@ -108,8 +108,8 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 rhythm_tree_list = parser(pattern)
                 rhythm_tree_container = rhythm_tree_list[0]
                 r = rhythm_tree_container(pair)
-                m = abjad.Markup(rf"\markup {pattern}", direction=abjad.UP)
-                abjad.attach(m, abjad.select.leaves(r)[0])
+                m = abjad.Markup(rf"\markup {pattern}")
+                abjad.attach(m, abjad.select.leaves(r)[0], direction=abjad.UP)
                 abjad.attach(time_signature, abjad.select.leaves(r)[0])
                 print("adding parsed funnel to staff ...")
                 parsed_patterns.extend(r)
@@ -126,7 +126,7 @@ def make_tableaux_chart(fundamental_patterns, subdivisions):
                 items=[
                     '#(set-default-paper-size "a4" \'11x17landscape)',
                     r"#(set-global-staff-size 14)",
-                    "\\include 'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily'",
+                    "\\include 'Users/gregoryevans/abjad/abjad/scm/abjad.ily'",
                     score,
                     abjad.Block(name="layout"),
                     abjad.Block(name="header"),

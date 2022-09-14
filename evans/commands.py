@@ -16,6 +16,7 @@ class Command:
         callable=None,
         command=None,
         contents=None,
+        direction=None,
         indicator=None,
         selector=None,
         voice_name=None,
@@ -25,6 +26,7 @@ class Command:
         self.callable = callable
         self.command = command
         self.contents = contents
+        self.direction = direction
         self.indicator = indicator
         self.selector = selector
         self.voice_name = voice_name
@@ -33,6 +35,7 @@ class Command:
 
     def __str__(self):
         return f"<{type(self).__name__}()>"
+        # maybe use: black.format_str(?, mode=black.mode.Mode())
 
     def __repr__(self):
         return f"<{type(self).__name__}()>"
@@ -51,7 +54,8 @@ class Command:
             ...
             >>> command = evans.Command(
             ...     command="attach",
-            ...     indicator=abjad.Markup(r"\markup *", direction="up"),
+            ...     direction=abjad.UP,
+            ...     indicator=abjad.Markup(r"\markup *"),
             ...     selector=get_leaf_selector,
             ...     voice_name="staff one"
             ... )
@@ -63,7 +67,7 @@ class Command:
             ...     items=[
             ...         "#(set-default-paper-size \"a4\" \'portrait)",
             ...         r"#(set-global-staff-size 16)",
-            ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+            ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
             ...         score,
             ...     ],
             ... )
@@ -99,7 +103,7 @@ class Command:
             voice = score[self.voice_name]
             selection = self.selector(voice)
         if self.command == "attach":
-            abjad.attach(self.indicator, selection)
+            abjad.attach(self.indicator, selection, direction=self.direction)
         elif self.command == "call":
             self.callable(selection)
         elif self.command == "detach":
@@ -117,7 +121,7 @@ class Command:
         abjad.mutate.replace(selection[:], contents[:])
 
 
-def attach(voice_name, indicator, selector=None):
+def attach(voice_name, indicator, selector=None, direction=None):
     if selector is None:
 
         def selector(_):
@@ -125,6 +129,7 @@ def attach(voice_name, indicator, selector=None):
 
     return Command(
         command="attach",
+        direction=direction,
         indicator=indicator,
         selector=selector,
         voice_name=voice_name,
@@ -229,8 +234,9 @@ class MusicCommand:
             lambda _: abjad.select.leaf(_, 0, pitched=True),
         ),
         evans.attachment(
-            abjad.Markup(r"\evans-custom-markup", direction=abjad.UP),
+            abjad.Markup(r"\evans-custom-markup"),
             lambda _: abjad.select.leaf(_, 0, pitched=True),
+            direction=abjad.UP,
         ),
         text_span_handler,
         preprocessor=evans.Sequence().fuse((1, 2))
@@ -266,7 +272,9 @@ class MusicCommand:
 
                         def selector(selections):
                             runs = abjad.select.runs(selections)
-                            run_ties = abjad.select.logical_ties(selections, pitched=True)
+                            run_ties = abjad.select.logical_ties(
+                                selections, pitched=True
+                            )
                             ties_first_leaves = [_[0] for _ in run_ties]
                             return ties_first_leaves
 

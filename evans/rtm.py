@@ -145,7 +145,7 @@ def nested_list_to_rtm(nested_list):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -210,7 +210,7 @@ def rotate_tree(rtm_string, n=1):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -281,7 +281,7 @@ def rotate_tree(rtm_string, n=1):
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         score,
     ...     ],
     ... )
@@ -442,7 +442,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -540,7 +540,7 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
             ...     items=[
             ...         "#(set-default-paper-size \"a4\" \'portrait)",
             ...         r"#(set-global-staff-size 16)",
-            ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+            ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
             ...         score,
             ...     ],
             ... )
@@ -612,7 +612,7 @@ class RTMMaker(rmakers.RhythmMaker):
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )
@@ -662,12 +662,14 @@ class RTMMaker(rmakers.RhythmMaker):
             self.state += len(selections)
             self.state %= len(self.rtm)
 
-        return selections
+        return flatten(selections)  # WARNING: was not previously flattened
 
     @staticmethod
     def _rhythm_cell(duration, rtm):
         rtm_parser = abjad.rhythmtrees.RhythmTreeParser()
-        selection = rtm_parser(rtm)[0](duration) # WARNING: was previously wrapped in selection
+        selection = rtm_parser(rtm)[0](
+            duration
+        )  # WARNING: was previously wrapped in selection
         return selection
 
     def _rtm_maker(self, divisions, starting_index=0):

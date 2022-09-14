@@ -164,7 +164,7 @@ Add staff group to score and override settings:
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         score_block,
     ...     ],
     ... )
@@ -267,7 +267,7 @@ Attach extra attachments and override score settings:
     ...     items=[
     ...         "#(set-default-paper-size \"a4\" \'portrait)",
     ...         r"#(set-global-staff-size 16)",
-    ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+    ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
     ...         paper_block,
     ...         score_block,
     ...     ],
@@ -366,19 +366,15 @@ Define tone row and row permutations:
     >>> labels = [
     ...     abjad.Markup(
     ...         r"\markup P",
-    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup I",
-    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup R",
-    ...         direction=abjad.UP,
     ...     ),
     ...     abjad.Markup(
     ...         r"\markup IR",
-    ...         direction=abjad.UP,
     ...     ),
     ... ]
     ...
@@ -390,7 +386,7 @@ Define rotation distances and iterate through permutations, creating charts:
     >>> rotations = [0, -1, -2, -3, -4, -5]
     >>> for perm, label in zip(perms, labels):
     ...     source_staff = abjad.Staff([abjad.Note(_, (1, 16)) for _ in perm])
-    ...     abjad.attach(label, source_staff[0])
+    ...     abjad.attach(label, source_staff[0], direction=abjad.UP)
     ...     score = abjad.Score([source_staff])
     ...     group = abjad.StaffGroup()
     ...     hexachords = [
@@ -418,22 +414,21 @@ Define rotation distances and iterate through permutations, creating charts:
     ...             .transpose(hexachords[1][0]),
     ...         ]
     ...         names = [
-    ...             abjad.Markup(r"\markup \box α", direction=abjad.UP),
-    ...             abjad.Markup(r"\markup \box β", direction=abjad.UP),
-    ...             abjad.Markup(r"\markup \box γ", direction=abjad.UP),
-    ...             abjad.Markup(r"\markup \box δ", direction=abjad.UP),
+    ...             abjad.Markup(r"\markup \box α"),
+    ...             abjad.Markup(r"\markup \box β"),
+    ...             abjad.Markup(r"\markup \box γ"),
+    ...             abjad.Markup(r"\markup \box δ"),
     ...         ]
     ...         for set, name in zip(sets, names):
     ...             voice = abjad.Voice([abjad.Note(_, (1, 16)) for _ in set])
     ...             for leaf in abjad.iterate.leaves(voice):
     ...                 mark = abjad.Markup(
     ...                     f"\markup {abjad.NumberedPitchClass(leaf.written_pitch)}",
-    ...                     direction=abjad.UP,
     ...                 )
     ...                 abjad.tweak(mark).staff_padding = "3"
-    ...                 abjad.attach(mark, leaf)
+    ...                 abjad.attach(mark, leaf, direction=abjad.UP)
     ...             abjad.tweak(name).staff_padding = "3"
-    ...             abjad.attach(name, voice[0])
+    ...             abjad.attach(name, voice[0], direction=abjad.UP)
     ...             abjad.attach(abjad.TimeSignature((6, 16)), voice[0])
     ...             staff.append(voice)
     ...         abjad.attach(m, abjad.select.leaf(staff, 0))
@@ -521,30 +516,34 @@ Show file of chart scores:
 
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}", direction=abjad.UP,
+        ...         "\markup \parenthesize \concat \markup {P} \markup \sub {7}",
         ...     ),
         ...     abjad.select.leaf(group[0], 0),
+        ...     direction=abjad.UP,
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}", direction=abjad.UP,
+        ...         "\markup \parenthesize \concat \markup {RI} \markup \sub {6}"
         ...     ).parenthesize(),
         ...     abjad.select.leaf(group[0], 3),
+        ...     direction=abjad.UP,
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}", direction=abjad.UP,
+        ...         "\markup \parenthesize \concat \markup {R} \markup \sub {1}"
         ...     ).parenthesize(),
         ...     abjad.select.leaf(group[0], 6),
+        ...     direction=abjad.UP,
         ... )
         ...
         >>> abjad.attach(
         ...     abjad.Markup(
-        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}", direction=abjad.UP,
+        ...         "\markup \parenthesize \concat \markup {I} \markup \sub {0}"
         ...     ).parenthesize(),
         ...     abjad.select.leaf(group[0], 9),
+        ...     direction=abjad.UP,
         ... )
         ...
         >>> score.append(group)
@@ -564,7 +563,7 @@ Show file of chart scores:
         ...     items=[
         ...         "#(set-default-paper-size \"a4\" \'portrait)",
         ...         r"#(set-global-staff-size 16)",
-        ...         "\\include \'Users/gregoryevans/abjad/docs/source/_stylesheets/abjad.ily\'",
+        ...         "\\include \'Users/gregoryevans/abjad/abjad/scm/abjad.ily\'",
         ...         score,
         ...     ],
         ... )

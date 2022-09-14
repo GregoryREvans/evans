@@ -27,7 +27,7 @@ class AddSpannerAnchor:
             abjad.attach(indicator, new_leaves[0][0])
         self.leaf.multiplier = mult
         abjad.attach(
-            abjad.LilyPondLiteral(r"""\abjad-invisible-music""", format_slot="before"),
+            abjad.LilyPondLiteral(r"""\abjad-invisible-music""", site="before"),
             new_leaves[1],
         )
         abjad.annotate(new_leaves[1], "type", "spanner anchor")
