@@ -1307,7 +1307,7 @@ def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,
     selector=lambda _: baca.select.plts(_, exclude=baca.enums.HIDDEN),
-) -> baca.PitchCommand:
+):
     loop = Loop(items=items, intervals=intervals)
     return baca.pitches(loop, selector=selector)
 
