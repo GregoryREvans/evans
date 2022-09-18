@@ -205,9 +205,11 @@ class Attachment:
         self,
         indicator,
         selector=None,
+        direction=None,
     ):
         self.indicator = indicator
         self.selector = selector
+        self.direction = direction
 
 
 class Callable:

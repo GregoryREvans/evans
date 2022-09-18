@@ -725,7 +725,7 @@ class SegmentMaker:
                         )
                         new_starting_leaf_target = abjad.select.leaf(temp_container, 0)
                         for old_indicator in old_starting_indicators:
-                            abjad.attach(old_indicator, new_starting_leaf_target)
+                            abjad.attach(old_indicator, new_starting_leaf_target) # how to preserve direction across replacement?
                         abjad.mutate.replace(measure_group, temp_container[:])
                     else:
                         top_level_components = get_top_level_components_from_leaves(
@@ -775,9 +775,9 @@ class SegmentMaker:
                         attachment_site, list
                     ):  # WARNING: formerly tested against both list and selection
                         for site in attachment_site:
-                            abjad.attach(_attachment.indicator, site)
+                            abjad.attach(_attachment.indicator, site, direction=_attachment.direction)
                     else:
-                        abjad.attach(_attachment.indicator, attachment_site)
+                        abjad.attach(_attachment.indicator, attachment_site, direction=_attachment.direction)
 
             elif isinstance(music_command.threaded_commands, list):
                 self._interpret_music_commands(music_command.threaded_commands)
