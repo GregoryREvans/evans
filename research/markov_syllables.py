@@ -5,11 +5,11 @@ import black
 import eng_to_ipa as ipa
 import epitran
 import evans
-# from epitran.backoff import Backoff
 from ipapy import is_valid_ipa
 from ipapy.ipastring import IPAString
 from nltk import tokenize
 
+# from epitran.backoff import Backoff
 ### From Corpus
 
 corpus = "A. M. M. N. No. Na. Me. A. E. The Sea."
