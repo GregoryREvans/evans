@@ -1,11 +1,11 @@
-import itertools
+# import itertools
 from decimal import Decimal
 
 import black
 import eng_to_ipa as ipa
 import epitran
 import evans
-from epitran.backoff import Backoff
+# from epitran.backoff import Backoff
 from ipapy import is_valid_ipa
 from ipapy.ipastring import IPAString
 from nltk import tokenize

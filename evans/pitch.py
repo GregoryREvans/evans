@@ -2,6 +2,7 @@
 Pitch functions.
 """
 import collections
+import copy
 import math
 
 import abjad

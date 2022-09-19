@@ -1,7 +1,7 @@
 """
 Command classes.
 """
-import dataclasses
+# import dataclasses
 import typing
 
 import abjad
@@ -273,7 +273,7 @@ class MusicCommand:
                     if type(arg) == abjad.Articulation:
 
                         def selector(selections):
-                            runs = abjad.select.runs(selections)
+                            # runs = abjad.select.runs(selections)
                             run_ties = abjad.select.logical_ties(
                                 selections, pitched=True
                             )

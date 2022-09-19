@@ -2,9 +2,10 @@
 Rhythm tree functions.
 """
 import abjad
-from abjadext import rmakers
 
 from .sequence import CyclicList, Sequence, flatten
+
+# from abjadext import rmakers
 
 
 def flatten_tree_level(rtm, recurse=False):
