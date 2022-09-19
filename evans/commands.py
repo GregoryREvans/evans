@@ -441,7 +441,7 @@ class Skeleton:
         return selection
 
 
-@dataclasses.dataclass(slots=True)
+# @dataclasses.dataclass(slots=True) # WARNING: does this break anything?
 class RewriteMeterCommand(rmakers.Command):
     """
     Rewrite meter command.
