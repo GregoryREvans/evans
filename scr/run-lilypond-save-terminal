@@ -1,0 +1,1 @@
+run-lilypond illustration.ly 2>&1 | tee lily_out.txt

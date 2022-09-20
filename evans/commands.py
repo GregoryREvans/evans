@@ -5,6 +5,7 @@ Command classes.
 import typing
 
 import abjad
+import baca
 from abjadext import rmakers
 
 from .handlers import RhythmHandler
@@ -442,13 +443,19 @@ class Skeleton:
 
 
 # @dataclasses.dataclass(slots=True) # WARNING: does this break anything?
-class RewriteMeterCommand(rmakers.Command):
+# WARNING: was class RewriteMeterCommand(rmakers.Command):
+class RewriteMeterCommand:
     """
     Rewrite meter command.
     """
 
-    boundary_depth: int | None = None
-    reference_meters: typing.Sequence[abjad.Meter] = ()
+    def __init__(
+        self,
+        boundary_depth=None,
+        reference_meters=(),
+    ):
+        self.boundary_depth = boundary_depth
+        self.reference_meters = reference_meters
 
     def __post_init__(self):
         if self.boundary_depth is not None:
@@ -501,3 +508,13 @@ class RewriteMeterCommand(rmakers.Command):
                 boundary_depth=self.boundary_depth,
                 rewrite_tuplets=False,
             )
+
+
+def hairpin(dynamics, *tweaks, selector):
+    return lambda _: baca.hairpin(selector(_), dynamics)
+
+def text_spanner(spanner_string, *tweaks, lilypond_id=None, bookend=None, selector=None):
+    if selector is not None:
+        return lambda _: baca.text_spanner(selector(_), spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend)
+    else:
+        return lambda _: baca.text_spanner(_, spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend)

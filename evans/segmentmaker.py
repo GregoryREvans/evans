@@ -233,7 +233,7 @@ class SegmentMaker:
                 abjad.attach(metro, leaf1)
 
         markup2 = abjad.RehearsalMark(
-            markup=abjad.Markup(rf"\markup \bold {{ {self.rehearsal_mark} }}")
+            markup=rf"\markup \bold {{ {self.rehearsal_mark} }}"
         )
         if self.rehearsal_mark is not None:
             for staff in abjad.iterate.components(
@@ -645,7 +645,8 @@ class SegmentMaker:
 
         if self.fermata_measures is not None:
             for voice in abjad.select.components(self.score_template, abjad.Voice):
-                measures = abjad.select.leaves(voice).group_by_measure()
+                leaves = abjad.select.leaves(voice)
+                measures = abjad.select.group_by_measure(leaves)
                 for fermata_index in self.fermata_measures:
                     make_fermata_measure(
                         measures[fermata_index], transparent=self.transparent_fermatas
@@ -694,7 +695,7 @@ class SegmentMaker:
                 measure_durations = [
                     non_reduced_fractions[_] for _ in relevant_measure_indices
                 ]
-                measure_groups = relevant_measures.group_by_contiguity()
+                measure_groups = abjad.select.group_by_contiguity(relevant_measures)
                 group_sizes = [len(g) for g in measure_groups]
                 duration_groups = Sequence(measure_durations).partition_by_counts(
                     group_sizes
@@ -702,7 +703,7 @@ class SegmentMaker:
                 for measure_group, duration_group in zip(
                     measure_groups, duration_groups
                 ):
-                    measure_group = measure_group.flatten()
+                    measure_group = Sequence(measure_group).flatten()
                     temp_container = abjad.Container()
                     if duration_preprocessor is not None:  # EXPERIMENTAL
                         duration_group = duration_preprocessor(duration_group)
@@ -1417,7 +1418,7 @@ def make_fermata_measure(selection, transparent=True):
     )
     temp_container = abjad.Container()
     temp_container.append(skip)
-    original_leaves = selection.leaves()
+    original_leaves = abjad.select.leaves(selection)
     if abjad.get.has_indicator(original_leaves[0], abjad.TimeSignature):
         regular_rest = abjad.Rest(1, multiplier=duration / 2)
         first_skip = abjad.Skip(1, multiplier=duration / 2)
@@ -1467,7 +1468,7 @@ def get_top_level_components_from_leaves(leaves):  # TODO:
 
 def make_score_template(instruments, groups):
     assert sum(groups) == len(instruments)
-    name_counts = {_.name: 1 for _ in instruments}
+    name_counts = {extract_class_name(_): 1 for _ in instruments}
     sub_group_counter = 1
     score = abjad.Score(
         [
@@ -1485,27 +1486,27 @@ def make_score_template(instruments, groups):
             sub_group_counter += 1
             for sub_item in item:
                 if 1 < instruments.count(sub_item):
-                    name_string = f"{sub_item.name} {name_counts[sub_item.name]}"
+                    name_string = f"{extract_class_name(sub_item)} {name_counts[extract_class_name(sub_item)]}"
                 else:
-                    name_string = f"{sub_item.name}"
+                    name_string = f"{extract_class_name(sub_item)}"
                 staff = abjad.Staff(
                     [abjad.Voice(name=f"{name_string} voice")],
                     name=f"{name_string} staff",
                 )
                 sub_group.append(staff)
-                name_counts[sub_item.name] += 1
+                name_counts[extract_class_name(sub_item)] += 1
             score["Staff Group"].append(sub_group)
         else:
             if 1 < instruments.count(item):
-                name_string = f"{item.name} {name_counts[item.name]}"
+                name_string = f"{extract_class_name(item)} {name_counts[extract_class_name(item)]}"
             else:
-                name_string = f"{item.name}"
+                name_string = f"{extract_class_name(item)}"
             staff = abjad.Staff(
                 [abjad.Voice(name=f"{name_string} voice")],
                 name=f"{name_string} staff",
             )
             score["Staff Group"].append(staff)
-            name_counts[item.name] += 1
+            name_counts[extract_class_name(item)] += 1
     return score
 
 
@@ -1535,7 +1536,7 @@ def global_to_voice(score):
     voices = abjad.select.components(score, abjad.Voice)
     for i, measure in enumerate(measures):
         indicators = []
-        for leaf in measure.leaves():
+        for leaf in abjad.select.leaves(measure):
             for indicator in abjad.get.indicators(leaf):
                 if not isinstance(
                     indicator, (abjad.TimeSignature, abjad.MetronomeMark)
@@ -1543,7 +1544,10 @@ def global_to_voice(score):
                     indicators.append(indicator)
                     abjad.detach(indicator, leaf)
         for voice in voices:
-            target = abjad.select.leaves(voice).group_by_measure().get([i]).leaf(0)
+            sel_1 = abjad.select.leaves(voice)
+            sel_2 = abjad.select.group_by_measure(sel_1)
+            sel_3 = abjad.select.get(sel_2, [i])
+            target = abjad.select.leaf(sel_3, 0)
             for _indicator in indicators:
                 abjad.attach(_indicator, target)
 

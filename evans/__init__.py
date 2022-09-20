@@ -16,8 +16,10 @@ from .commands import (
     call,
     detach,
     duplicate,
+    hairpin,
     music,
     replace,
+    text_spanner,
 )
 from .consort import (
     LogicalTieCollection,
@@ -229,6 +231,7 @@ __all__ = [
     "funnel_tree_to_x",
     "get_top_level_components_from_leaves",
     "global_to_voice",
+    "hairpin",
     "helianthated_rtm",
     "herz_combination_tone_ratios",
     "human_sorted_keys",
@@ -257,6 +260,7 @@ __all__ = [
     "sort_voices",
     "sorted_keys",
     "talea_timespans",
+    "text_spanner",
     "to_digit",
     "to_nearest_eighth_tone",
     "to_nearest_quarter_tone",
