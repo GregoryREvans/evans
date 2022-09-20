@@ -2,7 +2,7 @@
 Command classes.
 """
 # import dataclasses
-import typing
+# import typing
 
 import abjad
 import baca
@@ -513,8 +513,19 @@ class RewriteMeterCommand:
 def hairpin(dynamics, *tweaks, selector):
     return lambda _: baca.hairpin(selector(_), dynamics)
 
-def text_spanner(spanner_string, *tweaks, lilypond_id=None, bookend=None, selector=None):
+
+def text_spanner(
+    spanner_string, *tweaks, lilypond_id=None, bookend=None, selector=None
+):
     if selector is not None:
-        return lambda _: baca.text_spanner(selector(_), spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend)
+        return lambda _: baca.text_spanner(
+            selector(_),
+            spanner_string,
+            *tweaks,
+            lilypond_id=lilypond_id,
+            bookend=bookend,
+        )
     else:
-        return lambda _: baca.text_spanner(_, spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend)
+        return lambda _: baca.text_spanner(
+            _, spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend
+        )
