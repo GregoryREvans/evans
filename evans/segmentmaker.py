@@ -930,7 +930,7 @@ class SegmentMaker:
                     abjad.attach(literal, container, tag=None)
                 literal = abjad.LilyPondLiteral("", "closing")
                 abjad.attach(literal, container, tag=None)
-            directory = self.current_directory
+            directory = self.current_directory # WARNING: this causes trouble in building all segments by iterating from directory above
             pdf_path = pathlib.Path(f"{directory}/illustration.pdf")
             ly_path = pathlib.Path(f"{directory}/illustration.ly")
             if pdf_path.exists():

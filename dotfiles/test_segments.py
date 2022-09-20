@@ -41,8 +41,10 @@ def test_segments_01(segment):
     ly_old = f"{segment}/illustration.old.ly"
     if os.path.exists(ly):
         shutil.copyfile(ly, ly_old)
+        temp_path_object = pathlib.Path(ly) # WARNING: new! deletes old copy
+        temp_path_object.unlink() # WARNING: new! deletes old copy
     log = f"/tmp/{segment.name}.log"
-    command = f"python {segment}/definition.py"
+    command = f"python {segment}/definition.py" # QUESTION: does path system actually write new file here?
     process = subprocess.run(
         command,
         stdout=subprocess.PIPE,
