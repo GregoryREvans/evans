@@ -12,8 +12,8 @@ on:
 
 env:
   LILYPOND: /tmp/lilypond
-  LILYPOND_URL: http://lilypond.org/download/binaries/linux-64/
-  LILYPOND_SOURCE: lilypond-2.23.2-1.linux-64.sh
+  # LILYPOND_URL: http://lilypond.org/download/binaries/linux-64/
+  # LILYPOND_SOURCE: lilypond-2.23.2-1.linux-64.sh
   ABJAD: /tmp/abjad
   RMAKERS: /tmp/abjad-ext-rmakers
   MICROTONES: /tmp/abjad-ext-microtones
@@ -41,11 +41,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install black flake8 isort pytest six
 
-    - name: Install lilypond
+    # - name: Install lilypond
+    #   run: |
+    #     wget -q -O $LILYPOND $LILYPOND_URL/$LILYPOND_SOURCE
+    #     sh $LILYPOND --batch
+    #     echo "/home/runner/bin" >> $GITHUB_PATH
+
+    - name: Install LilyPond
       run: |
-        wget -q -O $LILYPOND $LILYPOND_URL/$LILYPOND_SOURCE
-        sh $LILYPOND --batch
-        echo "/home/runner/bin" >> $GITHUB_PATH
+        lilypond_version=2.23.12
+        lilypond_archive=lilypond-${lilypond_version}-linux-x86_64.tar.gz
+        lilypond_url=https://gitlab.com/lilypond/lilypond/-/releases/
+        lilypond_url=${lilypond_url}/v${lilypond_version}/downloads/${lilypond_archive}
+        echo ${lilypond_url}
+        cd /tmp
+        wget -q ${lilypond_url}
+        tar -xf ${lilypond_archive}
 
     - name: Install abjad
       run: |
