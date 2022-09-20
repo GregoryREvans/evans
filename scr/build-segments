@@ -15,6 +15,7 @@ def build_segments():
             if segment.name.startswith("."):
                 continue
             print(f"Building {segment} ...")
+            # maybe try saving the current working directory and cd back and forth
             os.system(f"python {segment}/definition.py")
 
 
