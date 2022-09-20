@@ -30,4 +30,5 @@ if __name__ == "__main__":
         packages=["evans"],
         platforms="Any",
         url="https://github.com/GregoryREvans/evans",
+        version="2.0",
     )
