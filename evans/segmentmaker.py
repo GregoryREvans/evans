@@ -633,14 +633,13 @@ class SegmentMaker:
             abjad.mutate.wrap(group, container)
 
     def _fill_score_with_rests(self):
-        temp_leaf_maker = abjad.LeafMaker()
         for voice in abjad.select.components(self.score_template, abjad.Voice):
             durations = [
                 abjad.Duration(time_signature)
                 for time_signature in self.time_signatures[:-1]
             ]
             none_list = [None]
-            full_voice_rests = temp_leaf_maker(none_list, durations)
+            full_voice_rests = abjad.makers.make_leaves(none_list, durations)
             voice.extend(full_voice_rests)
 
         if self.fermata_measures is not None:
@@ -1134,8 +1133,7 @@ class SegmentMaker:
                 imp_num, imp_den = tuplet.implied_prolation.pair
                 head_dur = tuplet_dur / imp_den
                 dur = head_dur * imp_num
-                maker = abjad.NoteMaker()
-                donor_leaves = maker([0], [dur])
+                donor_leaves = abjad.makers.make_notes([0], [dur])
                 indicators = abjad.get.indicators(tuplet[0])
                 for indicator in indicators:
                     abjad.attach(indicator, donor_leaves[-1])
@@ -1151,8 +1149,7 @@ class SegmentMaker:
                 imp_num, imp_den = tuplet.implied_prolation.pair
                 head_dur = tuplet_dur / imp_den
                 dur = head_dur * imp_num
-                maker = abjad.NoteMaker()
-                abjad.mutate.replace(tuplet, maker([None], [dur]))
+                abjad.mutate.replace(tuplet, abjad.makers.make_leaves([None], [dur]))
             if tuplet.hide is not True:
                 notehead_maker = NoteheadBracketMaker()
                 notehead_maker(tuplet)

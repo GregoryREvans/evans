@@ -65,10 +65,13 @@ for fundamental, voice in zip(fundamentals, voicewise_ratios):
 
 handlers.reverse()
 
-maker = abjad.LeafMaker()
 durations = [abjad.Duration((10, 4)) for _ in range(len(out_))]
-leaves_1 = [abjad.Rest((3, 8))] + [maker(["c'"], durations)]
-leaves_2 = [abjad.Rest((3, 4))] + [maker(["c'"], durations)] + [abjad.Rest((3, 4))]
+leaves_1 = [abjad.Rest((3, 8))] + [abjad.makers.make_leaves(["c'"], durations)]
+leaves_2 = (
+    [abjad.Rest((3, 4))]
+    + [abjad.makers.make_leaves(["c'"], durations)]
+    + [abjad.Rest((3, 4))]
+)
 leaves_3 = [maker(["c"], durations)]
 
 group = abjad.StaffGroup(

@@ -45,7 +45,7 @@ def test_segments_01(segment):
         temp_path_object.unlink()  # WARNING: new! deletes old copy
     log = f"/tmp/{segment.name}.log"
     command = f"python {segment}/definition.py"  # QUESTION: does path system actually write new file here?
-    process = subprocess.run(
+    process = subprocess.run(  # QUESTION: can the subprocess be made to give exit code 1 if file fails?
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,

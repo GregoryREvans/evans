@@ -479,7 +479,6 @@ class RewriteMeterCommand:
             meters.append(meter)
         durations = [abjad.Duration(_) for _ in meters]
         reference_meters = self.reference_meters or ()
-        command = rmakers.SplitMeasuresCommand()
         non_tuplets = []
         for component in voice:
             if isinstance(component, abjad.Tuplet):
@@ -489,7 +488,7 @@ class RewriteMeterCommand:
                 non_tuplets.append(new_skip)
             else:
                 non_tuplets.append(component)
-        command(non_tuplets, durations=durations)
+        rmakers.split_measures(non_tuplets, durations=durations)
         selections = abjad.select.group_by_measure(voice[:])
         for meter, selection in zip(meters, selections):
             for reference_meter in reference_meters:
@@ -501,7 +500,7 @@ class RewriteMeterCommand:
             for leaf in abjad.iterate.leaves(selection):
                 if not abjad.get.parentage(leaf).count(abjad.Tuplet):
                     nontupletted_leaves.append(leaf)
-            rmakers.unbeam()(nontupletted_leaves)
+            rmakers.unbeam(nontupletted_leaves)
             abjad.Meter.rewrite_meter(
                 selection,
                 meter,
@@ -529,3 +528,137 @@ def text_spanner(
         return lambda _: baca.text_spanner(
             _, spanner_string, *tweaks, lilypond_id=lilypond_id, bookend=bookend
         )
+
+
+def stack(
+    rmaker, *args, preprocessor=None
+):  # QUESTION: Is this an OK bridge in functionality? Imitating old?
+    def returned_function(divisions):
+        if preprocessor is not None:
+            divisions = preprocessor(divisions)
+        music = rmaker(divisions)
+        container = abjad.Container(music)
+        for arg in args:
+            arg(container)
+        music = abjad.mutate.eject_contents(container)
+        return music
+
+    return returned_function
+
+
+def accelerando(
+    *interpolations,
+    previous_state=None,
+    spelling=rmakers.Spelling(
+        forbidden_note_duration=None,
+        forbidden_rest_duration=None,
+        increase_monotonic=False,
+    ),
+    state=None,
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=state, previous_state=previous_state):
+        music = rmakers.accelerando(
+            divisions,
+            interpolations,
+            previous_state=previous_state,
+            spelling=spelling,
+            state=state,
+            tag=tag,
+        )
+        return music
+
+    return returned_function
+
+
+def even_division(
+    denominators,
+    denominator="from_counts",
+    *,
+    extra_counts=(0,),
+    previous_state=None,
+    spelling=rmakers.Spelling(
+        forbidden_note_duration=None,
+        forbidden_rest_duration=None,
+        increase_monotonic=False,
+    ),
+    state=None,
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=state, previous_state=previous_state):
+        music = rmakers.even_division(
+            divisions,
+            denominators=denominators,
+            extra_counts=extra_counts,
+            previous_state=previous_state,
+            spelling=spelling,
+            state=state,
+            tag=tag,
+        )
+        return music
+
+    return returned_function
+
+
+def talea(
+    counts,
+    denominator,
+    *,
+    end_counts=(),
+    extra_counts=(),
+    preamble=(),
+    previous_state=None,
+    read_talea_once_only=False,
+    spelling=rmakers.Spelling(
+        forbidden_note_duration=None,
+        forbidden_rest_duration=None,
+        increase_monotonic=False,
+    ),
+    state=None,
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=state, previous_state=previous_state):
+        music = rmakers.talea(
+            divisions,
+            counts=counts,
+            denominator=denominator,
+            end_counts=end_counts,
+            extra_counts=extra_counts,
+            preamble=preamble,
+            previous_state=previous_state,
+            read_talea_once_only=read_talea_once_only,
+            spelling=spelling,
+            state=state,
+            tag=tag,
+        )
+        return music
+
+    return returned_function
+
+
+def tuplet(
+    tuplet_ratios,
+    *,
+    denominator=None,
+    spelling=rmakers.Spelling(
+        forbidden_note_duration=None,
+        forbidden_rest_duration=None,
+        increase_monotonic=False,
+    ),
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=None, previous_state=None):
+        music = rmakers.tuplet(
+            divisions=divisions,
+            tuplet_ratios=tuplet_ratios,
+            denominator=denominator,
+            spelling=rmakers.Spelling(
+                forbidden_note_duration=None,
+                forbidden_rest_duration=None,
+                increase_monotonic=False,
+            ),
+            tag=abjad.Tag(string=""),
+        )
+        return music
+
+    return returned_function

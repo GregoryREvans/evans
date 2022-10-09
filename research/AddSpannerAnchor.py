@@ -20,8 +20,7 @@ class AddSpannerAnchor:
             pitches = pitches[0]
         else:
             pass
-        maker = abjad.LeafMaker()
-        new_leaves = [list_ for list_ in maker([pitches], durs)]
+        new_leaves = [list_ for list_ in abjad.makers.make_leaves([pitches], durs)]
         indicators = abjad.get.indicators(self.leaf)
         for indicator in indicators:
             abjad.attach(indicator, new_leaves[0][0])

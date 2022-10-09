@@ -652,7 +652,7 @@ class RTMMaker:
     def __repr__(self):
         return f"<{type(self).__name__}()>"
 
-    def __call__(self, divisions, previous_state=-1):
+    def __call__(self, divisions, previous_state=-1, state=None):
         starting_index = -1
 
         if previous_state is not None:
@@ -663,7 +663,9 @@ class RTMMaker:
         if previous_state is not None:
             self.state += len(selections)
             self.state %= len(self.rtm)
-
+            state = self.state
+        else:
+            state = -1
         return flatten(selections)  # WARNING: was not previously flattened
 
     @staticmethod

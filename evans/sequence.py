@@ -2039,6 +2039,79 @@ class Sequence(collections.abc.Sequence):
             result = result_
         return type(self)(result)
 
+    def partition_by_predicate(self, predicate):
+        """
+        Partitions sequence by predicate test function.
+
+        ..  container:: example
+
+            >>> seq = evans.Sequence([abjad.TimeSignature(_) for _ in [(4, 4), (3, 4), (1, 6), (4, 4), (1, 6), (1, 6), (5, 4), (3, 4)]])
+            >>> def test_case(arg):
+            ...     return arg.pair == abjad.Duration((1, 6)).pair
+            ...
+            >>> partitions = seq.partition_by_predicate(test_case)
+            >>> print(partitions)
+            Sequence([[TimeSignature(pair=(4, 4), hide=False, partial=None), TimeSignature(pair=(3, 4), hide=False, partial=None)], [TimeSignature(pair=(1, 6), hide=False, partial=None)], [TimeSignature(pair=(4, 4), hide=False, partial=None)], [TimeSignature(pair=(1, 6), hide=False, partial=None), TimeSignature(pair=(1, 6), hide=False, partial=None)], [TimeSignature(pair=(5, 4), hide=False, partial=None), TimeSignature(pair=(3, 4), hide=False, partial=None)]])
+
+        """
+        input_list = [_ for _ in self]
+        previous_result = predicate(input_list[0])
+        lengths = []
+        count = 0
+        for item in input_list:
+            match = predicate(item) == previous_result
+            if match is True:
+                count += 1
+            if match is False:
+                lengths.append(count)
+                count = 1
+                previous_result = predicate(item)
+        lengths.append(count)
+        assert sum(lengths) == len(input_list)
+        partitions = abjad.sequence.partition_by_counts(input_list, lengths)
+
+        return type(self)(partitions)
+
+    def partition_by_predicate_list(self, predicate_list):
+        """
+        Partitions sequence by ordered list of predicate test functions.
+
+        ..  container:: example
+
+            >>> seq = evans.Sequence([abjad.TimeSignature(_) for _ in [(4, 4), (3, 4), (1, 6), (4, 4), (1, 6), (1, 6), (5, 4), (3, 4)]])
+            >>> def test_case_1(arg):
+            ...     return arg.pair == abjad.Duration((1, 6)).pair
+            ...
+            >>> def test_case_2(arg):
+            ...     return arg.pair < abjad.Duration((5, 4)).pair
+            ...
+            >>> partitions = seq.partition_by_predicate_list([test_case_1, test_case_2])
+            >>> print(partitions)
+            Sequence([[TimeSignature(pair=(4, 4), hide=False, partial=None), TimeSignature(pair=(3, 4), hide=False, partial=None)], [TimeSignature(pair=(1, 6), hide=False, partial=None)], [TimeSignature(pair=(4, 4), hide=False, partial=None)], [TimeSignature(pair=(1, 6), hide=False, partial=None), TimeSignature(pair=(1, 6), hide=False, partial=None)], [TimeSignature(pair=(5, 4), hide=False, partial=None)], [TimeSignature(pair=(3, 4), hide=False, partial=None)]])
+
+        """
+        input_list = [_ for _ in self]
+
+        def recurse(input, predicates):
+            out = []
+            initial_partitions = type(self)(input).partition_by_predicate(predicates[0])
+            if 1 < len(predicates):
+                new_predicates = [_ for _ in predicates[1:]]
+                for partition in initial_partitions:
+                    if predicates[0](partition[0]):
+                        out.append(partition)
+                    else:
+                        recursed_result = recurse(partition, new_predicates)
+                        out.extend(recursed_result)
+            else:
+                for partition in initial_partitions:
+                    out.append(partition)
+            return out
+
+        partitions = recurse(input_list, predicate_list)
+
+        return type(self)(partitions)
+
     def partition_by_ratio_of_lengths(self, ratio) -> "Sequence":
         r"""
         Partitions sequence by ``ratio`` of lengths.

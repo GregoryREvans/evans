@@ -9,6 +9,7 @@ from abjadext import microtones
 
 from . import sequence
 from .pitch import JIPitch, return_cent_markup, tune_to_ratio
+from .rtm import RTMMaker
 
 
 class Handler:
@@ -585,6 +586,16 @@ class ClefHandler(Handler):
     """
 
     _clef_groups_up = {
+        "bass_15": (
+            "bass_15",
+            "bass_8",
+            "bass",
+            "tenor",
+            "treble",
+            "treble^8",
+            "treble^15",
+        ),
+        "bass_8": ("bass_8", "bass", "treble", "treble^8", "treble^15"),
         "bass": ("bass", "tenorvarC", "treble"),  # "treble^8", "treble^15"),
         "tenor": ("tenorvarC", "treble"),  # "treble^8", "treble^15"),
         "alto": ("varC", "treble"),  # "treble^8", "treble^15"),
@@ -592,6 +603,7 @@ class ClefHandler(Handler):
     }
 
     _clef_groups_down = {
+        "bass_8": ("bass_8", "bass_15"),
         "bass": ("bass", "bass_8", "bass_15"),
         "tenor": ("tenorvarC", "bass", "bass_8"),
         "alto": ("varC", "bass", "bass_8"),
@@ -599,6 +611,8 @@ class ClefHandler(Handler):
     }
 
     _default_clef_shelves = {
+        "bass_15": (-52, -24),
+        "bass_8": (-40, -12),
         "bass": (-28, 6),
         "tenor": (-10, 12),
         "tenorvarC": (-10, 12),
@@ -1699,7 +1713,7 @@ class GettatoHandler(Handler):
         )
 
 
-class GlissandoHandler(Handler):
+class GlissandoHandler(Handler):  # TODO: add vibrato glissando?
     r"""
     Glissando Handler
 
@@ -2057,22 +2071,25 @@ class IntermittentVoiceHandler(Handler):
         >>> ph_down = evans.PitchHandler([0, 1, 2, 3, 4, 5], forget=False)
         >>> s = abjad.Staff([abjad.Voice("c'4 c'8 c'8 c'8 c'4.", name="Voice1")], name="Staff1")
         >>> ph_down(s)
-        >>> h = evans.RhythmHandler(
-        ...     rmakers.stack(
-        ...         rmakers.talea(
-        ...             [1, 2, 3, 4],
-        ...             8,
-        ...             extra_counts=[1, 0, -1],
-        ...         ),
-        ...         rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
-        ...         rmakers.extract_trivial(lambda _: abjad.select.tuplets(_)),
-        ...         rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
-        ...         rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
-        ...     ),
-        ...     forget=False,
-        ... )
+        >>> maker = evans.talea([1, 2, 3, 4], 8, extra_counts=[1, 0, -1])
+        >>> handler = evans.RhythmHandler(maker, forget=False)
+        >>> def rhythm_function(durations):
+        ...     nested_music = handler(durations)
+        ...     container = abjad.Container()
+        ...     for _ in nested_music:
+        ...         container.append(_)
+        ...     tuplet_target = abjad.select.tuplets(container)
+        ...     rmakers.trivialize(tuplet_target)
+        ...     tuplet_target = abjad.select.tuplets(container)
+        ...     rmakers.extract_trivial(tuplet_target)
+        ...     tuplet_target = abjad.select.tuplets(container)
+        ...     rmakers.rewrite_rest_filled(tuplet_target)
+        ...     tuplet_target = abjad.select.tuplets(container)
+        ...     rmakers.rewrite_sustained(tuplet_target)
+        ...     music = abjad.mutate.eject_contents(container)
+        ...     return music
         ...
-        >>> ivh = evans.IntermittentVoiceHandler(h, direction=abjad.UP)
+        >>> ivh = evans.IntermittentVoiceHandler(rhythm_function, direction=abjad.UP)
         >>> sel1 = abjad.select.leaf(s["Voice1"], 0)
         >>> sel2 = abjad.select.leaf(s["Voice1"], 2)
         >>> sel3 = abjad.select.leaves(s["Voice1"])
@@ -3153,7 +3170,6 @@ class PitchHandler(Handler):
     def _apply_pitches(self, selections):  # get apply all to handler chords
         if self.as_ratios is True:
             self.apply_all = True
-        leaf_maker = abjad.LeafMaker()
         old_ties = [tie for tie in abjad.iterate.logical_ties(selections, pitched=True)]
         if len(old_ties) > 0:
             collect = self._collect_pitches_durations_leaves(old_ties)
@@ -3219,7 +3235,9 @@ class PitchHandler(Handler):
                             cent_string = cent_string[:26] + "+" + cent_string[26:]
                         JIPitch_cents.append((pitch_index, abjad.Markup(cent_string)))
             if self.apply_all is False:
-                new_leaves = [leaf for leaf in leaf_maker(pitches, durations)]
+                new_leaves = [
+                    leaf for leaf in abjad.makers.make_leaves(pitches, durations)
+                ]
                 # experimental
                 for JIPitch_index in JIPitch_indices:
                     abjad.annotate(
@@ -3285,10 +3303,10 @@ class PitchHandler(Handler):
                                     quicktions.Fraction(ratio).denominator
                                 ):
                                     factors.append(_)
-                                over_23 = 0
+                                over_47 = 0
                                 if 0 < len(factors):
-                                    over_23 = max(factors)
-                                if 23 < over_23:
+                                    over_47 = max(factors)
+                                if 47 < over_47:
                                     marks.append(return_cent_markup(head, ratio))
                                     tune_to_ratio(head, ratio)
                                     leaf_annotation_ratio.append(ratio)
@@ -3338,10 +3356,10 @@ class PitchHandler(Handler):
                                 quicktions.Fraction(temp).denominator
                             ):
                                 factors.append(_)
-                            over_23 = 0
+                            over_47 = 0
                             if 0 < len(factors):
-                                over_23 = max(factors)
-                            if 23 < over_23:
+                                over_47 = max(factors)
+                            if 47 < over_47:
                                 m = return_cent_markup(leaf.note_head, temp)
                                 tune_to_ratio(leaf.note_head, temp)
                                 leaf_annotation_ratio.append(temp)
@@ -3416,14 +3434,12 @@ class RhythmHandler(Handler):
         ...         abjad.Timespan(1, 2),
         ...     ]
         ... )
-        >>> maker = rmakers.stack(
-        ...     rmakers.NoteRhythmMaker()
-        ... )
-        >>> handler = evans.RhythmHandler(rmaker=maker)
+        >>> handler = evans.RhythmHandler(rmaker=rmakers.note)
         >>> staff = abjad.Staff()
         >>> for span in spans:
-        ...     selections = maker([span.duration])
-        ...     staff.extend(selections)
+        ...     selections = handler([span.duration])
+        ...     for component in selections:
+        ...         staff.extend(component)
         ...
         >>> score = abjad.Score([staff])
         >>> moment = "#(ly:make-moment 1 25)"
@@ -3453,8 +3469,11 @@ class RhythmHandler(Handler):
     def __init__(self, rmaker, forget=True, state=None, name="Rhythm Handler"):
         self.rmaker = rmaker
         self.forget = forget
-        self._input_state = state
-        self.state = self.rmaker.state
+        self.state = state
+        if isinstance(rmaker, RTMMaker):
+            if state is None:
+                self.state = -1
+        self.temp_state_dict = {}
         self.name = name
 
     def __call__(self, durations):
@@ -3462,14 +3481,12 @@ class RhythmHandler(Handler):
 
     def _make_basic_rhythm(self, durations):
         if self.forget is False:
-            if self._input_state is not None:
-                self.state = self._input_state
-                selections = self.rmaker(durations, previous_state=self.state)
-                self.state = self.rmaker.state
-                self._input_state = None
-            else:
-                selections = self.rmaker(durations, previous_state=self.rmaker.state)
-                self.state = self.rmaker.state
+            selections = self.rmaker(
+                durations, previous_state=self.state, state=self.temp_state_dict
+            )
+            if isinstance(self.rmaker, RTMMaker):
+                self.temp_state_dict = self.rmaker.state
+            self.state = self.temp_state_dict
         else:
             selections = self.rmaker(durations)
         return selections
