@@ -1330,7 +1330,7 @@ class ArtificialHarmonic(abjad.Chord):
     def __init__(
         self,
         *arguments,
-        style="#'harmonic",
+        style="harmonic",
         is_parenthesized=False,
         with_sounding_pitch=True,
         language="english",
@@ -1361,6 +1361,12 @@ class ArtificialHarmonic(abjad.Chord):
                 are_cautionary = [leaf.note_head.is_cautionary]
                 are_forced = [leaf.note_head.is_forced]
                 are_parenthesized = [leaf.note_head.is_parenthesized]
+                calculated_note = abjad.NamedInterval("+P4").transpose(arguments[0])
+                written_pitches.append(calculated_note.note_head.written_pitch)
+                are_cautionary.append(calculated_note.note_head.is_cautionary)
+                are_forced.append(calculated_note.note_head.is_forced)
+                are_parenthesized.append(calculated_note.note_head.is_parenthesized)
+                self.written_pitches = written_pitches
             elif isinstance(leaf, abjad.Chord):
                 written_pitches.extend(_.written_pitch for _ in leaf.note_heads)
                 are_cautionary = [_.is_cautionary for _ in leaf.note_heads]
@@ -1380,11 +1386,14 @@ class ArtificialHarmonic(abjad.Chord):
             raise ValueError(f"can not initialize chord from {arguments!r}.")
         abjad.Leaf.__init__(self, written_duration, multiplier=multiplier, tag=tag)
         if not are_cautionary:
-            are_cautionary = [None] * len(written_pitches)
+            are_cautionary = [None for _ in written_pitches]
         if not are_forced:
-            are_forced = [None] * len(written_pitches)
+            are_forced = [None for _ in written_pitches]
         if not are_parenthesized:
-            are_parenthesized = [None] * len(written_pitches)
+            are_parenthesized = [None for _ in written_pitches]
+        if len(arguments) == 1:
+            if isinstance(arguments[0], abjad.Note):
+                self._note_heads = abjad.NoteHeadList()
         for written_pitch, is_cautionary, is_forced, is_parenthesized in zip(
             written_pitches, are_cautionary, are_forced, are_parenthesized
         ):
@@ -1406,10 +1415,7 @@ class ArtificialHarmonic(abjad.Chord):
         if len(arguments) == 1 and isinstance(arguments[0], abjad.Leaf):
             self._copy_override_and_set_from_leaf(arguments[0])
 
-        self.written_pitches = abjad.PitchSegment(
-            items=(note_head.written_pitch for note_head in self._note_heads),
-            item_class=abjad.NamedPitch,
-        )
+        self.written_pitches = [note_head.written_pitch for note_head in self._note_heads]
 
         if self.is_parenthesized:
             first_head = self._note_heads[0]
@@ -1420,11 +1426,11 @@ class ArtificialHarmonic(abjad.Chord):
         if with_sounding_pitch is True:
             written_pitch_list = [_ for _ in written_pitches]
             written_pitch_list.append(self.sounding_pitch())
-            self.written_pitches = abjad.PitchSegment(written_pitch_list)
+            self.written_pitches = written_pitch_list
 
         second_head = self._note_heads[1]
         abjad.tweak(
-            second_head, rf"\tweak style #{self.style}"
+            second_head, rf"\tweak style #'{self.style}"
         )  # was: abjad.tweak(second_head).style = self.style
 
         if len(self._note_heads) == 3:
@@ -1432,13 +1438,19 @@ class ArtificialHarmonic(abjad.Chord):
             third_head.is_parenthesized = True
             abjad.tweak(
                 third_head, r"\tweak font-size #-4"
-            )  # was: abjad.tweak(third_head).font_size = -4
+            )
+            abjad.tweak(
+                third_head, r"\tweak Accidental.font-size #-4"
+            )
 
     ### PUBLIC METHODS ###
 
     def sounding_pitch(self):
         r"Returns the sounding pitch of the harmonic as an |abjad.Pitch|."
-        interval = abs(self.written_pitches[1] - self.written_pitches[0]).semitones
+        if len(self.written_pitches) == 1:
+            interval = 24
+        else:
+            interval = abs(self.written_pitches[1] - self.written_pitches[0]).semitones
         sounding_pitch_dict = {
             1: 48,
             2: 36,
