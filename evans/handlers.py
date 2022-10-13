@@ -3380,6 +3380,7 @@ class PitchHandler(Handler):
                         for x, y in zip(leaf_annotation_pitch, leaf_annotation_ratio)
                     ]
                     abjad.annotate(leaf, "ratio", annotation_string)
+                    abjad.annotate(leaf, "JI ratio", leaf_annotation_ratio)
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.get.indicators(old_leaf)

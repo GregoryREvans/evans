@@ -4968,6 +4968,25 @@ class Sequence(collections.abc.Sequence):
             returned_list.append(val)
         return type(self)(returned_list)
 
+    def reduce_time_signatures_in_list(self):
+        ts_l = [_ for _ in self]
+
+        def reduce_time_signature(t):
+            nf = abjad.NonreducedFraction(t.pair)
+            f = Fraction(t.pair[0], t.pair[1])
+            if f.denominator < 4:
+                nf_ = nf.with_denominator(4)
+                nt = abjad.TimeSignature(nf_.pair)
+            else:
+                nt = abjad.TimeSignature((f.numerator, f.denominator))
+            return nt
+
+        out = []
+        for _ in ts_l:
+            nt = reduce_time_signature(_)
+            out.append(nt)
+        return type(self)(out)
+
     def remove_none(self):
         """
 

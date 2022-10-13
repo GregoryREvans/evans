@@ -11,6 +11,7 @@ import quicktions
 from abjadext import microtones
 
 from .sequence import RatioSegment, flatten
+from .verticalmoment import iterate_vertical_moments_by_logical_tie
 
 
 class JIPitch(abjad.Pitch):
@@ -560,19 +561,21 @@ def return_vertical_moment_ties(score):
             >>
 
     """
-    moments = [_ for _ in abjad.iterate_vertical_moments(score)]
+    moments = [_ for _ in iterate_vertical_moments_by_logical_tie(score)]
     new_moments = []
+    final_moments = []
     for i, moment in enumerate(moments):
         new_moment = []
-        new_moment_notes = []
-        for note in moment.start_notes:
-            new_moment_notes.append(note)
-        if 0 < len(new_moment_notes):
-            new_moment.append([_ for _ in abjad.select.logical_ties(new_moment_notes)])
+        for tie in moment.start_ties:
+            if isinstance(tie, abjad.LogicalTie):
+                new_moment.append(tie)
+        if 0 < len(new_moment):
             new_moments.append(new_moment)
-    flat_moments = flatten(new_moments)
-    flat_moments.sort(key=lambda _: abjad.get.timespan(_))
-    return flat_moments
+    new_moments.sort(key=lambda _: abjad.get.timespan(_[0]))
+    for moment in new_moments:
+        final_moments.extend(moment)
+    assert isinstance(final_moments[0], abjad.LogicalTie)
+    return final_moments
 
 
 def to_nearest_eighth_tone(number, frac=False):
@@ -1560,3 +1563,76 @@ def reduced_spectrum(prime_limit, partial_cap, multiplier_reduction_function):
             continue
         reduced_out.append(i)
     return reduced_out
+
+
+def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
+    moments = [_.start_ties for _ in iterate_vertical_moments_by_logical_tie(score)]
+    for moment in moments:
+        for tie in moment:
+            if isinstance(tie[0], abjad.Rest):
+                continue
+            if isinstance(tie[0], abjad.Note):
+                tie = tie[0]
+                if show_leaf_order is True:
+                    markup = abjad.Markup(fr"\markup {counter}")
+                    bundle = abjad.bundle(markup, r"\tweak color #blue")
+                    abjad.attach(bundle, tie, direction=abjad.DOWN)
+                    counter += 1
+                abjad.annotate(tie, "requires annotation", True)
+
+    moments = [_ for _ in iterate_vertical_moments_by_logical_tie(score)]
+    for moment in moments:
+        for tie in moment.ties:
+            attempt_booleans = [
+                abjad.get.annotation(tie[0], "requires annotation") is not None,
+                abjad.get.annotation(tie[0], "already annotated") is not True,
+            ]
+            if all(attempt_booleans):
+                annotated_ratios = {}
+                if len(moment.overlap_ties) == 0:
+                    for tie_ in moment.ties:
+                        leaf = tie_[0]
+                        try:
+                            ratio = abjad.get.annotation(leaf, "JI ratio")[0]
+                            fraction = quicktions.Fraction(ratio)
+                            fraction = (fraction.numerator, fraction.denominator)
+                        except:
+                            fraction = None
+                        if fraction is not None:
+                            voice_name = abjad.get.parentage(leaf).logical_voice()["voice"][7:-1]
+                            annotated_ratios[voice_name] = fraction
+                else:
+                    for tie_ in moment.overlap_ties:
+                        leaf = tie_[0]
+                        try:
+                            ratio = abjad.get.annotation(leaf, "JI ratio")[0]
+                            fraction = quicktions.Fraction(ratio)
+                            fraction = (fraction.numerator, fraction.denominator)
+                        except:
+                            fraction = None
+                        if fraction is not None:
+                            voice_name = abjad.get.parentage(leaf).logical_voice()["voice"][7:-1]
+                            annotated_ratios[voice_name] = fraction
+                tie_parent_name = abjad.get.parentage(tie[0]).logical_voice()["voice"][7:-1]
+                try:
+                    tie_fraction = annotated_ratios[tie_parent_name]
+                    del annotated_ratios[tie_parent_name]
+                except:
+                    tie_annotation = abjad.get.annotation(tie[0], "JI ratio")[0]
+                    tie_fraction = quicktions.Fraction(tie_annotation)
+                    tie_fraction = (tie_fraction.numerator, tie_fraction.denominator)
+                if len(annotated_ratios) == 0:
+                    continue
+                comparison_ratios = {}
+                for key, value in annotated_ratios.items():
+                    value_object = quicktions.Fraction(value[0], value[1])
+                    tie_fraction_object = quicktions.Fraction(tie_fraction[0], tie_fraction[1])
+                    comparison_ratios[key] = quicktions.Fraction(tie_fraction_object, value_object)
+                ordered_keys = sorted(comparison_ratios, key=lambda _: (comparison_ratios[_].numerator, comparison_ratios[_].denominator))
+                chosen_comparison = ordered_keys[0]
+                numerator = comparison_ratios[chosen_comparison].numerator
+                denominator = comparison_ratios[chosen_comparison].denominator
+                markup = abjad.Markup(fr"\markup \center-align {{ {chosen_comparison} \fraction {numerator} {denominator} }}")
+                bundle = abjad.bundle(markup, fr"\tweak color #{color}")
+                abjad.attach(bundle, tie[0], direction=abjad.DOWN)
+                abjad.annotate(tie[0], "already annotated", True)

@@ -23,8 +23,8 @@ def return_nearest_approximation(target, candidates):
 
 nearest = return_nearest_approximation(temp_val, p_cents)
 
-print(f"Real Herts: {temp_val}")
-print(f"Semitone Hertz: {p.hertz}")
-print(f"Semitone Cents in Hertz: {p_cents}")
-print(f"Calculated Nearest Approximation: {nearest[0]}")
+print(f"Real Herts: {temp_val}\n")
+print(f"Semitone Hertz: {p.hertz}\n")
+print(f"Semitone Cents in Hertz: {p_cents}\n")
+print(f"Calculated Nearest Approximation: {nearest[0]}\n")
 print(f"Deviation in cents: {nearest[1]}")

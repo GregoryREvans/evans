@@ -73,6 +73,7 @@ from .pitch import (
     ArtificialHarmonic,
     JIPitch,
     Loop,
+    annotate_concurrent_ratios,
     combination_tones,
     herz_combination_tone_ratios,
     loop,
@@ -147,6 +148,7 @@ from .timespan import (
     talea_timespans,
     to_digit,
 )
+from .verticalmoment import (VerticalMoment, iterate_vertical_moments_by_logical_tie)
 
 __all__ = [
     "ArtificialHarmonic",
@@ -211,6 +213,7 @@ __all__ = [
     "TranspositionHandler",
     "TrillHandler",
     "accelerando",
+    "annotate_concurrent_ratios",
     "add_silences_to_timespan_dict",
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
