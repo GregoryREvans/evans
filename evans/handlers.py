@@ -3321,13 +3321,12 @@ class PitchHandler(Handler):
                         if 0 < len(marks):
                             marks_strings = r""
                             # raise Exception(marks)
-                            for marks_string in marks[
-                                ::-1
-                            ]:  # WARNING: marks[::-1] reverses order of cent column. test to prove order
-                                marks_strings += rf"{marks_string.string[24:-1]}"
+                            for marks_string in marks:  # WARNING: marks[::-1] reverses order of cent column. test to prove order
+                                marks_strings += rf"\line {{ {marks_string.string[24:-1]} }}"
                             column = abjad.Markup(
                                 rf"\center-column {{ {marks_strings} }}",
                             )
+                            # raise Exception(column)
                             m = abjad.Markup(
                                 rf"\markup \center-align {column.string}",
                             )
