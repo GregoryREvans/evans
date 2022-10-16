@@ -3211,7 +3211,10 @@ class PitchHandler(Handler):
             JIPitch_cents = []
             for i, _ in enumerate(pitches):
                 if isinstance(_, list):
-                    _.sort()
+                    if self.as_ratios is True:
+                        _.sort(key=lambda _: quicktions.Fraction(_))
+                    else:
+                        _.sort()
                     nested_indices_to_pitch = dict()
                     for i_, sub_ in enumerate(_):
                         if self.apply_all is False:
@@ -3263,16 +3266,16 @@ class PitchHandler(Handler):
                         JIPitch_indices.append(
                             (
                                 pitch_index,
-                                f"{pitch_value.pitch_hertz}",
+                                fr"\line {{ {pitch_value.pitch_hertz} }}",
                             )
                         )
                     if pitch_value.with_quarter_tones is False:
                         cent_deviation = pitch_value.deviation
                         cent_string = (
-                            rf'\markup \center-column {{ "{str(cent_deviation)}" }}'
+                            rf'\markup \center-align {{ \center-column {{ "{str(cent_deviation)}" }} }}'
                         )
                         if -1 < cent_deviation:
-                            cent_string = cent_string[:26] + "+" + cent_string[26:]
+                            cent_string = cent_string[:42] + "+" + cent_string[42:]
                         JIPitch_cents.append((pitch_index, abjad.Markup(cent_string)))
             if self.apply_all is False:
                 new_leaves = [
@@ -3351,20 +3354,18 @@ class PitchHandler(Handler):
                                     tune_to_ratio(head, ratio)
                                     leaf_annotation_ratio.append(ratio)
                                 else:
-                                    marks.append(
-                                        microtones.return_cent_deviation_markup(
-                                            ratio, head.written_pitch
-                                        )
+                                    mark = microtones.return_cent_deviation_markup(
+                                        ratio, head.written_pitch
                                     )
+                                    marks.append(mark)
                                     microtones.tune_to_ratio(head, ratio)
                                     leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
                             marks_strings = r""
-                            # raise Exception(marks)
                             for (
                                 marks_string
                             ) in (
-                                marks
+                                marks[::-1]
                             ):  # WARNING: marks[::-1] reverses order of cent column. test to prove order
                                 marks_strings += (
                                     rf"\line {{ {marks_string.string[24:-1]} }}"
@@ -3374,7 +3375,7 @@ class PitchHandler(Handler):
                             )
                             # raise Exception(column)
                             m = abjad.Markup(
-                                rf"\markup \center-align {column.string}",
+                                rf"\markup \center-align {{ {column.string} }}",
                             )
                             if leaf is abjad.get.logical_tie(leaf).head:
                                 abjad.attach(m, leaf, direction=abjad.UP)
