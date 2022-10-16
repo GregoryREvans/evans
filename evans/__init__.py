@@ -71,6 +71,7 @@ from .metmod import (
 )
 from .pitch import (
     ArtificialHarmonic,
+    ETPitch,
     JIPitch,
     Loop,
     annotate_concurrent_ratios,
@@ -148,14 +149,14 @@ from .timespan import (
     talea_timespans,
     to_digit,
 )
-from .verticalmoment import (VerticalMoment, iterate_vertical_moments_by_logical_tie)
+from .verticalmoment import VerticalMoment, iterate_vertical_moments_by_logical_tie
 
 __all__ = [
-    "ArtificialHarmonic",
     "ArticulationHandler",
+    "ArtificialHarmonic",
     "Attachment",
-    "BendHandler",
     "BendBefore",
+    "BendHandler",
     "BisbigliandoHandler",
     "BowAngleHandler",
     "Breaks",
@@ -166,6 +167,7 @@ __all__ = [
     "CyclicList",
     "DurationLine",
     "DynamicHandler",
+    "ETPitch",
     "GettatoHandler",
     "GlissandoHandler",
     "GraceHandler",
@@ -212,11 +214,12 @@ __all__ = [
     "TimespanSpecifier",
     "TranspositionHandler",
     "TrillHandler",
+    "VerticalMoment",
     "accelerando",
-    "annotate_concurrent_ratios",
     "add_silences_to_timespan_dict",
     "add_silences_to_timespan_lists",
     "add_silent_timespans",
+    "annotate_concurrent_ratios",
     "annotate_leaves",
     "annotate_time",
     "attach",
@@ -246,6 +249,7 @@ __all__ = [
     "human_sorted_keys",
     "intercalate_silences",
     "iterate_nwise",
+    "iterate_vertical_moments_by_logical_tie",
     "join_time_signature_lists",
     "julia_set",
     "loop",

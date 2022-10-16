@@ -10,8 +10,139 @@ import baca
 import quicktions
 from abjadext import microtones
 
-from .sequence import RatioSegment, flatten
+from .sequence import RatioSegment, Sequence
 from .verticalmoment import iterate_vertical_moments_by_logical_tie
+
+
+class ETPitch(abjad.Pitch):
+    def __init__(
+        self,
+        fundamental,
+        repeating_ratio,
+        number_of_divisions,
+        scale_degree,
+        transposition=None,
+        with_quarter_tones=False,
+    ):
+        self.fundamental = abjad.NamedPitch(fundamental)
+        self.repeating_ratio = quicktions.Fraction(repeating_ratio)
+        self.number_of_divisions = number_of_divisions
+        self.scale_degree = scale_degree
+        self.transposition = transposition
+        self.with_quarter_tones = with_quarter_tones
+        pair = self._calculate_pitch_and_deviation()
+        self.pitch = pair[0]
+        self.deviation = pair[1]
+        self.pitch_hertz = pair[2]
+
+    def __add__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return type(self)(
+                self.pitch.number + argument,
+                self.repeating_ratio,
+                self.number_of_divisions,
+                self.scale_degree,
+                self.transposition,
+                self.with_quarter_tones,
+            )
+        else:
+            raise Exception(
+                "Argument must be of types: int, float, or quicktions.Fraction"
+            )
+
+    def __truediv__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return type(self)(
+                self.pitch.number / argument,
+                self.repeating_ratio,
+                self.number_of_divisions,
+                self.scale_degree,
+                self.transposition,
+                self.with_quarter_tones,
+            )
+        else:
+            raise Exception(
+                "Argument must be of types: int, float, or quicktions.Fraction"
+            )
+
+    def __lt__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return self.pitch.number < argument
+
+    def __lte__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return self.pitch.number <= argument
+
+    def __mod__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return self.pitch.number % argument
+
+    def __mul__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return type(self)(
+                self.pitch.number * argument,
+                self.repeating_ratio,
+                self.number_of_divisions,
+                self.scale_degree,
+                self.transposition,
+                self.with_quarter_tones,
+            )
+        else:
+            raise Exception(
+                "Argument must be of types: int, float, or quicktions.Fraction"
+            )
+
+    def __str__(self):
+        return abjad.lilypond(self.pitch)
+
+    def __sub__(self, argument):
+        if isinstance(argument, (int, float, quicktions.Fraction)):
+            return type(self)(
+                self.pitch.number - argument,
+                self.repeating_ratio,
+                self.number_of_divisions,
+                self.scale_degree,
+                self.transposition,
+                self.with_quarter_tones,
+            )
+        else:
+            raise Exception(
+                "Argument must be of types: int, float, or quicktions.Fraction"
+            )
+
+    def _get_lilypond_format(self):
+        return abjad.lilypond(self.pitch)
+
+    def _calculate_pitch_and_deviation(self):
+        scale = Sequence.equal_divisions(
+            self.fundamental.hertz,
+            self.repeating_ratio,
+            self.number_of_divisions,
+        )
+        degree = scale[self.scale_degree]
+        rounded_pitch = abjad.NamedPitch.from_hertz(degree)
+        if rounded_pitch.accidental == abjad.Accidental("qs"):
+            rounded_pitch = rounded_pitch + 0.5
+        elif rounded_pitch.accidental == abjad.Accidental("qf"):
+            rounded_pitch = rounded_pitch - 0.5
+        ratio = quicktions.Fraction(degree / rounded_pitch.hertz)
+        ji_pitch = JIPitch(
+            rounded_pitch, ratio, with_quarter_tones=self.with_quarter_tones
+        )
+        nearest = ji_pitch.pitch, ji_pitch.deviation, degree
+        return nearest
+
+    @property
+    def name(self):
+        return abjad.lilypond(self.pitch)
+
+    @property
+    def pitch_class(self):
+        return abjad.NamedPitchClass(self.pitch)
+
+    @property
+    def octave(self):
+        return abjad.Octave(self.pitch)
 
 
 class JIPitch(abjad.Pitch):
@@ -564,14 +695,16 @@ def return_vertical_moment_ties(score):
     moments = [_ for _ in iterate_vertical_moments_by_logical_tie(score)]
     new_moments = []
     final_moments = []
-    for i, moment in enumerate(moments):
+    for moment in moments:
         new_moment = []
         for tie in moment.start_ties:
             if isinstance(tie, abjad.LogicalTie):
                 new_moment.append(tie)
         if 0 < len(new_moment):
             new_moments.append(new_moment)
-    new_moments.sort(key=lambda _: abjad.get.timespan(_[0]))
+    for moment in new_moments:
+        moment.sort(key=lambda _: abjad.get.timespan(_))
+    new_moments.sort(key=lambda _: abjad.get.timespan(_[0]).start_offset)
     for moment in new_moments:
         final_moments.extend(moment)
     assert isinstance(final_moments[0], abjad.LogicalTie)
@@ -1418,7 +1551,9 @@ class ArtificialHarmonic(abjad.Chord):
         if len(arguments) == 1 and isinstance(arguments[0], abjad.Leaf):
             self._copy_override_and_set_from_leaf(arguments[0])
 
-        self.written_pitches = [note_head.written_pitch for note_head in self._note_heads]
+        self.written_pitches = [
+            note_head.written_pitch for note_head in self._note_heads
+        ]
 
         if self.is_parenthesized:
             first_head = self._note_heads[0]
@@ -1439,12 +1574,8 @@ class ArtificialHarmonic(abjad.Chord):
         if len(self._note_heads) == 3:
             third_head = self._note_heads[2]
             third_head.is_parenthesized = True
-            abjad.tweak(
-                third_head, r"\tweak font-size #-4"
-            )
-            abjad.tweak(
-                third_head, r"\tweak Accidental.font-size #-4"
-            )
+            abjad.tweak(third_head, r"\tweak font-size #-4")
+            abjad.tweak(third_head, r"\tweak Accidental.font-size #-4")
 
     ### PUBLIC METHODS ###
 
@@ -1568,13 +1699,14 @@ def reduced_spectrum(prime_limit, partial_cap, multiplier_reduction_function):
 def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
     moments = [_.start_ties for _ in iterate_vertical_moments_by_logical_tie(score)]
     for moment in moments:
+        counter = 0
         for tie in moment:
             if isinstance(tie[0], abjad.Rest):
                 continue
             if isinstance(tie[0], abjad.Note):
                 tie = tie[0]
                 if show_leaf_order is True:
-                    markup = abjad.Markup(fr"\markup {counter}")
+                    markup = abjad.Markup(rf"\markup {counter}")
                     bundle = abjad.bundle(markup, r"\tweak color #blue")
                     abjad.attach(bundle, tie, direction=abjad.DOWN)
                     counter += 1
@@ -1596,10 +1728,12 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                             ratio = abjad.get.annotation(leaf, "JI ratio")[0]
                             fraction = quicktions.Fraction(ratio)
                             fraction = (fraction.numerator, fraction.denominator)
-                        except:
+                        except: # do not use bare exception?
                             fraction = None
                         if fraction is not None:
-                            voice_name = abjad.get.parentage(leaf).logical_voice()["voice"][7:-1]
+                            voice_name = abjad.get.parentage(leaf).logical_voice()[
+                                "voice"
+                            ][7:-1]
                             annotated_ratios[voice_name] = fraction
                 else:
                     for tie_ in moment.overlap_ties:
@@ -1611,9 +1745,13 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                         except:
                             fraction = None
                         if fraction is not None:
-                            voice_name = abjad.get.parentage(leaf).logical_voice()["voice"][7:-1]
+                            voice_name = abjad.get.parentage(leaf).logical_voice()[
+                                "voice"
+                            ][7:-1]
                             annotated_ratios[voice_name] = fraction
-                tie_parent_name = abjad.get.parentage(tie[0]).logical_voice()["voice"][7:-1]
+                tie_parent_name = abjad.get.parentage(tie[0]).logical_voice()["voice"][
+                    7:-1
+                ]
                 try:
                     tie_fraction = annotated_ratios[tie_parent_name]
                     del annotated_ratios[tie_parent_name]
@@ -1626,13 +1764,25 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                 comparison_ratios = {}
                 for key, value in annotated_ratios.items():
                     value_object = quicktions.Fraction(value[0], value[1])
-                    tie_fraction_object = quicktions.Fraction(tie_fraction[0], tie_fraction[1])
-                    comparison_ratios[key] = quicktions.Fraction(tie_fraction_object, value_object)
-                ordered_keys = sorted(comparison_ratios, key=lambda _: (comparison_ratios[_].numerator, comparison_ratios[_].denominator))
+                    tie_fraction_object = quicktions.Fraction(
+                        tie_fraction[0], tie_fraction[1]
+                    )
+                    comparison_ratios[key] = quicktions.Fraction(
+                        tie_fraction_object, value_object
+                    )
+                ordered_keys = sorted(
+                    comparison_ratios,
+                    key=lambda _: (
+                        comparison_ratios[_].numerator,
+                        comparison_ratios[_].denominator,
+                    ),
+                )
                 chosen_comparison = ordered_keys[0]
                 numerator = comparison_ratios[chosen_comparison].numerator
                 denominator = comparison_ratios[chosen_comparison].denominator
-                markup = abjad.Markup(fr"\markup \center-align {{ {chosen_comparison} \fraction {numerator} {denominator} }}")
-                bundle = abjad.bundle(markup, fr"\tweak color #{color}")
+                markup = abjad.Markup(
+                    rf"\markup \center-align {{ {chosen_comparison} \fraction {numerator} {denominator} }}"
+                )
+                bundle = abjad.bundle(markup, rf"\tweak color #{color}")
                 abjad.attach(bundle, tie[0], direction=abjad.DOWN)
                 abjad.annotate(tie[0], "already annotated", True)

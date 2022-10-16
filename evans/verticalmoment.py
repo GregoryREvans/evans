@@ -209,8 +209,6 @@ class VerticalMoment:
         return result
 
 
-
-
 def iterate_vertical_moments_by_logical_tie(components, reverse=None):
     moments = []
     components = abjad.select.logical_ties(components)

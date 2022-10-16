@@ -4973,7 +4973,7 @@ class Sequence(collections.abc.Sequence):
 
         def reduce_time_signature(t):
             nf = abjad.NonreducedFraction(t.pair)
-            f = Fraction(t.pair[0], t.pair[1])
+            f = quicktions.Fraction(t.pair[0], t.pair[1])
             if f.denominator < 4:
                 nf_ = nf.with_denominator(4)
                 nt = abjad.TimeSignature(nf_.pair)

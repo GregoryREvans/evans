@@ -8,7 +8,7 @@ import quicktions
 from abjadext import microtones
 
 from . import sequence
-from .pitch import JIPitch, return_cent_markup, tune_to_ratio
+from .pitch import ETPitch, JIPitch, return_cent_markup, tune_to_ratio
 from .rtm import RTMMaker
 
 
@@ -2182,9 +2182,13 @@ class IntermittentVoiceHandler(Handler):
         self,
         rhythm_handler,
         direction=abjad.UP,
+        cluster=False,
+        cluster_color="#(rgb-color 0.56 0.85 0.6)",
     ):
         self.rhythm_handler = rhythm_handler
         self.direction = direction
+        self.cluster = cluster
+        self.cluster_color = cluster_color
 
     def __call__(
         self,
@@ -2208,9 +2212,13 @@ class IntermittentVoiceHandler(Handler):
         container = abjad.Container(simultaneous=True)
         original_voice = abjad.Voice(name=self._find_parent(selections))
         intermittent_voice = abjad.Voice(name="intermittent_voice")
-        new_components = self._make_components(duration)[:]
-        for new_component in new_components:
-            intermittent_voice.append(new_component)
+        if self.cluster is False:
+            new_components = self._make_components(duration)[:]
+            for new_component in new_components:
+                intermittent_voice.append(new_component)
+        else:
+            new_components = self._make_components(duration)
+            intermittent_voice.append(new_components)
         abjad.mutate.wrap(selections, original_voice)
         abjad.mutate.wrap(original_voice, container)
         container.append(intermittent_voice)
@@ -2225,7 +2233,31 @@ class IntermittentVoiceHandler(Handler):
         return parent_voice[0].name
 
     def _make_components(self, duration):
-        return self.rhythm_handler(duration)
+        components = self.rhythm_handler(duration)
+        if self.cluster is True:
+            components.append(abjad.Note("c'16"))
+            opening = abjad.LilyPondLiteral(
+                r"\afterGrace 15/16 ", site="before"
+            )  # maybe allow fraction to be configurable (cont.)
+            closing = abjad.LilyPondLiteral(
+                "{ ", site="after"
+            )  # (cont. ^) or simply call rmaker on duration including following leaf?
+            close_grace = abjad.LilyPondLiteral(" }", site="after")
+            target = abjad.select.leaf(components, -2)
+            abjad.attach(opening, target)
+            abjad.attach(closing, target)
+            abjad.attach(close_grace, components[-1])
+            components = abjad.Cluster(components)
+            overrides = abjad.LilyPondLiteral(
+                [
+                    r"\override Staff.ClusterSpanner.style = #'ramp",
+                    r"\override Staff.ClusterSpanner.layer = #-10",
+                    rf"\override Staff.ClusterSpanner.color = {self.cluster_color}",
+                ],
+                site="before",
+            )
+            abjad.attach(overrides, components)
+        return components
 
 
 class NoteheadHandler(Handler):
@@ -3217,15 +3249,23 @@ class PitchHandler(Handler):
             for pitch_index, pitch_value in enumerate(
                 pitches
             ):  # find way to add cent when 1/4 is false
-                if isinstance(pitch_value, JIPitch):
+                if isinstance(pitch_value, (JIPitch, ETPitch)):
                     pitches[pitch_index] = pitch_value.pitch
                     # experimental
-                    JIPitch_indices.append(
-                        (
-                            pitch_index,
-                            f"{pitch_value.fundamental.hertz} * {pitch_value.ratio}",
+                    if isinstance(pitch_value, JIPitch):
+                        JIPitch_indices.append(
+                            (
+                                pitch_index,
+                                f"{pitch_value.fundamental.hertz} * {pitch_value.ratio}",
+                            )
                         )
-                    )
+                    else:
+                        JIPitch_indices.append(
+                            (
+                                pitch_index,
+                                f"{pitch_value.pitch_hertz}",
+                            )
+                        )
                     if pitch_value.with_quarter_tones is False:
                         cent_deviation = pitch_value.deviation
                         cent_string = (
@@ -3321,8 +3361,14 @@ class PitchHandler(Handler):
                         if 0 < len(marks):
                             marks_strings = r""
                             # raise Exception(marks)
-                            for marks_string in marks:  # WARNING: marks[::-1] reverses order of cent column. test to prove order
-                                marks_strings += rf"\line {{ {marks_string.string[24:-1]} }}"
+                            for (
+                                marks_string
+                            ) in (
+                                marks
+                            ):  # WARNING: marks[::-1] reverses order of cent column. test to prove order
+                                marks_strings += (
+                                    rf"\line {{ {marks_string.string[24:-1]} }}"
+                                )
                             column = abjad.Markup(
                                 rf"\center-column {{ {marks_strings} }}",
                             )
