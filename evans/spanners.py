@@ -1,7 +1,7 @@
 # import dataclasses
 
 import abjad
-
+from .sequence import CyclicList
 
 class DurationLine:  # don't forget to force notehead shape
 
@@ -129,3 +129,73 @@ class BendBefore:
             bundle.after.articulations.extend(tweaks)
         bundle.after.articulations.append(self._get_lilypond_format())
         return bundle
+
+
+def make_fancy_gliss(*args, right_padding=0.5, match=True):
+    if match is True:
+        temp = []
+        for arg in args:
+            temp.append(arg)
+            temp.append(arg * -1)
+        args = temp
+    lines = [
+        r"\fancy-gliss",
+        "   #'(",
+    ]
+    for i, arg in enumerate(args):
+        s = f"      ({i} 0 {i}.5 {arg} {i + 1} 0)"
+        lines.append(s)
+    lines.append(f" )")
+    lines.append(f" #{right_padding}")
+    literal = abjad.LilyPondLiteral(lines, site="before")
+    return literal
+
+
+def make_multi_trill(note, *trill_pitches, notehead_styles=[r"\revert-noteheads"], after_spacing="1/16"):
+    heads = CyclicList(notehead_styles, forget=False)
+    t_length = len(trill_pitches)
+    assert 0 < t_length < 5
+    opening_literal = abjad.LilyPondLiteral(fr"\afterGrace {after_spacing}", site="after")
+    abjad.attach(opening_literal, note)
+    if t_length == 1:
+        closing_literal = abjad.LilyPondLiteral(
+            [
+                "{",
+                fr"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}'!32 \startTrillSpan \revert-noteheads",
+                "}"
+            ],
+            site="after"
+        )
+        abjad.attach(closing_literal, note)
+        stop_trill = abjad.LilyPondLiteral(r"\stopTrillSpan", site="after")
+        next = abjad.get.leaf(note, 1)
+        abjad.attach(stop_trill, next)
+    if t_length == 2:
+        closing_literal = abjad.LilyPondLiteral(
+            [
+                "{",
+                fr"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}!32 \startDoubleTrill #2 #1 -\markup "(" """,
+                fr"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[1]}!32 -\markup ")" """,
+                "}",
+            ],
+            site="after"
+        )
+        abjad.attach(closing_literal, note)
+        stop_trill = abjad.LilyPondLiteral(r"\stopDoubleTrill", site="after")
+        next = abjad.get.leaf(note, 1)
+        abjad.attach(stop_trill, next)
+    if t_length == 3:
+        closing_literal = abjad.LilyPondLiteral(
+            [
+                "{",
+        			fr"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}!32 \startTripleTrill #3 #2 #1 -\markup "(" """
+        			fr"     \suggest-pitch-middle {heads(r=1)[0]} {trill_pitches[1]}!32"
+        			fr"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[2]}!32 -\markup ")" """
+                "}"
+            ],
+            site="after"
+        )
+        abjad.attach(closing_literal, note)
+        stop_trill = abjad.LilyPondLiteral(r"\stopTripleTrill", site="after")
+        next = abjad.get.leaf(note, 1)
+        abjad.attach(stop_trill, next)

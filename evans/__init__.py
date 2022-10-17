@@ -132,7 +132,7 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import BendBefore, DurationLine, Lyrics
+from .spanners import BendBefore, DurationLine, Lyrics, make_fancy_gliss, make_multi_trill
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -253,6 +253,8 @@ __all__ = [
     "join_time_signature_lists",
     "julia_set",
     "loop",
+    "make_fancy_gliss",
+    "make_multi_trill",
     "make_sc_file",
     "make_score_template",
     "make_showable_list",

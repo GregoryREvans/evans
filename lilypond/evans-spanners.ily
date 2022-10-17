@@ -694,3 +694,188 @@ evans-text-spanner-left-text = #(
         $music
         #}
         )
+
+
+%%% FANCY GLISS %%%
+
+lengthen-gliss =
+#(define-music-function (nmbr)(number?)
+#{
+  \once \override Glissando.springs-and-rods = #ly:spanner::set-spacing-rods
+  \once \override Glissando.minimum-length = #nmbr
+#})
+
+
+fancy-gliss =
+#(define-music-function (pts-list right-padding)(list? number?)
+#{
+ \once \override Glissando.bound-details.left.padding = 0
+ \once \override Glissando.bound-details.left.start-at-dot = ##f
+ \once \override Glissando.bound-details.right.padding = #right-padding
+ \once \override Glissando.after-line-breaking =
+  #(lambda (grob)
+    (let ((stil (ly:line-spanner::print grob)))
+     (if (ly:stencil? stil)
+         (let*
+           ((left-bound-info (ly:grob-property grob 'left-bound-info))
+            (left-bound (ly:spanner-bound grob LEFT))
+            (y-off (assoc-get 'Y left-bound-info))
+            (padding (assoc-get 'padding left-bound-info))
+            (note-column (ly:grob-parent left-bound X))
+            (note-heads (ly:grob-object note-column 'note-heads))
+            (ext-X
+              (if (null? note-heads)
+                  '(0 . 0)
+                  (ly:relative-group-extent note-heads grob X)))
+            (dot-column (ly:note-column-dot-column note-column))
+            (dots
+              (if (null? dot-column)
+                  '()
+                  (ly:grob-object dot-column 'dots)))
+            (dots-ext-X
+              (if (null? dots)
+                  '(0 . 0)
+                  (ly:relative-group-extent dots grob X)))
+            (factor
+              (/ (interval-length (ly:stencil-extent stil X))
+                 (car (take-right (last pts-list) 2))))
+            (new-stil
+              (make-connected-path-stencil
+                (map
+                  (lambda (e)
+                    (cond ((= (length e) 2)
+                           (cons (* (car e) factor) (cdr e)))
+                          ((= (length e) 6)
+                           (list
+                             (* (car e) factor)
+                             (cadr e)
+                             (* (third e) factor)
+                             (fourth e)
+                             (* (fifth e) factor)
+                             (sixth e)))
+                          (else
+                            (ly:error
+                              "Some element(s) of the given list do not fit"))))
+                  pts-list)
+                (layout-line-thickness grob) ;line-width
+                1   ;scaling
+                1   ;scaling
+                #f
+                #f)))
+         (ly:grob-set-property! grob 'stencil
+           (ly:stencil-translate
+            new-stil
+            (cons (+ (interval-length ext-X)
+                     (interval-length dots-ext-X)
+                     padding)
+                  y-off))))
+       (begin
+         (ly:warning
+           "Cannot find stencil. Please set 'minimum-length accordingly")
+         #f))))
+#})
+
+%% comment me
+%#(display "\n\tLimitations:
+%\t-Does not work with line-break
+%\t-dotted notes with glissando may return a warning for unknown reasons,
+%\t strange things may happen, if contexts die prematurely")
+
+%% If spacing is very tight Glissando sometimes is omitted.
+%% Use 'lengthen-gliss' with an apropiate value in this case.
+%\lengthen-gliss #10
+%{ \override Glissando.cross-staff = ##t %}
+
+
+%%% MULTI TRILLS %%%
+
+startDoubleTrillSpanUp = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "DTSUp"
+    )
+
+stopDoubleTrillSpanUp = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "DTSUp"
+    )
+
+startDoubleTrillSpanDown = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "DTSDn"
+    )
+
+stopDoubleTrillSpanDown = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "DTSDn"
+    )
+
+startTripleTrillSpanDown = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "TTSDn"
+    )
+
+stopTripleTrillSpanDown = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "TTSDn"
+    )
+
+startDoubleTrill =
+	#(define-music-function (padding1 padding2)(number? number?)
+		#{
+			- \tweak bound-details.left.text \markup {\hspace #0.5 }
+			- \tweak bound-details.left.padding #1
+			- \tweak style #'trill
+			- \tweak staff-padding #padding1
+			- \tweak padding #0
+			- \tweak Y-extent #0
+			\startDoubleTrillSpanDown
+			- \tweak bound-details.left.text \markup {\lower #0.25 \musicglyph "scripts.trill" \hspace #0.5 }
+			- \tweak style #'trill
+			- \tweak staff-padding #padding2
+			- \tweak padding #0
+			- \tweak Y-extent #0
+			\startDoubleTrillSpanUp
+		#}
+	)
+
+stopDoubleTrill = \stopDoubleTrillSpanUp \stopDoubleTrillSpanDown
+
+startTripleTrill =
+	#(define-music-function (padding1 padding2 padding3)(number? number? number?)
+		#{
+			- \tweak bound-details.left.text \markup {\hspace #0.5 }
+			- \tweak bound-details.left.padding #1
+			- \tweak style #'trill
+			- \tweak staff-padding #padding1
+			- \tweak padding #0
+			- \tweak Y-extent #0
+			\startDoubleTrillSpanDown
+			- \tweak bound-details.left.text \markup {\lower #0.5 \musicglyph "scripts.trill" \hspace #0.5 }
+			- \tweak style #'trill
+			- \tweak staff-padding #padding2
+			- \tweak padding #0
+			- \tweak Y-extent #0
+			\startDoubleTrillSpanUp
+			- \tweak bound-details.left.text \markup {\hspace #0.5 }
+			- \tweak bound-details.left.padding #1
+			- \tweak style #'trill
+			- \tweak staff-padding #padding3
+			- \tweak padding #0
+			- \tweak Y-extent #0
+			\startTripleTrillSpanDown
+		#}
+	)
+
+stopTripleTrill = \stopDoubleTrillSpanUp \stopDoubleTrillSpanDown \stopTripleTrillSpanDown
+
+suggest-pitch-open = #(define-music-function (note) (ly:music?)
+#{
+	\once \override TextScript.extra-offset = #'(-1.25 . 1.75)
+	\tweak Stem.transparent ##t
+	$note
+#})
+suggest-pitch-middle = #(define-music-function (note) (ly:music?)
+#{
+	\tweak Stem.transparent ##t
+	$note
+#})
+suggest-pitch-close = #(define-music-function (note) (ly:music?)
+#{
+	\once \override TextScript.extra-offset = #'(0.75 . 1.75)
+	\tweak Stem.transparent ##t
+	$note
+#})
