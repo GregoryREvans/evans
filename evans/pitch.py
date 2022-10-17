@@ -1778,7 +1778,7 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                 numerator = comparison_ratios[chosen_comparison].numerator
                 denominator = comparison_ratios[chosen_comparison].denominator
                 markup = abjad.Markup(
-                    rf"\markup \center-align {{ {chosen_comparison} \fraction {numerator} {denominator} }}"
+                    rf'\markup \center-align \concat {{ "{chosen_comparison} "\fraction {numerator} {denominator} }}'
                 )
                 bundle = abjad.bundle(markup, rf"\tweak color #{color}")
                 abjad.attach(bundle, tie[0], direction=abjad.DOWN)
