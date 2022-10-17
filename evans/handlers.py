@@ -3266,7 +3266,7 @@ class PitchHandler(Handler):
                         JIPitch_indices.append(
                             (
                                 pitch_index,
-                                fr"\line {{ {pitch_value.pitch_hertz} }}",
+                                f"{pitch_value.pitch_hertz}",
                             )
                         )
                     if pitch_value.with_quarter_tones is False:

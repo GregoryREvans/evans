@@ -114,12 +114,9 @@ class ETPitch(abjad.Pitch):
         return abjad.lilypond(self.pitch)
 
     def _calculate_pitch_and_deviation(self):
-        scale = Sequence.equal_divisions(
-            self.fundamental.hertz,
-            self.repeating_ratio,
-            self.number_of_divisions,
-        )
-        degree = scale[self.scale_degree]
+        nth_root_of_ratio = self.repeating_ratio ** quicktions.Fraction(1, self.number_of_divisions)
+        scale_degree_multiplier = nth_root_of_ratio ** self.scale_degree
+        degree = self.fundamental.hertz * scale_degree_multiplier
         rounded_pitch = abjad.NamedPitch.from_hertz(degree)
         if rounded_pitch.accidental == abjad.Accidental("qs"):
             rounded_pitch = rounded_pitch + 0.5
