@@ -91,6 +91,7 @@ from .pitch import (
     tonnetz,
     tune_to_ratio,
 )
+from .preprocess import make_preprocessor
 from .rtm import (
     RTMMaker,
     RhythmTreeQuantizer,
@@ -115,6 +116,20 @@ from .segmentmaker import (
     make_score_template,
     sort_voices,
 )
+from .select import (
+    select_all_but_final_leaf,
+    select_all_first_leaves,
+    select_alternate_divisions_final_leaves,
+    select_alternate_leaves,
+    select_divisions_final_leaves,
+    select_measures,
+    select_outer_ties,
+    select_periodic_ties,
+    select_periodic_tuplets,
+    select_run_first_leaves,
+    select_ties_final_leaves,
+    select_untupleted_leaves,
+)
 from .sequence import (
     CyclicList,
     MarkovChain,
@@ -132,7 +147,13 @@ from .sequence import (
     flatten,
     julia_set,
 )
-from .spanners import BendBefore, DurationLine, Lyrics, make_fancy_gliss, make_multi_trill
+from .spanners import (
+    BendBefore,
+    DurationLine,
+    Lyrics,
+    make_fancy_gliss,
+    make_multi_trill,
+)
 from .timespan import (
     SilentTimespan,
     TimespanMaker,
@@ -152,7 +173,6 @@ from .timespan import (
 from .verticalmoment import VerticalMoment, iterate_vertical_moments_by_logical_tie
 
 __all__ = [
-    "ArticulationHandler",
     "ArtificialHarmonic",
     "Attachment",
     "BendBefore",
@@ -229,7 +249,6 @@ __all__ = [
     "calculate_tempo_modulated_duration",
     "call",
     "collect_offsets",
-    "combination_multiples",
     "combination_tones",
     "compare_speed",
     "cyc",
@@ -255,6 +274,7 @@ __all__ = [
     "loop",
     "make_fancy_gliss",
     "make_multi_trill",
+    "make_preprocessor",
     "make_sc_file",
     "make_score_template",
     "make_showable_list",
@@ -272,6 +292,18 @@ __all__ = [
     "return_cent_markup",
     "return_vertical_moment_ties",
     "rotate_tree",
+    "select_all_but_final_leaf",
+    "select_all_first_leaves",
+    "select_alternate_divisions_final_leaves",
+    "select_alternate_leaves",
+    "select_divisions_final_leaves",
+    "select_measures",
+    "select_outer_ties",
+    "select_periodic_ties",
+    "select_periodic_tuplets",
+    "select_run_first_leaves",
+    "select_ties_final_leaves",
+    "select_untupleted_leaves",
     "sort_voices",
     "sorted_keys",
     "talea",
@@ -286,4 +318,5 @@ __all__ = [
     "tonnetz",
     "tune_to_ratio",
     "tuplet",
+    "ArticulationHandler",
 ]

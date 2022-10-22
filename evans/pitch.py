@@ -114,8 +114,10 @@ class ETPitch(abjad.Pitch):
         return abjad.lilypond(self.pitch)
 
     def _calculate_pitch_and_deviation(self):
-        nth_root_of_ratio = self.repeating_ratio ** quicktions.Fraction(1, self.number_of_divisions)
-        scale_degree_multiplier = nth_root_of_ratio ** self.scale_degree
+        nth_root_of_ratio = self.repeating_ratio ** quicktions.Fraction(
+            1, self.number_of_divisions
+        )
+        scale_degree_multiplier = nth_root_of_ratio**self.scale_degree
         degree = self.fundamental.hertz * scale_degree_multiplier
         rounded_pitch = abjad.NamedPitch.from_hertz(degree)
         if rounded_pitch.accidental == abjad.Accidental("qs"):
@@ -1725,7 +1727,7 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                             ratio = abjad.get.annotation(leaf, "JI ratio")[0]
                             fraction = quicktions.Fraction(ratio)
                             fraction = (fraction.numerator, fraction.denominator)
-                        except: # do not use bare exception?
+                        except:  # do not use bare exception?
                             fraction = None
                         if fraction is not None:
                             voice_name = abjad.get.parentage(leaf).logical_voice()[

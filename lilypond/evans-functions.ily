@@ -4,7 +4,7 @@ staff-line-count = #(
     define-music-function (parser location number music) (number? ly:music?)
     #{
     \stopStaff
-    \override Staff.StaffSymbol.line-count = ##'number
+    \override Staff.StaffSymbol.line-count = #number
     \startStaff
     $music
     #}

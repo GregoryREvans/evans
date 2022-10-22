@@ -3271,9 +3271,7 @@ class PitchHandler(Handler):
                         )
                     if pitch_value.with_quarter_tones is False:
                         cent_deviation = pitch_value.deviation
-                        cent_string = (
-                            rf'\markup \center-align {{ \center-column {{ "{str(cent_deviation)}" }} }}'
-                        )
+                        cent_string = rf'\markup \center-align {{ \center-column {{ "{str(cent_deviation)}" }} }}'
                         if -1 < cent_deviation:
                             cent_string = cent_string[:42] + "+" + cent_string[42:]
                         JIPitch_cents.append((pitch_index, abjad.Markup(cent_string)))
@@ -3362,11 +3360,9 @@ class PitchHandler(Handler):
                                     leaf_annotation_ratio.append(ratio)
                         if 0 < len(marks):
                             marks_strings = r""
-                            for (
-                                marks_string
-                            ) in (
-                                marks[::-1]
-                            ):  # WARNING: marks[::-1] reverses order of cent column. test to prove order
+                            for marks_string in marks[
+                                ::-1
+                            ]:  # WARNING: marks[::-1] reverses order of cent column. test to prove order
                                 marks_strings += (
                                     rf"\line {{ {marks_string.string[24:-1]} }}"
                                 )
