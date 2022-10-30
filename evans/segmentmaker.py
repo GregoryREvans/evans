@@ -156,6 +156,7 @@ class SegmentMaker:
         tuplet_bracket_noteheads=True,
         with_layout=False,
         extra_rewrite=False,
+        print_clock_time=False,
     ):
         self.abbreviations = abbreviations
         self.add_final_grand_pause = add_final_grand_pause
@@ -185,6 +186,7 @@ class SegmentMaker:
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.with_layout = with_layout
         self.extra_rewrite = extra_rewrite
+        self.print_clock_time = print_clock_time
 
     def __str__(self):
         return f"<{type(self).__name__}()>"
@@ -1262,6 +1264,16 @@ class SegmentMaker:
         ) as fp:
             fp.writelines(lines)
 
+    def _print_clock_time(self):
+        logical_tie = abjad.select.logical_tie(
+            self.score_template["Global Context"], -1
+        )
+        timespan = logical_tie.tail._get_timespan(in_seconds=True)
+        stop_offset = timespan.stop_offset
+        string = stop_offset.to_clock_string()
+        number = float(stop_offset / 60)
+        print(f"ESTIMATED DURATION: {string} or {number} minutes")
+
     def build_segment(self):
         with abjad.Timer() as timer:
             self._make_global_context()
@@ -1280,6 +1292,8 @@ class SegmentMaker:
             self._render_file()
         self.post_handlers_time = int(timer.elapsed_time)
         self._write_optimization_log()
+        if self.print_clock_time is True:
+            self._print_clock_time()
 
 
 def beam_meter(components, meter, offset_depth, include_rests=True):

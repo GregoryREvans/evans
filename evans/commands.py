@@ -9,6 +9,8 @@ import baca
 from abjadext import rmakers
 
 from .handlers import RhythmHandler
+from .rtm import RTMMaker
+from .select import select_all_but_final_leaf
 
 
 class Command:
@@ -321,56 +323,35 @@ def music(
     location,
     rmaker,
     *args,
-    forget=False,
     preprocessor=None,
     rewrite_meter=None,
 ):
-    commands = []
     arguments = []
     for arg in args:
-        if issubclass(arg.__class__, rmakers.Command):
-            commands.append(arg)
-        else:
-            arguments.append(arg)
+        arguments.append(arg)
     if rewrite_meter is not None:
-        stack = rmakers.stack(
-            rmaker,
-            *commands,
-            rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
-            rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
-            rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
-            rmakers.extract_trivial(),
-            rmakers.RewriteMeterCommand(
-                boundary_depth=rewrite_meter,
-                reference_meters=[
-                    abjad.Meter((4, 4))
-                ],  # reference meters is for constructing special offset inventories (i.e. akasha 6/8)
-            ),
-            preprocessor=preprocessor,
-        )
-        handler = RhythmHandler(
-            stack,
-            forget=forget,
-        )
+        stack = [
+            lambda _: rmakers.trivialize(abjad.select.tuplets(_)),
+            lambda _: rmakers.rewrite_rest_filled(abjad.select.tuplets(_)),
+            lambda _: rmakers.rewrite_sustained(abjad.select.tuplets(_)),
+            lambda _: rmakers.extract_trivial(_),
+            RewriteMeterCommand(boundary_depth=rewrite_meter),
+        ]
+        stack.extend(arguments)
     else:
-        stack = rmakers.stack(
-            rmaker,
-            *commands,
-            rmakers.trivialize(lambda _: abjad.select.tuplets(_)),
-            rmakers.rewrite_rest_filled(lambda _: abjad.select.tuplets(_)),
-            rmakers.rewrite_sustained(lambda _: abjad.select.tuplets(_)),
-            rmakers.extract_trivial(),
-            preprocessor=preprocessor,
-        )
-        handler = RhythmHandler(
-            stack,
-            forget=forget,
-        )
+        stack = [
+            lambda _: rmakers.trivialize(abjad.select.tuplets(_)),
+            lambda _: rmakers.rewrite_rest_filled(abjad.select.tuplets(_)),
+            lambda _: rmakers.rewrite_sustained(abjad.select.tuplets(_)),
+            lambda _: rmakers.extract_trivial(_),
+        ]
+        stack.extend(arguments)
 
     out = MusicCommand(
         location,
-        handler,
-        *arguments,
+        rmaker,
+        *stack,
+        preprocessor=preprocessor,
     )
     return out
 
@@ -577,6 +558,9 @@ def even_division(
     *,
     extra_counts=(0,),
     previous_state=None,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
     spelling=rmakers.Spelling(
         forbidden_note_duration=None,
         forbidden_rest_duration=None,
@@ -586,7 +570,11 @@ def even_division(
     tag=abjad.Tag(string=""),
 ):
     def returned_function(divisions, state=state, previous_state=previous_state):
-        music = rmakers.even_division(
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.even_division(
             divisions,
             denominators=denominators,
             extra_counts=extra_counts,
@@ -595,6 +583,72 @@ def even_division(
             state=state,
             tag=tag,
         )
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
+        return music
+
+    return returned_function
+
+
+def note(
+    *,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=None, previous_state=None):
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.note(divisions)
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
         return music
 
     return returned_function
@@ -609,6 +663,9 @@ def talea(
     preamble=(),
     previous_state=None,
     read_talea_once_only=False,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
     spelling=rmakers.Spelling(
         forbidden_note_duration=None,
         forbidden_rest_duration=None,
@@ -618,7 +675,11 @@ def talea(
     tag=abjad.Tag(string=""),
 ):
     def returned_function(divisions, state=state, previous_state=previous_state):
-        music = rmakers.talea(
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.talea(
             divisions,
             counts=counts,
             denominator=denominator,
@@ -631,6 +692,30 @@ def talea(
             state=state,
             tag=tag,
         )
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
         return music
 
     return returned_function
@@ -640,6 +725,9 @@ def tuplet(
     tuplet_ratios,
     *,
     denominator=None,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
     spelling=rmakers.Spelling(
         forbidden_note_duration=None,
         forbidden_rest_duration=None,
@@ -648,7 +736,11 @@ def tuplet(
     tag=abjad.Tag(string=""),
 ):
     def returned_function(divisions, state=None, previous_state=None):
-        music = rmakers.tuplet(
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.tuplet(
             divisions=divisions,
             tuplet_ratios=tuplet_ratios,
             denominator=denominator,
@@ -659,6 +751,133 @@ def tuplet(
             ),
             tag=abjad.Tag(string=""),
         )
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
         return music
+
+    return returned_function
+
+
+def make_tied_notes(preprocessor=None, rewrite=False, treat_tuplets=True):
+    def handler_function(
+        durations, state=None, previous_state=None
+    ):  # seems to work accurately
+        time_signatures = [_ for _ in durations]
+        if preprocessor is not None:
+            durations = preprocessor(durations)
+        maker = rmakers.note
+        nested_music = maker(durations)
+        container = abjad.Container()
+        for component in nested_music:
+            container.extend(component)
+        tie_target = select_all_but_final_leaf(container)
+        rmakers.tie(tie_target)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
+        return music
+
+    return handler_function
+
+
+def make_rtm(
+    rtm,
+    *,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
+):
+
+    maker = RhythmHandler(RTMMaker(rtm), forget=False)
+
+    def returned_function(divisions, state=None, previous_state=None):
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = maker(divisions)
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
+        return music
+
+    return returned_function
+
+
+def slur(counts, cyclic=True, pitched=True, phrase=False, direction=None):
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections, pitched=pitched)
+        groups = abjad.select.partition_by_counts(
+            ties, counts, cyclic=cyclic, overhang=cyclic
+        )
+        for group in groups:
+            if 1 < len(group):
+                if phrase is False:
+                    abjad.slur(group, direction=direction)
+                else:
+                    abjad.slur(
+                        group,
+                        start_slur=abjad.StartPhrasingSlur(),
+                        stop_slur=abjad.StopPhrasingSlur(),
+                        direction=direction,
+                    )
 
     return returned_function

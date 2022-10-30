@@ -302,7 +302,7 @@ slapped = {
 }
 
 half-harmonic = {
-    \override NoteHead.stem-attachment = #'(1 . -0.125)
+    \override NoteHead.stem-attachment = #'(0 . 0.5) % different x for up vs down?
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -402,7 +402,7 @@ half-air-tone = {
 
 highest = {
     \override NoteHead.stem-attachment = #'(0 . 0.75)
-    \override NoteHead #'no-ledgers = ##t
+    \override NoteHead.no-ledgers = ##t
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -422,7 +422,7 @@ highest = {
 
 lowest = {
     \override NoteHead.stem-attachment = #'(0 . 0.75)
-    \override NoteHead #'no-ledgers = ##t
+    \override NoteHead.no-ledgers = ##t
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -444,7 +444,7 @@ revert-noteheads = {
   \revert NoteHead.stem-attachment
   \revert NoteHead.stencil
   \revert Staff.AccidentalPlacement.right-padding
-  \override NoteHead #'no-ledgers = ##f
+  \override NoteHead.no-ledgers = ##f
 }
 
 %%% CLEFS %%%

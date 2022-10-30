@@ -1395,57 +1395,18 @@ def tune_to_ratio(
     note_head.written_pitch = pitch
 
 
-class Loop(abjad.CyclicTuple):
-
-    ### CLASS VARIABLES ###
-
-    __slots__ = ("_intervals", "_items")
-
-    ### INITIALIZER ###
-
-    def __init__(self, items=None, *, intervals=None):
-        if items is not None:
-            assert isinstance(items, collections.abc.Iterable), repr(items)
-            items = [abjad.NamedPitch(_) for _ in items]
-            items = abjad.CyclicTuple(items)
-        abjad.CyclicTuple.__init__(self, items=items)
-        if intervals is not None:
-            assert isinstance(items, collections.abc.Iterable), repr(items)
-            intervals = abjad.CyclicTuple(intervals)
-        self._intervals = intervals
-
-    ### SPECIAL METHODS ###
-
-    def __getitem__(self, i) -> abjad.Pitch:
-        if isinstance(i, slice):
-            raise NotImplementedError
-        iteration = i // len(self)
-        if self.intervals is None:
-            transposition = 0
-        else:
-            transposition = sum(self.intervals[:iteration])
-        pitch_ = abjad.CyclicTuple(list(self))[i]
-        pitch = type(pitch_)(pitch_.number + transposition)
-        return pitch
-
-    ### PUBLIC PROPERTIES ###
-
-    @property
-    def intervals(self):
-        return self._intervals
-
-    @property
-    def items(self):
-        return self._items
-
-
 def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,
     selector=lambda _: baca.select.plts(_, exclude=baca.enums.HIDDEN),
 ):
-    loop = Loop(items=items, intervals=intervals)
-    return baca.pitches(loop, selector=selector)
+    loop = baca.Loop(items, intervals)
+
+    def returned_function(selections):
+        new_sel = selector(selections)
+        baca.pitches(new_sel, pitches=loop)
+
+    return returned_function
 
 
 class ArtificialHarmonic(abjad.Chord):
@@ -1779,9 +1740,49 @@ def annotate_concurrent_ratios(score, color="red", show_leaf_order=False):
                 chosen_comparison = ordered_keys[0]
                 numerator = comparison_ratios[chosen_comparison].numerator
                 denominator = comparison_ratios[chosen_comparison].denominator
+                chosen_comparison = chosen_comparison.replace("voice", "")
                 markup = abjad.Markup(
                     rf'\markup \center-align \concat {{ "{chosen_comparison} "\fraction {numerator} {denominator} }}'
                 )
                 bundle = abjad.bundle(markup, rf"\tweak color #{color}")
                 abjad.attach(bundle, tie[0], direction=abjad.DOWN)
                 abjad.annotate(tie[0], "already annotated", True)
+
+
+def force_accidentals(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    for tie in ties:
+        first_leaf = tie[0]
+        if isinstance(first_leaf, abjad.Note):
+            first_leaf.note_head.is_forced = True
+        elif isinstance(first_leaf, abjad.Chord):
+            heads = first_leaf.note_heads
+            for head in heads:
+                head.is_forced = True
+        else:
+            ex = f"Object must be of type {type(abjad.Note())} or {type(abjad.Chord())}"
+            raise Exception(ex)
+
+
+def annotate_hertz(selections):
+    for tie in abjad.select.logical_ties(selections):
+        try:
+            hertz = abjad.get.annotation(tie[0], "ratio")
+            hertz = round(float(hertz), 1)
+            m = abjad.Markup(rf"\markup \center-align {hertz}")
+            bundle = abjad.bundle(m, r"\tweak color #red")
+            abjad.attach(bundle, tie[0], direction=abjad.DOWN)
+        except:
+            continue
+
+
+def clean_cent_markup(selections):
+    # this is a hack because logical ties cannot be selected from leaves
+    # ask trevor later
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    for tie in ties:
+        leaves = abjad.select.leaves(tie)[1:]
+        for leaf in leaves:
+            indicators = abjad.get.indicators(leaf, abjad.Markup)
+            for indicator in indicators:
+                abjad.detach(indicator, leaf)

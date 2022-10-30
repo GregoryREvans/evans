@@ -3,8 +3,15 @@ import baca
 
 
 def preprocess_divisions(
-    divisions, sum=False, quarters=False, fuse_counts=None, cyclic_fuse=True
+    divisions,
+    sum=False,
+    quarters=False,
+    fuse_counts=None,
+    cyclic_fuse=True,
+    flatten_before_fuse=True,
+    split_at_measure_boundaries=False,
 ):
+    old_divisions = divisions
     divisions = [abjad.Duration(_.pair) for _ in divisions]
     if sum is True:
         divisions = [abjad.sequence.sum(divisions)]
@@ -15,28 +22,37 @@ def preprocess_divisions(
             divisions = abjad.sequence.flatten(divisions, depth=-1)
             divisions = abjad.sequence.partition_by_counts(
                 divisions,
-                (_ for _ in fuse_counts),
+                fuse_counts,
                 cyclic=cyclic_fuse,
                 overhang=True,
             )
-            divisions = [sum(_) for _ in divisions]
+            divisions = [abjad.sequence.sum(_) for _ in divisions]
         else:
             temp = []
             for measure in divisions:
                 m = abjad.sequence.partition_by_counts(
                     measure,
-                    (_ for _ in fuse_counts),
+                    fuse_counts,
                     cyclic=cyclic_fuse,
                     overhang=True,
                 )
-                m_ = [sum(_) for _ in m]
+                m_ = [abjad.sequence.sum(_) for _ in m]
                 temp.append(m_)
             divisions = abjad.sequence.flatten(temp, depth=-1)
     divisions = abjad.sequence.flatten(divisions, depth=-1)
+    if split_at_measure_boundaries is True:
+        divisions = abjad.sequence.split(divisions, old_divisions)
+        divisions = abjad.sequence.flatten(divisions, depth=-1)
     return divisions
 
 
-def make_preprocessor(sum=False, quarters=False, fuse_counts=None, cyclic_fuse=True):
+def make_preprocessor(
+    sum=False,
+    quarters=False,
+    fuse_counts=None,
+    cyclic_fuse=True,
+    split_at_measure_boundaries=False,
+):
     def returned_function(divisions):
         divisions_ = preprocess_divisions(
             divisions,
@@ -44,6 +60,7 @@ def make_preprocessor(sum=False, quarters=False, fuse_counts=None, cyclic_fuse=T
             fuse_counts=fuse_counts,
             cyclic_fuse=cyclic_fuse,
             quarters=quarters,
+            split_at_measure_boundaries=split_at_measure_boundaries,
         )
         return divisions_
 
