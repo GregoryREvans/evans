@@ -3,6 +3,7 @@ Command classes.
 """
 # import dataclasses
 # import typing
+import quicktions
 
 import abjad
 import baca
@@ -11,6 +12,7 @@ from abjadext import rmakers
 from .handlers import RhythmHandler
 from .rtm import RTMMaker
 from .select import select_all_but_final_leaf
+from .sequence import CyclicList
 
 
 class Command:
@@ -862,22 +864,151 @@ def make_rtm(
     return returned_function
 
 
-def slur(counts, cyclic=True, pitched=True, phrase=False, direction=None):
+def slur(counts=None, cyclic=True, pitched=True, phrase=False, direction=None):
     def returned_function(selections):
         ties = abjad.select.logical_ties(selections, pitched=pitched)
-        groups = abjad.select.partition_by_counts(
-            ties, counts, cyclic=cyclic, overhang=cyclic
-        )
+        if counts is not None:
+            groups = abjad.select.partition_by_counts(
+                ties, counts, cyclic=cyclic, overhang=cyclic
+            )
+            for group in groups:
+                if 1 < len(group):
+                    if phrase is False:
+                        abjad.slur(group, direction=direction)
+                    else:
+                        abjad.slur(
+                            group,
+                            start_slur=abjad.StartPhrasingSlur(),
+                            stop_slur=abjad.StopPhrasingSlur(),
+                            direction=direction,
+                        )
+        else:
+            if phrase is False:
+                abjad.slur(selections, direction=direction)
+            else:
+                abjad.slur(
+                    selections,
+                    start_slur=abjad.StartPhrasingSlur(),
+                    stop_slur=abjad.StopPhrasingSlur(),
+                    direction=direction,
+                )
+
+    return returned_function
+
+
+def text_span(marks, style, counts=None, cyclic=True, pitched=True, padding=0, id=None, forget=False):
+    cyclic_marks = CyclicList(marks, forget=forget)
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections, pitched=pitched)
+        if counts is not None:
+            groups = abjad.select.partition_by_counts(ties, counts, cyclic=cyclic, overhang=cyclic)
+        else:
+            groups = [abjad.select.leaves(ties)]
         for group in groups:
             if 1 < len(group):
-                if phrase is False:
-                    abjad.slur(group, direction=direction)
+                if style[-1] == ">":
+                    bookend = True
+                    string = cyclic_marks(r=1)[0] + " " + style + " " + cyclic_marks(r=1)[0]
                 else:
-                    abjad.slur(
-                        group,
-                        start_slur=abjad.StartPhrasingSlur(),
-                        stop_slur=abjad.StopPhrasingSlur(),
-                        direction=direction,
-                    )
+                    bookend = False
+                    string = cyclic_marks(r=1)[0] + " " + style
+                span = lambda _: baca.text_spanner(
+                    _,
+                    string,
+                    abjad.Tweak(fr"- \tweak staff-padding {padding}"),
+                    lilypond_id=id,
+                    bookend=bookend,
+                    pieces=lambda x: baca.select.lparts(x, [len(_), len(_) + 1]),
+                )
+                span(group)
+    return returned_function
 
+
+def bcp(bcps, padding=2):
+    fractions = [_.split("/") for _ in bcps]
+    bcps = [(int(_[0]), int(_[1])) for _ in fractions]
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections, pitched=True)
+        if 1 < len(ties[-1]):
+            target = ties[-1][-2]
+            abjad.detach(abjad.Tie(), target)
+        baca.bcps(
+            ties,
+            bcps,
+            abjad.Tweak(fr"- \tweak staff-padding {padding}"),
+            bow_change_tweaks=(
+                abjad.Tweak(r"- \tweak self-alignment-X #left"),
+                abjad.Tweak(fr"- \tweak staff-padding {padding + 2}"),
+            ),
+        )
+    return returned_function
+
+
+def trill(counts=[1], cyclic=True, alteration=None, harmonic=False, padding=2):
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections, pitched=True)
+        if counts is not None:
+            groups = abjad.select.partition_by_counts(
+                ties, counts, cyclic=cyclic, overhang=cyclic
+            )
+            for group in groups:
+                final = abjad.select.leaf(group, -1)
+                next_leaf = abjad.get.leaf(final, 1)
+                group.append(next_leaf)
+            for group in groups:
+                baca.trill_spanner(
+                    group,
+                    abjad.Tweak(fr"- \tweak staff-padding {padding}"),
+                    alteration=alteration,
+                    harmonic=harmonic,
+                )
+    return returned_function
+
+
+def vibrato_spanner(peaks=[0, 1, 4, 2], wavelengths=[2], thickness=0.2, divisions=[4, 5], counts=[1], cyclic=True, padding=2, forget=False):
+    cyc_peaks = CyclicList(peaks, forget=forget)
+    cyc_divisions = CyclicList(divisions, forget=forget)
+    cyc_wavelengths = CyclicList(wavelengths, forget=forget)
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections, pitched=True)
+        if counts is not None:
+            groups = abjad.select.partition_by_counts(
+                ties, counts, cyclic=cyclic, overhang=cyclic
+            )
+            for group in groups:
+                final = abjad.select.leaf(group, -1)
+                next_leaf = abjad.get.leaf(final, 1)
+                group.append(next_leaf)
+            for group in groups:
+                current_wavelength = cyc_wavelengths(r=1)[0]
+                current_divisions = cyc_divisions(r=1)[0]
+                current_peaks = str(tuple(cyc_peaks(r=current_divisions)))
+                current_peaks = current_peaks.replace(",", "")
+                baca.trill_spanner(
+                    group,
+                    abjad.Tweak(fr"- \tweak staff-padding {padding}"),
+                    # abjad.Tweak(fr"- \tweak bound-details.right.padding 10"),
+                )
+                vib_literal = abjad.LilyPondLiteral(fr"\vibrato #'{current_peaks} #{current_wavelength} #{thickness}", site="before")
+                abjad.attach(vib_literal, abjad.select.leaf(group, 0))
+    return returned_function
+
+
+def hairpin(dynamics, counts=None, cyclic=True, pitched=True, final_hairpin=False, remove_length_1_spanner_start=False):
+    def returned_function(selections):
+        def selector(selections_):
+            ties = abjad.select.logical_ties(selections_, pitched=pitched)
+            if counts is not None:
+                counts_ = [_ - 1 for _ in counts]
+                groups = abjad.select.partition_by_counts(ties, counts_, cyclic=cyclic, overhang=cyclic)
+            else:
+                groups = [abjad.select.leaves(ties)]
+            return groups
+        baca.hairpin(
+            selections,
+            dynamics,
+            pieces=selector,
+            final_hairpin=final_hairpin,
+            remove_length_1_spanner_start=remove_length_1_spanner_start,
+        )
     return returned_function

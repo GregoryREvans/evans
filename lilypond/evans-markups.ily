@@ -148,3 +148,11 @@ full-pressure = \markup {
     \override #'(font-name . "ekmelos")
     \char ##xe11a
 }
+
+diamond-notehead-markup = \markup \musicglyph "noteheads.s0harmonic"
+default-notehead-markup = \markup \musicglyph "noteheads.s1"
+half-diamond-notehead-markup = \markup {
+    \fontsize #5
+    \override #'(font-name . "ekmelos")
+    \char ##xe0fc
+}
