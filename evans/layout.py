@@ -136,9 +136,11 @@ class Page:
             self.systems.append(system)
             self.total_measures += system.measures
         self.system_break_indices = []
-        if 1 < len(self.systems):
-            for system in self.systems:
-                self.system_break_indices.append(system.measures)
+        # if 1 < len(self.systems): # old for polillas
+        #     for system in self.systems:
+        #         self.system_break_indices.append(system.measures)
+        for system in self.systems:  # new for undae
+            self.system_break_indices.append(system.measures)
 
 
 class System:

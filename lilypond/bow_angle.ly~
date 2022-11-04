@@ -1,4 +1,4 @@
-\version "2.23.14"
+\version "2.19.84"
 \language "english"
 #(set-default-paper-size "11x17landscape")
 #(set-global-staff-size 20)
