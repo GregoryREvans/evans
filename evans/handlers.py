@@ -10,6 +10,7 @@ from abjadext import microtones
 from . import sequence
 from .pitch import ETPitch, JIPitch, return_cent_markup, tune_to_ratio
 from .rtm import RTMMaker
+from .select import get_top_level_components_from_leaves
 
 
 class Handler:
@@ -2184,11 +2185,13 @@ class IntermittentVoiceHandler(Handler):
         direction=abjad.UP,
         cluster=False,
         cluster_color="#(rgb-color 0.56 0.85 0.6)",
+        voice_name="intermittent_voice",
     ):
         self.rhythm_handler = rhythm_handler
         self.direction = direction
         self.cluster = cluster
         self.cluster_color = cluster_color
+        self.voice_name = voice_name
 
     def __call__(
         self,
@@ -2211,7 +2214,7 @@ class IntermittentVoiceHandler(Handler):
             duration = [abjad.get.duration(selections)]
         container = abjad.Container(simultaneous=True)
         original_voice = abjad.Voice(name=self._find_parent(selections))
-        intermittent_voice = abjad.Voice(name="intermittent_voice")
+        intermittent_voice = abjad.Voice(name=self.voice_name)
         if self.cluster is False:
             new_components = self._make_components(duration)[:]
             for new_component in new_components:
@@ -2219,6 +2222,7 @@ class IntermittentVoiceHandler(Handler):
         else:
             new_components = self._make_components(duration)
             intermittent_voice.append(new_components)
+        selections = get_top_level_components_from_leaves(selections)
         abjad.mutate.wrap(selections, original_voice)
         abjad.mutate.wrap(original_voice, container)
         container.append(intermittent_voice)
@@ -2230,7 +2234,7 @@ class IntermittentVoiceHandler(Handler):
         first_leaf = abjad.select.leaf(selections, 0)
         parentage = abjad.get.parentage(first_leaf)
         parent_voice = abjad.select.components(parentage, abjad.Voice)
-        return parent_voice[0].name
+        return f"{parent_voice[0].name} temp"
 
     def _make_components(self, duration):
         components = self.rhythm_handler(duration)

@@ -104,7 +104,21 @@ class Command:
         elif self.voice_name == "vertical":
             selection = self.selector(score["Staff Group"])
         else:
-            voice = score[self.voice_name]
+            try:
+                voice = score[self.voice_name]
+            except:  # what about staff?
+                if "voice" in self.voice_name:
+                    voice = [
+                        _[:]
+                        for _ in abjad.select.components(score, abjad.Voice)
+                        if _.name == self.voice_name
+                    ]
+                if "staff" in self.voice_name:
+                    voice = [
+                        _[:]
+                        for _ in abjad.select.components(score, abjad.Staff)
+                        if _.name == self.voice_name
+                    ]
             selection = self.selector(voice)
         if self.command == "attach":
             abjad.attach(self.indicator, selection, direction=self.direction)
@@ -1054,3 +1068,32 @@ def hairpin(
         )
 
     return returned_function
+
+
+def figure(
+    collections,
+    counts,
+    denominator,
+    *,
+    acciaccatura=None,
+    affix=None,
+    restart_talea=False,
+    tsd=None,
+    spelling=None,
+    treatments=(),
+):
+    container = baca.figure(
+        collections=collections,
+        counts=counts,
+        denominator=denominator,
+        acciaccatura=acciaccatura,
+        affix=affix,
+        restart_talea=restart_talea,
+        tsd=tsd,
+        spelling=spelling,
+        treatments=treatments,
+    )
+    # raise Exception([_ for _ in abjad.select.components(container, abjad.Container)[1:]])
+    selections = [_ for _ in abjad.select.components(container, abjad.Container)[1:]]
+
+    return selections

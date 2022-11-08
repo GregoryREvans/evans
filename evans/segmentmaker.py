@@ -681,7 +681,16 @@ class SegmentMaker:
                     abjad.NonreducedFraction(_) for _ in signatures
                 ]
 
-                relevant_voice = self.score_template[command_voice_name]
+                try:
+                    relevant_voice = self.score_template[command_voice_name]
+                except:
+                    relevant_voice = [
+                        voice[:]
+                        for voice in abjad.select.components(
+                            self.score_template, abjad.Voice
+                        )
+                        if voice.name == command_voice_name
+                    ]
                 if isinstance(command_measures, int):
                     relevant_measure_indices = [command_measures]
                 elif isinstance(command_measures, tuple):

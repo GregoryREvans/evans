@@ -144,3 +144,18 @@ def select_all_but_final_leaf(argument):
     sel_2 = abjad.select.leaves(result)
     sel_3 = abjad.select.exclude(sel_2, [-1])
     return sel_3
+
+
+def get_top_level_components_from_leaves(leaves):  # TODO:
+    out = []
+    for leaf in leaves:
+        parent = abjad.get.parentage(leaf).parent
+        if isinstance(parent, (abjad.Voice, abjad.Staff)):
+            if leaf not in out:
+                out.append(leaf)
+        else:
+            sub_out = get_top_level_components_from_leaves([parent])
+            for sub_leaf in sub_out:
+                if sub_leaf not in out:
+                    out.append(sub_leaf)
+    return out
