@@ -10,7 +10,7 @@ from abjadext import rmakers
 
 from .handlers import RhythmHandler
 from .rtm import RTMMaker
-from .select import select_all_but_final_leaf
+from .select import get_top_level_components_from_leaves, select_all_but_final_leaf
 from .sequence import CyclicList
 
 
@@ -552,16 +552,40 @@ def accelerando(
     ),
     state=None,
     tag=abjad.Tag(string=""),
+    preprocessor=None,
+    treat_tuplets=False,
 ):
     def returned_function(divisions, state=state, previous_state=previous_state):
-        music = rmakers.accelerando(
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.accelerando(
             divisions,
-            interpolations,
+            *interpolations,
             previous_state=previous_state,
             spelling=spelling,
             state=state,
             tag=tag,
         )
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        rmakers.duration_bracket(container)
+        rmakers.feather_beam(container)
+        music = abjad.mutate.eject_contents(container)
+
         return music
 
     return returned_function
@@ -1097,3 +1121,85 @@ def figure(
     selections = [_ for _ in abjad.select.components(container, abjad.Container)[1:]]
 
     return selections
+
+
+def imbricate(
+    selections,
+    pitches,
+    name,
+    *,
+    direction=abjad.UP,
+    articulation=None,
+    beam=False,
+    secondary=False,
+    allow_unused_pitches=False,
+    by_pitch_class=False,
+    hocket=False,
+    truncate_ties=False,
+):
+    def _find_parent(selections):
+        first_leaf = abjad.select.leaf(selections, 0)
+        parentage = abjad.get.parentage(first_leaf)
+        parent_voice = abjad.select.components(parentage, abjad.Voice)
+        return f"{parent_voice[0].name} temp"
+
+    container = abjad.Container(simultaneous=True)
+    original_voice = abjad.Voice(name=_find_parent(selections))
+    intermittent_voice = abjad.Voice(name=name)
+    selections_ = get_top_level_components_from_leaves(selections)
+    abjad.mutate.wrap(selections_, original_voice)
+    abjad.mutate.wrap(original_voice, container)
+    if beam is True:
+        groups = rmakers.nongrace_leaves_in_each_tuplet(original_voice)
+        rmakers.beam_groups(groups)
+        baca.extend_beam(abjad.select.leaf(original_voice, -1))
+
+    imbrications = baca.imbricate(
+        original_voice,
+        "v1",
+        pitches,
+        allow_unused_pitches=allow_unused_pitches,
+        by_pitch_class=by_pitch_class,
+        hocket=hocket,
+        truncate_ties=truncate_ties,
+    )
+    imbrication = imbrications["v1"][0]
+    contents = abjad.mutate.eject_contents(imbrication)
+    intermittent_voice.extend(contents)
+
+    groups = rmakers.nongrace_leaves_in_each_tuplet(intermittent_voice)
+    rmakers.beam_groups(groups, beam_rests=True)
+    if articulation is not None:
+        for head in baca.select.pheads(intermittent_voice):
+            abjad.attach(abjad.Articulation(articulation), head)
+    baca.extend_beam(abjad.select.leaf(intermittent_voice, -1))
+    abjad.override(intermittent_voice).TupletBracket.stencil = False
+    abjad.override(intermittent_voice).TupletNumber.stencil = False
+
+    container.append(intermittent_voice)
+    if secondary is False:
+        direction_1 = "One"
+        direction_2 = "Two"
+    else:
+        direction_1 = "Three \shiftOff"
+        direction_2 = "Four \shiftOff"
+    if direction == abjad.UP:
+        abjad.attach(
+            abjad.LilyPondLiteral(rf"\voice{direction_2}", site="before"),
+            abjad.select.leaf(original_voice, 0),
+        )
+        abjad.attach(
+            abjad.LilyPondLiteral(rf"\voice{direction_1}", site="before"),
+            abjad.select.leaf(intermittent_voice, 0),
+        )
+    else:
+        abjad.attach(
+            abjad.LilyPondLiteral(rf"\voice{direction_1}", site="before"),
+            abjad.select.leaf(original_voice, 0),
+        )
+        abjad.attach(
+            abjad.LilyPondLiteral(rf"\voice{direction_2}", site="before"),
+            abjad.select.leaf(intermittent_voice, 0),
+        )
+    closing_literal = abjad.LilyPondLiteral(r"\oneVoice", site="after")
+    abjad.attach(closing_literal, container)

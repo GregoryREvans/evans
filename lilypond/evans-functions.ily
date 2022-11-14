@@ -912,3 +912,123 @@ parentheAll = #(define-music-function (note) (ly:music?)
          (parentheses-interface::print grob)))
   \parenthesize $note
 #})
+
+
+%%% String Contact Point Spanner %%%
+
+
+#(define (line-stencil left-bound x-span thick amplitude-list wave-height start-height)
+
+  (if (zero? x-span)
+      empty-stencil
+      (let* (
+             (waves-amount (length amplitude-list))
+             ;; think about calculating amplitude heights relative to the width of the bars?
+             ;;(max-amp (apply max amplitude-list))
+             ;;(min-amp (apply min amplitude-list))
+             ;;(interval (- max-amp min-amp))
+             ;;(multiplier (/ (* 2 wave-height) interval))
+             (step-size (/ x-span waves-amount))
+             )
+         (make-path-stencil
+           (append
+               `(moveto ,left-bound ,wave-height)
+               `(lineto
+                 ,x-span ,wave-height
+                )
+                `(moveto ,left-bound ,(- 0 wave-height))
+                `(lineto
+                  ,x-span ,(- 0 wave-height)
+                 )
+             `(moveto ,left-bound ,start-height)
+             (append-map
+               (lambda (amp)
+                 `(rlineto
+                   ,step-size ,amp
+                  )
+                 )
+               amplitude-list))
+            thick
+            1
+            1
+            #f))))
+
+
+#(define (make-scp-stencil grob amplitudes start-height wave-length thickness)
+"Creates a stencil that draws a wavy line for vibrato based on @var{amplitudes},
+a list of vertival lengths, and @var{wave-length} for the horizontal extent.
+"
+  (let* ((orig (ly:grob-original grob))
+         (siblings (if (ly:grob? orig) (ly:spanner-broken-into orig) '()))
+         (thick (ly:grob-property grob 'thickness thickness ;;0.2
+         ))
+         ;; length of the actual grob
+         (xspan (grob-width grob))
+         ;; add the length of all siblings
+         (total-span
+           (if (null? siblings)
+               (grob-width grob)
+               (reduce + 0 (map (lambda (g) (grob-width g)) siblings))))
+         ;; get the x-position for the start
+         (left-bound
+           (if (or (null? siblings) (eq? (car siblings) grob))
+               ;; compensate thickness of the line
+               (* thick -2)
+               ;; start a little left
+               (1- (assoc-get 'X (ly:grob-property grob 'left-bound-info)))))
+         (final-stencil
+           (line-stencil
+             left-bound
+             xspan
+             thick
+             amplitudes
+             wave-length
+             start-height
+             ))
+         (bound-details
+           (ly:grob-property grob 'bound-details))
+         ;; bound-details.left.padding affects both broken and unbroken spanner
+         ;; whereas bound-details.left-broken.padding only affects the broken
+         ;; spanner part (same for right and right-broken)
+         ;; We need to move the stencil along x-axis if padding is inserted to
+         ;; the left
+         (x-offset
+           (cond
+             ((or (null? siblings) (equal? grob (car siblings)))
+               (assoc-get 'padding (assoc-get 'left bound-details '()) 0))
+             ((member grob siblings)
+               ;; get at least one working value for the offset
+               (or (assoc-get
+                     'padding
+                     (assoc-get 'left-broken bound-details '())
+                     #f)
+                   (assoc-get 'padding (assoc-get 'left bound-details '()) 0)))
+             (else 0))))
+
+      (ly:stencil-translate-axis
+        final-stencil
+        ;; TODO
+        ;; there's a little inconsistency here, with the need to add some
+        ;; correction, i.e. (* thick 2)
+        (if (zero? x-offset)
+            0
+            (- x-offset (* thick 2)))
+        X)))
+
+string-contact-points =
+#(define-music-function (amplitudes start-height wave-length thickness) (list? number? number? number?)
+"Overrides @code{TrillSpanner.after-line-breaking}, setting a new stencil,
+drawning a wavy line looking at @var{amplitudes} and @var{wave-length} with thickness @var{thickness}.
+Limitations:
+  - @var{wave-length} is a constant, it can't be changed dynamically while
+    processing one vibrato.
+  - Each part of the vibrato (growing or shrinking) is of equal length.
+    Would be nice to have something like:
+      go from amplitude 1 to 4 while the underlying music lasts a quarter
+"
+#{
+  \once \override TextSpanner.after-line-breaking =
+    #(lambda (grob)
+       (ly:grob-set-property! grob 'stencil
+         (make-scp-stencil grob amplitudes start-height wave-length thickness)))
+#})

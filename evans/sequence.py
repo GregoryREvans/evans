@@ -5275,3 +5275,141 @@ def julia_set(c, z0, max_iter):
         return max_iter
 
     return n + 1 - math.log(math.log2(abs(z)))
+
+
+class CompoundMelody:
+    def __init__(
+        self,
+        foreground,
+        background,
+        foreground_partitions=[1],
+        background_partitions=[1],
+        foreground_second=False,
+        force_matching_lengths=True,
+        repartition_counts=None,
+        overhang=False,
+    ):
+        self._foreground = foreground
+        self._background = background
+        self.foreground_partitions = foreground_partitions
+        self.background_partitions = background_partitions
+        self.foreground_second = foreground_second
+        self.force_matching_lengths = force_matching_lengths
+        self.repartition_counts = repartition_counts
+        self.overhang = overhang
+        self._partitioned_foreground = abjad.sequence.partition_by_counts(
+            foreground,
+            foreground_partitions,
+            cyclic=True,
+            overhang=True,
+        )
+        self._partitioned_background = abjad.sequence.partition_by_counts(
+            background,
+            background_partitions,
+            cyclic=True,
+            overhang=True,
+        )
+        if force_matching_lengths is True:
+            assert len(self._partitioned_foreground) == len(
+                self._partitioned_background
+            )
+        if foreground_second is False:
+            zip_generator = [
+                _
+                for _ in zip(self._partitioned_foreground, self._partitioned_background)
+            ]
+            self._zipped_partitions = []
+            for i, _ in enumerate(zip_generator):
+                self._zipped_partitions.append(_)
+            if self.overhang is True:
+                if i + 1 < len(self._partitioned_foreground):
+                    for extra_value in self._partitioned_foreground[i + 1 :]:
+                        self._zipped_partitions.append(extra_value)
+                if i + 1 < len(self._partitioned_background):
+                    for extra_value in self._partitioned_background[i + 1 :]:
+                        self._zipped_partitions.append(extra_value)
+        else:
+            zip_generator = [
+                _
+                for _ in zip(self._partitioned_background, self._partitioned_foreground)
+            ]
+            self._zipped_partitions = []
+            for i, _ in enumerate(zip_generator):
+                self._zipped_partitions.append(_)
+            if self.overhang is True:
+                if i + 1 < len(self._partitioned_foreground):
+                    for extra_value in self._partitioned_foreground[i + 1 :]:
+                        self._zipped_partitions.append(extra_value)
+                if i + 1 < len(self._partitioned_background):
+                    for extra_value in self._partitioned_background[i + 1 :]:
+                        self._zipped_partitions.append(extra_value)
+
+        self._items = abjad.sequence.flatten(self._zipped_partitions, depth=-1)
+        if self.repartition_counts is not None:
+            self._items = abjad.sequence.partition_by_counts(
+                self._items, self.repartition_counts, cyclic=True, overhang=True
+            )
+
+    ### SPECIAL METHODS ###
+
+    def __add__(self, argument):
+        argument = type(self)(items=argument)
+        items = self.items + argument.items
+        return type(self)(items)
+
+    def __contains__(self, argument):
+        return argument in self._items
+
+    def __eq__(self, argument):
+        if isinstance(argument, type(self)):
+            return self.items == argument.items
+        return False
+
+    def __getitem__(self, argument):
+        result = self._items.__getitem__(argument)
+        if isinstance(argument, slice):
+            return type(self)(result)
+        return result
+
+    def __iter__(self):
+        for item in self._items:
+            yield item
+
+    def __len__(self):
+        return len(self._items)
+
+    def __radd__(self, argument):
+        argument = type(self)(items=argument)
+        items = argument.items + self.items
+        return type(self)(items)
+
+    def __repr__(self):
+        items = ", ".join([repr(_) for _ in self.items])
+        string = f"{type(self).__name__}([{items}])"
+        return string
+
+    ### PUBLIC PROPERTIES ###
+
+    @property
+    def items(self):
+        return self._items
+
+    @property
+    def partitioned_items(self):
+        return self._zipped_partitions
+
+    @property
+    def foreground(self):
+        return self._foreground
+
+    @property
+    def partitioned_foreground(self):
+        return self._partitioned_foreground
+
+    @property
+    def background(self):
+        return self._background
+
+    @property
+    def partitioned_background(self):
+        return self._partitioned_background

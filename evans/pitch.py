@@ -1395,6 +1395,9 @@ def tune_to_ratio(
     note_head.written_pitch = pitch
 
 
+# consider subclassing baca.Loop to allow for named pitches and intervals?
+
+
 def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,

@@ -21,6 +21,7 @@ from .commands import (
     even_division,
     figure,
     hairpin,
+    imbricate,
     make_rtm,
     make_tied_notes,
     music,
@@ -142,6 +143,7 @@ from .select import (
     select_untupleted_leaves,
 )
 from .sequence import (
+    CompoundMelody,
     CyclicList,
     MarkovChain,
     PitchClassSegment,
@@ -195,9 +197,11 @@ __all__ = [
     "ClefHandler",
     "Command",
     "CompositeHandler",
+    "CompoundMelody",
     "CyclicList",
     "DurationLine",
     "bcp",
+    "imbricate",
     "hairpin",
     "DynamicHandler",
     "ETPitch",

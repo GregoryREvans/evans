@@ -880,3 +880,14 @@ suggest-pitch-close = #(define-music-function (note) (ly:music?)
 	\tweak Stem.transparent ##t
 	$note
 #})
+
+
+%%% rebecca saunders string contact point %%%
+
+start-graphic-scp = #(
+    make-music 'TextSpanEvent 'span-direction START 'spanner-id "graphicSCP"
+    )
+
+stop-graphic-scp = #(
+    make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "graphicSCP"
+    )
