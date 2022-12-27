@@ -17,6 +17,8 @@ import scipy
 from abjadext import microtones
 from scipy.integrate import odeint
 
+from . import consort
+
 
 class CyclicList:
     r"""
@@ -4746,6 +4748,105 @@ class Sequence(collections.abc.Sequence):
                     list_.append([x] + p)
             return type(self)(list_)
 
+    def permutational_parsimony(self, cycles, debug=False):
+
+        # def make_h_cycle(i):
+        #     out = []
+        #     for _ in range(12):
+        #         out.append((_, (((7 * _) + i) % 12)))
+        #     return out
+
+        # tritone (0, 6)
+        # aug 5 (0, 4, 8)
+        # dim 7 (0, 3, 6, 9)
+        # alt 7 (0, 2, 6, 8)
+        # double fifths (0, 1, 6, 7)
+        # mode 1 (0, 2, 4, 6, 8, 10)
+        # mode 2 (0, 1, 3, 4, 6, 7, 9, 10)
+        # mode 3 (0, 1, 2, 4, 5, 6, 8, 9, 10)
+        # mode 4 (0, 1, 2, 3, 6, 7, 8, 9)
+        # mode 5 (0, 1, 2, 6, 7, 8)
+        # mode 6 (0, 1, 2, 4, 6, 7, 8, 10)
+        # mode 7 (0, 1, 2, 3, 4, 6, 7, 8, 9, 10)
+        # mode A (0, 1, 4, 5, 8, 9)
+        # mode B (0, 1, 3, 6, 7, 9)
+        # mode C (0, 1, 4, 6, 7, 10)
+        # chromatic scale (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+        predefined_cycles = {
+            "p": [(0, 7), (1, 6), (2, 5), (3, 4), (8, 11), (9, 10)],
+            "r": [(0, 4), (1, 3), (5, 11), (6, 10), (7, 9)],
+            "l": [(0, 11), (1, 10), (2, 9), (3, 8), (4, 7), (5, 6)],
+            "h1": [(0, 1, 8, 9, 4, 5), (2, 3, 10, 11, 6, 7)],  # 7x + 1
+            "h2": [(0, 4, 8), (1, 11, 9, 7, 5, 3), (2, 6, 10)],  # 7x + 4
+            "h3": [(0, 7, 8, 3, 4, 11), (1, 2, 9, 10, 5, 6)],  # 7x + 7
+            "h4": [(0, 10, 8, 6, 4, 2), (1, 5, 9), (3, 7, 11)],  # 7x + 10
+            "messiaen a": [(0, 1, 6, 7), (2, 11, 8, 5), (3, 4, 9, 10)],
+            "messiaen b": [(0, 3, 6, 9), (1, 8, 7, 2), (4, 11, 10, 5)],
+            "feu a": [(0, 6, 9, 1, 5, 3, 4, 8, 10, 11), (2, 7)],
+            "feu b": [(0, 5, 8, 1, 6, 2, 4, 3, 7, 9, 10)],
+            "morris M5": [(1, 5), (2, 10), (4, 8), (7, 11)],  # x * 5 % 12
+            "morris M7": [(1, 7), (3, 9), (5, 11)],  # x * 7 % 12
+            "morris I": [(1, 11), (2, 10), (3, 9), (4, 8), (5, 7)],
+            "morris T1": [(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)],
+            "morris alpha": [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11)],
+            "morris beta": [(0, 2), (1, 3), (4, 6), (5, 7), (8, 10), (9, 11)],
+            "morris gamma": [(0, 3), (1, 4), (2, 5), (6, 9), (7, 10), (8, 11)],
+            "morris delta": [(4, 8), (5, 9), (6, 10), (7, 11)],
+            "knot 14": [(0, 1), (2, 3), (4, 6), (5, 8), (7, 10), (9, 11)],
+            "knot 19": [(0, 1), (2, 3), (4, 6), (5, 9), (7, 11), (8, 10)],
+            "knot 20": [(0, 1), (2, 3), (4, 6), (5, 10), (7, 9), (8, 11)],
+            "knot 33": [(0, 1), (2, 3), (4, 7), (5, 9), (6, 11), (8, 10)],
+            "knot 34": [(0, 1), (2, 3), (4, 7), (5, 10), (6, 9), (8, 11)],
+            "knot 35": [(0, 1), (2, 3), (4, 7), (5, 11), (6, 9), (8, 10)],
+            "knot 38": [(0, 1), (2, 3), (4, 9), (5, 7), (6, 11), (8, 10)],
+            "knot 39": [(0, 1), (2, 3), (4, 11), (5, 7), (6, 9), (8, 10)],
+            # TODO: add more knots from all-interval sets in book
+        }
+
+        if isinstance(cycles, str):
+            cycles = predefined_cycles[cycles]
+
+        verbose_cycles = []
+        for cycle in cycles:
+            adjacent_pairs = []
+            for i, num in enumerate(cycle):
+                if num != cycle[-1]:
+                    pair = (num, cycle[i + 1])
+                else:
+                    pair = (num, cycle[0])
+                adjacent_pairs.append(pair)
+            if debug is True:
+                print(f"adjacent pairs: {adjacent_pairs}")
+            verbose_cycles.append(adjacent_pairs)
+        if debug is True:
+            print(f"verbose cycles: {verbose_cycles}")
+
+        new_items = []
+
+        for item in self.items:
+            treated = False
+            reduced_item = item % 12
+            if debug is True:
+                print(f"reduced item: {reduced_item}")
+            for verbose_cycle in verbose_cycles:
+                for pair in verbose_cycle:
+                    if reduced_item == pair[0]:
+                        if debug is True:
+                            print(f"chosen cycle: {verbose_cycle}")
+                            print(f"chosen pair: {pair}")
+                        distance = pair[1] - pair[0]
+                        if debug is True:
+                            print(f"distance: {distance}")
+                        new_value = item + distance
+                        if debug is True:
+                            print(f"new value: {new_value}\n")
+                        new_items.append(new_value)
+                        treated = True
+            if treated is False:
+                new_items.append(item)
+        return type(self)(new_items)
+
     def pitch_warp(self, warp_values=(0.5, -0.5), *, boolean_vector=(1)):
         """
 
@@ -5413,3 +5514,44 @@ class CompoundMelody:
     @property
     def partitioned_background(self):
         return self._partitioned_background
+
+
+def combine_ts_lists(tsl_1, tsl_2):
+    combination = tsl_1 + tsl_2
+    combination.sort()
+    offsets = []
+    for span in combination:
+        offsets.extend(span.offsets)
+    offsets = list(set(offsets))
+    offsets.sort()
+    out = abjad.TimespanList()
+    for pair in consort.iterate_nwise(offsets, 2):
+        out.append(abjad.Timespan(pair[0], pair[1]))
+    return out
+
+
+def make_time_signatures_from_ts_list(tsl):
+    assert tsl.is_sorted
+    durations = [_.duration for _ in tsl]
+    assert sum(durations) == tsl.duration
+    signatures = Sequence([abjad.TimeSignature(_) for _ in durations])
+    out = signatures.reduce_time_signatures_in_list()
+    return out
+
+
+def time_signature_list_to_timespan_list(tsl):
+    offsets = [abjad.Offset(_) for _ in tsl]
+    cum_sums = abjad.math.cumulative_sums(offsets)
+    spans = abjad.TimespanList()
+    for pair in consort.iterate_nwise(cum_sums, 2):
+        span = abjad.Timespan(pair[0], pair[1])
+        spans.append(span)
+    return spans
+
+
+def intersect_time_signature_lists(*args, translation=(1, 4)):
+    tsls = [time_signature_list_to_timespan_list(arg) for arg in args]
+    tsls[1].translate(translation)
+    combined = combine_ts_lists(tsls[0], tsls[1])
+    out = make_time_signatures_from_ts_list(combined)
+    return out

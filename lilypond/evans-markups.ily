@@ -157,3 +157,127 @@ half-diamond-notehead-markup = \markup {
     \override #'(font-name . "ekmelos")
     \char ##xe0fc
 }
+
+quarter-pedal = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xf6ba
+}
+
+half-pedal = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xf6bb
+}
+
+three-quarter-pedal = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xf6bc
+}
+
+full-pedal = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xf6bd
+}
+
+%%% chop bowings %%%
+
+down-bow-towards-body-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee80
+}
+
+up-bow-towards-body-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee81
+}
+
+down-bow-away-from-body-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee82
+}
+
+up-bow-away-from-body-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee83
+}
+
+down-bow-beyond-bridge-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee84
+}
+
+up-bow-beyond-bridge-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee85
+}
+
+scrape-parallel-inward-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee86
+}
+
+scrape-parallel-outward-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee87
+}
+
+scrape-circular-clockwise-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee88
+}
+
+scrape-circular-counterclockwise-markup = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xee89
+}
+
+smorz-text = \markup "smorz."
+
+square-element = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeab8
+}
+
+loop-element = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeac3
+}
+
+wiggle-element = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeaf2
+}
+
+random-element = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeaf0
+}
+
+random-element-two = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeaf1
+}
+
+random-element-three = \markup {
+    \fontsize #1
+    \override #'(font-name . "ekmelos")
+    \char ##xeaf2
+}

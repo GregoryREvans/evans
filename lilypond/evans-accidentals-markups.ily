@@ -1,5 +1,17 @@
-\version "2.23.14"
+\version "2.23.81"
 \language "english"
+
+
+#(define-markup-command
+    (ekmelos-five layout props markup)
+    (markup?)
+    (interpret-markup layout props
+    #{
+    \markup
+    \fontsize #5
+    \override #'(font-name . "ekmelos")
+    #markup
+    #}))
 
 
 %%% one eighth tone up %%%
@@ -185,3 +197,47 @@ eleven-twelfs-flat = \markup {\fontsize #-4
               stroke grestore
               gsave 0.1 setlinewidth -1.70 -1.4 moveto -1.40 -2.18 lineto -1.10 -1.4 lineto
               stroke grestore"}
+
+
+% european-style accidentals
+
+one-quarter-flat-markup-black = \markup \ekmelos-five \char ##xE480
+
+one-quarter-flat-markup-thin = \markup \ekmelos-five \char ##xE284
+
+three-quarters-flat-markup-black = \markup \ekmelos-five \char ##xE296
+
+three-quarters-flat-markup-thin = \markup \ekmelos-five \char ##xE285
+
+one-quarter-sharp-markup-short = \markup \ekmelos-five \char ##xF672
+
+one-quarter-sharp-markup-tall = \markup \ekmelos-five \char ##xE472
+
+three-quarters-sharp-markup-triple = \markup \ekmelos-five \char ##xF66A
+
+extra-tqs = \markup {
+          \general-align #Y #0.11
+          \epsfile #Y #3.5 #"gfx/three-quarter-sharp.eps"
+      }
+
+alt-accidentals = #(lambda (grob)
+    (let* (
+        (sz (ly:grob-property grob 'font-size 0))
+        (mlt (magstep sz))
+        (glyph (ly:grob-property grob 'glyph-name)))
+        (cond
+            ((equal? glyph "accidentals.sharp.slashslash.stem")
+                (grob-interpret-markup grob one-quarter-sharp-markup-short)
+            )
+            ((equal? glyph "accidentals.sharp.slashslash.stemstemstem")
+                (grob-interpret-markup grob three-quarters-sharp-markup-triple)
+            )
+            ((equal? glyph "accidentals.mirroredflat")
+                (grob-interpret-markup grob one-quarter-flat-markup-black)
+            )
+            ((equal? glyph "accidentals.mirroredflat.flat")
+                (grob-interpret-markup grob three-quarters-flat-markup-black)
+            )
+            (else (ly:clef::print grob)))
+        )
+    )

@@ -1,7 +1,10 @@
 """
 Rhythm tree functions.
 """
+from fractions import Fraction
+
 import abjad
+from abjadext import rmakers
 
 from .sequence import CyclicList, Sequence, flatten
 
@@ -773,3 +776,354 @@ def helianthated_rtm(divisions, beats):
         rtm_out.append(rtm)
 
     return rtm_out
+
+
+def find_smallest(selections):
+    leaves = abjad.select.leaves(selections)
+    multipliers = [leaf.multiplier for leaf in leaves]
+    minimum = min(multipliers)
+    index = multipliers.index(minimum)
+    return index
+
+
+def find_largest(selections):
+    multipliers = [leaf.multiplier for leaf in selections]
+    maximum = max(multipliers)
+    index = multipliers.index(maximum)
+    return index
+
+
+def variable_feather_beam(selections, number_of_extra_beams=1):
+    leaves = abjad.select.leaves(selections)
+    min_index = find_smallest(leaves)
+    max_index = find_largest(leaves)
+    if leaves[0].multiplier < leaves[-1].multiplier:
+        literal = abjad.LilyPondLiteral(
+            rf"\once \override Beam.grow-direction = #LEFT",
+            site="before",
+        )
+    if leaves[-1].multiplier < leaves[0].multiplier:
+        literal = abjad.LilyPondLiteral(
+            rf"\once \override Beam.grow-direction = #RIGHT",
+            site="before",
+        )
+    if 0 < min_index < (len(leaves) - 1):
+        literal = abjad.LilyPondLiteral(
+            rf"\once \override Beam.stencil = #(grow-beam-var {min_index} {number_of_extra_beams})",
+            site="before",
+        )
+    if 0 < max_index < (len(leaves) - 1):
+        literal = abjad.LilyPondLiteral(
+            rf"\once \override Beam.stencil = #(grow-beam-var {0 - max_index} {number_of_extra_beams})",
+            site="before",
+        )
+    first_leaf = leaves[0]
+    abjad.attach(literal, first_leaf)
+    abjad.beam(selections)
+
+
+def return_interpolations(duration, divisions, direction, switch_index):
+    integers = [_ + 1 for _ in range(divisions)]
+    if direction is abjad.RIGHT:
+        integers.reverse()
+    if switch_index is not None:
+        first_part = integers[: switch_index + 1]
+        desired_continuation_length = len(integers[switch_index + 1 :])
+        reference_integer = first_part[-1]
+        if direction is abjad.LEFT:
+            second_part = [reference_integer - 1]
+        if direction is abjad.RIGHT:
+            second_part = [reference_integer + 1]
+        for i in range(desired_continuation_length - 1):
+            if direction is abjad.LEFT:
+                new_point = second_part[-1] - 1
+            if direction is abjad.RIGHT:
+                new_point = second_part[-1] + 1
+            second_part.append(new_point)
+        integers = first_part + second_part
+        smallest_integer = min(integers)
+        if smallest_integer < 1:
+            difference = 1 - smallest_integer
+            integers = [_ + difference for _ in integers]
+        if 1 < smallest_integer:
+            difference = smallest_integer - 1
+            integers = [_ - difference for _ in integers]
+    total = sum(integers)
+    smallest_piece = duration / total
+    sizes = [i * smallest_piece for i in integers]
+    assert sum(sizes) == duration
+    return sizes
+
+
+def return_multipliers(interpolations, written_duration=Fraction(1, 8)):
+    multipliers = [_ / written_duration for _ in interpolations]
+    assert [_ * written_duration for _ in multipliers] == interpolations
+    return multipliers
+
+
+def make_exponential_leaves(
+    total_duration,
+    written_duration,
+    number_of_divisions,
+    direction=abjad.LEFT,
+    switch_index=None,
+):
+    if isinstance(written_duration, Fraction):
+        pass
+    else:
+        written_duration = Fraction(written_duration[0], written_duration[1])
+    if isinstance(total_duration, Fraction):
+        pass
+    elif isinstance(total_duration, abjad.Duration):
+        written_duration = Fraction(
+            total_duration.numerator, written_duration.denominator
+        )
+    else:
+        written_duration = Fraction(total_duration[0], written_duration[1])
+    i = return_interpolations(
+        total_duration,
+        number_of_divisions,
+        direction=direction,
+        switch_index=switch_index,
+    )
+    m = return_multipliers(i, written_duration)
+    tuplet = abjad.Tuplet(
+        "1:1",
+        [
+            abjad.Note(
+                "c'",
+                abjad.Duration(
+                    written_duration.numerator, written_duration.denominator
+                ),
+                multiplier=abjad.Multiplier(_),
+            )
+            for _ in m
+        ],
+    )
+    assert abjad.get.duration(tuplet) == abjad.Duration(total_duration)
+    rmakers.duration_bracket(tuplet)
+    variable_feather_beam(tuplet)
+    return [tuplet]
+
+
+def exponential_leaf_maker(
+    written_durations, numbers_of_attacks, directions, switch_indices
+):
+    written_durations = CyclicList(written_durations, forget=False)
+    numbers_of_attacks = CyclicList(numbers_of_attacks, forget=False)
+    directions = CyclicList(directions, forget=False)
+    switch_indices = CyclicList(switch_indices, forget=False)
+
+    def make_leaves(divisions, state=None, previous_state=None):
+        out = []
+        for division in divisions:
+            tup = make_exponential_leaves(
+                division,
+                written_durations(r=1)[0],
+                numbers_of_attacks(r=1)[0],
+                directions(r=1)[0],
+                switch_indices(r=1)[0],
+            )
+            out.extend(tup)
+        return out
+
+    return make_leaves
+
+
+class BeforeGraceContainer(abjad.BeforeGraceContainer):
+    def __init__(
+        self,
+        components=None,
+        *,
+        position=6,
+        language="english",
+        tag=None,
+    ) -> None:
+        if isinstance(components, str):
+            new_str = "{" + components + "}"
+            container = abjad.parse(new_str)
+            components = abjad.mutate.eject_contents(container)
+        component_count = len(components)
+        if 1 < component_count:
+            self._command = r"\appoggiatura"
+            new_components = components
+        else:
+            temp = [abjad.Rest("r8")]
+            new_components = temp + components
+            abjad.attach(abjad.StartSlur(), new_components[-1])
+            stop_slur_literal = abjad.LilyPondLiteral(r"<> )", site="after")
+            abjad.attach(stop_slur_literal, new_components[-1])
+            self._command = r"\acciaccatura"
+        abjad.attach(abjad.StartBeam(), new_components[0])
+        abjad.attach(abjad.StopBeam(), new_components[-1])
+        abjad.override(
+            new_components[0]
+        ).Beam.positions = rf"#'({position} . {position})"
+        self._main_leaf = None
+        abjad.BeforeGraceContainer.__init__(
+            self, new_components, command=self._command, language=language, tag=tag
+        )
+
+
+def before_grace_container(
+    argument,
+    counts,
+    *,
+    position=6,
+):
+    _do_grace_container_command(
+        argument,
+        counts=counts,
+        class_=BeforeGraceContainer,
+        talea=rmakers.Talea([1], 8),
+        position=position,
+    )
+
+
+class AfterGraceContainer(abjad.AfterGraceContainer):
+    def __init__(
+        self,
+        components=None,
+        *,
+        position=6,
+        with_glissando=False,
+        language="english",
+        tag=None,
+    ) -> None:
+        if isinstance(components, str):
+            new_str = "{" + components + "}"
+            container = abjad.parse(new_str)
+            components = abjad.mutate.eject_contents(container)
+        component_count = len(components)
+        # _main_leaf must be initialized before container initialization
+        if 1 < component_count:
+            if with_glissando is True:
+                copy = abjad.mutate.copy(components[0])
+                temp = [copy]
+                new_components = temp + components
+                abjad.attach(abjad.StartBeam(), new_components[1])
+                start_literal = abjad.LilyPondLiteral(
+                    r"\start-multi-grace", site="before"
+                )
+                abjad.attach(start_literal, new_components[0])
+                start_literal_ = abjad.LilyPondLiteral(
+                    r"\start-multi-grace", site="before"
+                )
+                abjad.attach(start_literal_, new_components[1])
+                abjad.override(
+                    new_components[1]
+                ).Beam.positions = rf"#'({position} . {position})"
+                abjad.override(new_components[0]).Flag.stencil = "##f"
+                abjad.override(new_components[0]).Stem.stencil = rf"##f"
+                abjad.override(new_components[0]).NoteHead.transparent = rf"##t"
+                heads = []
+                non_last_leaves = abjad.select.leaves(new_components)[:-1]
+                for leaf in non_last_leaves:
+                    if isinstance(leaf, abjad.Note):
+                        heads.append(leaf.note_head)
+                    elif isinstance(leaf, abjad.Chord):
+                        heads.extend(leaf.note_heads)
+                    for head in heads:
+                        abjad.tweak(head, r"\tweak X-extent #'(0 . 0)")
+                    for leaf in non_last_leaves:
+                        abjad.override(leaf).NoteHead.transparent = "##t"
+                        abjad.override(leaf).Glissando.layer = 3
+                    abjad.glissando(new_components, zero_padding=True)
+            else:
+                new_components = components
+                abjad.attach(abjad.StartBeam(), new_components[0])
+                start_literal = abjad.LilyPondLiteral(
+                    r"\start-multi-grace", site="before"
+                )
+                abjad.attach(start_literal, new_components[0])
+                abjad.override(new_components[1]).Flag.stencil = "##f"
+                abjad.override(
+                    new_components[0]
+                ).Beam.positions = rf"#'({position} . {position})"
+            abjad.attach(abjad.StopBeam(), new_components[-1])
+            stop_literal = abjad.LilyPondLiteral(r"\stop-multi-grace", site="after")
+            abjad.attach(stop_literal, new_components[-1])
+        else:
+            copy = abjad.mutate.copy(components[0])
+            temp = [copy]
+            new_components = temp + components
+            abjad.attach(abjad.StartBeam(), new_components[0])
+            abjad.attach(abjad.StopBeam(), new_components[-1])
+            abjad.override(new_components[0]).Beam.stencil = "##f"
+            abjad.override(new_components[0]).Flag.stencil = "##f"
+            start_literal = abjad.LilyPondLiteral(r"\start-single-grace", site="before")
+            abjad.attach(start_literal, new_components[0])
+            start_literal = abjad.LilyPondLiteral(r"\stop-single-grace", site="after")
+            abjad.attach(start_literal, new_components[-1])
+            abjad.override(
+                new_components[0]
+            ).Beam.positions = rf"#'({position} . {position})"
+            abjad.override(new_components[0]).Stem.stencil = rf"##f"
+            abjad.override(new_components[0]).NoteHead.transparent = rf"##t"
+            if isinstance(new_components[0], abjad.Note):
+                heads = [new_components[0].note_head]
+            elif isinstance(new_components[0], abjad.Chord):
+                heads = new_components[0].note_heads
+            for head in heads:
+                abjad.tweak(head, r"\tweak X-extent #'(0 . 0)")
+            if with_glissando is True:
+                abjad.override(new_components[1]).NoteHead.transparent = "##t"
+                if isinstance(new_components[1], abjad.Note):
+                    heads = [new_components[1].note_head]
+                elif isinstance(new_components[1], abjad.Chord):
+                    heads = new_components[1].note_heads
+                for head in heads:
+                    abjad.tweak(head, r"\tweak X-extent #'(0 . 0)")
+                abjad.glissando(new_components, zero_padding=True)
+
+        self._main_leaf = None
+        abjad.AfterGraceContainer.__init__(
+            self, new_components, language=language, tag=tag
+        )
+
+
+def after_grace_container(
+    argument,
+    counts,
+    *,
+    talea=rmakers.Talea([1], 8),
+    position=6,
+    with_glissando=False,
+):
+    _do_grace_container_command(
+        argument,
+        counts=counts,
+        class_=AfterGraceContainer,
+        talea=talea,
+        position=position,
+        with_glissando=with_glissando,
+    )
+
+
+def _do_grace_container_command(
+    argument,
+    counts,
+    class_=None,
+    talea=None,
+    position=6,
+    with_glissando=False,
+):
+    leaves = abjad.select.leaves(argument, grace=False)
+    assert all(isinstance(_, int) for _ in counts), repr(counts)
+    cyclic_counts = abjad.CyclicTuple(counts)
+    start = 0
+    for i, leaf in enumerate(leaves):
+        count = cyclic_counts[i]
+        if not count:
+            continue
+        stop = start + count
+        durations = talea[start:stop]
+        notes = abjad.makers.make_leaves([0], durations)
+        if class_ == AfterGraceContainer:
+            if with_glissando is True:
+                abjad.attach(abjad.Glissando(zero_padding=True), leaf)
+            container = class_(notes, position=position, with_glissando=with_glissando)
+            abjad.attach(container, leaf)
+        else:
+            container = class_(notes, position=position)
+            abjad.attach(container, leaf)

@@ -10,6 +10,14 @@ staff-line-count = #(
     #}
     )
 
+%%% staff size %%%
+staffSize = #(define-music-function (new-size) (number?)
+  #{
+    \set fontSize = #new-size
+    \override StaffSymbol.staff-space = #(magstep new-size)
+    \override StaffSymbol.thickness = #(magstep (+ 1 new-size))
+  #})
+
 %%% duration line style %%%
 
 duration-line-style = #(
@@ -114,18 +122,6 @@ normal-accidentals = #(
     \set suggestAccidentals = ##f
     \revert Voice.AccidentalSuggestion.font-size
     \revert Voice.AccidentalSuggestion.parenthesized
-    #}
-    )
-
-%%% evans new spacing section %%%
-evans-new-spacing-section = #(
-    define-music-function
-    (parser location n d music)
-    (number? number? ly:music?)
-    #{
-    \set Score.proportionalNotationDuration = #(ly:make-moment n d)
-    \newSpacingSection
-    $music
     #}
     )
 
@@ -266,6 +262,71 @@ zStemOn = {
               -1.75))))
 }
 
+%%% swipe stems %%%
+swipeUpStemOn = {
+  \override Stem.stencil =
+    #(lambda (grob)
+       (let* ((x-parent (ly:grob-parent grob X))
+              (is-rest? (ly:grob? (ly:grob-object x-parent 'rest))))
+         (if is-rest?
+             empty-stencil
+             (ly:stencil-combine-at-edge
+              (ly:stem::print grob)
+              Y
+              (- (ly:grob-property grob 'direction))
+              (grob-interpret-markup grob
+                                     (markup #:center-align #:hspace 0.01 #:fontsize -6.5 #:ekmelos-char #x2b67))
+              -1.75))))
+}
+
+swipeDownStemOn = {
+  \override Stem.stencil =
+    #(lambda (grob)
+       (let* ((x-parent (ly:grob-parent grob X))
+              (is-rest? (ly:grob? (ly:grob-object x-parent 'rest))))
+         (if is-rest?
+             empty-stencil
+             (ly:stencil-combine-at-edge
+              (ly:stem::print grob)
+              Y
+              (- (ly:grob-property grob 'direction))
+              (grob-interpret-markup grob
+                                     (markup #:center-align #:hspace 0.01 #:fontsize -6.5 #:ekmelos-char #x2b68))
+              -1.75))))
+}
+
+swipeUpAbruptStemOn = {
+  \override Stem.stencil =
+    #(lambda (grob)
+       (let* ((x-parent (ly:grob-parent grob X))
+              (is-rest? (ly:grob? (ly:grob-object x-parent 'rest))))
+         (if is-rest?
+             empty-stencil
+             (ly:stencil-combine-at-edge
+              (ly:stem::print grob)
+              Y
+              (- (ly:grob-property grob 'direction))
+              (grob-interpret-markup grob
+                                     (markup #:center-align #:hspace 0.01 #:fontsize -6.5 #:ekmelos-char #x2b77))
+              -1.75))))
+}
+
+swipeDownAbruptStemOn = {
+  \override Stem.stencil =
+    #(lambda (grob)
+       (let* ((x-parent (ly:grob-parent grob X))
+              (is-rest? (ly:grob? (ly:grob-object x-parent 'rest))))
+         (if is-rest?
+             empty-stencil
+             (ly:stencil-combine-at-edge
+              (ly:stem::print grob)
+              Y
+              (- (ly:grob-property grob 'direction))
+              (grob-interpret-markup grob
+                                     (markup #:center-align #:hspace 0.01 #:fontsize -6.5 #:ekmelos-char #x2b78))
+              -1.75))))
+}
+
 stemOff = {
   \revert Stem.stencil
   \revert Flag.stencil
@@ -287,7 +348,24 @@ squared = {
 }
 
 slapped = {
-    \override NoteHead.stem-attachment = #'(1 . -0.125)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  0.5
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      -0.5
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -301,11 +379,30 @@ slapped = {
         )
 }
 
+
 half-harmonic = {
-    \override NoteHead.stem-attachment = #'(0 . 0.5) % different x for up vs down?
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  0.9
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      -0.9
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
-            (let ((dur (ly:grob-property grob 'duration-log)))
+            (let
+                ((dur (ly:grob-property grob 'duration-log)))
                 (if (<= dur 1)
                     (grob-interpret-markup grob (markup #:ekmelos-char #xe0fc))
                     (if (> dur 1)
@@ -334,6 +431,24 @@ slashed-dot = {
 }
 
 kiss-on = {
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  1
+                  0.5
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      -0.5
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -351,7 +466,24 @@ kiss-on = {
 }
 
 kiss-off = {
-    \override NoteHead.stem-attachment = #'(0 . 0)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0.2
+                  0
+              )
+              (if (= dir DOWN)
+                  (cons
+                      -0.99
+                      0
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -369,7 +501,24 @@ kiss-off = {
 }
 
 air-tone = {
-    \override NoteHead.stem-attachment = #'(0 . -1.5)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  -1.5
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      1.5
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -385,7 +534,24 @@ air-tone = {
 }
 
 half-air-tone = {
-    \override NoteHead.stem-attachment = #'(0 . -1.5)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  -1.5
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      1.5
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.stencil =
         #(lambda (grob)
             (let ((dur (ly:grob-property grob 'duration-log)))
@@ -401,7 +567,24 @@ half-air-tone = {
 }
 
 highest = {
-    \override NoteHead.stem-attachment = #'(0 . 0.75)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  0.8
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      -1
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.no-ledgers = ##t
     \override NoteHead.stencil =
         #(lambda (grob)
@@ -421,7 +604,24 @@ highest = {
 }
 
 lowest = {
-    \override NoteHead.stem-attachment = #'(0 . 0.75)
+    \override NoteHead.stem-attachment = #(lambda (grob)
+        (let* ((thickness (ly:staff-symbol-line-thickness grob))
+              (stem (ly:grob-object grob 'stem))
+              (dir (ly:grob-property stem 'direction UP)))
+          (if (= dir UP)
+              (cons
+                  0
+                  1
+              )
+              (if (= dir DOWN)
+                  (cons
+                      0
+                      -0.8
+                  )
+              )
+          )
+        )
+    )
     \override NoteHead.no-ledgers = ##t
     \override NoteHead.stencil =
         #(lambda (grob)
@@ -452,6 +652,20 @@ fingerboard-clef = {
     \override Staff.Clef.stencil =
         #(lambda (grob)
             (grob-interpret-markup grob (markup #:fontsize -5.5 #:raise 1 #:ekmelos-char #xe078))
+        )
+}
+
+square-alto-clef = {
+    \override Staff.Clef.stencil =
+        #(lambda (grob)
+            (grob-interpret-markup grob (markup #:fontsize -5.5 #:raise 1 #:ekmelos-char #xe060))
+        )
+}
+
+square-alto-clef-change = {
+    \override Staff.Clef.stencil =
+        #(lambda (grob)
+            (grob-interpret-markup grob (markup #:fontsize -5.5 #:raise 1 #:ekmelos-char #xf632))
         )
 }
 
@@ -1032,3 +1246,316 @@ Limitations:
        (ly:grob-set-property! grob 'stencil
          (make-scp-stencil grob amplitudes start-height wave-length thickness)))
 #})
+
+
+%%%
+%%% repeat spanners
+%%%
+#(define (test-stencil grob text)
+   (let* ((orig (ly:grob-original grob))
+          (siblings (ly:spanner-broken-into orig)) ; have we been split?
+          (refp (ly:grob-system grob))
+          (left-bound (ly:spanner-bound grob LEFT))
+          (right-bound (ly:spanner-bound grob RIGHT))
+          (elts-L (ly:grob-array->list (ly:grob-object left-bound 'elements)))
+          (elts-R (ly:grob-array->list (ly:grob-object right-bound 'elements)))
+          (break-alignment-L
+           (filter
+            (lambda (elt) (grob::has-interface elt 'break-alignment-interface))
+            elts-L))
+          (break-alignment-R
+           (filter
+            (lambda (elt) (grob::has-interface elt 'break-alignment-interface))
+            elts-R))
+          (break-alignment-L-ext (ly:grob-extent (car break-alignment-L) refp X))
+          (break-alignment-R-ext (ly:grob-extent (car break-alignment-R) refp X))
+          (num
+           (markup text))
+          (num
+           (if (or (null? siblings)
+                   (eq? grob (car siblings)))
+               num
+               (make-parenthesize-markup num)))
+          (num (grob-interpret-markup grob num))
+          (num-stil-ext-X (ly:stencil-extent num X))
+          (num-stil-ext-Y (ly:stencil-extent num Y))
+          (num (ly:stencil-aligned-to num X CENTER))
+          (num
+           (ly:stencil-translate-axis
+            num
+            (+ (interval-length break-alignment-L-ext)
+              (* 0.5
+                (- (car break-alignment-R-ext)
+                  (cdr break-alignment-L-ext))))
+            X))
+          (bracket-L
+           (markup
+            #:path
+            0.1 ; line-thickness
+            `((moveto 0.5 ,(* 0.5 (interval-length num-stil-ext-Y)))
+              (lineto ,(* 0.5
+                         (- (car break-alignment-R-ext)
+                           (cdr break-alignment-L-ext)
+                           (interval-length num-stil-ext-X)))
+                ,(* 0.5 (interval-length num-stil-ext-Y)))
+              (closepath)
+              (rlineto 0.0
+                ,(if (or (null? siblings) (eq? grob (car siblings)))
+                     -1.0 0.0)))))
+          (bracket-R
+           (markup
+            #:path
+            0.1
+            `((moveto ,(* 0.5
+                         (- (car break-alignment-R-ext)
+                           (cdr break-alignment-L-ext)
+                           (interval-length num-stil-ext-X)))
+                ,(* 0.5 (interval-length num-stil-ext-Y)))
+              (lineto 0.5
+                ,(* 0.5 (interval-length num-stil-ext-Y)))
+              (closepath)
+              (rlineto 0.0
+                ,(if (or (null? siblings) (eq? grob (last siblings)))
+                     -1.0 0.0)))))
+          (bracket-L (grob-interpret-markup grob bracket-L))
+          (bracket-R (grob-interpret-markup grob bracket-R))
+          (num (ly:stencil-combine-at-edge num X LEFT bracket-L 0.4))
+          (num (ly:stencil-combine-at-edge num X RIGHT bracket-R 0.4)))
+     num))
+
+#(define-public (Measure_attached_spanner_engraver context)
+   (let ((span '())
+         (finished '())
+         (event-start '())
+         (event-stop '()))
+     (make-engraver
+      (listeners ((measure-counter-event engraver event)
+                  (if (= START (ly:event-property event 'span-direction))
+                      (set! event-start event)
+                      (set! event-stop event))))
+      ((process-music trans)
+       (if (ly:stream-event? event-stop)
+           (if (null? span)
+               (ly:warning "You're trying to end a measure-attached spanner but you haven't started one.")
+               (begin (set! finished span)
+                 (ly:engraver-announce-end-grob trans finished event-start)
+                 (set! span '())
+                 (set! event-stop '()))))
+       (if (ly:stream-event? event-start)
+           (begin (set! span (ly:engraver-make-grob trans 'MeasureCounter event-start))
+             (set! event-start '()))))
+      ((stop-translation-timestep trans)
+       (if (and (ly:spanner? span)
+                (null? (ly:spanner-bound span LEFT))
+                (moment<=? (ly:context-property context 'measurePosition) ZERO-MOMENT))
+           (ly:spanner-set-bound! span LEFT
+             (ly:context-property context 'currentCommandColumn)))
+       (if (and (ly:spanner? finished)
+                (moment<=? (ly:context-property context 'measurePosition) ZERO-MOMENT))
+           (begin
+            (if (null? (ly:spanner-bound finished RIGHT))
+                (ly:spanner-set-bound! finished RIGHT
+                  (ly:context-property context 'currentCommandColumn)))
+            (set! finished '())
+            (set! event-start '())
+            (set! event-stop '()))))
+      ((finalize trans)
+       (if (ly:spanner? finished)
+           (begin
+            (if (null? (ly:spanner-bound finished RIGHT))
+                (set! (ly:spanner-bound finished RIGHT)
+                      (ly:context-property context 'currentCommandColumn)))
+            (set! finished '())))
+       (if (ly:spanner? span)
+           (begin
+            (ly:warning "I think there's a dangling measure-attached spanner :-(")
+            (ly:grob-suicide! span)
+            (set! span '())))))))
+
+
+% function itself
+repeatBracket = #(define-music-function
+     (N color note)
+     (number? string? ly:music?)
+      #{
+        \override MeasureCounter.stencil =
+        #(lambda (grob) (test-stencil grob #{ #(string-append "×" (number->string N)) #} ))
+        \once \override Score.BarLine.X-extent = #'(0.5 . 1.5)
+        \once \override Score.BarLine.thick-thickness = #3
+        \once \override Score.BarLine.color = #color
+        \once \override Score.SpanBar.color = #color
+        \bar ".|:"
+        \startMeasureCount
+        $note
+        \stopMeasureCount
+        \once \override Score.BarLine.X-extent = #'(1.5 . 0.5)
+        \once \override Score.BarLine.thick-thickness = #3
+        \once \override Score.BarLine.color = #color
+        \once \override Score.SpanBar.color = #color
+        \bar ":|."
+      #}
+     )
+
+
+%%% click track %%%
+
+addTicks =
+#(define-music-function (m) (ly:music?)
+   #{ << $m
+         \new Devnull \with {
+           \consists Drum_note_performer
+           \consists Staff_performer
+           \consists Dynamic_performer
+           midiInstrument = #"woodblock"
+         } \drummode {
+           <>\ff \repeat unfold
+           $(ly:moment-main-numerator
+             (ly:moment-div
+              (ly:music-length m)
+              (ly:make-moment 1 4)))
+           rb4 }>> #})
+
+% place \addTicks at the top of each staff? voice?
+
+%%% substitute old clefs %%%
+old-clefs = #(lambda (grob)
+     (let* ((sz (ly:grob-property grob 'font-size 0))
+            (mlt (magstep sz))
+            (glyph (ly:grob-property grob 'glyph-name)))
+             (cond
+              ((equal? glyph "clefs.G")
+                 (ly:stencil-scale (grob-interpret-markup grob old-g-clef-markup) (* 1 mlt) (* 1 mlt))
+                 )
+              ((equal? glyph "clefs.G_change")
+               (ly:stencil-scale (grob-interpret-markup grob old-g-clef-markup) (* .7 mlt) (* .7 mlt))
+               )
+               ((equal? glyph "clefs.petrucci.g")
+                  (ly:stencil-scale (grob-interpret-markup grob mendelssohn-g-clef-markup) (* 1 mlt) (* 1 mlt))
+                  )
+               ((equal? glyph "clefs.petrucci.g_change")
+                (ly:stencil-scale (grob-interpret-markup grob mendelssohn-g-clef-markup) (* .7 mlt) (* .7 mlt))
+                )
+                ((equal? glyph "clefs.mensural.g")
+                   (ly:stencil-scale (grob-interpret-markup grob alt-g-clef-markup) (* 1 mlt) (* 1 mlt))
+                   )
+                ((equal? glyph "clefs.mensural.g_change")
+                (ly:stencil-scale (grob-interpret-markup grob alt-g-clef-markup) (* .7 mlt) (* .7 mlt))
+                 )
+                 ((equal? glyph "clefs.varpercussion")
+                    (ly:stencil-scale (grob-interpret-markup grob behind-bridge-clef-markup) (* 1 mlt) (* 1 mlt))
+                    )
+                 ((equal? glyph "clefs.varpercussion_change")
+                 (ly:stencil-scale (grob-interpret-markup grob behind-bridge-clef-markup) (* .7 mlt) (* .7 mlt))
+                  )
+              ((equal? glyph "clefs.F")
+                 (ly:stencil-scale old-bass-clef (* 1 mlt) (* 1 mlt)))
+              ((equal? glyph "clefs.F_change")
+                (ly:stencil-scale old-bass-clef (* .8 mlt) (* .8 mlt)))
+              (else (ly:clef::print grob)))))
+
+%%% spanner tweaks %%%
+
+stringNumberSpanner =
+    #(define-music-function (StringNumber) (string?) #{
+        \once \override TextSpanner.style = #'solid
+        \once \override TextSpanner.bound-details.left.stencil-align-dir-y = #CENTER
+        \once \override TextSpanner.bound-details.left.text =
+        \markup { \fontsize #-10 \circle \number $StringNumber }
+#})
+
+
+guide =
+    #(define-music-function (shift pad) (pair? number?) #{
+        \once \override TextSpanner.extra-offset = #shift
+        \override TextSpanner.bound-details.right.Y = #pad
+#})
+
+
+#(define (airohalf radius height thick)
+  (string-append "gsave
+                  /msellipse {
+                        /endangle exch def
+                        /startangle exch def
+                        /yrad exch def
+                        /xrad exch def
+                        /y exch def
+                        /x exch def
+                        /savematrix matrix currentmatrix def
+                        x y translate
+                        xrad yrad scale
+                        0 0 1 startangle endangle arc
+                        savematrix setmatrix
+                    } def
+                  /rad " (number->string radius) " def
+                  /offset " (number->string height) " rad mul def
+                  /ecenter 0 offset add def
+                  /xradius rad rad mul offset offset mul sub sqrt def
+                  /yradius rad offset sub def
+                  " (number->string thick) " setlinewidth
+                  currentpoint translate
+                  0 0 moveto
+                  newpath
+                          0 rad rad 0 360 arc
+                          fill
+                  0 rad translate
+                  1 1 1 setcolor
+                  newpath
+                          0 ecenter xradius yradius 0 -180 msellipse
+                          closepath
+                          fill
+                  0 0 rad sub translate
+                  0 0 0 setcolor
+                  newpath
+                          0 rad rad 0 360 arc
+                          stroke
+                  grestore"))
+
+#(define (airuhalf radius height thick)
+  (string-append "gsave
+                  /msellipse {
+                        /endangle exch def
+                        /startangle exch def
+                        /yrad exch def
+                        /xrad exch def
+                        /y exch def
+                        /x exch def
+                        /savematrix matrix currentmatrix def
+                        x y translate
+                        xrad yrad scale
+                        0 0 1 startangle endangle arc
+                        savematrix setmatrix
+                    } def
+                  /rad " (number->string radius) " def
+                  /offset " (number->string height) " rad mul def
+                  /ecenter 0 offset sub def
+                  /xradius rad rad mul offset offset mul sub sqrt def
+                  /yradius 0 rad offset sub sub def
+                  " (number->string thick) " setlinewidth
+                  currentpoint translate
+                  0 0 moveto
+                  newpath
+                          0 rad rad 0 360 arc
+                          stroke
+                  0 rad translate
+                  newpath
+                          0 ecenter xradius yradius 0 -180 msellipse
+                          closepath
+                          fill
+                  grestore"))
+
+
+#(define-markup-command (airytone layout props radius height thick)
+    (number? number? number?)
+    (let ((longstring ""))
+    (set! height (max (min height 1) 0))
+    (if (> height 0.5)
+       (set! longstring (airohalf radius (* 2 (- height 0.5)) thick))
+       (set! longstring (airuhalf radius (- 1 (* 2 height)) thick)))
+    (ly:make-stencil
+    (list 'embedded-ps longstring)
+    (cons 0 0) (cons 0 2)))
+)
+
+
+#(define-public guerrero-flared-hairpin
+  (elbowed-hairpin '((1.0 . 0.0) (1.45 . 1.0)) - #t))

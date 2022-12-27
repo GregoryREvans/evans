@@ -863,21 +863,48 @@ startTripleTrill =
 
 stopTripleTrill = \stopDoubleTrillSpanUp \stopDoubleTrillSpanDown \stopTripleTrillSpanDown
 
+#(define-public (open-paren-stencils grob)
+  (let ((lp (grob-interpret-markup grob (markup #:fontsize 3.5 #:translate (cons -0.3 -0.5) "(")))
+        (rp (grob-interpret-markup grob (markup #:fontsize 3.5 #:translate (cons -0.3 -0.5) ""))))
+    (list lp rp)))
+
+#(define-public (close-paren-stencils grob)
+  (let ((lp (grob-interpret-markup grob (markup #:fontsize 3.5 #:translate (cons -0.3 -0.5) "")))
+        (rp (grob-interpret-markup grob (markup #:fontsize 3.5 #:translate (cons -0.3 -0.5) ")"))))
+    (list lp rp)))
+
+open-paren = #(define-music-function (arg) (ly:music?)
+   (_i "Tag @var{arg} to be parenthesized.")
+#{
+  \once \override Parentheses.stencils = #open-paren-stencils
+  \parenthesize $arg
+#})
+
+close-paren = #(define-music-function (arg) (ly:music?)
+   (_i "Tag @var{arg} to be parenthesized.")
+#{
+  \once \override Parentheses.stencils = #close-paren-stencils
+  \parenthesize $arg
+#})
+
 suggest-pitch-open = #(define-music-function (note) (ly:music?)
 #{
-	\once \override TextScript.extra-offset = #'(-1.25 . 1.75)
-	\tweak Stem.transparent ##t
+	\once \override Stem.stencil = ##f
+    \once \override Beam.stencil = ##f
+    \open-paren
 	$note
 #})
 suggest-pitch-middle = #(define-music-function (note) (ly:music?)
 #{
-	\tweak Stem.transparent ##t
+    \once \override Stem.stencil = ##f
+    \once \override Beam.stencil = ##f
 	$note
 #})
 suggest-pitch-close = #(define-music-function (note) (ly:music?)
 #{
-	\once \override TextScript.extra-offset = #'(0.75 . 1.75)
-	\tweak Stem.transparent ##t
+    \once \override Stem.stencil = ##f
+    \once \override Beam.stencil = ##f
+    \close-paren
 	$note
 #})
 
@@ -890,4 +917,403 @@ start-graphic-scp = #(
 
 stop-graphic-scp = #(
     make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "graphicSCP"
+    )
+
+
+%%% Ferneyhough Interruptive Polyphony Engraver and Commands %%%
+%%% Don't forget \consists #interrupt_heads_engraver in \SCORE
+#(define (draw-ps-line length offset thickness)
+  (ly:make-stencil (list 'embedded-ps
+                   (ly:format "gsave
+                    /x ~4f def
+                    /offset ~4f def
+                    /thickness ~4f def
+                    currentpoint translate
+                    thickness setlinewidth
+                    2 setlinecap
+                    2 setlinejoin
+                    newpath
+                    offset thickness moveto
+                    x thickness lineto
+                    stroke
+                    newpath
+                    offset thickness sub thickness -1 mul moveto
+                    x thickness -1 mul lineto
+                    stroke
+                    newpath
+                    thickness 2 mul setlinewidth
+                    offset 0 moveto
+                    x thickness sub 0 lineto
+                    stroke
+                    grestore
+                    " length (- offset 0.015) thickness))
+                (cons -0.5 0.5)
+                (cons -0.5 0.5))
+)
+
+#(define (draw-ps-bracket length offset position thickness)
+  (ly:make-stencil (list 'embedded-ps
+                   (ly:format "gsave
+                    /x ~4f def
+                    /offset ~4f def
+                    /end-pos ~4f def
+                    /thickness ~4f def
+                    currentpoint translate
+                    newpath
+                    thickness setlinewidth
+                    2 setlinecap
+                    2 setlinejoin
+                    offset thickness moveto
+                    x thickness lineto
+                    x 0 moveto
+                    x end-pos lineto
+                    stroke
+                    newpath
+                    offset thickness sub thickness -1 mul moveto
+                    x thickness -1 mul lineto
+                    stroke
+                    newpath
+                    thickness 2 mul setlinewidth
+                    offset 0 moveto
+                    x thickness sub 0 lineto
+                    stroke
+                    grestore
+                    " length (- offset 0.015) position thickness))
+                (cons -0.5 0.5)
+                (cons -0.5 0.5))
+)
+
+#(define (ly:moment-abs moment)
+  (let* (
+    (num (ly:moment-main-numerator moment))
+    (d (ly:moment-main-denominator moment))
+    )
+    (ly:make-moment (abs num) d)
+  )
+)
+
+#(define (get-upper-staff-pos grob-a grob-b)
+  (let*
+    (
+      (min-val (min (ly:grob-property grob-a 'staff-position) (ly:grob-property grob-b 'staff-position)))
+    )
+  (if (equal? min-val (ly:grob-property grob-a 'staff-position))
+          grob-b
+          grob-a
+      )
+))
+
+#(define (get-lower-staff-pos grob-a grob-b)
+  (let*
+    (
+      (min-val (min (ly:grob-property grob-a 'staff-position) (ly:grob-property grob-b 'staff-position)))
+    )
+  (if (equal? min-val (ly:grob-property grob-a 'staff-position))
+          grob-a
+          grob-b
+      )
+))
+
+%!!find overlapping durations
+#(define (find-duration-overlap new-note old-note)
+  (let* (
+    (old-grob (third old-note))
+    (new-grob (third new-note))
+    (notecol (ly:grob-parent old-grob X))
+    (notecol-new (ly:grob-parent new-grob X))
+    (noteheads (ly:grob-array->list (ly:grob-object notecol 'note-heads)))
+    (meta-old (ly:grob-property notecol 'meta))
+    (overlap (ly:moment-abs (ly:moment-sub (first new-note) (second old-note) )))
+    )
+  (if (ly:moment<? (ly:make-moment 0 0 0) overlap)
+        ;;check if chord
+        (if (eqv? notecol notecol-new)
+              (begin
+                ;;if chord set lower note green
+                ;(ly:grob-set-property! (get-lower-staff-pos old-grob new-grob) 'color green)
+                (ly:grob-set-property! (get-lower-staff-pos old-grob new-grob) 'meta
+                        (append
+                            (ly:grob-property (get-lower-staff-pos old-grob new-grob) 'meta)
+                              (list (cons 'is-lower-in-chord #t))))
+                ;(display "Chord")(newline)
+              )
+              ;;if not chord
+              (begin
+                ;(display "Not Chord")(newline)
+                ;;if not a chord just make grob relation
+                ;(ly:grob-set-property! old-grob 'color red)
+                ;;set the meta value in notecolumn so that we can access it from chord-heads
+                ;;first check back to see if this note is part of a chords
+                (ly:grob-set-property! notecol 'meta
+                            (append meta-old (list (cons 'other-grob new-grob))))
+              )
+        )
+        (begin
+            (display "Othering")(newline) ; needs to do something for no error
+        )
+    )
+))
+
+#(define (extract-timing context notehead)
+  (let*
+    (
+      (start-point (ly:context-current-moment context))
+      (duration (ly:event-property (ly:grob-property notehead 'cause) 'length))
+      (end-point (ly:moment-add start-point duration))
+    )
+    ;;return a list of grob start and end point
+   (list start-point end-point notehead)
+  )
+)
+
+#(define (interrupt_heads_engraver ctx)
+   (let (
+      (noteheads '())
+    )
+    `(
+      (acknowledgers
+          (note-head-interface . , (lambda (trans grob source)
+                (set! noteheads (cons (extract-timing ctx grob) noteheads)))
+          )
+        )
+       (process-acknowledged
+        . ,(lambda (trans)
+            (begin
+             (if (>= (length noteheads) 2)
+                 (begin
+                   ; (display noteheads)(newline)
+                   (find-duration-overlap (first noteheads) (last noteheads))
+                   (set! noteheads (list (first noteheads)))
+                  )
+                )
+             ))
+          )
+      )
+))
+
+#(define (get-distance x y)
+    (- (cdr y) (car x))
+)
+
+%!!music function -problem is with (ly:grob-extent grob sys Y))
+interrupt = #(define-music-function (value) (number?)
+  #{
+      \override Staff.NoteHead.cross-staff = ##t
+      \once \override Staff.NoteHead.after-line-breaking = #(lambda (grob)
+              (let* (
+                (stem (ly:grob-object grob 'stem))
+                (stem-dir (ly:grob-property stem 'direction))
+                (stem-thickness (ly:grob-property stem 'thickness))
+                (thickness (/ stem-thickness 10))
+                (notecol (ly:grob-parent grob X))
+                (meta  (assoc 'other-grob (ly:grob-property notecol 'meta)))
+                (other (if meta
+                              (cdr meta)
+                              grob
+                      ))
+                (notehead-width (cdr (ly:grob-property grob 'X-extent)))
+                (sys (ly:grob-system grob))
+                (now-pos (ly:grob-extent grob sys X))
+                (next-pos (ly:grob-extent other sys X))
+
+                ; does not work. skyline calculation unavailable
+                ;(now-pos-y (ly:grob-extent grob sys Y)) ; greg
+                ;(next-pos-y (ly:grob-extent other sys Y)) ; greg
+                (x-distance
+                    (if (= stem-dir -1)
+                      (+ (- (get-distance now-pos next-pos) notehead-width ) (/ thickness 2))
+                      (- (get-distance now-pos next-pos) (/ thickness 2))
+                    ))
+                ; does not work. skyline calculation unavailable
+                ;(y-distance
+                ;    (if (= stem-dir -1)
+                ;      (+ (- (get-distance now-pos-y next-pos-y) notehead-width ) (/ thickness 2))
+                ;      (- (get-distance now-pos-y next-pos-y) (/ thickness 2))
+                ;    ))
+                (ps-bracket
+                    (if (= stem-dir -1)
+                      (draw-ps-bracket x-distance notehead-width (- value 0.5) thickness)
+                      (draw-ps-bracket x-distance notehead-width value thickness)
+                    ))
+                ; does not work. skyline calculation unavailable
+                ;(ps-bracket
+                ;    (if (= stem-dir -1)
+                ;      (draw-ps-bracket x-distance notehead-width (- y-distance 0.5) thickness)
+                ;      (draw-ps-bracket x-distance notehead-width y-distance thickness)
+                ;    ))
+                (ps-line (draw-ps-line x-distance notehead-width thickness))
+                (grob-stencil (ly:grob-property grob 'stencil))
+                (stencil-bracket (ly:stencil-add grob-stencil ps-bracket ))
+                (stencil-line (ly:stencil-add grob-stencil ps-line))
+                )
+                (if (assoc 'is-lower-in-chord (ly:grob-property grob 'meta))
+                        (ly:grob-set-property! grob 'stencil stencil-line)
+                        (ly:grob-set-property! grob 'stencil stencil-bracket)
+                  )
+              )
+            )
+  #}
+)
+
+
+%%% duplicate symbol spanners %%%
+#(define (make-duplicate-stencil grob amount width markup)
+  (let* ((orig (ly:grob-original grob))
+         (siblings (if (ly:grob? orig) (ly:spanner-broken-into orig) '()))
+         ;; length of the actual grob
+         (xspan (grob-width grob))
+         ;; add the length of all siblings
+         (total-span
+           (if (null? siblings)
+               (grob-width grob)
+               (reduce + 0 (map (lambda (g) (grob-width g)) siblings))))
+           (part-size (/ total-span amount))
+           (scale-size (/ part-size width))
+         ;; get the x-position for the start
+         (left-bound
+           (if (or (null? siblings) (eq? (car siblings) grob))
+               ;; compensate thickness of the line
+               ;; start a little left
+               (1- (assoc-get 'X (ly:grob-property grob 'left-bound-info)))))
+         ;; get the length of the already done parts of the wavy line
+         (span-so-far
+           (if (null? siblings)
+               0
+               (-
+                 (reduce + 0
+                   (map
+                     (lambda (g) (grob-width g))
+                     (member grob (reverse siblings))))
+                 xspan)))
+         ;; process the final stencil
+         (final-stencil
+             (let (
+                 (stil (ly:stencil-scale (grob-interpret-markup grob markup) scale-size 1))
+                 )
+               (let loop ((count (1- amount)) (new-stil stil))
+                 (if (> count 0)
+                     (loop (1- count)
+                           (ly:stencil-combine-at-edge new-stil X LEFT stil 0))
+                     (ly:stencil-aligned-to new-stil X LEFT)
+                     )
+                     )
+              )
+             )
+         (bound-details
+           (ly:grob-property grob 'bound-details))
+         ;; bound-details.left.padding affects both broken and unbroken spanner
+         ;; whereas bound-details.left-broken.padding only affects the broken
+         ;; spanner part (same for right and right-broken)
+         ;; We need to move the stencil along x-axis if padding is inserted to
+         ;; the left
+         (x-offset
+           (cond
+             ((or (null? siblings) (equal? grob (car siblings)))
+               (assoc-get 'padding (assoc-get 'left bound-details '()) 0))
+             ((member grob siblings)
+               ;; get at least one working value for the offset
+               (or (assoc-get
+                     'padding
+                     (assoc-get 'left-broken bound-details '())
+                     #f)
+                   (assoc-get 'padding (assoc-get 'left bound-details '()) 0)))
+             (else 0))))
+
+      (ly:stencil-translate-axis
+        final-stencil
+        ;; TODO
+        ;; there's a little inconsistency here, with the need to add some
+        ;; correction, i.e. (* thick 2)
+        (if (zero? x-offset)
+            0
+            (- x-offset (* thick 2)))
+        X)))
+
+duplicate-spanner =
+#(define-music-function (amount width markup) (number? number? markup?)
+#{
+\once \override TrillSpanner.after-line-breaking =
+#(lambda (grob)
+   (ly:grob-set-property! grob 'stencil
+     (make-duplicate-stencil grob amount width markup)))
+#})
+
+loop-spanner =
+#(define-music-function (amount) (number?)
+#{
+\duplicate-spanner #amount 0.87 \loop-element
+#})
+
+square-spanner =
+#(define-music-function (amount) (number?)
+#{
+\duplicate-spanner #amount 1.3 \square-element
+#})
+
+random-spanner =
+#(define-music-function (amount) (number?)
+#{
+\duplicate-spanner #amount 2.1 \random-element
+#})
+
+random-spanner-two =
+#(define-music-function (amount) (number?)
+#{
+\duplicate-spanner #amount 2.1 \random-element-two
+#})
+
+random-spanner-three =
+#(define-music-function (amount) (number?)
+#{
+\duplicate-spanner #amount 3.5 \random-element-three
+#})
+
+%%% spanner line styles %%%
+
+evans-dashed-line-with-hook-and-arrow = #(
+    define-music-function
+    (parser location music)
+    (ly:music?)
+    #{
+    - \tweak Y-extent ##f
+    - \tweak arrow-width 0.25
+    - \tweak dash-fraction 0.25
+    - \tweak dash-period 1.5
+    - \tweak bound-details.left.stencil-align-dir-y #up
+    - \tweak bound-details.left-broken.text ##f
+    - \tweak bound-details.left.text \markup { \draw-line #'(0 . -1) }
+    % right padding to avoid last leaf in spanner:
+    %%%- \tweak bound-details.right.padding 1.25
+    - \tweak bound-details.right.stencil-align-dir-y #center
+    - \tweak bound-details.right.arrow ##t
+    - \tweak bound-details.right-broken.arrow ##t
+    - \tweak bound-details.right.padding 0.5
+    - \tweak bound-details.right-broken.padding 0
+    - \tweak bound-details.right-broken.text ##f
+    $music
+    #}
+    )
+
+
+evans-solid-line-with-hook-and-arrow = #(
+    define-music-function
+    (parser location music)
+    (ly:music?)
+    #{
+    - \tweak Y-extent ##f
+    - \tweak arrow-width 0.25
+    - \tweak dash-fraction 1
+    - \tweak bound-details.left.stencil-align-dir-y #up
+    - \tweak bound-details.left-broken.text ##f
+    - \tweak bound-details.left.text \markup { \draw-line #'(0 . -1) }
+    % right padding to avoid last leaf in spanner:
+    %%%- \tweak bound-details.right.padding 1.25
+    - \tweak bound-details.right.stencil-align-dir-y #center
+    - \tweak bound-details.right.arrow ##t
+    - \tweak bound-details.right-broken.arrow ##t
+    - \tweak bound-details.right.padding 0.5
+    - \tweak bound-details.right-broken.padding 0
+    - \tweak bound-details.right-broken.text ##f
+    $music
+    #}
     )

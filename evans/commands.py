@@ -8,8 +8,8 @@ import baca
 import quicktions
 from abjadext import rmakers
 
-from .handlers import RhythmHandler
-from .rtm import RTMMaker
+from .handlers import IntermittentVoiceHandler, RhythmHandler
+from .rtm import RTMMaker, exponential_leaf_maker
 from .select import get_top_level_components_from_leaves, select_all_but_final_leaf
 from .sequence import CyclicList
 
@@ -1094,6 +1094,45 @@ def hairpin(
     return returned_function
 
 
+def sustain_pedal(
+    counts=None,
+    cyclic=True,
+    pitched=True,
+    alternating=False,
+    lifts=False,
+):
+    def returned_function(selections):
+        def selector(selections_):
+            ties = abjad.select.logical_ties(selections_, pitched=pitched)
+            if counts is not None:
+                counts_ = [_ - 1 for _ in counts]
+                groups = abjad.select.partition_by_counts(
+                    ties, counts_, cyclic=cyclic, overhang=cyclic
+                )
+            else:
+                groups = [abjad.select.leaves(ties)]
+            return groups
+
+        groups = selector(selections)
+        for i, group in enumerate(groups):
+            if alternating is True:
+                if i % 2 == 0 and i != 0:
+                    continue
+            if lifts is True:
+                if 0 < i:
+                    first_leaf = abjad.select.leaf(group, 0)
+                    previous_leaf = abjad.get.leaf(first_leaf, -1)
+                    lift_group = [previous_leaf]
+                    lift_group.extend(group)
+                    baca.sustain_pedal(lift_group)
+                else:
+                    baca.sustain_pedal(group)
+            else:
+                baca.sustain_pedal(group)
+
+    return returned_function
+
+
 def figure(
     collections,
     counts,
@@ -1203,3 +1242,347 @@ def imbricate(
         )
     closing_literal = abjad.LilyPondLiteral(r"\oneVoice", site="after")
     abjad.attach(closing_literal, container)
+
+
+def auto_staff_change(upper_staff_name, lower_staff_name):
+    def returned_function(selections):
+        def up_or_down(pitch, first=False):
+            numbered_pitch = abjad.NumberedPitch(pitch)
+            if 0 < numbered_pitch:
+                return "UP"
+            elif numbered_pitch < 0:
+                return "DOWN"
+            else:
+                if first is False:
+                    return None
+                else:
+                    return "UP"
+
+        ties = abjad.select.logical_ties(selections, pitched=True)
+        active_staff = up_or_down(ties[0][0].written_pitch, first=True)
+        up_literal = abjad.LilyPondLiteral(
+            rf'\change Staff = "{upper_staff_name}"', site="before"
+        )
+        down_literal = abjad.LilyPondLiteral(
+            rf'\change Staff = "{lower_staff_name}"', site="before"
+        )
+        if active_staff == "UP":
+            abjad.attach(up_literal, ties[0][0])
+        else:
+            abjad.attach(down_literal, ties[0][0])
+
+        for tie in ties[1:]:
+            desired_staff = up_or_down(tie[0].written_pitch)
+            if desired_staff is None:
+                continue
+            elif desired_staff == active_staff:
+                continue
+            elif desired_staff == "UP":
+                abjad.attach(up_literal, tie[0])
+            elif desired_staff == "DOWN":
+                abjad.attach(down_literal, tie[0])
+            else:
+                raise Exception("BAD TESTER RESULT")
+            active_staff = desired_staff
+
+    return returned_function
+
+
+def replace_rests_with_skips(selections):
+    skips = []
+    rests = abjad.select.leaves(selections, pitched=False)
+    for rest in rests:
+        duration = rest.written_duration
+        s = abjad.Skip(duration)
+        skips.append(s)
+    abjad.mutate.replace(rests, skips)
+
+
+def make_anchor_skips_from_voices(
+    *args, name="anchor voice", destination="voice 1", exclude_final_measure=True
+):
+    input = [_ for _ in args]
+    voices = abjad.select.components(input, abjad.Voice)
+    if exclude_final_measure is True:
+        for voice in voices:
+            if voice.name == destination:
+                measures = abjad.select.group_by_measure(voice)
+                final_measure = measures[-1]
+                final_timespan = abjad.get.timespan(final_measure)
+
+    leaves = abjad.select.leaves(voices)
+    timespans = [abjad.get.timespan(leaf) for leaf in leaves]
+    timespans.sort()
+    out_spans = [timespans[0]]
+    for span in timespans[1:]:
+        if span.start_offset == out_spans[-1].start_offset:
+            continue
+        if span.start_offset < out_spans[-1].stop_offset:
+            out_spans[-1].stop_offset = span.start_offset
+        out_spans.append(span)
+    out_spans = abjad.TimespanList(out_spans)
+    if exclude_final_measure is True:
+        out_spans = out_spans - final_timespan
+    out_durations = [_.duration for _ in out_spans]
+    nested_music = rmakers.multiplied_duration(out_durations, abjad.Skip)
+    container = abjad.Container()
+    for component in nested_music:
+        if isinstance(component, list):
+            container.extend(component)
+        else:
+            container.append(component)
+    music = abjad.mutate.eject_contents(container)
+
+    destination = [_ for _ in voices if _.name == destination][0]
+    if exclude_final_measure is True:
+        measures = abjad.select.group_by_measure(destination)[:-1]
+        destination = []
+        for measure in measures:
+            destination.extend(measure)
+
+    handler = IntermittentVoiceHandler(
+        music,
+        direction="neutral",
+        from_components=True,
+        voice_name=name,
+    )
+
+    handler(destination)
+
+
+def wrap_in_repeats(selections, number_of_repeats=2, barline_color="black"):
+    leaves = abjad.select.leaves(selections)
+    abjad.attach(
+        abjad.LilyPondLiteral(
+            rf'\repeatBracket {number_of_repeats} "{barline_color}" {{ ', site="before"
+        ),
+        leaves[0],
+    )
+    abjad.attach(
+        abjad.LilyPondLiteral("}", site="after"),
+        leaves[-1],
+    )
+    # abjad.LilyPondLiteral(r"""\set Score.repeatCommands = #'((volta "1-2"))""", site="before")
+    # abjad.LilyPondLiteral(
+    #     r"""\set Score.repeatCommands = #'((volta #f) (volta "3"))""",
+    #     site="before",
+    # )
+    # abjad.LilyPondLiteral(
+    #     r"""\set Score.repeatCommands = #'((volta #f))""",
+    #     site="before",
+    # )
+
+
+def do_fitted_obgc(
+    target,
+    number_of_leaves=[5],
+    *,
+    # voice_name="obgc",
+    accelerando_switch_indices=None,
+    accelerando_written_durations=[32],
+    anchor_voice_number=2,
+    beam_position=6,
+    do_not_beam=False,
+    do_not_slur=False,
+    feathered=False,
+    fixed_gettato_pitch=None,
+    font_size=-4,
+    gettato=False,
+    grace_voice_number=1,
+    grow_directions=None,
+    interval_of_transposition="+P8",
+    over_figure=False,
+    portion_of_total_duration=None,
+    with_beam_nibs=False,
+    written_duration=8,
+):
+    if portion_of_total_duration is not None:
+        portion_of_total_duration = quicktions.Fraction(
+            portion_of_total_duration[0], portion_of_total_duration[1]
+        )
+    cyc_accel_written_durs = CyclicList(accelerando_written_durations, forget=False)
+    if grow_directions is not None:
+        cyc_grow_dirs = CyclicList(grow_directions, forget=False)
+    if accelerando_switch_indices is not None:
+        cyc_accel_switch_ind = CyclicList(accelerando_switch_indices, forget=False)
+    else:
+        cyc_accel_switch_ind = CyclicList([None], forget=False)
+    group_numbers = CyclicList(number_of_leaves, forget=False)
+    number_of_leaves = CyclicList(number_of_leaves, forget=False)
+    if over_figure is True:
+        duration = abjad.get.duration(target)
+        durations = [duration]
+        targets = [target[:]]
+    else:
+        ties = abjad.select.logical_ties(target, pitched=True)
+        durations = [abjad.get.duration(tie) for tie in ties]
+        targets = ties
+    for target_, duration in zip(targets, durations):
+        n_of_l = number_of_leaves(r=1)[0]
+        if gettato is True:
+            first_leaf = abjad.select.leaf(target_, 0)
+            if isinstance(first_leaf, abjad.Note):
+                pitch = first_leaf.written_pitch
+            elif isinstance(first_leaf, abjad.Chord):
+                pitch = first_leaf.written_pitches[-1]
+        else:
+            pitch = "c'"
+        if grow_directions is not None:
+            next_dur = cyc_accel_written_durs(r=1)[0]
+            next_grow_dir = cyc_grow_dirs(r=1)
+            next_switch_ind = cyc_accel_switch_ind(r=1)
+            content_maker = exponential_leaf_maker(
+                [(1, next_dur)],
+                number_of_leaves.lst,
+                next_grow_dir,
+                next_switch_ind,
+            )
+            contents = content_maker([duration])
+        else:
+            contents = [
+                abjad.Note(pitch, abjad.Duration(1, written_duration))
+                for _ in range(n_of_l)
+            ]
+        if grow_directions is None:
+            calculated_duration = duration / n_of_l
+            if portion_of_total_duration is not None:
+                calculated_duration = calculated_duration * portion_of_total_duration
+        else:
+            calculated_duration = portion_of_total_duration
+        new_container = abjad.on_beat_grace_container(
+            contents,
+            target_,
+            anchor_voice_number=anchor_voice_number,
+            leaf_duration=calculated_duration,
+            do_not_slash=True,
+            do_not_slur=do_not_slur,
+            do_not_beam=do_not_beam,
+            font_size=font_size,
+            grace_voice_number=grace_voice_number,
+        )
+        if gettato is False:
+            abjad.override(target_[0]).NoteHead.layer = 3
+            abjad.override(
+                new_container[0]
+            ).Beam.positions = rf"#'({beam_position} . {beam_position})"
+            tweak_literal = abjad.LilyPondLiteral(
+                rf"\once \override Slur.details.region-size = #{beam_position + 0.5}",
+                site="before",
+            )
+            abjad.attach(tweak_literal, new_container[0])
+            abjad.override(
+                new_container[0]
+            ).Slur.positions = rf"#'({beam_position + 0.5} . {beam_position + 0.5})"
+            start_scheme_literal = abjad.LilyPondLiteral(
+                r"\start-ob-multi-grace", site="before"
+            )
+            abjad.attach(start_scheme_literal, new_container[0])
+            stop_scheme_literal = abjad.LilyPondLiteral(
+                r"\stop-ob-multi-grace", site="after"
+            )
+            abjad.attach(stop_scheme_literal, new_container[-1])
+        if gettato is True:
+            graces = abjad.select.leaves(new_container, pitched=True, grace=True)
+            groups = abjad.select.group_by_contiguity(graces)
+            for group in groups:
+                group_number = group_numbers(r=1)[0]
+                abjad.attach(
+                    abjad.Markup(rf'\markup {{\hspace #1 "gett.({group_number})" }}'),
+                    group[0],
+                )
+                start_literal = abjad.LilyPondLiteral(
+                    [
+                        r"\override NoteHead.no-ledgers = ##t",
+                        r"\override Accidental.transparent = ##t",
+                        r"\override NoteHead.transparent = ##t",
+                        # r"\override NoteHead.X-extent = #'(0 . 0)",
+                    ],
+                    site="before",
+                )
+                abjad.attach(start_literal, group[0])
+                stop_literal = abjad.LilyPondLiteral(
+                    [
+                        r"\override NoteHead.no-ledgers = ##f",
+                        r"\override Accidental.transparent = ##f",
+                        r"\override NoteHead.transparent = ##f",
+                        # r"\revert NoteHead.X-extent",
+                    ],
+                    site="after",
+                )
+                abjad.attach(stop_literal, group[-1])
+                if with_beam_nibs is not False:
+                    if written_duration == 8:
+                        beam_count = abjad.BeamCount(1, 1)
+                    elif written_duration == 16:
+                        beam_count = abjad.BeamCount(2, 2)
+                    elif written_duration == 32:
+                        beam_count = abjad.BeamCount(3, 3)
+                    elif written_duration == 64:
+                        beam_count = abjad.BeamCount(4, 4)
+                    else:
+                        raise Exception(
+                            f"INCOMPATIBLE WRITTEN DURATION: {written_duration}"
+                        )
+                    if with_beam_nibs != "trailing":
+                        abjad.attach(beam_count, group[0])
+                    abjad.attach(beam_count, group[-1])
+                if feathered is True:
+                    literal = abjad.LilyPondLiteral(
+                        r"\once \override Beam.grow-direction = #left",
+                        site="before",
+                    )
+                    abjad.attach(literal, group[0])
+            for grace in graces:
+                if fixed_gettato_pitch is None:
+                    interval = abjad.NamedInterval(interval_of_transposition)
+                    new_note = interval.transpose(grace)
+                else:
+                    new_note = abjad.Note(fixed_gettato_pitch, abjad.Duration(1, 4))
+                if isinstance(grace, abjad.Note):
+                    grace.written_pitch = new_note.written_pitch
+                abjad.attach(abjad.Articulation("staccato"), grace, direction=abjad.UP)
+
+
+def fitted_obgc(
+    # voice_name="obgc",
+    accelerando_switch_indices=None,
+    accelerando_written_durations=[32],
+    anchor_voice_number=2,
+    beam_position=6,
+    do_not_beam=False,
+    do_not_slur=False,
+    feathered=False,
+    fixed_gettato_pitch=None,
+    font_size=-4,
+    gettato=False,
+    grace_voice_number=1,
+    grow_directions=None,
+    interval_of_transposition="+P8",
+    number_of_leaves=[5],
+    over_figure=False,
+    portion_of_total_duration=None,
+    with_beam_nibs=False,
+    written_duration=8,
+):
+    f = lambda selections: do_fitted_obgc(
+        selections,
+        number_of_leaves=number_of_leaves,
+        anchor_voice_number=anchor_voice_number,
+        beam_position=beam_position,
+        over_figure=over_figure,
+        written_duration=written_duration,
+        gettato=gettato,
+        grace_voice_number=grace_voice_number,
+        with_beam_nibs=with_beam_nibs,
+        feathered=feathered,
+        interval_of_transposition=interval_of_transposition,
+        fixed_gettato_pitch=fixed_gettato_pitch,
+        do_not_slur=do_not_slur,
+        do_not_beam=do_not_beam,
+        font_size=font_size,
+        accelerando_written_durations=accelerando_written_durations,
+        grow_directions=grow_directions,
+        accelerando_switch_indices=accelerando_switch_indices,
+        portion_of_total_duration=portion_of_total_duration,
+    )
+    return f

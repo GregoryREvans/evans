@@ -2186,12 +2186,14 @@ class IntermittentVoiceHandler(Handler):
         cluster=False,
         cluster_color="#(rgb-color 0.56 0.85 0.6)",
         voice_name="intermittent_voice",
+        from_components=False,
     ):
         self.rhythm_handler = rhythm_handler
         self.direction = direction
         self.cluster = cluster
         self.cluster_color = cluster_color
         self.voice_name = voice_name
+        self.from_components = from_components
 
     def __call__(
         self,
@@ -2226,9 +2228,10 @@ class IntermittentVoiceHandler(Handler):
         abjad.mutate.wrap(selections, original_voice)
         abjad.mutate.wrap(original_voice, container)
         container.append(intermittent_voice)
-        abjad.attach(literal1, abjad.select.leaf(original_voice, 0))
-        abjad.attach(literal2, abjad.select.leaf(intermittent_voice, 0))
-        abjad.attach(closing_literal, container)
+        if self.direction != "neutral":
+            abjad.attach(literal1, abjad.select.leaf(original_voice, 0))
+            abjad.attach(literal2, abjad.select.leaf(intermittent_voice, 0))
+            abjad.attach(closing_literal, container)
 
     def _find_parent(self, selections):
         first_leaf = abjad.select.leaf(selections, 0)
@@ -2237,7 +2240,10 @@ class IntermittentVoiceHandler(Handler):
         return f"{parent_voice[0].name} temp"
 
     def _make_components(self, duration):
-        components = self.rhythm_handler(duration)
+        if self.from_components is False:
+            components = self.rhythm_handler(duration)
+        else:
+            components = self.rhythm_handler
         if self.cluster is True:
             components.append(abjad.Note("c'16"))
             opening = abjad.LilyPondLiteral(

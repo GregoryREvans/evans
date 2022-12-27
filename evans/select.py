@@ -159,3 +159,23 @@ def get_top_level_components_from_leaves(leaves):  # TODO:
                 if sub_leaf not in out:
                     out.append(sub_leaf)
     return out
+
+
+def select_ties_below_written_pitch(argument, reference_pitch, *, flattened=False):
+    out = []
+    temp_group = []
+    for tie in abjad.select.logical_ties(argument, pitched=True):
+        if isinstance(tie[0], abjad.Note):
+            tie_pitch = tie[0].written_pitch
+        elif isinstance(tie[0], abjad.Chord):
+            tie_pitch = tie[0].written_pitches[-1]
+        if tie_pitch < reference_pitch:
+            if flattened is False:
+                temp_group.append(tie)
+            else:
+                out.append(tie)
+        else:
+            if 0 < len(temp_group):
+                out.append(temp_group)
+                temp_group = []
+    return out

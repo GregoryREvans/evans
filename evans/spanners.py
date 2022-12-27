@@ -2,6 +2,7 @@
 
 import abjad
 
+from .select import get_top_level_components_from_leaves
 from .sequence import CyclicList
 
 
@@ -154,20 +155,33 @@ def make_fancy_gliss(*args, right_padding=0.5, match=True):
 
 
 def make_multi_trill(
-    note, *trill_pitches, notehead_styles=[r"\revert-noteheads"], after_spacing="1/16"
+    note, *trill_pitches, notehead_styles=[None], after_spacing="1/16", extra_padding=0
 ):
-    heads = CyclicList(notehead_styles, forget=False)
+    """
+    sample pitches:
+    c'!
+    cqs''!
+    <d'! fqs'!>
+    !! requires evans.ily and abjad.ily
+    """
+    _notehead_styles = []
+    for _ in notehead_styles:
+        if _ is not None:
+            _notehead_styles.append(_)
+        else:
+            _notehead_styles.append("")
+    heads = CyclicList(_notehead_styles, forget=False)
     t_length = len(trill_pitches)
     assert 0 < t_length < 5
     opening_literal = abjad.LilyPondLiteral(
-        rf"\afterGrace {after_spacing}", site="after"
+        rf"\afterGrace {after_spacing}", site="before"
     )
     abjad.attach(opening_literal, note)
     if t_length == 1:
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
-                rf"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}'!32 \startTrillSpan \revert-noteheads",
+                rf"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}32 \startTrillSpan \revert-noteheads",
                 "}",
             ],
             site="after",
@@ -180,8 +194,8 @@ def make_multi_trill(
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
-                rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}!32 \startDoubleTrill #2 #1 -\markup "(" """,
-                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[1]}!32 -\markup ")" """,
+                rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}32 \startDoubleTrill #{2 + extra_padding} #{1 + extra_padding} """,
+                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[1]}32 \revert-noteheads""",
                 "}",
             ],
             site="after",
@@ -194,9 +208,9 @@ def make_multi_trill(
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
-                rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}!32 \startTripleTrill #3 #2 #1 -\markup "(" """
-                rf"     \suggest-pitch-middle {heads(r=1)[0]} {trill_pitches[1]}!32"
-                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[2]}!32 -\markup ")" """
+                rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}32 \startTripleTrill #{3 + extra_padding} #{2 + extra_padding} #{1 + extra_padding} """
+                rf"     \suggest-pitch-middle {heads(r=1)[0]} {trill_pitches[1]}32"
+                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[2]}32 \revert-noteheads"""
                 "}",
             ],
             site="after",
@@ -205,3 +219,46 @@ def make_multi_trill(
         stop_trill = abjad.LilyPondLiteral(r"\stopTripleTrill", site="after")
         next = abjad.get.leaf(note, 1)
         abjad.attach(stop_trill, next)
+
+
+def annotate_tuplet_duration(
+    selections, exclude_durations=[(1, 4)], paddings=[2.5], directions=["#up"]
+):
+    paddings = CyclicList(paddings, forget=False)
+    directions = CyclicList(directions, forget=False)
+    exclude_durations = [abjad.Duration(_) for _ in exclude_durations]
+    leaves = abjad.select.leaves(selections)
+    top_level_components = get_top_level_components_from_leaves(leaves)
+    tuplets = abjad.select.tuplets(top_level_components)
+    for tuplet in tuplets:
+        parent = abjad.get.parentage(tuplet).parent
+        if isinstance(parent, abjad.Tuplet):
+            continue
+        tup_dur = abjad.get.duration(tuplet)
+        if tup_dur in exclude_durations:
+            continue
+        group_start = abjad.StartGroup()
+        group_stop = abjad.StopGroup()
+        notes = abjad.makers.make_leaves([0], [tup_dur])
+        string = abjad.illustrators.selection_to_score_markup_string(notes)
+        string = rf"""\markup {{ \hspace #1.25 "(" \hspace #-0.5 \scale #'(0.5 . 0.5) {string} \hspace #-0.5 ")" }}"""
+        direction = directions(r=1)[0]
+        padding = paddings(r=1)[0]
+        bundle = abjad.Bundle(
+            indicator=group_start,
+            tweaks=(
+                abjad.Tweak(rf"- \tweak HorizontalBracket.direction {direction}"),
+                abjad.Tweak(r"- \tweak HorizontalBracket.transparent ##t"),
+                abjad.Tweak(rf"- \tweak HorizontalBracket.padding {padding}"),
+                abjad.Tweak(r"- \tweak HorizontalBracketText.Y-offset -0.5"),
+                abjad.Tweak(rf"- \tweak HorizontalBracketText.text {string}"),
+            ),
+        )
+        # abjad.override(group_start).HorizontalBracket.transparent = True
+        # abjad.override(group_start).padding = 2.5
+        # abjad.override(group_start).HorizontalBracketText.Y_offset = -0.5
+        # abjad.override(group_start).HorizontalBracketText.text = string
+        first_leaf = abjad.select.leaf(tuplet, 0)
+        last_leaf = abjad.select.leaf(tuplet, -1)
+        abjad.attach(bundle, first_leaf)
+        abjad.attach(group_stop, last_leaf)
