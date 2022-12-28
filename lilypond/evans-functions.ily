@@ -742,7 +742,7 @@ square-alto-clef-change = {
              (append (list origin)
                      (reverse (cdr (reverse pointlist)))) pointlist))))
 
-#(define (make-path-stencil path thickness x-scale y-scale fill)
+#(define (make-my-path-stencil path thickness x-scale y-scale fill)
   "Make a stencil based on the path described by the list @var{path},
 with thickness @var{thickness}, and scaled by @var{x-scale} in the X
 direction and @var{y-scale} in the Y direction.  @var{fill} is a boolean
@@ -896,7 +896,7 @@ coordinates for the previous point in the path."
              (corr (/ raw-line-length x-span))
              ;; calculate the scaled wave-length
              (scaled-wave-length (/ wave-length corr)))
-         (make-path-stencil
+         (make-my-path-stencil
            (append
              `(moveto ,left-bound 0.0)
              (append-map
@@ -1064,7 +1064,7 @@ vibrato =
                         (thickness (* (ly:grob-property grob 'thickness 1.0) (ly:staff-symbol-line-thickness grob)))
                         (factor (ly:grob-property grob 'curvature-factor))
                         )
-                    (make-path-stencil (append `(moveto ,start 0.0)
+                    (make-my-path-stencil (append `(moveto ,start 0.0)
                         (let loop (
                             (position start)
                             (tail sublist)
@@ -1144,7 +1144,7 @@ parentheAll = #(define-music-function (note) (ly:music?)
              ;;(multiplier (/ (* 2 wave-height) interval))
              (step-size (/ x-span waves-amount))
              )
-         (make-path-stencil
+         (make-my-path-stencil
            (append
                `(moveto ,left-bound ,wave-height)
                `(lineto

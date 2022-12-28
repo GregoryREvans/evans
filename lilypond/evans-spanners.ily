@@ -919,241 +919,90 @@ stop-graphic-scp = #(
     make-music 'TextSpanEvent 'span-direction STOP 'spanner-id "graphicSCP"
     )
 
+%%% interruptive polyphony %%%
+% don't forget
+% \consists Grob_pq_engraver
+% \consists #Interrupt_heads_engraver
 
-%%% Ferneyhough Interruptive Polyphony Engraver and Commands %%%
-%%% Don't forget \consists #interrupt_heads_engraver in \SCORE
-#(define (draw-ps-line length offset thickness)
-  (ly:make-stencil (list 'embedded-ps
-                   (ly:format "gsave
-                    /x ~4f def
-                    /offset ~4f def
-                    /thickness ~4f def
-                    currentpoint translate
-                    thickness setlinewidth
-                    2 setlinecap
-                    2 setlinejoin
-                    newpath
-                    offset thickness moveto
-                    x thickness lineto
-                    stroke
-                    newpath
-                    offset thickness sub thickness -1 mul moveto
-                    x thickness -1 mul lineto
-                    stroke
-                    newpath
-                    thickness 2 mul setlinewidth
-                    offset 0 moveto
-                    x thickness sub 0 lineto
-                    stroke
-                    grestore
-                    " length (- offset 0.015) thickness))
-                (cons -0.5 0.5)
-                (cons -0.5 0.5))
-)
+#(define (make-butt-line-stencil width start-x start-y end-x end-y)
+   (let ((path `(moveto ,start-x ,start-y lineto ,end-x ,end-y)))
+     (make-path-stencil path width 1 1 #t #:line-cap-style 'butt)))
 
-#(define (draw-ps-bracket length offset position thickness)
-  (ly:make-stencil (list 'embedded-ps
-                   (ly:format "gsave
-                    /x ~4f def
-                    /offset ~4f def
-                    /end-pos ~4f def
-                    /thickness ~4f def
-                    currentpoint translate
-                    newpath
-                    thickness setlinewidth
-                    2 setlinecap
-                    2 setlinejoin
-                    offset thickness moveto
-                    x thickness lineto
-                    x 0 moveto
-                    x end-pos lineto
-                    stroke
-                    newpath
-                    offset thickness sub thickness -1 mul moveto
-                    x thickness -1 mul lineto
-                    stroke
-                    newpath
-                    thickness 2 mul setlinewidth
-                    offset 0 moveto
-                    x thickness sub 0 lineto
-                    stroke
-                    grestore
-                    " length (- offset 0.015) position thickness))
-                (cons -0.5 0.5)
-                (cons -0.5 0.5))
-)
+#(define (interrupting-bracket grob)
+   (let* ((left (ly:spanner-bound grob LEFT))
+          (right (ly:spanner-bound grob RIGHT))
+          (sys (ly:grob-system grob))
+          (start-x (interval-end (ly:grob-extent left sys X)))
+          (start-y (interval-center (ly:grob-extent left sys Y)))
+          (right-stem (ly:grob-object right 'stem))
+          (right-stem-dir (ly:grob-property right-stem 'direction))
+          (right-head (reduce (lambda (head prev)
+                                (if ((if (eqv? UP right-stem-dir) not identity)
+                                     (ly:grob-vertical<? head prev))
+                                    head
+                                    prev))
+                              'dummy
+                              (ly:grob-array->list (ly:grob-object right 'note-heads))))
+          (end-x (interval-index (interval-widen (ly:grob-extent right-head sys X) -0.07)
+                                 (- right-stem-dir)))
+          (end-y (interval-center (ly:grob-extent right-head sys Y))))
+     (ly:stencil-translate
+      (ly:stencil-add
+       (make-butt-line-stencil 0.5 (- start-x 0.2) start-y (+ end-x 0.05) start-y)
+       (make-butt-line-stencil 0.1 end-x start-y end-x end-y))
+      (cons (- (ly:grob-relative-coordinate grob sys X))
+            (- (ly:grob-relative-coordinate grob sys Y))))))
 
-#(define (ly:moment-abs moment)
-  (let* (
-    (num (ly:moment-main-numerator moment))
-    (d (ly:moment-main-denominator moment))
-    )
-    (ly:make-moment (abs num) d)
-  )
-)
-
-#(define (get-upper-staff-pos grob-a grob-b)
-  (let*
-    (
-      (min-val (min (ly:grob-property grob-a 'staff-position) (ly:grob-property grob-b 'staff-position)))
-    )
-  (if (equal? min-val (ly:grob-property grob-a 'staff-position))
-          grob-b
-          grob-a
-      )
-))
-
-#(define (get-lower-staff-pos grob-a grob-b)
-  (let*
-    (
-      (min-val (min (ly:grob-property grob-a 'staff-position) (ly:grob-property grob-b 'staff-position)))
-    )
-  (if (equal? min-val (ly:grob-property grob-a 'staff-position))
-          grob-a
-          grob-b
-      )
-))
-
-%!!find overlapping durations
-#(define (find-duration-overlap new-note old-note)
-  (let* (
-    (old-grob (third old-note))
-    (new-grob (third new-note))
-    (notecol (ly:grob-parent old-grob X))
-    (notecol-new (ly:grob-parent new-grob X))
-    (noteheads (ly:grob-array->list (ly:grob-object notecol 'note-heads)))
-    (meta-old (ly:grob-property notecol 'meta))
-    (overlap (ly:moment-abs (ly:moment-sub (first new-note) (second old-note) )))
-    )
-  (if (ly:moment<? (ly:make-moment 0 0 0) overlap)
-        ;;check if chord
-        (if (eqv? notecol notecol-new)
-              (begin
-                ;;if chord set lower note green
-                ;(ly:grob-set-property! (get-lower-staff-pos old-grob new-grob) 'color green)
-                (ly:grob-set-property! (get-lower-staff-pos old-grob new-grob) 'meta
-                        (append
-                            (ly:grob-property (get-lower-staff-pos old-grob new-grob) 'meta)
-                              (list (cons 'is-lower-in-chord #t))))
-                ;(display "Chord")(newline)
-              )
-              ;;if not chord
-              (begin
-                ;(display "Not Chord")(newline)
-                ;;if not a chord just make grob relation
-                ;(ly:grob-set-property! old-grob 'color red)
-                ;;set the meta value in notecolumn so that we can access it from chord-heads
-                ;;first check back to see if this note is part of a chords
-                (ly:grob-set-property! notecol 'meta
-                            (append meta-old (list (cons 'other-grob new-grob))))
-              )
-        )
-        (begin
-            (display "Othering")(newline) ; needs to do something for no error
-        )
-    )
-))
-
-#(define (extract-timing context notehead)
-  (let*
-    (
-      (start-point (ly:context-current-moment context))
-      (duration (ly:event-property (ly:grob-property notehead 'cause) 'length))
-      (end-point (ly:moment-add start-point duration))
-    )
-    ;;return a list of grob start and end point
-   (list start-point end-point notehead)
-  )
-)
-
-#(define (interrupt_heads_engraver ctx)
-   (let (
-      (noteheads '())
-    )
-    `(
+#(define (Interrupt_heads_engraver context)
+   (let ((interrupted (make-hash-table)))
+     (make-engraver
       (acknowledgers
-          (note-head-interface . , (lambda (trans grob source)
-                (set! noteheads (cons (extract-timing ctx grob) noteheads)))
-          )
-        )
-       (process-acknowledged
-        . ,(lambda (trans)
-            (begin
-             (if (>= (length noteheads) 2)
-                 (begin
-                   ; (display noteheads)(newline)
-                   (find-duration-overlap (first noteheads) (last noteheads))
-                   (set! noteheads (list (first noteheads)))
-                  )
-                )
-             ))
-          )
-      )
-))
+       ((note-column-interface engraver grob source-engraver)
+        (when (not (ly:grob-object grob 'rest #f))
+          (for-each
+           (match-lambda
+            ((mom . elt)
+             (when (and (grob::has-interface elt 'note-head-interface)
+                        (assoc-get 'interrupt (ly:grob-property elt 'details '()))
+                        (not (hashq-ref interrupted elt))
+                        (not (equal? mom (ly:context-current-moment context))))
+               (hashq-set! interrupted elt #t)
+               (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
+                 (ly:spanner-set-bound! follower LEFT elt)
+                 (ly:spanner-set-bound! follower RIGHT grob)
+                 (ly:grob-set-property! follower 'stencil interrupting-bracket)))))
+           (ly:context-property context 'busyGrobs))))))))
 
-#(define (get-distance x y)
-    (- (cdr y) (car x))
-)
+interrupt = \once \override Staff.NoteHead.details.interrupt = ##t
 
-%!!music function -problem is with (ly:grob-extent grob sys Y))
-interrupt = #(define-music-function (value) (number?)
-  #{
-      \override Staff.NoteHead.cross-staff = ##t
-      \once \override Staff.NoteHead.after-line-breaking = #(lambda (grob)
-              (let* (
-                (stem (ly:grob-object grob 'stem))
-                (stem-dir (ly:grob-property stem 'direction))
-                (stem-thickness (ly:grob-property stem 'thickness))
-                (thickness (/ stem-thickness 10))
-                (notecol (ly:grob-parent grob X))
-                (meta  (assoc 'other-grob (ly:grob-property notecol 'meta)))
-                (other (if meta
-                              (cdr meta)
-                              grob
-                      ))
-                (notehead-width (cdr (ly:grob-property grob 'X-extent)))
-                (sys (ly:grob-system grob))
-                (now-pos (ly:grob-extent grob sys X))
-                (next-pos (ly:grob-extent other sys X))
 
-                ; does not work. skyline calculation unavailable
-                ;(now-pos-y (ly:grob-extent grob sys Y)) ; greg
-                ;(next-pos-y (ly:grob-extent other sys Y)) ; greg
-                (x-distance
-                    (if (= stem-dir -1)
-                      (+ (- (get-distance now-pos next-pos) notehead-width ) (/ thickness 2))
-                      (- (get-distance now-pos next-pos) (/ thickness 2))
-                    ))
-                ; does not work. skyline calculation unavailable
-                ;(y-distance
-                ;    (if (= stem-dir -1)
-                ;      (+ (- (get-distance now-pos-y next-pos-y) notehead-width ) (/ thickness 2))
-                ;      (- (get-distance now-pos-y next-pos-y) (/ thickness 2))
-                ;    ))
-                (ps-bracket
-                    (if (= stem-dir -1)
-                      (draw-ps-bracket x-distance notehead-width (- value 0.5) thickness)
-                      (draw-ps-bracket x-distance notehead-width value thickness)
-                    ))
-                ; does not work. skyline calculation unavailable
-                ;(ps-bracket
-                ;    (if (= stem-dir -1)
-                ;      (draw-ps-bracket x-distance notehead-width (- y-distance 0.5) thickness)
-                ;      (draw-ps-bracket x-distance notehead-width y-distance thickness)
-                ;    ))
-                (ps-line (draw-ps-line x-distance notehead-width thickness))
-                (grob-stencil (ly:grob-property grob 'stencil))
-                (stencil-bracket (ly:stencil-add grob-stencil ps-bracket ))
-                (stencil-line (ly:stencil-add grob-stencil ps-line))
-                )
-                (if (assoc 'is-lower-in-chord (ly:grob-property grob 'meta))
-                        (ly:grob-set-property! grob 'stencil stencil-line)
-                        (ly:grob-set-property! grob 'stencil stencil-bracket)
-                  )
-              )
-            )
-  #}
-)
+
+%%% hocket lines %%%
+% don't forget
+% \consists Grob_pq_engraver
+% \consists #Hocket_lines_engraver
+
+#(define (Hocket_lines_engraver context)
+   (let ((hocketed (make-hash-table)))
+     (make-engraver
+      (acknowledgers
+       ((note-column-interface engraver grob source-engraver)
+        (when (not (ly:grob-object grob 'rest #f))
+          (for-each
+           (match-lambda
+            ((mom . elt)
+             (when (and (grob::has-interface elt 'note-head-interface)
+                        (assoc-get 'hocket (ly:grob-property elt 'details '()))
+                        (not (hashq-ref hocketed elt))
+                        (not (equal? mom (ly:context-current-moment context))))
+               (hashq-set! hocketed elt #t)
+               (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
+                 (ly:spanner-set-bound! follower LEFT elt)
+                 (ly:spanner-set-bound! follower RIGHT grob)
+                 ))))
+           (ly:context-property context 'busyGrobs))))))))
+
+hocket = \once \override Staff.NoteHead.details.hocket = ##t
 
 
 %%% duplicate symbol spanners %%%
@@ -1317,3 +1166,190 @@ evans-solid-line-with-hook-and-arrow = #(
     $music
     #}
     )
+
+
+%%% variable trills %%%
+%\once \override TrillSpanner.thickness = 3
+%\once \override TrillSpanner.details.squiggle-initial-width = 0.4
+%\once \override TrillSpanner.details.squiggle-Y-scale = 0.8
+%% Use a negative value for a fast-slow trill.
+%% Bad things will happen if you set this to 1 or more!
+%\once \override TrillSpanner.details.squiggle-speed-factor = -0.6
+
+slow-fast-trill =
+\tweak TrillSpanner.stencil
+#(lambda (grob)
+    (let* ((left (ly:spanner-bound grob LEFT))
+           (right (ly:spanner-bound grob RIGHT))
+           (sys (ly:grob-system grob))
+           (my-coord (ly:grob-relative-coordinate grob sys X))
+           (trill-start-x (interval-start (ly:grob-extent left sys X)))
+           (glyph-stil
+            (ly:stencil-translate-axis
+             (ly:stencil-aligned-to
+              (grob-interpret-markup
+               grob
+               #{ \markup \general-align #Y #CENTER \musicglyph
+"scripts.trill" #})
+              X
+              LEFT)
+             trill-start-x
+             X))
+           (squiggle-glyph-stil
+            (grob-interpret-markup
+             grob
+             #{ \markup \lower #0.6 \general-align #X #LEFT \musicglyph
+"scripts.trill_element" #}))
+           (squiggle-glyph-width (interval-length (ly:stencil-extent
+squiggle-glyph-stil X)))
+           (start-x (+ (interval-end (ly:stencil-extent glyph-stil X))
+                       0.8))
+           (end-x (interval-start (ly:grob-extent right sys X)))
+           (thickness (* (ly:grob-property grob 'thickness 2.0)
+                         (ly:staff-symbol-line-thickness grob)))
+           (det (ly:grob-property grob 'details))
+           (squiggle-height (assoc-get 'squiggle-height det 0.3))
+           (squiggle-initial-width (assoc-get 'squiggle-initial-width
+det 2.0))
+           (squiggle-speed-factor (assoc-get 'squiggle-speed-factor det
+0.4))
+           (squiggle-Y-scale (assoc-get 'squiggle-Y-scale det 0.55)))
+      (let loop ((x start-x)
+                 (dir UP)
+                 (i 1)
+                 (stil glyph-stil))
+        (if (>= x end-x)
+            (ly:stencil-translate-axis stil (- my-coord) X)
+            (let ((width (* squiggle-initial-width (/ (expt i
+squiggle-speed-factor)))))
+              (loop (+ x width)
+                    (- dir)
+                    (1+ i)
+                    (let ((squiggle (ly:stencil-translate-axis
+                                     (ly:stencil-scale squiggle-glyph-stil
+                                                       (/ width
+squiggle-glyph-width)
+squiggle-Y-scale)
+                                     x
+                                     X)))
+                      (ly:stencil-add stil squiggle))))))))
+\startTrillSpan
+
+
+
+ slow-fast-smorzando =
+ \tweak TrillSpanner.stencil
+ #(lambda (grob)
+     (let* ((left (ly:spanner-bound grob LEFT))
+            (right (ly:spanner-bound grob RIGHT))
+            (sys (ly:grob-system grob))
+            (my-coord (ly:grob-relative-coordinate grob sys X))
+            (trill-start-x (interval-start (ly:grob-extent left sys X)))
+            (glyph-stil
+             (ly:stencil-translate-axis
+              (ly:stencil-aligned-to
+               (grob-interpret-markup
+                grob
+                #{ \markup \general-align #Y #CENTER \fontsize #-3 "smz." #})
+               X
+               LEFT)
+              trill-start-x
+              X))
+            (squiggle-glyph-stil
+             (grob-interpret-markup
+              grob
+              #{ \markup \lower #0.6 \general-align #X #LEFT \override #'(font-name . "ekmelos") \char ##xeab8
+ #}))
+            (squiggle-glyph-width (interval-length (ly:stencil-extent
+ squiggle-glyph-stil X)))
+            (start-x (+ (interval-end (ly:stencil-extent glyph-stil X))
+                        0.8))
+            (end-x (interval-start (ly:grob-extent right sys X)))
+            (thickness (* (ly:grob-property grob 'thickness 2.0)
+                          (ly:staff-symbol-line-thickness grob)))
+            (det (ly:grob-property grob 'details))
+            (squiggle-height (assoc-get 'squiggle-height det 0.3))
+            (squiggle-initial-width (assoc-get 'squiggle-initial-width
+ det 2.0))
+            (squiggle-speed-factor (assoc-get 'squiggle-speed-factor det
+ 0.4))
+            (squiggle-Y-scale (assoc-get 'squiggle-Y-scale det 0.55)))
+       (let loop ((x start-x)
+                  (dir UP)
+                  (i 1)
+                  (stil glyph-stil))
+         (if (>= x end-x)
+             (ly:stencil-translate-axis stil (- my-coord) X)
+             (let ((width (* squiggle-initial-width (/ (expt i
+ squiggle-speed-factor)))))
+               (loop (+ x width)
+                     (- dir)
+                     (1+ i)
+                     (let ((squiggle (ly:stencil-translate-axis
+                                      (ly:stencil-scale squiggle-glyph-stil
+                                                        (/ width
+ squiggle-glyph-width)
+ squiggle-Y-scale)
+                                      x
+                                      X)))
+                       (ly:stencil-add stil squiggle))))))))
+ \startTrillSpan
+
+
+ slow-fast-circle =
+ \tweak TrillSpanner.stencil
+ #(lambda (grob)
+     (let* ((left (ly:spanner-bound grob LEFT))
+            (right (ly:spanner-bound grob RIGHT))
+            (sys (ly:grob-system grob))
+            (my-coord (ly:grob-relative-coordinate grob sys X))
+            (trill-start-x (interval-start (ly:grob-extent left sys X)))
+            (glyph-stil
+             (ly:stencil-translate-axis
+              (ly:stencil-aligned-to
+               (grob-interpret-markup
+                grob
+                #{ \markup \general-align #Y #CENTER \fontsize #-3 "cir." #})
+               X
+               LEFT)
+              trill-start-x
+              X))
+            (squiggle-glyph-stil
+             (grob-interpret-markup
+              grob
+              #{ \markup \lower #0.6 \general-align #X #LEFT \override #'(font-name . "ekmelos") \char ##xeac3
+ #}))
+            (squiggle-glyph-width (interval-length (ly:stencil-extent
+ squiggle-glyph-stil X)))
+            (start-x (+ (interval-end (ly:stencil-extent glyph-stil X))
+                        0.8))
+            (end-x (interval-start (ly:grob-extent right sys X)))
+            (thickness (* (ly:grob-property grob 'thickness 2.0)
+                          (ly:staff-symbol-line-thickness grob)))
+            (det (ly:grob-property grob 'details))
+            (squiggle-height (assoc-get 'squiggle-height det 0.3))
+            (squiggle-initial-width (assoc-get 'squiggle-initial-width
+ det 2.0))
+            (squiggle-speed-factor (assoc-get 'squiggle-speed-factor det
+ 0.4))
+            (squiggle-Y-scale (assoc-get 'squiggle-Y-scale det 0.55)))
+       (let loop ((x start-x)
+                  (dir UP)
+                  (i 1)
+                  (stil glyph-stil))
+         (if (>= x end-x)
+             (ly:stencil-translate-axis stil (- my-coord) X)
+             (let ((width (* squiggle-initial-width (/ (expt i
+ squiggle-speed-factor)))))
+               (loop (+ x width)
+                     (- dir)
+                     (1+ i)
+                     (let ((squiggle (ly:stencil-translate-axis
+                                      (ly:stencil-scale squiggle-glyph-stil
+                                                        (/ width
+ squiggle-glyph-width)
+ squiggle-Y-scale)
+                                      x
+                                      X)))
+                       (ly:stencil-add stil squiggle))))))))
+ \startTrillSpan
