@@ -37,12 +37,17 @@ all-color-music = #(
     \override Beam.color = $color
     \override Dots.color = $color
     \override Flag.color = $color
+    \override Glissando.color = $color
     \override MultiMeasureRest.color = $color
     \override NoteHead.color = $color
+    \override NoteHead.details.hocket-color = $color
+    \override NoteHead.details.interrupt-color = $color
     \override RepeatTie.color = $color
     \override Rest.color = $color
+    \override Slur.color = $color
     \override Stem.color = $color
     \override StemTremolo.color = $color
+    \override Tie.color = $color
     $music
     #}
     )

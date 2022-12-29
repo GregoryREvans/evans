@@ -970,6 +970,7 @@ stop-graphic-scp = #(
                (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
                  (ly:spanner-set-bound! follower LEFT elt)
                  (ly:spanner-set-bound! follower RIGHT grob)
+                 (ly:grob-set-property! follower 'color (assoc-get 'interrupt-color (ly:grob-property elt 'details '())))
                  (ly:grob-set-property! follower 'stencil interrupting-bracket)))))
            (ly:context-property context 'busyGrobs))))))))
 
@@ -999,10 +1000,16 @@ interrupt = \once \override Staff.NoteHead.details.interrupt = ##t
                (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
                  (ly:spanner-set-bound! follower LEFT elt)
                  (ly:spanner-set-bound! follower RIGHT grob)
-                 ))))
+                 (ly:grob-set-property! follower 'color (assoc-get 'hocket-color (ly:grob-property elt 'details '())))
+                 ))
+            ))
            (ly:context-property context 'busyGrobs))))))))
 
 hocket = \once \override Staff.NoteHead.details.hocket = ##t
+
+%{ hocket-blue = \once \override Staff.NoteHead.details.hocket-blue = ##t %}
+%{ hocket-red = \once \override Staff.NoteHead.details.hocket-red = ##t %}
+%{ hocket-green = \once \override Staff.NoteHead.details.hocket-green = ##t %}
 
 
 %%% duplicate symbol spanners %%%

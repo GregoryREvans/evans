@@ -57,6 +57,8 @@ startAcciaccaturaMusic = { % single grace
   %{ \override GraceSpacing.spacing-increment = #0.1 %}
   \my-hack-flag
   \override Beam.transparent = ##t
+  \override Beam.cross-staff = ##t
+  \override Stem.cross-staff = ##t
   \override Stem.Y-extent = #'(0 . 0) % new
   \override NoteHead.layer = #3
   \override Stem.layer = #2
@@ -72,6 +74,8 @@ stopAcciaccaturaMusic = {
   %{ \revert GraceSpacing.spacing-increment %}
   \revert Stem.stencil
   \revert Beam.transparent
+  \revert Beam.cross-staff
+  \revert Stem.cross-staff
   \revert Stem.Y-extent % new
   \revert NoteHead.layer
   \revert Stem.layer
@@ -89,6 +93,8 @@ startAppoggiaturaMusic = { % multi grace
   \my-hack-slash
   \overhead-accidentals #-3
   \override Beam.Y-extent = #'(0 . 0) % new
+  \override Beam.cross-staff = ##t
+  \override Stem.cross-staff = ##t
   \override Stem.Y-extent = #'(0 . 0) % new
   \override NoteHead.layer = #3
   \override Beam.layer = #3
@@ -103,6 +109,8 @@ startAppoggiaturaMusic = { % multi grace
 stopAppoggiaturaMusic = {
   \normal-accidentals #-2
   \revert Beam.Y-extent % new
+  \revert Beam.cross-staff
+  \revert Stem.cross-staff
   \revert Stem.Y-extent % new
   \revert NoteHead.layer
   \revert Beam.layer
@@ -117,6 +125,8 @@ stopAppoggiaturaMusic = {
 start-single-grace = {
     \my-hack-flag
     \override Beam.transparent = ##t
+    \override Beam.cross-staff = ##t
+    \override Stem.cross-staff = ##t
     \override Stem.Y-extent = #'(0 . 0) % new
     \override NoteHead.layer = #3
     \override Stem.layer = #2
@@ -130,6 +140,8 @@ start-single-grace = {
 stop-single-grace = {
     \revert Stem.stencil
     \revert Beam.transparent
+    \revert Beam.cross-staff
+    \revert Stem.cross-staff
     \revert Stem.Y-extent % new
     \revert NoteHead.layer
     \revert Stem.layer
@@ -144,6 +156,8 @@ start-multi-grace = {
     \my-hack-slash
     \overhead-accidentals #-3
     \override Beam.Y-extent = #'(0 . 0) % new
+    \override Beam.cross-staff = ##t
+    \override Stem.cross-staff = ##t
     \override Stem.Y-extent = #'(0 . 0) % new
     \override NoteHead.layer = #3
     \override Beam.layer = #3
@@ -156,6 +170,8 @@ start-multi-grace = {
 stop-multi-grace = {
     \normal-accidentals #-2
     \revert Beam.Y-extent % new
+    \revert Beam.cross-staff
+    \revert Stem.cross-staff
     \revert Stem.Y-extent % new
     \revert NoteHead.layer
     \revert Beam.layer
@@ -170,6 +186,8 @@ start-ob-multi-grace = {
     \override Beam.Y-extent = #'(0 . 0) % new
     \override Slur.Y-extent = #'(0 . 0) % new
     \override Stem.Y-extent = #'(0 . 0) % new
+    \override Beam.cross-staff = ##t
+    \override Stem.cross-staff = ##t
     \override NoteHead.layer = #3
     \override Beam.layer = #3
     \override Stem.layer = #2
@@ -183,6 +201,8 @@ stop-ob-multi-grace = {
     \revert Beam.Y-extent % new
     \revert Slur.Y-extent % new
     \revert Stem.Y-extent % new
+    \revert Beam.cross-staff
+    \revert Stem.cross-staff
     \revert NoteHead.layer
     \revert Beam.layer
     \revert Stem.layer
