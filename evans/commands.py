@@ -505,7 +505,7 @@ class RewriteMeterCommand:
             )
 
 
-def hairpin(dynamics, *tweaks, selector):
+def simple_hairpin(dynamics, *tweaks, selector):
     return lambda _: baca.hairpin(selector(_), dynamics)
 
 
@@ -998,7 +998,9 @@ def bcp(bcps, padding=2):
     return returned_function
 
 
-def trill(counts=[1], cyclic=True, alteration=None, harmonic=False, padding=2):
+def trill(
+    counts=[1], cyclic=True, alteration=None, harmonic=False, padding=2, right_padding=0
+):
     def returned_function(selections):
         ties = abjad.select.logical_ties(selections, pitched=True)
         if counts is not None:
@@ -1013,6 +1015,9 @@ def trill(counts=[1], cyclic=True, alteration=None, harmonic=False, padding=2):
                 baca.trill_spanner(
                     group,
                     abjad.Tweak(rf"- \tweak staff-padding {padding}"),
+                    abjad.Tweak(
+                        rf"- \tweak bound-details.right.padding {right_padding}"
+                    ),
                     alteration=alteration,
                     harmonic=harmonic,
                 )

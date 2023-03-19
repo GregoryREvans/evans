@@ -135,6 +135,7 @@ class SegmentMaker:
         beam_rests=False,
         clef_handlers=None,
         colophon=None,
+        color_out_of_range=True,
         commands=None,
         current_directory=None,
         cutaway=True,
@@ -165,6 +166,7 @@ class SegmentMaker:
         SegmentMaker.beaming = beam_rests
         self.clef_handlers = clef_handlers
         self.colophon = colophon
+        self.color_out_of_range = color_out_of_range
         self.commands = commands
         self.current_directory = current_directory
         self.cutaway = cutaway
@@ -297,17 +299,18 @@ class SegmentMaker:
                 else:
                     rhythm_commands_booleans.append(False)
             if not any(rhythm_commands_booleans):
-                out_of_range_pitches = abjad.iterpitches.iterate_out_of_range(voice)
-                for leaf in out_of_range_pitches:
-                    out_of_range_color = abjad.LilyPondLiteral(
-                        r"\evans-pitch-out-of-range-coloring"
-                    )
-                    abjad.attach(
-                        out_of_range_color,
-                        leaf,
-                        tag=abjad.Tag("PITCH"),
-                        deactivate=False,
-                    )
+                if self.color_out_of_range is True:
+                    out_of_range_pitches = abjad.iterpitches.iterate_out_of_range(voice)
+                    for leaf in out_of_range_pitches:
+                        out_of_range_color = abjad.LilyPondLiteral(
+                            r"\evans-pitch-out-of-range-coloring"
+                        )
+                        abjad.attach(
+                            out_of_range_color,
+                            leaf,
+                            tag=abjad.Tag("PITCH"),
+                            deactivate=False,
+                        )
                 # for leaf in abjad.select.leaves(voice, pitched=True): # remove?
                 #     pitched_annotation = abjad.get.annotation(leaf, "pitched")
                 #     if pitched_annotation is None:

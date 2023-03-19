@@ -2245,18 +2245,27 @@ class IntermittentVoiceHandler(Handler):
         else:
             components = self.rhythm_handler
         if self.cluster is True:
-            components.append(abjad.Note("c'16"))
-            opening = abjad.LilyPondLiteral(
-                r"\afterGrace 15/16 ", site="before"
-            )  # maybe allow fraction to be configurable (cont.)
-            closing = abjad.LilyPondLiteral(
-                "{ ", site="after"
-            )  # (cont. ^) or simply call rmaker on duration including following leaf?
-            close_grace = abjad.LilyPondLiteral(" }", site="after")
-            target = abjad.select.leaf(components, -2)
-            abjad.attach(opening, target)
-            abjad.attach(closing, target)
-            abjad.attach(close_grace, components[-1])
+            # components.append(abjad.Note("c'16"))
+            # opening = abjad.LilyPondLiteral(
+            #     r"\afterGrace 15/16 ", site="before"
+            # )  # maybe allow fraction to be configurable (cont.)
+            # closing = abjad.LilyPondLiteral(
+            #     "{ ", site="after"
+            # )  # (cont. ^) or simply call rmaker on duration including following leaf?
+            # close_grace = abjad.LilyPondLiteral(" }", site="after")
+            # target = abjad.select.leaf(components, -2)
+            # abjad.attach(opening, target)
+            # abjad.attach(closing, target)
+            # abjad.attach(close_grace, components[-1])
+            target = abjad.select.leaf(components, -1)
+            if isinstance(target, abjad.Note):
+                p = target.written_pitch
+                grace_n = abjad.Note(p, (1, 16))
+            elif isinstance(target, abjad.Chord):
+                p = target.written_pitches
+                grace_n = abjad.Chord(p, (1, 16))
+            after_g = abjad.AfterGraceContainer([grace_n])
+            abjad.attach(after_g, target)
             components = abjad.Cluster(components)
             overrides = abjad.LilyPondLiteral(
                 [
@@ -3311,12 +3320,17 @@ class PitchHandler(Handler):
                             [abjad.NoteHead(leaf.written_pitch) for _ in pair[1]]
                         )
                         indicators = abjad.get.indicators(leaf)
+                        overrides = leaf._overrides
                         before_grace = abjad.get.before_grace_container(leaf)
+                        after_grace = abjad.get.after_grace_container(leaf)
                         multiplier = leaf.multiplier
                         for indicator in indicators:
                             abjad.attach(indicator, replacement_chord)
+                        replacement_chord._overrides = overrides
                         if before_grace is not None:
                             abjad.attach(before_grace, replacement_chord)
+                        if after_grace is not None:
+                            abjad.attach(after_grace, replacement_chord)
                         if multiplier is not None:
                             replacement_chord.multiplier = multiplier
                         abjad.mutate.replace(leaf, replacement_chord)
@@ -3436,12 +3450,17 @@ class PitchHandler(Handler):
             if self.apply_all is False:
                 for old_leaf, new_leaf in zip(old_leaves, new_leaves):
                     indicators = abjad.get.indicators(old_leaf)
+                    overrides = old_leaf._overrides
                     before_grace = abjad.get.before_grace_container(old_leaf)
+                    after_grace = abjad.get.after_grace_container(old_leaf)
                     multiplier = old_leaf.multiplier
                     for indicator in indicators:
                         abjad.attach(indicator, new_leaf)
+                    new_leaf._overrides = overrides
                     if before_grace is not None:
                         abjad.attach(before_grace, new_leaf)
+                    if after_grace is not None:
+                        abjad.attach(after_grace, new_leaf)
                     if multiplier is not None:
                         new_leaf.multiplier = multiplier
                     abjad.mutate.replace(old_leaf, new_leaf)

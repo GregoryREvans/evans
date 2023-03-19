@@ -1011,6 +1011,34 @@ hocket = \once \override Staff.NoteHead.details.hocket = ##t
 %{ hocket-red = \once \override Staff.NoteHead.details.hocket-red = ##t %}
 %{ hocket-green = \once \override Staff.NoteHead.details.hocket-green = ##t %}
 
+%%% line follower (different than hocket) %%%
+#(define (Follow_lines_engraver context)
+   (let ((followed (make-hash-table)))
+     (make-engraver
+      (acknowledgers
+       ((note-column-interface engraver grob source-engraver)
+       ;(format #t "\n\nnote colum grob details: ~A \n\n"  (ly:grob-property grob 'details '()))
+        (when
+            (assoc-get 'followable (ly:grob-property grob 'details '()))
+          (for-each
+           (match-lambda
+            ((mom . elt)
+             (when (and (grob::has-interface elt 'note-head-interface)
+                        (assoc-get 'follow (ly:grob-property elt 'details '()))
+                        (not (hashq-ref followed elt))
+                        )
+               (hashq-set! followed elt #t)
+               (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
+                 (ly:spanner-set-bound! follower LEFT elt)
+                 (ly:spanner-set-bound! follower RIGHT grob)
+                 (ly:grob-set-property! follower 'color (assoc-get 'follow-color (ly:grob-property elt 'details '())))
+                 ))
+            ))
+           (ly:context-property context 'busyGrobs))))))))
+
+start-follow = \once \override Staff.NoteHead.details.follow = ##t
+stop-follow = \once \override Staff.NoteColumn.details.followable = ##t
+
 
 %%% duplicate symbol spanners %%%
 #(define (make-duplicate-stencil grob amount width markup)

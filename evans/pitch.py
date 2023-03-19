@@ -3,7 +3,9 @@ Pitch functions.
 """
 import collections
 import copy
+import dataclasses
 import math
+import typing
 
 import abjad
 import baca
@@ -1395,7 +1397,25 @@ def tune_to_ratio(
     note_head.written_pitch = pitch
 
 
-# consider subclassing baca.Loop to allow for named pitches and intervals?
+class BacaLoop:
+    def __init__(self, pitches, intervals):
+        self.pitches = pitches
+        self.intervals = intervals
+
+    def __getitem__(self, i):
+        intervals = abjad.CyclicTuple(self.intervals)
+        pitches = abjad.CyclicTuple(self.pitches)
+        iteration = i // len(pitches)
+        if not pitches:
+            transposition = 0
+        else:
+            transposition = sum(intervals[:iteration])
+        number = pitches[i]
+        pitch = abjad.NamedPitch(number + transposition)
+        return pitch
+
+    def __iter__(self):
+        return self.pitches.__iter__()
 
 
 def loop(
@@ -1403,11 +1423,13 @@ def loop(
     intervals: baca.typing.Sequence,
     selector=lambda _: baca.select.plts(_, exclude=baca.enums.HIDDEN),
 ):
-    loop = baca.Loop(items, intervals)
+    loop = BacaLoop(items, intervals)
 
     def returned_function(selections):
         new_sel = selector(selections)
-        baca.pitches(new_sel, pitches=loop)
+        sel_len = len(new_sel)
+        new_pitches = [loop[i] for i in range(sel_len)]
+        baca.pitches(new_sel, pitches=new_pitches, allow_obgc_mutation=True)
 
     return returned_function
 
