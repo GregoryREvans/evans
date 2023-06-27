@@ -91,7 +91,7 @@ stopAcciaccaturaMusic = {
 startAppoggiaturaMusic = { % multi grace
   <>(
   \my-hack-slash
-  \overhead-accidentals #-3
+  %{ \overhead-accidentals #-3 %}
   \override Beam.Y-extent = #'(0 . 0) % new
   \override Beam.cross-staff = ##t
   \override Stem.cross-staff = ##t
@@ -107,7 +107,7 @@ startAppoggiaturaMusic = { % multi grace
 }
 
 stopAppoggiaturaMusic = {
-  \normal-accidentals #-2
+  %{ \normal-accidentals #-2 %}
   \revert Beam.Y-extent % new
   \revert Beam.cross-staff
   \revert Stem.cross-staff
@@ -154,7 +154,7 @@ stop-single-grace = {
 
 start-multi-grace = {
     \my-hack-slash
-    \overhead-accidentals #-3
+    %{ \overhead-accidentals #-3 %}
     \override Beam.Y-extent = #'(0 . 0) % new
     \override Beam.cross-staff = ##t
     \override Stem.cross-staff = ##t
@@ -168,7 +168,7 @@ start-multi-grace = {
 }
 
 stop-multi-grace = {
-    \normal-accidentals #-2
+    %{ \normal-accidentals #-2 %}
     \revert Beam.Y-extent % new
     \revert Beam.cross-staff
     \revert Stem.cross-staff

@@ -891,6 +891,7 @@ suggest-pitch-open = #(define-music-function (note) (ly:music?)
 #{
 	\once \override Stem.stencil = ##f
     \once \override Beam.stencil = ##f
+    \once \override Flag.stencil = ##f
     \open-paren
 	$note
 #})
@@ -898,12 +899,14 @@ suggest-pitch-middle = #(define-music-function (note) (ly:music?)
 #{
     \once \override Stem.stencil = ##f
     \once \override Beam.stencil = ##f
+    \once \override Flag.stencil = ##f
 	$note
 #})
 suggest-pitch-close = #(define-music-function (note) (ly:music?)
 #{
     \once \override Stem.stencil = ##f
     \once \override Beam.stencil = ##f
+    \once \override Flag.stencil = ##f
     \close-paren
 	$note
 #})
@@ -1271,6 +1274,123 @@ squiggle-Y-scale)
 \startTrillSpan
 
 
+slow-fast-harmonic =
+\tweak TrillSpanner.stencil
+#(lambda (grob)
+    (let* ((left (ly:spanner-bound grob LEFT))
+           (right (ly:spanner-bound grob RIGHT))
+           (sys (ly:grob-system grob))
+           (my-coord (ly:grob-relative-coordinate grob sys X))
+           (trill-start-x (interval-start (ly:grob-extent left sys X)))
+           (glyph-stil
+            (ly:stencil-translate-axis
+             (ly:stencil-aligned-to
+              (grob-interpret-markup
+               grob
+               #{ \markup \general-align #Y #CENTER \musicglyph
+"noteheads.s0harmonic" #})
+              X
+              LEFT)
+             trill-start-x
+             X))
+           (squiggle-glyph-stil
+            (grob-interpret-markup
+             grob
+             #{ \markup \lower #0.6 \general-align #X #LEFT \musicglyph
+"scripts.trill_element" #}))
+           (squiggle-glyph-width (interval-length (ly:stencil-extent
+squiggle-glyph-stil X)))
+           (start-x (+ (interval-end (ly:stencil-extent glyph-stil X))
+                       0.8))
+           (end-x (interval-start (ly:grob-extent right sys X)))
+           (thickness (* (ly:grob-property grob 'thickness 2.0)
+                         (ly:staff-symbol-line-thickness grob)))
+           (det (ly:grob-property grob 'details))
+           (squiggle-height (assoc-get 'squiggle-height det 0.3))
+           (squiggle-initial-width (assoc-get 'squiggle-initial-width
+det 2.0))
+           (squiggle-speed-factor (assoc-get 'squiggle-speed-factor det
+0.4))
+           (squiggle-Y-scale (assoc-get 'squiggle-Y-scale det 0.55)))
+      (let loop ((x start-x)
+                 (dir UP)
+                 (i 1)
+                 (stil glyph-stil))
+        (if (>= x end-x)
+            (ly:stencil-translate-axis stil (- my-coord) X)
+            (let ((width (* squiggle-initial-width (/ (expt i
+squiggle-speed-factor)))))
+              (loop (+ x width)
+                    (- dir)
+                    (1+ i)
+                    (let ((squiggle (ly:stencil-translate-axis
+                                     (ly:stencil-scale squiggle-glyph-stil
+                                                       (/ width
+squiggle-glyph-width)
+squiggle-Y-scale)
+                                     x
+                                     X)))
+                      (ly:stencil-add stil squiggle))))))))
+\startTrillSpan
+
+
+slow-fast-flute-heel =
+\tweak TrillSpanner.stencil
+#(lambda (grob)
+    (let* ((left (ly:spanner-bound grob LEFT))
+           (right (ly:spanner-bound grob RIGHT))
+           (sys (ly:grob-system grob))
+           (my-coord (ly:grob-relative-coordinate grob sys X))
+           (trill-start-x (interval-start (ly:grob-extent left sys X)))
+           (glyph-stil
+            (ly:stencil-translate-axis
+             (ly:stencil-aligned-to
+              (grob-interpret-markup
+               grob
+               #{ \markup \general-align #Y #CENTER \concat { "(" \raise #0.5 \rotate #50 \musicglyph "scripts.upedalheel" \raise #0.75 \override #'(font-size . -3) \arrow-head #X #LEFT ##f \raise #0.75 \draw-line #'(-0.75 . 0) \raise #0.75 \override #'(font-size . -3) \arrow-head #X #RIGHT ##f \raise #0.5 \rotate #-50 \musicglyph "scripts.upedalheel" ")" } #})
+              X
+              LEFT)
+             trill-start-x
+             X))
+           (squiggle-glyph-stil
+            (grob-interpret-markup
+             grob
+             #{ \markup \lower #0.6 \general-align #X #LEFT \musicglyph
+"scripts.trill_element" #}))
+           (squiggle-glyph-width (interval-length (ly:stencil-extent
+squiggle-glyph-stil X)))
+           (start-x (+ (interval-end (ly:stencil-extent glyph-stil X))
+                       0.8))
+           (end-x (interval-start (ly:grob-extent right sys X)))
+           (thickness (* (ly:grob-property grob 'thickness 2.0)
+                         (ly:staff-symbol-line-thickness grob)))
+           (det (ly:grob-property grob 'details))
+           (squiggle-height (assoc-get 'squiggle-height det 0.3))
+           (squiggle-initial-width (assoc-get 'squiggle-initial-width
+det 2.0))
+           (squiggle-speed-factor (assoc-get 'squiggle-speed-factor det
+0.4))
+           (squiggle-Y-scale (assoc-get 'squiggle-Y-scale det 0.55)))
+      (let loop ((x start-x)
+                 (dir UP)
+                 (i 1)
+                 (stil glyph-stil))
+        (if (>= x end-x)
+            (ly:stencil-translate-axis stil (- my-coord) X)
+            (let ((width (* squiggle-initial-width (/ (expt i
+squiggle-speed-factor)))))
+              (loop (+ x width)
+                    (- dir)
+                    (1+ i)
+                    (let ((squiggle (ly:stencil-translate-axis
+                                     (ly:stencil-scale squiggle-glyph-stil
+                                                       (/ width
+squiggle-glyph-width)
+squiggle-Y-scale)
+                                     x
+                                     X)))
+                      (ly:stencil-add stil squiggle))))))))
+\startTrillSpan
 
  slow-fast-smorzando =
  \tweak TrillSpanner.stencil

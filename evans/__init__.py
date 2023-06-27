@@ -3,6 +3,8 @@ Evans API
 
 The personal Abjad library of Gregory Rowland Evans.
 """
+from . import baca_rhythm
+
 from .commands import (
     Attachment,
     Callable,
@@ -41,6 +43,11 @@ from .commands import (
     tuplet,
     vibrato_spanner,
     wrap_in_repeats,
+    long_beam,
+    subdivided_ties,
+    cross_staff,
+    cross_staff_copy,
+    unsicthbare_farben,
 )
 from .consort import (
     LogicalTieCollection,
@@ -109,12 +116,17 @@ from .pitch import (
     to_nearest_twelfth_tone,
     tonnetz,
     tune_to_ratio,
+    contour,
+    Lapidary,
 )
 from .preprocess import make_preprocessor
+from .quantizer import unity_capsule_rhythms, fuse_durations, subdivide_durations
 from .rtm import (
     AfterGraceContainer,
     BeforeGraceContainer,
     RTMMaker,
+    RTMNode,
+    RTMTree,
     RhythmTreeQuantizer,
     after_grace_container,
     before_grace_container,
@@ -229,6 +241,7 @@ __all__ = [
     "HandlerCommand",
     "IntermittentVoiceHandler",
     "JIPitch",
+    "Lapidary",
     "LogicalTieCollection",
     "Lyrics",
     "MarkovChain",
@@ -243,6 +256,8 @@ __all__ = [
     "PitchSegment",
     "PitchSet",
     "RTMMaker",
+    "RTMNode",
+    "RTMTree",
     "Ratio",
     "RatioClassSegment",
     "RatioClassSet",
@@ -260,7 +275,6 @@ __all__ = [
     "Skeleton",
     "SlurHandler",
     "System",
-    "intersect_time_signature_lists",
     "TempoSpannerHandler",
     "TextSpanHandler",
     "TimespanCollection",
@@ -294,6 +308,9 @@ __all__ = [
     "combination_tones",
     "combine_ts_lists",
     "compare_speed",
+    "contour",
+    "cross_staff",
+    "cross_staff_copy",
     "cyc",
     "detach",
     "duplicate",
@@ -307,6 +324,7 @@ __all__ = [
     "force_accidentals",
     "funnel_inner_tree_to_x",
     "funnel_tree_to_x",
+    "fuse_durations",
     "get_top_level_components_from_leaves",
     "global_to_voice",
     "hairpin",
@@ -316,10 +334,12 @@ __all__ = [
     "human_sorted_keys",
     "imbricate",
     "intercalate_silences",
+    "intersect_time_signature_lists",
     "iterate_nwise",
     "iterate_vertical_moments_by_logical_tie",
     "join_time_signature_lists",
     "julia_set",
+    "long_beam",
     "loop",
     "make_anchor_skips_from_voices",
     "make_exponential_leaves",
@@ -361,10 +381,12 @@ __all__ = [
     "select_ties_below_written_pitch",
     "select_ties_final_leaves",
     "select_untupleted_leaves",
-    "slur",
     "simple_hairpin",
+    "slur",
     "sort_voices",
     "sorted_keys",
+    "subdivide_durations",
+    "subdivided_ties",
     "sustain_pedal",
     "talea",
     "talea_timespans",
@@ -380,6 +402,8 @@ __all__ = [
     "trill",
     "tune_to_ratio",
     "tuplet",
+    "unity_capsule_rhythms",
+    "unsicthbare_farben",
     "vibrato_spanner",
     "wrap_in_repeats",
 ]

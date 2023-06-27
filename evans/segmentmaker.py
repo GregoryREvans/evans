@@ -105,7 +105,9 @@ class NoteheadBracketMaker:
         for tuplet in abjad.select.tuplets(selections):
             rests = abjad.select.rests(tuplet)
             for rest_group in abjad.select.group_by_contiguity(rests):
-                abjad.mutate.fuse(rest_group)
+                parental_groups = abjad.select.group_by(rest_group, predicate=lambda _:abjad.get.parentage(_).parent)
+                for parental_group in parental_groups:
+                    abjad.mutate.fuse(parental_group)
             inner_durs = []
             for _ in tuplet[:]:
                 if isinstance(_, abjad.Tuplet):
@@ -1551,7 +1553,9 @@ def beautify_tuplets(target):
             tuplet.hide = True
         rests = abjad.select.rests(tuplet)
         for rest_group in abjad.select.group_by_contiguity(rests):
-            abjad.mutate.fuse(rest_group)  # EXPERIMENTAL
+            parental_groups = abjad.select.group_by(rest_group, predicate=lambda _:abjad.get.parentage(_).parent)
+            for parental_group in parental_groups:
+                abjad.mutate.fuse(parental_group) # EXPERIMENTAL
 
 
 def global_to_voice(score):

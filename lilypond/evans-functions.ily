@@ -1559,3 +1559,33 @@ guide =
 
 #(define-public guerrero-flared-hairpin
   (elbowed-hairpin '((1.0 . 0.0) (1.45 . 1.0)) - #t))
+
+
+%%% tuplet bracket noteheads by Jean Abou Samra %%%
+#(define (duration-or-markup? x)
+   (or (ly:duration? x)
+       (markup? x)))
+
+addNote =
+#(define-music-function (note tuplet-music) (duration-or-markup? ly:music?)
+   (unless (music-is-of-type? tuplet-music 'time-scaled-music)
+     (ly:music-warning tuplet-music "\\addNotes expected a tuplet"))
+   #{
+     %% ugh, bug workaround -- see https://gitlab.com/lilypond/lilypond/-/merge_requests/2024
+     %% for a fix
+     \tweak TupletNumber.direction
+       #(lambda (grob)
+          (ly:grob-property (ly:grob-object grob 'bracket) 'direction))
+     \tweak TupletNumber.text
+     #(grob-transformer
+       'text
+       (lambda (grob orig)
+         (let* ((dir (ly:grob-property grob 'direction))
+                (note-markup (if (markup? note)
+                                 note
+                                 #{ \markup \parenthesize \fontsize #-4 \note #note #dir #})))
+           #{ \markup \put-adjacent #Y #dir
+                #orig
+                \raise #(* dir 0.7) \with-outline "" #note-markup #})))
+     #tuplet-music
+   #})

@@ -164,6 +164,11 @@ def make_multi_trill(
     <d'! fqs'!>
     !! requires evans.ily and abjad.ily
     """
+    if isinstance(note, abjad.LogicalTie):
+        tie = note
+        note = note[0]
+    else:
+        tie = abjad.select.logical_ties(note)
     _notehead_styles = []
     for _ in notehead_styles:
         if _ is not None:
@@ -181,28 +186,32 @@ def make_multi_trill(
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
-                rf"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}32 \startTrillSpan \revert-noteheads",
+                rf"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}32 \startTrillSpan",
+                # used to end with \revert-noteheads
                 "}",
             ],
             site="after",
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopTrillSpan", site="after")
-        next = abjad.get.leaf(note, 1)
+        final_tie_leaf = tie[-1]
+        next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
     if t_length == 2:
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
                 rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}32 \startDoubleTrill #{2 + extra_padding} #{1 + extra_padding} """,
-                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[1]}32 \revert-noteheads""",
+                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[1]}32""",
+                # used to end with \revert-noteheads
                 "}",
             ],
             site="after",
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopDoubleTrill", site="after")
-        next = abjad.get.leaf(note, 1)
+        final_tie_leaf = tie[-1]
+        next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
     if t_length == 3:
         closing_literal = abjad.LilyPondLiteral(
@@ -210,14 +219,16 @@ def make_multi_trill(
                 "{",
                 rf"""     \suggest-pitch-open {heads(r=1)[0]} {trill_pitches[0]}32 \startTripleTrill #{3 + extra_padding} #{2 + extra_padding} #{1 + extra_padding} """
                 rf"     \suggest-pitch-middle {heads(r=1)[0]} {trill_pitches[1]}32"
-                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[2]}32 \revert-noteheads"""
+                rf"""     \suggest-pitch-close {heads(r=1)[0]} {trill_pitches[2]}32"""
+                # used to end with \revert-noteheads
                 "}",
             ],
             site="after",
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopTripleTrill", site="after")
-        next = abjad.get.leaf(note, 1)
+        final_tie_leaf = tie[-1]
+        next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
 
 

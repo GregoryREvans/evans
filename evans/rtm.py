@@ -746,9 +746,9 @@ class RhythmTreeQuantizer:
         self._recursive_operation(layers)
 
 
-def helianthated_rtm(divisions, beats):
-    s = Sequence(divisions).helianthate(-1, 1)
-    s_ = Sequence(flatten(Sequence(beats).helianthate(-1, 1)))
+def helianthated_rtm(divisions, beats, divisions_rotations=(-1, 1), beats_rotations=(-1, 1)):
+    s = Sequence(divisions).helianthate(divisions_rotations[0], divisions_rotations[1])
+    s_ = Sequence(flatten(Sequence(beats).helianthate(beats_rotations[0], beats_rotations[1])))
 
     c_s_ = CyclicList(s_, forget=False)
     beats = c_s_(r=len(s))
@@ -987,6 +987,7 @@ class AfterGraceContainer(abjad.AfterGraceContainer):
         *,
         position=6,
         with_glissando=False,
+        hide_accidentals=False,
         language="english",
         tag=None,
     ) -> None:
@@ -1049,8 +1050,8 @@ class AfterGraceContainer(abjad.AfterGraceContainer):
             new_components = temp + components
             abjad.attach(abjad.StartBeam(), new_components[0])
             abjad.attach(abjad.StopBeam(), new_components[-1])
-            abjad.override(new_components[0]).Beam.stencil = "##f"
-            abjad.override(new_components[0]).Flag.stencil = "##f"
+            abjad.override(new_components[0]).Beam.transparent = "##t"
+            abjad.override(new_components[0]).Flag.transparent = "##t"
             start_literal = abjad.LilyPondLiteral(r"\start-single-grace", site="before")
             abjad.attach(start_literal, new_components[0])
             start_literal = abjad.LilyPondLiteral(r"\stop-single-grace", site="after")
@@ -1077,6 +1078,9 @@ class AfterGraceContainer(abjad.AfterGraceContainer):
                 abjad.glissando(new_components, zero_padding=True)
 
         self._main_leaf = None
+        if hide_accidentals is True:
+            for component in new_components:
+                abjad.override(component).Accidental.stencil = False
         abjad.AfterGraceContainer.__init__(
             self, new_components, language=language, tag=tag
         )
@@ -1108,7 +1112,7 @@ def _do_grace_container_command(
     position=6,
     with_glissando=False,
 ):
-    leaves = abjad.select.leaves(argument, grace=False)
+    leaves = abjad.select.logical_ties(argument, grace=False)
     assert all(isinstance(_, int) for _ in counts), repr(counts)
     cyclic_counts = abjad.CyclicTuple(counts)
     start = 0
@@ -1121,9 +1125,341 @@ def _do_grace_container_command(
         notes = abjad.makers.make_leaves([0], durations)
         if class_ == AfterGraceContainer:
             if with_glissando is True:
-                abjad.attach(abjad.Glissando(zero_padding=True), leaf)
+                abjad.attach(abjad.Glissando(zero_padding=True), leaf[-1])
             container = class_(notes, position=position, with_glissando=with_glissando)
-            abjad.attach(container, leaf)
+            abjad.attach(container, leaf[-1])
         else:
             container = class_(notes, position=position)
-            abjad.attach(container, leaf)
+            abjad.attach(container, leaf[0])
+
+
+class RTMNode:
+    def __init__(self, size):
+        self.size = size
+
+        self.parent = None
+        self.left_neighbor = None
+        self.right_neighbor = None
+        self.left_neighbor_node = None
+        self.right_neighbor_node = None
+        self.depth = 0
+        self.position = None
+
+    def __repr__(self):
+        string = f"{type(self).__name__}({self.size})"
+        return string
+
+
+class RTMTree:
+    def __init__(self, items, size=1):
+        contents = []
+        counter = 0
+        for _ in items:
+            if isinstance(_, int):
+                temp = RTMNode(_)
+                temp.parent = self
+                temp.position = counter
+                counter += 1
+                contents.append(temp)
+            elif isinstance(_, list):
+                temp = RTMTree(_[1], size=_[0])
+                temp.parent = self
+                temp.position = counter
+                counter += 1
+                contents.append(temp)
+            elif isinstance(_, (RTMNode, RTMTree)):
+                copied_node = self._recursively_copy(_)
+                copied_node.parent = self
+                copied_node.position = counter
+                counter += 1
+                contents.append(copied_node)
+            else:
+                raise Exception(f"Bad Input Value: {_}. Must be RTMTree, RTMNode, or integer. Got type {type(_)}.")
+        assert all([isinstance(_, (RTMTree, RTMNode)) for _ in contents])
+        self.items = contents
+        self.size = size
+
+        self.parent = None
+        self.left_neighbor = None
+        self.right_neighbor = None
+        self.left_neighbor_node = None
+        self.right_neighbor_node = None
+        self.nodes = abjad.sequence.flatten(items)
+        self.depth = 0
+        self.position = None
+
+        if 1 < len(items):
+            self._inform_residents_of_neighbors(self)
+        self._assign_depths(self.items, 1)
+
+    ### SPECIAL METHODS ###
+
+    def __add__(self, argument):
+        argument = type(self)(items=argument)
+        items = self.items + argument.items
+        return type(self)(items)
+
+    def __eq__(self, argument):
+        if isinstance(argument, type(self)):
+            return self.items == argument.items
+        return False
+
+    def __getitem__(self, argument):
+        result = self.items.__getitem__(argument)
+        if isinstance(argument, slice):
+            return type(self)(result)
+        return result
+
+    def __hash__(self):
+        return hash(self.__class__.__name__ + str(self))
+
+    def __len__(self):
+        return len(self.items)
+
+    def __radd__(self, argument):
+        argument = type(self)(items=argument)
+        items = argument.items + self.items
+        return type(self)(items)
+
+    def __repr__(self):
+        items = f"({self.size} ({self.items}))"
+        string = f'{type(self).__name__}( "{items}" )'
+        return string
+
+    def __str__(self):
+        nested_list = self.list_format()
+        string = nested_list_to_rtm(nested_list)
+        return string
+
+    ### User Methods ###
+
+    def add_node_to_index(self, index, node=1):
+        pass
+
+    def replace_node_at_index(self, index, replacement):
+        pass
+
+    def rotate_nodes_by_level(self, i, level=1):
+        temp = []
+        for item in self.items:
+            if item.depth == level:
+                temp.append(item)
+            if item.depth != level:
+                if isinstance(item, RTMTree):
+                    rotated_item = item.rotate_nodes_by_level(i, level)
+                    rotated_item.size = item.size
+                    temp.append(rotated_item)
+                else:
+                    temp.append(item)
+        if temp[0].depth == level:
+            temp = abjad.sequence.rotate(temp, i)
+        return RTMTree(temp)
+
+    def rotate_sizes_by_level(self, i, level=1):
+        temp = []
+        items_temp = []
+        for item in self.items:
+            if item.depth == level:
+                temp.append(item.size)
+                items_temp.append(item)
+            if item.depth != level:
+                if isinstance(item, RTMTree):
+                    rotated_item = item.rotate_sizes_by_level(i, level)
+                    rotated_item.size = item.size
+                    temp.append(rotated_item.size)
+                    items_temp.append(rotated_item)
+                else:
+                    temp.append(item.size)
+                    items_temp.append(item)
+        if items_temp[0].depth == level:
+            temp = abjad.sequence.rotate(temp, i)
+        instances = []
+        for size, old_instance in zip(temp, items_temp):
+            if isinstance(old_instance, RTMNode):
+                instances.append(RTMNode(size))
+            else:
+                instances.append(RTMTree(old_instance.items, size))
+        return RTMTree(instances)
+
+    def rotate_children_by_level(self, i, level=1):
+        temp = self.rotate_sizes_by_level(i * -1, level)
+        out = temp.rotate_nodes_by_level(i, level)
+        return out
+
+    def rotate_sizes_and_nodes_by_level(self, size_rotation, node_rotation, level=1):
+        temp = self.rotate_sizes_by_level(size_rotation * -1, level)
+        out = temp.rotate_nodes_by_level(size_rotation + node_rotation, level)
+        return out
+
+    def remap_sizes(self, map=[2, 1, 0], allowable_levels=[1, 2, 3], allowable_classes=None):
+        def return_denested_items_by_index(nested_structure, map, counter, allowable_levels, allowable_classes):
+            if allowable_classes is None:
+                allowable_classes = [RTMTree, RTMNode]
+            instances = []
+            for item in nested_structure:
+                print(f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}")
+                if item.depth in allowable_levels and type(item) in allowable_classes:
+                    counter += 1
+                if counter in map:
+                    instances.append(item)
+                if isinstance(item, RTMTree):
+                    sub_instances = return_denested_items_by_index(item, map, counter, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+                    instances.extend(sub_instances)
+            return instances
+
+        copy_of_self = RTMTree(self.items)
+        instances = return_denested_items_by_index(copy_of_self.items, map, counter=-1, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+        sizes = [_.size for _ in instances]
+        indices = [_ for _ in map]
+        indices.sort()
+        for index, mapped_index in zip(indices, map):
+            instances[index].size = sizes[mapped_index]
+        return copy_of_self
+
+    # rotating instances of objects requires a pop and replace function yet to be decided
+    def rotate_sizes_through_level(self, i, allowable_levels=[1, 2, 3], allowable_classes=None):
+        def return_denested_items_by_index(nested_structure, counter, allowable_levels, allowable_classes):
+            if allowable_classes is None:
+                allowable_classes = [RTMTree, RTMNode]
+            instances = []
+            for item in nested_structure:
+                print(f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}")
+                if item.depth in allowable_levels and type(item) in allowable_classes:
+                    instances.append(item)
+                if isinstance(item, RTMTree):
+                    sub_instances = return_denested_items_by_index(item, counter, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+                    instances.extend(sub_instances)
+            return instances
+        copy_of_self = RTMTree(self.items)
+        instances = return_denested_items_by_index(copy_of_self.items, counter=-1, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+        sizes = [_.size for _ in instances]
+        indices = [_ for _ in range(len(instances))]
+        map = abjad.sequence.rotate(indices, i)
+        for index, mapped_index in zip(indices, map):
+            instances[index].size = sizes[mapped_index]
+        return copy_of_self
+
+    def list_format(self):
+        out = []
+        for _ in self.items:
+            if isinstance(_, RTMNode):
+                out.append(_.size)
+            else:
+                list_format = _.list_format()
+                out.append(list_format)
+        return [self.size, out]
+    ### Private Methods ###
+
+    def _get_items_by_depth(self, argument, depth, flatten=False):
+        relevant_items = []
+        for item in argument:
+            if item.depth == depth:
+                relevant_items.append(item)
+            elif item.depth < depth:
+                if isinstance(item, RTMTree):
+                    deeper_items = self._get_items_by_depth(item, depth, flatten=flatten)
+                    if flatten is True:
+                        relevant_items.extend(deeper_items)
+                    else:
+                        relevant_items.append(deeper_items)
+        flattened_items = abjad.sequence.flatten(relevant_items, depth=1)
+        return flattened_items
+
+    def _recursively_copy(self, argument):
+        if isinstance(argument, RTMNode):
+            copied_argument = RTMNode(argument.size)
+        elif isinstance(argument, RTMTree):
+            copied_nodes = [self._recursively_copy(node) for node in argument]
+            copied_argument = RTMTree(size=argument.size, items=copied_nodes)
+        return copied_argument
+
+    def _assign_depths(self, argument, level_number):
+        for item in argument:
+            item.depth = level_number
+            if isinstance(argument, RTMTree):
+                self._assign_depths(argument, level_number+1)
+
+    def _tree_to_nested_list(self):
+        out = []
+        for item in self.items:
+            if isinstance(item, RTMNode):
+                out.append(item.size)
+            else:
+                temp = [item.size, item._tree_to_nested_list()]
+                out.append(temp)
+        return out
+
+    def _step_down_one_level(self, tree, preserve_nest=True):
+        out = []
+        for _ in tree:
+            if isinstance(_, RTMTree):
+                if preserve_nest is True:
+                    out.append(_.items)
+                else:
+                    out.extend(_.items)
+
+    def _get_level_by_index(self, tree, index, preserve_nest=True):
+        level = []
+        if index == 0:
+            for _ in tree:
+                level.append(_)
+        else:
+            pass
+
+    def _inform_residents_of_neighbors(self, tree_instance, paused_at_index=None):
+        assert isinstance(tree_instance, RTMTree), f"Must be of type evans.RTMNode or evans.RTMTree. Got {type(tree_instance)}."
+        final_index = len(tree_instance) - 1
+
+        for i, resident in enumerate(tree_instance):
+            if resident.parent is None:
+                resident.parent = tree_instance
+                resident.depth = tree_instance.depth + 1
+            else:
+                resident.depth = resident.parent.depth + 1
+            if i == 0:
+                resident.left_neighbor = tree_instance[final_index]
+                resident.right_neighbor = tree_instance[i + 1]
+                if tree_instance.parent is None:
+                    resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[final_index], abjad.RIGHT)
+                else:
+                    resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance.parent[paused_at_index - 1], abjad.RIGHT)
+                resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[i + 1], abjad.LEFT)
+                if isinstance(resident, RTMTree):
+                    self._inform_residents_of_neighbors(resident, paused_at_index=i)
+            elif i == final_index:
+                resident.left_neighbor = tree_instance[i - 1]
+                resident.right_neighbor = tree_instance[0]
+                resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[i - 1], abjad.RIGHT)
+                if tree_instance.parent is None:
+                    resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[0], abjad.LEFT)
+                else:
+                    resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance.parent[(paused_at_index + 1) % len(tree_instance.parent)], abjad.LEFT)
+                if isinstance(resident, RTMTree):
+                    self._inform_residents_of_neighbors(resident, paused_at_index=i)
+            else:
+                resident.left_neighbor = tree_instance[i - 1]
+                resident.right_neighbor = tree_instance[i + 1]
+                resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[i - 1], abjad.RIGHT)
+                resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[i + 1], abjad.LEFT)
+                if isinstance(resident, RTMTree):
+                    self._inform_residents_of_neighbors(resident, paused_at_index=i)
+
+    def _get_border_node_from_tree(self, tree_instance, side=None):
+        if isinstance(tree_instance, RTMNode):
+            return tree_instance
+        elif isinstance(tree_instance, RTMTree):
+            if side == abjad.LEFT:
+                item = tree_instance[0]
+                if isinstance(item, RTMTree):
+                    item = self._get_border_node_from_tree(item, abjad.LEFT)
+            elif side == abjad.RIGHT:
+                item = tree_instance[-1]
+                if isinstance(item, RTMTree):
+                    item = self._get_border_node_from_tree(item, abjad.RIGHT)
+            else:
+                raise Exception(f"Must be abjad.LEFT or abjad.RIGHT. Got {side}.")
+            return item
+        else:
+            raise Exception(f"Must be evans.RTMTree or evans.RTMNode. Got {type(tree_instance)}.")
+
+#obgc?

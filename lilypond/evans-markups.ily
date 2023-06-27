@@ -281,3 +281,18 @@ random-element-three = \markup {
     \override #'(font-name . "ekmelos")
     \char ##xeaf2
 }
+
+
+#(define-markup-command
+    (flute-heel-rotation-markup layout props number)
+    (number?)
+    (interpret-markup layout props
+    #{
+    \markup \rotate #number \musicglyph "scripts.upedalheel"
+    #}))
+
+tongue-t = \markup \rotate #0 \override #'(font-size . -3) \override #'(font-family . sans) "T"
+
+tongue-t-inverted = \markup \rotate #-180 \override #'(font-size . -3) \override #'(font-family . sans) "T"
+
+tongue-t-circled = \markup \override #'(thickness . 2.5) \circle \rotate #0 \override #'(font-size . -3) \override #'(font-family . sans) "T"

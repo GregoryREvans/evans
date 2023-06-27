@@ -1,6 +1,9 @@
 """
 Command classes.
 """
+import random
+import itertools
+import copy
 import abjad
 import baca
 # import dataclasses
@@ -9,9 +12,10 @@ import quicktions
 from abjadext import rmakers
 
 from .handlers import IntermittentVoiceHandler, RhythmHandler
-from .rtm import RTMMaker, exponential_leaf_maker
+from .rtm import RTMMaker, RTMTree, exponential_leaf_maker
 from .select import get_top_level_components_from_leaves, select_all_but_final_leaf
 from .sequence import CyclicList
+from .quantizer import make_subdivided_music, QSchemaTimeSignature
 
 
 class Command:
@@ -1167,6 +1171,66 @@ def figure(
     return selections
 
 
+def _do_indexed_imbrication(
+    container: abjad.Container,
+    segment: list,
+    voice_name: str,
+    *commands,
+    cyclic_period=None,
+    hocket: bool = False,
+    truncate_ties: bool = False,
+) -> dict[str, list]:
+    original_container = container
+    container = copy.deepcopy(container)
+    abjad.override(container).TupletBracket.stencil = False
+    abjad.override(container).TupletNumber.stencil = False
+    segment = abjad.sequence.flatten(segment, depth=-1)
+    original_logical_ties = abjad.select.logical_ties(original_container)
+    logical_ties = abjad.select.logical_ties(container)
+    pairs = zip(logical_ties, original_logical_ties)
+    relevant_ties = abjad.select.get(logical_ties, segment, period=cyclic_period)
+    for logical_tie, original_logical_tie in pairs:
+        if isinstance(logical_tie.head, abjad.Rest):
+            for leaf in logical_tie:
+                duration = leaf.written_duration
+                skip = abjad.Skip(duration)
+                abjad.mutate.replace(leaf, [skip])
+        elif isinstance(logical_tie.head, abjad.Skip):
+            pass
+        elif logical_tie in relevant_ties:
+            baca.figures._trim_matching_chord(logical_tie, logical_tie[0].written_pitch)
+            if truncate_ties:
+                head = logical_tie.head
+                tail = logical_tie.tail
+                for leaf in logical_tie[1:]:
+                    duration = leaf.written_duration
+                    skip = abjad.Skip(duration)
+                    abjad.mutate.replace(leaf, [skip])
+                abjad.detach(abjad.Tie, head)
+                next_leaf = abjad.get.leaf(tail, 1)
+                if next_leaf is not None:
+                    abjad.detach(abjad.RepeatTie, next_leaf)
+            if hocket:
+                for leaf in original_logical_tie:
+                    duration = leaf.written_duration
+                    skip = abjad.Skip(duration)
+                    abjad.mutate.replace(leaf, [skip])
+        else:
+            for leaf in logical_tie:
+                duration = leaf.written_duration
+                skip = abjad.Skip(duration)
+                abjad.mutate.replace(leaf, [skip])
+    for command in commands:
+        command(container)
+    selection = [container]
+    if not hocket:
+        pleaves = baca.select.pleaves(container)
+        assert isinstance(pleaves, list)
+        for pleaf in pleaves:
+            abjad.attach(baca.enums.ALLOW_OCTAVE, pleaf)
+    return {voice_name: selection}
+
+
 def imbricate(
     selections,
     pitches,
@@ -1178,6 +1242,8 @@ def imbricate(
     secondary=False,
     allow_unused_pitches=False,
     by_pitch_class=False,
+    by_index=False,
+    cyclic_period=None,
     hocket=False,
     truncate_ties=False,
 ):
@@ -1198,15 +1264,25 @@ def imbricate(
         rmakers.beam_groups(groups)
         baca.extend_beam(abjad.select.leaf(original_voice, -1))
 
-    imbrications = baca.imbricate(
-        original_voice,
-        "v1",
-        pitches,
-        allow_unused_pitches=allow_unused_pitches,
-        by_pitch_class=by_pitch_class,
-        hocket=hocket,
-        truncate_ties=truncate_ties,
-    )
+    if by_index is False:
+        imbrications = baca.imbricate(
+            original_voice,
+            "v1",
+            pitches,
+            allow_unused_pitches=allow_unused_pitches,
+            by_pitch_class=by_pitch_class,
+            hocket=hocket,
+            truncate_ties=truncate_ties,
+        )
+    else:
+        imbrications = _do_indexed_imbrication(
+            container=original_voice,
+            voice_name="v1",
+            segment=pitches,
+            hocket=hocket,
+            truncate_ties=truncate_ties,
+            cyclic_period=cyclic_period,
+        )
     imbrication = imbrications["v1"][0]
     contents = abjad.mutate.eject_contents(imbrication)
     intermittent_voice.extend(contents)
@@ -1215,7 +1291,10 @@ def imbricate(
     rmakers.beam_groups(groups, beam_rests=True)
     if articulation is not None:
         for head in baca.select.pheads(intermittent_voice):
-            abjad.attach(abjad.Articulation(articulation), head)
+            if isinstance(articulation, str):
+                abjad.attach(abjad.Articulation(articulation), head)
+            else:
+                abjad.attach(articulation, head)
     baca.extend_beam(abjad.select.leaf(intermittent_voice, -1))
     abjad.override(intermittent_voice).TupletBracket.stencil = False
     abjad.override(intermittent_voice).TupletNumber.stencil = False
@@ -1591,3 +1670,308 @@ def fitted_obgc(
         portion_of_total_duration=portion_of_total_duration,
     )
     return f
+
+
+def less_than_quarter(leaf):
+    if leaf.written_duration < abjad.Duration(1, 4):
+        return True
+    else:
+        return False
+
+def get_beam_count(leaf):
+
+    def _is_prime(n):
+        if n == 1:
+            return False
+        if n % 2 == 0:
+            return False
+        i = 3
+        while i * i <= n:
+            if n % i == 0:
+                return False
+            i += 2
+        return True
+
+    def _prime_factors(n):
+        prime_factor_list = []
+        while not n % 2:
+            prime_factor_list.append(2)
+            n //= 2
+        while not n % 3:
+            prime_factor_list.append(3)
+            n //= 3
+        i = 5
+        while n != 1:
+            if _is_prime(i):
+                while not n % i:
+                    prime_factor_list.append(i)
+                    n //= i
+            i += 2
+        return prime_factor_list
+
+    duration = leaf.written_duration
+    denominator = duration.denominator
+    factors = _prime_factors(denominator)
+    if len(factors) < 3:
+        return 0
+    else:
+        factors = factors[2:]
+        return len(factors)
+
+def long_beam(selections, stemlet_length=None, beam_rests=True, beam_lone_notes=False, direction=abjad.UP):
+    leaves = abjad.select.leaves(selections, grace=False)
+    filtered_leaves = abjad.select.filter(leaves, less_than_quarter)
+    groups = abjad.select.group_by_contiguity(filtered_leaves)
+    for i, group in enumerate(groups):
+        if len(groups) == 0:
+            return
+        if len(groups) == 1:
+            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests)
+        if 1 < len(groups):
+            total = len(groups) - 1
+            first_leaf = group[0]
+            last_leaf = group[-1]
+            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests, direction=direction)
+            if i != 0:
+                if i != total:
+                    start_count = get_beam_count(first_leaf)
+                    start_beam_count = abjad.BeamCount(left=start_count, right=start_count)
+                    abjad.attach(start_beam_count, first_leaf)
+                    stop_count = get_beam_count(last_leaf)
+                    stop_beam_count = abjad.BeamCount(right=stop_count, left=stop_count)
+                    abjad.attach(stop_beam_count, last_leaf)
+            if i == 0:
+                stop_count = get_beam_count(last_leaf)
+                stop_beam_count = abjad.BeamCount(right=stop_count, left=stop_count)
+                abjad.attach(stop_beam_count, last_leaf)
+            if i == total:
+                start_count = get_beam_count(first_leaf)
+                start_beam_count = abjad.BeamCount(left=start_count, right=start_count)
+                abjad.attach(start_beam_count, first_leaf)
+
+
+def subdivided_ties(
+    *args,
+    source_maker=rmakers.note,
+    treat_tuplets=False,
+):
+    args_count = 0
+    for arg in args:
+        args_count += 1
+    def returned_function(divisions, state=None, previous_state=None):
+        source_leaves = source_maker(divisions)
+        source_container = abjad.Container(source_leaves)
+        if 0 < args_count:
+            args_ = []
+            schema_list = []
+            represented_schema_indices = []
+            for arg in args:
+                if isinstance(arg, QSchemaTimeSignature):
+                    schema_list.append(arg)
+                    represented_schema_indices.append(arg.index)
+                else:
+                    args_.append(arg)
+            for i, division in enumerate(divisions):
+                if i not in represented_schema_indices:
+                    schema = QSchemaTimeSignature(
+                        index=i,
+                        time_signature=division,
+                        use_full_measure=True,
+                    )
+                    schema_list.append(schema)
+            new_args = args_ + schema_list
+            nested_music = make_subdivided_music(*new_args, ties=source_container) # ties?
+            for leaf in abjad.select.leaves(nested_music):
+                signature_indicator = abjad.get.indicator(leaf, abjad.TimeSignature)
+                abjad.detach(signature_indicator, leaf)
+            container = abjad.Container()
+            for component in nested_music:
+                if isinstance(component, list):
+                    container.extend(component)
+                else:
+                    container.append(component)
+            if treat_tuplets is True: # not needed?
+                command_target = abjad.select.tuplets(container)
+                rmakers.trivialize(command_target)
+                command_target = abjad.select.tuplets(container)
+                rmakers.rewrite_rest_filled(command_target)
+                command_target = abjad.select.tuplets(container)
+                rmakers.rewrite_sustained(command_target)
+                rmakers.extract_trivial(container)  # ?
+            music = abjad.mutate.eject_contents(container)
+        else:
+            music = abjad.mutate.eject_contents(source_container)
+
+        return music
+
+    return returned_function
+
+
+def wrap_in_cross_staff(selections):
+    start_literal = abjad.LilyPondLiteral(r"\crossStaff {", site="before")
+    stop_literal = abjad.LilyPondLiteral(r"}", site="after")
+    abjad.attach(start_literal, abjad.select.leaf(selections, 0))
+    abjad.attach(stop_literal, abjad.select.leaf(selections, -1))
+
+
+def find_cross_staff_events(selections, comparison):
+    crossable = []
+    comparison_ties = abjad.select.logical_ties(comparison, pitched=True)
+    comparison_start_offsets = [abjad.get.timespan(_).start_offset for _ in comparison_ties]
+    for tie in abjad.select.logical_ties(selections, pitched=True):
+        if abjad.get.timespan(tie).start_offset in comparison_start_offsets:
+            crossable.append(tie)
+    for tie in crossable:
+        wrap_in_cross_staff(tie)
+
+def cross_staff(target, reference_name, reference_selector):
+    score = abjad.get.parentage(target[0])[-1]
+    reference_target = score[reference_name]
+    reference_selections = reference_selector(reference_target)
+    find_cross_staff_events(target, reference_selections)
+
+
+def cross_staff_copy(target, reference_name, reference_selector, reference_indices, indices_period=None):
+    score = abjad.get.parentage(target[0])[-1]
+    reference_target = score[reference_name]
+    reference_selections = reference_selector(reference_target)
+    reference_selections = abjad.select.logical_ties(reference_selections, pitched=True)
+    ties = abjad.select.get(reference_selections, reference_indices, indices_period)
+    out = []
+    for tie in reference_selections:
+        if tie in ties:
+            new_leaf = rmakers.multiplied_duration([abjad.get.duration(tie)], duration=(1, 8))
+            out.extend(new_leaf)
+        else:
+            new_leaf = rmakers.multiplied_duration([abjad.get.duration(tie)], abjad.Skip)
+            out.extend(new_leaf)
+    for tie in abjad.select.logical_ties(out, pitched=True):
+        start_literal = abjad.LilyPondLiteral(r"\crossStaff {", site="before")
+        stop_literal = abjad.LilyPondLiteral(r"}", site="after")
+        abjad.attach(start_literal, tie[0])
+        abjad.attach(stop_literal, tie[-1])
+    abjad.mutate.replace(target, out)
+
+
+def unsicthbare_farben(
+    subdivisions_range=(1, 7),
+    proportions_range=(1, 12),
+    reproportioning_range=(1, 4),
+    motives_per_figure_range=(1, 5),
+    number_of_voices=6,
+    measurewise_voice_indices=[0],
+    cyclic_voice_indices=False,
+    proportions_from_combinations=False,
+    subdivide_both_proportions=False,
+    reverse_proportions=False,
+    seed=1,
+    preprocessor=None,
+    rewrite=None,
+    treat_tuplets=True,
+):
+    random.seed(seed)
+    subdivisions = [_ for _ in range(subdivisions_range[0], subdivisions_range[1])]
+    proportions = [_ for _ in range(proportions_range[0], proportions_range[1])]
+    motives_per_figure = [_ for _ in range(motives_per_figure_range[0], motives_per_figure_range[1])]
+    re_proportions = [_ for _ in range(reproportioning_range[0], reproportioning_range[1])]
+
+    if proportions_from_combinations is False:
+        if reverse_proportions is True:
+            proportion_pairs = [(proportions[0], _) for _ in proportions]
+        else:
+            proportion_pairs = [(_, proportions[0]) for _ in proportions]
+    else:
+        proportion_pairs = []
+        combinations = combinations_with_replacement(proportions, 2)
+        for combination in combinations:
+            if proportions_range < combination[0] and combination[0] == combination[1]:
+                continue
+            else:
+                proportion_pairs.append(combination)
+    subdivided_pairs = []
+    if subdivide_both_proportions is False:
+        for pair in proportion_pairs:
+            for subdivision in subdivisions:
+                proportion = random.choice(re_proportions)
+                if 1 < subdivision:
+                    temp_tree = RTMTree([pair[0], [pair[1], [1 for _ in range(subdivision)]]], size=proportion)
+                    reversed_tree = RTMTree([[pair[1], [1 for _ in range(subdivision)]], pair[0]], size=proportion)
+                else:
+                    temp_tree = RTMTree([pair[0], pair[1]], size=proportion)
+                    reversed_tree = RTMTree([pair[1], pair[0]], size=proportion)
+                subdivided_pairs.append(temp_tree)
+                subdivided_pairs.append(reversed_tree)
+    else:
+        combinations = combinations_with_replacement(subdivisions, 2)
+        for pair in proportion_pairs:
+            for combination in combinations:
+                proportion = random.choice(re_proportions)
+                temp_tree = RTMTree(
+                    [[pair[0], [1 for _ in range(combination[0])]], [pair[1], [1 for _ in range(combination[1])]]],
+                    size=proportion,
+                )
+                subdivided_pairs.append(temp_tree)
+
+
+    def returned_function(durations, state=None, previous_state=None, measurewise_voice_indices=measurewise_voice_indices):
+        random.seed(seed)
+        time_signatures = [_ for _ in durations]
+        if preprocessor is not None:
+            durations = preprocessor(durations)
+        size = len(durations)
+        if cyclic_voice_indices is True:
+            measurewise_voice_indices = CyclicList(measurewise_voice_indices, forget=False)
+            measurewise_voice_indices = measurewise_voice_indices(r=size)
+        else:
+            while len(measurewise_voice_indices) < size:
+                measurewise_voice_indices.append(measurewise_voice_indices[-1])
+            if size < len(measurewise_voice_indices):
+                measurewise_voice_indices = measurewise_voice_indices[:size]
+        voices = []
+        for i in range(number_of_voices):
+            voice = []
+            for division in durations:
+                number_of_figures = random.choice(motives_per_figure)
+                figures = []
+                for opportunity in range(number_of_figures):
+                    chosen = random.choice(subdivided_pairs)
+                    figures.append(chosen)
+                voice.append(RTMTree(figures))
+            voices.append(voice)
+        final_conjoint_layer = []
+        for i, dur_ in enumerate(durations):
+            chosen_voice = voices[measurewise_voice_indices[i]]
+            chosen_gesture = chosen_voice[i]
+            final_conjoint_layer.append(str(chosen_gesture))
+        # for _ in final_conjoint_layer:
+        #     print(_, "\n")
+        maker = RTMMaker(final_conjoint_layer)
+        nested_music = maker(durations)
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if treat_tuplets is True:
+            command_target = abjad.select.tuplets(container)
+            rmakers.trivialize(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_rest_filled(command_target)
+            command_target = abjad.select.tuplets(container)
+            rmakers.rewrite_sustained(command_target)
+            rmakers.extract_trivial(container)  # ?
+        if rewrite is not None:
+            meter_command = RewriteMeterCommand(boundary_depth=rewrite)
+            nested_music = abjad.mutate.eject_contents(container)
+            metered_staff = rmakers.wrap_in_time_signature_staff(
+                container[:], time_signatures
+            )
+            meter_command(metered_staff)
+            music = abjad.mutate.eject_contents(metered_staff)
+        else:
+            music = abjad.mutate.eject_contents(container)
+
+        return music
+
+    return returned_function
