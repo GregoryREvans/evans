@@ -1,9 +1,10 @@
 """
 Command classes.
 """
-import random
-import itertools
 import copy
+import itertools
+import random
+
 import abjad
 import baca
 # import dataclasses
@@ -12,10 +13,10 @@ import quicktions
 from abjadext import rmakers
 
 from .handlers import IntermittentVoiceHandler, RhythmHandler
+from .quantizer import QSchemaTimeSignature, make_subdivided_music
 from .rtm import RTMMaker, RTMTree, exponential_leaf_maker
 from .select import get_top_level_components_from_leaves, select_all_but_final_leaf
 from .sequence import CyclicList
-from .quantizer import make_subdivided_music, QSchemaTimeSignature
 
 
 class Command:
@@ -1678,8 +1679,8 @@ def less_than_quarter(leaf):
     else:
         return False
 
-def get_beam_count(leaf):
 
+def get_beam_count(leaf):
     def _is_prime(n):
         if n == 1:
             return False
@@ -1718,7 +1719,14 @@ def get_beam_count(leaf):
         factors = factors[2:]
         return len(factors)
 
-def long_beam(selections, stemlet_length=None, beam_rests=True, beam_lone_notes=False, direction=abjad.UP):
+
+def long_beam(
+    selections,
+    stemlet_length=None,
+    beam_rests=True,
+    beam_lone_notes=False,
+    direction=abjad.UP,
+):
     leaves = abjad.select.leaves(selections, grace=False)
     filtered_leaves = abjad.select.filter(leaves, less_than_quarter)
     groups = abjad.select.group_by_contiguity(filtered_leaves)
@@ -1726,16 +1734,29 @@ def long_beam(selections, stemlet_length=None, beam_rests=True, beam_lone_notes=
         if len(groups) == 0:
             return
         if len(groups) == 1:
-            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests)
+            abjad.beam(
+                group,
+                stemlet_length=stemlet_length,
+                beam_lone_notes=beam_lone_notes,
+                beam_rests=beam_rests,
+            )
         if 1 < len(groups):
             total = len(groups) - 1
             first_leaf = group[0]
             last_leaf = group[-1]
-            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests, direction=direction)
+            abjad.beam(
+                group,
+                stemlet_length=stemlet_length,
+                beam_lone_notes=beam_lone_notes,
+                beam_rests=beam_rests,
+                direction=direction,
+            )
             if i != 0:
                 if i != total:
                     start_count = get_beam_count(first_leaf)
-                    start_beam_count = abjad.BeamCount(left=start_count, right=start_count)
+                    start_beam_count = abjad.BeamCount(
+                        left=start_count, right=start_count
+                    )
                     abjad.attach(start_beam_count, first_leaf)
                     stop_count = get_beam_count(last_leaf)
                     stop_beam_count = abjad.BeamCount(right=stop_count, left=stop_count)
@@ -1758,6 +1779,7 @@ def subdivided_ties(
     args_count = 0
     for arg in args:
         args_count += 1
+
     def returned_function(divisions, state=None, previous_state=None):
         source_leaves = source_maker(divisions)
         source_container = abjad.Container(source_leaves)
@@ -1780,7 +1802,9 @@ def subdivided_ties(
                     )
                     schema_list.append(schema)
             new_args = args_ + schema_list
-            nested_music = make_subdivided_music(*new_args, ties=source_container) # ties?
+            nested_music = make_subdivided_music(
+                *new_args, ties=source_container
+            )  # ties?
             for leaf in abjad.select.leaves(nested_music):
                 signature_indicator = abjad.get.indicator(leaf, abjad.TimeSignature)
                 abjad.detach(signature_indicator, leaf)
@@ -1790,7 +1814,7 @@ def subdivided_ties(
                     container.extend(component)
                 else:
                     container.append(component)
-            if treat_tuplets is True: # not needed?
+            if treat_tuplets is True:  # not needed?
                 command_target = abjad.select.tuplets(container)
                 rmakers.trivialize(command_target)
                 command_target = abjad.select.tuplets(container)
@@ -1817,12 +1841,15 @@ def wrap_in_cross_staff(selections):
 def find_cross_staff_events(selections, comparison):
     crossable = []
     comparison_ties = abjad.select.logical_ties(comparison, pitched=True)
-    comparison_start_offsets = [abjad.get.timespan(_).start_offset for _ in comparison_ties]
+    comparison_start_offsets = [
+        abjad.get.timespan(_).start_offset for _ in comparison_ties
+    ]
     for tie in abjad.select.logical_ties(selections, pitched=True):
         if abjad.get.timespan(tie).start_offset in comparison_start_offsets:
             crossable.append(tie)
     for tie in crossable:
         wrap_in_cross_staff(tie)
+
 
 def cross_staff(target, reference_name, reference_selector):
     score = abjad.get.parentage(target[0])[-1]
@@ -1831,7 +1858,9 @@ def cross_staff(target, reference_name, reference_selector):
     find_cross_staff_events(target, reference_selections)
 
 
-def cross_staff_copy(target, reference_name, reference_selector, reference_indices, indices_period=None):
+def cross_staff_copy(
+    target, reference_name, reference_selector, reference_indices, indices_period=None
+):
     score = abjad.get.parentage(target[0])[-1]
     reference_target = score[reference_name]
     reference_selections = reference_selector(reference_target)
@@ -1840,10 +1869,14 @@ def cross_staff_copy(target, reference_name, reference_selector, reference_indic
     out = []
     for tie in reference_selections:
         if tie in ties:
-            new_leaf = rmakers.multiplied_duration([abjad.get.duration(tie)], duration=(1, 8))
+            new_leaf = rmakers.multiplied_duration(
+                [abjad.get.duration(tie)], duration=(1, 8)
+            )
             out.extend(new_leaf)
         else:
-            new_leaf = rmakers.multiplied_duration([abjad.get.duration(tie)], abjad.Skip)
+            new_leaf = rmakers.multiplied_duration(
+                [abjad.get.duration(tie)], abjad.Skip
+            )
             out.extend(new_leaf)
     for tie in abjad.select.logical_ties(out, pitched=True):
         start_literal = abjad.LilyPondLiteral(r"\crossStaff {", site="before")
@@ -1872,8 +1905,12 @@ def unsicthbare_farben(
     random.seed(seed)
     subdivisions = [_ for _ in range(subdivisions_range[0], subdivisions_range[1])]
     proportions = [_ for _ in range(proportions_range[0], proportions_range[1])]
-    motives_per_figure = [_ for _ in range(motives_per_figure_range[0], motives_per_figure_range[1])]
-    re_proportions = [_ for _ in range(reproportioning_range[0], reproportioning_range[1])]
+    motives_per_figure = [
+        _ for _ in range(motives_per_figure_range[0], motives_per_figure_range[1])
+    ]
+    re_proportions = [
+        _ for _ in range(reproportioning_range[0], reproportioning_range[1])
+    ]
 
     if proportions_from_combinations is False:
         if reverse_proportions is True:
@@ -1894,8 +1931,14 @@ def unsicthbare_farben(
             for subdivision in subdivisions:
                 proportion = random.choice(re_proportions)
                 if 1 < subdivision:
-                    temp_tree = RTMTree([pair[0], [pair[1], [1 for _ in range(subdivision)]]], size=proportion)
-                    reversed_tree = RTMTree([[pair[1], [1 for _ in range(subdivision)]], pair[0]], size=proportion)
+                    temp_tree = RTMTree(
+                        [pair[0], [pair[1], [1 for _ in range(subdivision)]]],
+                        size=proportion,
+                    )
+                    reversed_tree = RTMTree(
+                        [[pair[1], [1 for _ in range(subdivision)]], pair[0]],
+                        size=proportion,
+                    )
                 else:
                     temp_tree = RTMTree([pair[0], pair[1]], size=proportion)
                     reversed_tree = RTMTree([pair[1], pair[0]], size=proportion)
@@ -1907,20 +1950,29 @@ def unsicthbare_farben(
             for combination in combinations:
                 proportion = random.choice(re_proportions)
                 temp_tree = RTMTree(
-                    [[pair[0], [1 for _ in range(combination[0])]], [pair[1], [1 for _ in range(combination[1])]]],
+                    [
+                        [pair[0], [1 for _ in range(combination[0])]],
+                        [pair[1], [1 for _ in range(combination[1])]],
+                    ],
                     size=proportion,
                 )
                 subdivided_pairs.append(temp_tree)
 
-
-    def returned_function(durations, state=None, previous_state=None, measurewise_voice_indices=measurewise_voice_indices):
+    def returned_function(
+        durations,
+        state=None,
+        previous_state=None,
+        measurewise_voice_indices=measurewise_voice_indices,
+    ):
         random.seed(seed)
         time_signatures = [_ for _ in durations]
         if preprocessor is not None:
             durations = preprocessor(durations)
         size = len(durations)
         if cyclic_voice_indices is True:
-            measurewise_voice_indices = CyclicList(measurewise_voice_indices, forget=False)
+            measurewise_voice_indices = CyclicList(
+                measurewise_voice_indices, forget=False
+            )
             measurewise_voice_indices = measurewise_voice_indices(r=size)
         else:
             while len(measurewise_voice_indices) < size:

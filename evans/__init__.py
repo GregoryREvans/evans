@@ -4,7 +4,6 @@ Evans API
 The personal Abjad library of Gregory Rowland Evans.
 """
 from . import baca_rhythm
-
 from .commands import (
     Attachment,
     Callable,
@@ -19,6 +18,8 @@ from .commands import (
     auto_staff_change,
     bcp,
     call,
+    cross_staff,
+    cross_staff_copy,
     detach,
     duplicate,
     even_division,
@@ -26,6 +27,7 @@ from .commands import (
     fitted_obgc,
     hairpin,
     imbricate,
+    long_beam,
     make_anchor_skips_from_voices,
     make_rtm,
     make_tied_notes,
@@ -35,19 +37,16 @@ from .commands import (
     replace_rests_with_skips,
     simple_hairpin,
     slur,
+    subdivided_ties,
     sustain_pedal,
     talea,
     text_span,
     text_spanner,
     trill,
     tuplet,
+    unsicthbare_farben,
     vibrato_spanner,
     wrap_in_repeats,
-    long_beam,
-    subdivided_ties,
-    cross_staff,
-    cross_staff_copy,
-    unsicthbare_farben,
 )
 from .consort import (
     LogicalTieCollection,
@@ -97,10 +96,12 @@ from .pitch import (
     ArtificialHarmonic,
     ETPitch,
     JIPitch,
+    Lapidary,
     annotate_concurrent_ratios,
     annotate_hertz,
     clean_cent_markup,
     combination_tones,
+    contour,
     force_accidentals,
     herz_combination_tone_ratios,
     loop,
@@ -116,11 +117,9 @@ from .pitch import (
     to_nearest_twelfth_tone,
     tonnetz,
     tune_to_ratio,
-    contour,
-    Lapidary,
 )
 from .preprocess import make_preprocessor
-from .quantizer import unity_capsule_rhythms, fuse_durations, subdivide_durations
+from .quantizer import fuse_durations, subdivide_durations, unity_capsule_rhythms
 from .rtm import (
     AfterGraceContainer,
     BeforeGraceContainer,

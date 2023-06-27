@@ -1,6 +1,8 @@
 import abjad
 from abjadext import nauert, rmakers
+
 from .sequence import CyclicList
+
 # dont forget to work on a subclass of the rhythm trees in sequence?
 
 
@@ -24,12 +26,7 @@ def ties_to_milisecond_durations(selections):
     milisecond_durations = []
 
     for dur in durations:
-        result = (
-            dur
-            / reference_duration
-            / units_per_minute
-            * 60
-        )
+        result = dur / reference_duration / units_per_minute * 60
         dur = abjad.Duration(result)
         milisecond_durations.append(result * 1000)
     for i, tie in enumerate(ties):
@@ -63,22 +60,30 @@ def do_subdivide_durations(durations, cuts=[2], indices=[0], period=1, cyclic=Tr
 
 
 def subdivide_durations(cuts=[2], indices=[0], period=1, cyclic=True):
-
     def returned_function(durations):
-        subdivided_durations = do_subdivide_durations(durations, cuts=cuts, indices=indices, period=period, cyclic=cyclic)
+        subdivided_durations = do_subdivide_durations(
+            durations, cuts=cuts, indices=indices, period=period, cyclic=cyclic
+        )
         return subdivided_durations
 
     return returned_function
 
 
-def do_fuse_durations(durations, group_sizes=[2], boolean_vector=[True], cyclic=True, overhang=False, reversed_=False):
+def do_fuse_durations(
+    durations,
+    group_sizes=[2],
+    boolean_vector=[True],
+    cyclic=True,
+    overhang=False,
+    reversed_=False,
+):
     out = []
     partitions = abjad.sequence.partition_by_counts(
         durations,
         group_sizes,
         cyclic=cyclic,
         enchain=False,
-        overhang=overhang, # True, False, abjad.EXACT
+        overhang=overhang,  # True, False, abjad.EXACT
         reversed_=reversed_,
     )
     if cyclic is True:
@@ -104,8 +109,9 @@ def do_fuse_durations(durations, group_sizes=[2], boolean_vector=[True], cyclic=
     return flattened_sequence
 
 
-def fuse_durations(group_sizes=[2], boolean_vector=[True], cyclic=True, overhang=False, reversed_=False):
-
+def fuse_durations(
+    group_sizes=[2], boolean_vector=[True], cyclic=True, overhang=False, reversed_=False
+):
     def returned_function(durations):
 
         fused_durations = do_fuse_durations(
@@ -122,7 +128,6 @@ def fuse_durations(group_sizes=[2], boolean_vector=[True], cyclic=True, overhang
 
 
 class QSchemaTimeSignature:
-
     def __init__(
         self,
         index,
@@ -145,18 +150,17 @@ def miliseconds_to_music(*args, miliseconds, fuse_silences=True):
 
     schemas = [arg.constructed_dict for arg in args]
 
-    seq = nauert.QEventSequence.from_millisecond_durations(miliseconds, fuse_silences=fuse_silences)
+    seq = nauert.QEventSequence.from_millisecond_durations(
+        miliseconds, fuse_silences=fuse_silences
+    )
 
-    search_tree = nauert.UnweightedSearchTree( # default
+    search_tree = nauert.UnweightedSearchTree(  # default
         definition={
             2: {
-                    2: {
-                        2: {2: None},
-                        3: None
-                    },
-                    3: None,
-                    5: None,
-                    7: None,
+                2: {2: {2: None}, 3: None},
+                3: None,
+                5: None,
+                7: None,
             },
             3: {
                 2: {2: None},
@@ -167,9 +171,7 @@ def miliseconds_to_music(*args, miliseconds, fuse_silences=True):
                 2: None,
                 3: None,
             },
-            7: {
-                2: None
-            },
+            7: {2: None},
             11: None,
             13: None,
         }
@@ -322,7 +324,7 @@ def fuse_timespanlist_preserving_start_offsets(spans, start_offsets_only=True):
         start_offsets.append(spans.stop_offset)
         start_offsets = list(set(start_offsets))
         start_offsets.sort()
-        new_spans  = []
+        new_spans = []
         for start, stop in abjad.sequence.nwise(start_offsets, 2):
             new_spans.append(abjad.Timespan(start, stop))
         spans = new_spans
@@ -335,6 +337,7 @@ def fuse_timespanlist_preserving_start_offsets(spans, start_offsets_only=True):
     final_tsl = abjad.TimespanList(reduced_spans)
     return final_tsl
 
+
 def duration_to_milisecond_durations(durations):
     reference_duration = abjad.Duration(1, 4)
     units_per_minute = 60
@@ -343,12 +346,7 @@ def duration_to_milisecond_durations(durations):
     milisecond_durations = []
 
     for dur in durations:
-        result = (
-            dur
-            / reference_duration
-            / units_per_minute
-            * 60
-        )
+        result = dur / reference_duration / units_per_minute * 60
         milisecond_durations.append(result * 1000)
 
     return milisecond_durations
@@ -370,19 +368,24 @@ def truncate_list_of_durations(milisecond_durations, cap_milisecond):
             else:
                 new_dur = duration + difference
             temp[-1] = new_dur
-            assert(sum([abs(_) for _ in temp]) == cap_milisecond), f"out total:{sum([abs(_) for _ in temp])} vs desired total:{cap_milisecond}"
+            assert (
+                sum([abs(_) for _ in temp]) == cap_milisecond
+            ), f"out total:{sum([abs(_) for _ in temp])} vs desired total:{cap_milisecond}"
             out.append(new_dur)
             break
     out = out[1:]
-    assert(sum([abs(_) for _ in out]) == cap_milisecond), f"BAD TRUNCATION: out sum = {sum([abs(_) for _ in out])} vs cap milisecond {cap_milisecond}"
+    assert (
+        sum([abs(_) for _ in out]) == cap_milisecond
+    ), f"BAD TRUNCATION: out sum = {sum([abs(_) for _ in out])} vs cap milisecond {cap_milisecond}"
     return [abjad.Duration(_) for _ in out]
+
 
 def unity_capsule_rhythms(
     *args,
     trailing_divisions,
     treat_tuplets=False,
     intercalate_silences_between_groups=False,
-    rest_durations="divisions", # or [(1, 4), (1, 8) ...]
+    rest_durations="divisions",  # or [(1, 4), (1, 8) ...]
     rest_boolean_vector=[True],
     cyclic_vector=True,
     group_sizes=[2],
@@ -396,14 +399,20 @@ def unity_capsule_rhythms(
         if isinstance(arg, QSchemaTimeSignature):
             user_input_schemas.append(arg)
 
-    def returned_function(divisions, rest_durations=rest_durations, rest_boolean_vector=rest_boolean_vector):
+    def returned_function(
+        divisions,
+        rest_durations=rest_durations,
+        rest_boolean_vector=rest_boolean_vector,
+    ):
         if intercalate_silences_between_groups is True:
             if rest_durations == "divisions":
                 rest_divisions = divisions
             else:
                 rest_divisions = rest_durations
             rest_durations = [abjad.Duration(_) for _ in rest_divisions]
-            rest_milisecond_durations = [0 - _ for _ in duration_to_milisecond_durations(rest_durations)]
+            rest_milisecond_durations = [
+                0 - _ for _ in duration_to_milisecond_durations(rest_durations)
+            ]
         represented_schema_indices = [_.index for _ in user_input_schemas]
         schema_list = user_input_schemas
         for i, division in enumerate(divisions):
@@ -424,7 +433,9 @@ def unity_capsule_rhythms(
             if 0 < temp_trail:
                 required_trails.append(temp_trail)
         required_trail_count = max(required_trails)
-        assert(len(trailing_divisions) == required_trail_count), f"required_trail_count: {required_trail_count} != trailing_divisions: {len(trailing_divisions)}"
+        assert (
+            len(trailing_divisions) == required_trail_count
+        ), f"required_trail_count: {required_trail_count} != trailing_divisions: {len(trailing_divisions)}"
         temp_staff_group = abjad.StaffGroup()
         counter = -1
         total_pairs = len(pairs)
@@ -435,24 +446,40 @@ def unity_capsule_rhythms(
             staff_1 = abjad.Staff(lilypond_type="RhythmicStaff")
             staff_2 = abjad.Staff(lilypond_type="RhythmicStaff")
             if 0 < counter:
-                preceding_silence_divisions = sum([abjad.Duration(_) for _ in full_divisions[0:counter]])
-                pause_1 = rmakers.multiplied_duration([preceding_silence_divisions], prototype=abjad.Skip)
+                preceding_silence_divisions = sum(
+                    [abjad.Duration(_) for _ in full_divisions[0:counter]]
+                )
+                pause_1 = rmakers.multiplied_duration(
+                    [preceding_silence_divisions], prototype=abjad.Skip
+                )
                 staff_1.append(pause_1[0])
                 # rmakers.force_rest(staff_1)
 
-                pause_2 = rmakers.multiplied_duration([preceding_silence_divisions], prototype=abjad.Skip)
+                pause_2 = rmakers.multiplied_duration(
+                    [preceding_silence_divisions], prototype=abjad.Skip
+                )
                 staff_2.append(pause_2[0])
                 # rmakers.force_rest(staff_2)
 
-            first_numerator = pair[0].numerator # what about denominators?
+            first_numerator = pair[0].numerator  # what about denominators?
             second_numerator = pair[1].numerator
 
-            target_1 = sum([abjad.Duration(_) for _ in full_divisions[counter:counter+second_numerator]])
+            target_1 = sum(
+                [
+                    abjad.Duration(_)
+                    for _ in full_divisions[counter : counter + second_numerator]
+                ]
+            )
             layer_1 = rmakers.tuplet([target_1], [(1 for _ in range(first_numerator))])
             staff_1.extend(layer_1)
             temp_staff_group.append(staff_1)
 
-            target_2 = sum([abjad.Duration(_) for _ in full_divisions[counter:counter+first_numerator]])
+            target_2 = sum(
+                [
+                    abjad.Duration(_)
+                    for _ in full_divisions[counter : counter + first_numerator]
+                ]
+            )
             layer_2 = rmakers.tuplet([target_2], [(1 for _ in range(second_numerator))])
             staff_2.extend(layer_2)
             temp_staff_group.append(staff_2)
@@ -465,10 +492,7 @@ def unity_capsule_rhythms(
         milisecond_durations = duration_to_milisecond_durations(durations)
         if intercalate_silences_between_groups is True:
             groups = abjad.select.partition_by_counts(
-                milisecond_durations,
-                group_sizes,
-                cyclic=cyclic_groups,
-                overhang=True
+                milisecond_durations, group_sizes, cyclic=cyclic_groups, overhang=True
             )
             cyclic_rests = CyclicList(rest_milisecond_durations, forget=False)
             yield_vector = CyclicList(rest_boolean_vector, forget=False)
@@ -487,10 +511,24 @@ def unity_capsule_rhythms(
                             if current_bool is True:
                                 group.extend(current_rest)
                 interleaved_durations.extend(group)
-            milisecond_durations = truncate_list_of_durations(interleaved_durations, duration_to_milisecond_durations([total_duration])[0])
-        milisecond_sum = abjad.Duration(sum([abs(_) / 1000 for _ in milisecond_durations]))
-        total_duration_milisecond_sum = abjad.Duration(sum([abs(_) / 1000 for _ in duration_to_milisecond_durations([total_duration])]))
-        assert(milisecond_sum == total_duration_milisecond_sum), f"MILISECONDS MUST EQUAL MEASURES: miliseconds:{milisecond_sum} vs measures:{total_duration}"
+            milisecond_durations = truncate_list_of_durations(
+                interleaved_durations,
+                duration_to_milisecond_durations([total_duration])[0],
+            )
+        milisecond_sum = abjad.Duration(
+            sum([abs(_) / 1000 for _ in milisecond_durations])
+        )
+        total_duration_milisecond_sum = abjad.Duration(
+            sum(
+                [
+                    abs(_) / 1000
+                    for _ in duration_to_milisecond_durations([total_duration])
+                ]
+            )
+        )
+        assert (
+            milisecond_sum == total_duration_milisecond_sum
+        ), f"MILISECONDS MUST EQUAL MEASURES: miliseconds:{milisecond_sum} vs measures:{total_duration}"
 
         nested_music = miliseconds_to_music(
             *schema_list,
@@ -504,7 +542,9 @@ def unity_capsule_rhythms(
                     final_staff.extend(component)
                 else:
                     final_staff.append(component)
-            for rest_group in abjad.select.group_by_contiguity(abjad.select.rests(temp_staff_group)):
+            for rest_group in abjad.select.group_by_contiguity(
+                abjad.select.rests(temp_staff_group)
+            ):
                 start_literal = abjad.LilyPondLiteral(
                     [
                         r"\override Rest.transparent = ##t",
@@ -530,7 +570,7 @@ def unity_capsule_rhythms(
             file = abjad.LilyPondFile(
                 items=[
                     r'#(set-default-paper-size "11x17landscape")',
-                    r'#(set-global-staff-size 18)',
+                    r"#(set-global-staff-size 18)",
                     r'\include "/Users/gregoryevans/abjad/abjad/scm/abjad.ily"',
                     abjad.Block(
                         "layout",
@@ -601,12 +641,9 @@ def unity_capsule_rhythms(
                                     \RemoveAllEmptyStaves
                                   }
                             """
-                        ]
+                        ],
                     ),
-                    abjad.Block(
-                        "score",
-                        items=[score]
-                    ),
+                    abjad.Block("score", items=[score]),
                 ],
             )
             raise Exception(abjad.show(file))
@@ -619,7 +656,7 @@ def unity_capsule_rhythms(
                 container.extend(component)
             else:
                 container.append(component)
-        if treat_tuplets is True: # not needed?
+        if treat_tuplets is True:  # not needed?
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
             command_target = abjad.select.tuplets(container)
@@ -628,12 +665,21 @@ def unity_capsule_rhythms(
             rmakers.rewrite_sustained(command_target)
             rmakers.extract_trivial(container)  # ?
         music = abjad.mutate.eject_contents(container)
-        assert(sum([abjad.get.duration(_) for _ in abjad.select.logical_ties(music)]) == sum([abjad.Duration(_) for _ in divisions]))
+        assert sum(
+            [abjad.get.duration(_) for _ in abjad.select.logical_ties(music)]
+        ) == sum([abjad.Duration(_) for _ in divisions])
         return music
 
     return returned_function
 
-def duplicate_long_beam(selections, stemlet_length=1.6, beam_rests=True, beam_lone_notes=False, direction=abjad.UP): # because of circular import
+
+def duplicate_long_beam(
+    selections,
+    stemlet_length=1.6,
+    beam_rests=True,
+    beam_lone_notes=False,
+    direction=abjad.UP,
+):  # because of circular import
     def less_than_quarter(leaf):
         if leaf.written_duration < abjad.Duration(1, 4):
             return True
@@ -641,7 +687,6 @@ def duplicate_long_beam(selections, stemlet_length=1.6, beam_rests=True, beam_lo
             return False
 
     def get_beam_count(leaf):
-
         def _is_prime(n):
             if n == 1:
                 return False
@@ -679,6 +724,7 @@ def duplicate_long_beam(selections, stemlet_length=1.6, beam_rests=True, beam_lo
         else:
             factors = factors[2:]
             return len(factors)
+
     leaves = abjad.select.leaves(selections, grace=False)
     filtered_leaves = abjad.select.filter(leaves, less_than_quarter)
     groups = abjad.select.group_by_contiguity(filtered_leaves)
@@ -686,16 +732,29 @@ def duplicate_long_beam(selections, stemlet_length=1.6, beam_rests=True, beam_lo
         if len(groups) == 0:
             return
         if len(groups) == 1:
-            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests)
+            abjad.beam(
+                group,
+                stemlet_length=stemlet_length,
+                beam_lone_notes=beam_lone_notes,
+                beam_rests=beam_rests,
+            )
         if 1 < len(groups):
             total = len(groups) - 1
             first_leaf = group[0]
             last_leaf = group[-1]
-            abjad.beam(group, stemlet_length=stemlet_length, beam_lone_notes=beam_lone_notes, beam_rests=beam_rests, direction=direction)
+            abjad.beam(
+                group,
+                stemlet_length=stemlet_length,
+                beam_lone_notes=beam_lone_notes,
+                beam_rests=beam_rests,
+                direction=direction,
+            )
             if i != 0:
                 if i != total:
                     start_count = get_beam_count(first_leaf)
-                    start_beam_count = abjad.BeamCount(left=start_count, right=start_count)
+                    start_beam_count = abjad.BeamCount(
+                        left=start_count, right=start_count
+                    )
                     abjad.attach(start_beam_count, first_leaf)
                     stop_count = get_beam_count(last_leaf)
                     stop_beam_count = abjad.BeamCount(right=stop_count, left=stop_count)

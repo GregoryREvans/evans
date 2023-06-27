@@ -1813,12 +1813,12 @@ def clean_cent_markup(selections):
                 abjad.detach(indicator, leaf)
 
 
-class Lapidary: # or Sculp?
+class Lapidary:  # or Sculp?
     def __init__(
         self,
-        direction="up", # neutral, down
-        following_treatment_reference="previous alteration", # "previous pitch"
-        following_treatment_range="centroid octave", # "pure octave" "octave above" "octave below"
+        direction="up",  # neutral, down
+        following_treatment_reference="previous alteration",  # "previous pitch"
+        following_treatment_range="centroid octave",  # "pure octave" "octave above" "octave below"
         force_initial_octavation=False,
     ):
         self.direction = direction
@@ -1839,6 +1839,7 @@ def get_centroid(pitch_list):
         reference_pitch = pitch_list
     return reference_pitch
 
+
 def transpose_from_range(pitch, range):
     temp_pitch = pitch
     low = range.start_pitch
@@ -1848,6 +1849,7 @@ def transpose_from_range(pitch, range):
     while high < temp_pitch:
         temp_pitch = abjad.NamedInterval("-P8").transpose(temp_pitch)
     return temp_pitch
+
 
 def get_register(reference_pitch=0, specifier="pure octave"):
     if isinstance(reference_pitch, list):
@@ -1859,14 +1861,18 @@ def get_register(reference_pitch=0, specifier="pure octave"):
     elif specifier == "octave below":
         cap_pitch = abjad.NamedPitch(reference_pitch - 12)
     elif specifier == "pure octave":
-        while abjad.NamedPitchClass(named_reference_pitch) != abjad.NamedPitchClass("c"):
+        while abjad.NamedPitchClass(named_reference_pitch) != abjad.NamedPitchClass(
+            "c"
+        ):
             named_reference_pitch = abjad.NamedPitch(named_reference_pitch.number - 0.5)
         cap_pitch = abjad.NamedPitch(named_reference_pitch + 12)
     elif specifier == "centroid octave":
         named_reference_pitch = abjad.NamedPitch(reference_pitch - 6)
         cap_pitch = abjad.NamedPitch(reference_pitch + 6)
     else:
-        raise Exception(f"BAD value for 'specifier'!\nShould be 'octave above', 'octave below', 'pure octave', or 'centroid octave'.\nGot {specifier}.")
+        raise Exception(
+            f"BAD value for 'specifier'!\nShould be 'octave above', 'octave below', 'pure octave', or 'centroid octave'.\nGot {specifier}."
+        )
 
     pitch_list = [named_reference_pitch, cap_pitch]
     pitch_list.sort()
@@ -1889,12 +1895,14 @@ def do_contouring(pitch_list, command):
     if isinstance(command[0], int):
         try:
             index = command[0]
-            continuation = pitch_list[index+1:]
+            continuation = pitch_list[index + 1 :]
             continuation_indices = [index + 1 + _ for _ in range(len(continuation))]
             if command[1].direction == "up":
                 if force_initial_octavation is True:
                     if not isinstance(pitch_list[index], list):
-                        pitch_list[index] = abjad.NamedInterval("+P8").transpose(pitch_list[index])
+                        pitch_list[index] = abjad.NamedInterval("+P8").transpose(
+                            pitch_list[index]
+                        )
                     else:
                         temp = []
                         for pitch in pitch_list[index]:
@@ -1902,24 +1910,34 @@ def do_contouring(pitch_list, command):
                         pitch_list[index] = temp
                 else:
                     try:
-                        assert -1 < index-1
+                        assert -1 < index - 1
                         if not isinstance(pitch_list[index], list):
-                            while pitch_list[index] < get_centroid(pitch_list[index-1]):
-                                pitch_list[index] = abjad.NamedInterval("+P8").transpose(pitch_list[index])
+                            while pitch_list[index] < get_centroid(
+                                pitch_list[index - 1]
+                            ):
+                                pitch_list[index] = abjad.NamedInterval(
+                                    "+P8"
+                                ).transpose(pitch_list[index])
                         else:
                             centroid = get_centroid(pitch_list[index])
-                            while centroid < get_centroid(pitch_list[index-1]):
+                            while centroid < get_centroid(pitch_list[index - 1]):
                                 temp = []
-                                centroid = abjad.NamedInterval("+P8").transpose(centroid)
+                                centroid = abjad.NamedInterval("+P8").transpose(
+                                    centroid
+                                )
                                 for pitch in pitch_list[index]:
-                                    temp.append(abjad.NamedInterval("+P8").transpose(pitch))
+                                    temp.append(
+                                        abjad.NamedInterval("+P8").transpose(pitch)
+                                    )
                                 pitch_list[index] = temp
                     except:
                         pass
             elif command[1].direction == "down":
                 if force_initial_octavation is True:
                     if not isinstance(pitch_list[index], list):
-                        pitch_list[index] = abjad.NamedInterval("-P8").transpose(pitch_list[index])
+                        pitch_list[index] = abjad.NamedInterval("-P8").transpose(
+                            pitch_list[index]
+                        )
                     else:
                         temp = []
                         for pitch in pitch_list[index]:
@@ -1927,17 +1945,25 @@ def do_contouring(pitch_list, command):
                         pitch_list[index] = temp
                 else:
                     try:
-                        assert -1 < index-1
+                        assert -1 < index - 1
                         if not isinstance(pitch_list[index], list):
-                            while get_centroid(pitch_list[index-1]) < pitch_list[index]:
-                                pitch_list[index] = abjad.NamedInterval("-P8").transpose(pitch_list[index])
+                            while (
+                                get_centroid(pitch_list[index - 1]) < pitch_list[index]
+                            ):
+                                pitch_list[index] = abjad.NamedInterval(
+                                    "-P8"
+                                ).transpose(pitch_list[index])
                         else:
                             centroid = get_centroid(pitch_list[index])
-                            while get_centroid(pitch_list[index-1]) < centroid:
+                            while get_centroid(pitch_list[index - 1]) < centroid:
                                 temp = []
-                                centroid = abjad.NamedInterval("-P8").transpose(centroid)
+                                centroid = abjad.NamedInterval("-P8").transpose(
+                                    centroid
+                                )
                                 for pitch in pitch_list[index]:
-                                    temp.append(abjad.NamedInterval("-P8").transpose(pitch))
+                                    temp.append(
+                                        abjad.NamedInterval("-P8").transpose(pitch)
+                                    )
                                 pitch_list[index] = temp
                     except:
                         pass
@@ -1945,11 +1971,15 @@ def do_contouring(pitch_list, command):
                 pitch_list[index] = pitch_list[index]
             else:
                 raise Exception("Must be up, down, or neutral.")
-            gotten_register = get_register(get_centroid(pitch_list[index]), command[1].following_treatment_range)
+            gotten_register = get_register(
+                get_centroid(pitch_list[index]), command[1].following_treatment_range
+            )
             if command[1].following_treatment_reference == "previous alteration":
                 for index in continuation_indices:
                     if not isinstance(pitch_list[index], list):
-                        pitch_list[index] = transpose_from_range(pitch_list[index], gotten_register)
+                        pitch_list[index] = transpose_from_range(
+                            pitch_list[index], gotten_register
+                        )
                     else:
                         temp = []
                         for pitch_ in pitch_list[index]:
@@ -1958,13 +1988,18 @@ def do_contouring(pitch_list, command):
             elif command[1].following_treatment_reference == "previous pitch":
                 for index in continuation_indices:
                     if not isinstance(pitch_list[index], list):
-                        pitch_list[index] = transpose_from_range(pitch_list[index], gotten_register)
+                        pitch_list[index] = transpose_from_range(
+                            pitch_list[index], gotten_register
+                        )
                     else:
                         temp = []
                         for pitch_ in pitch_list[index]:
                             temp.append(transpose_from_range(pitch_, gotten_register))
                         pitch_list[index] = temp
-                    gotten_register = get_register(get_centroid(pitch_list[index]), command[1].following_treatment_range)
+                    gotten_register = get_register(
+                        get_centroid(pitch_list[index]),
+                        command[1].following_treatment_range,
+                    )
             else:
                 raise Exception("Must be previous alteration or previous pitch.")
         except:
@@ -1975,14 +2010,16 @@ def do_contouring(pitch_list, command):
             indices = [_ for _ in range(command[0][0], command[0][1])]
         else:
             indices = command[0]
-        continuation = pitch_list[indices[-1]+1:]
+        continuation = pitch_list[indices[-1] + 1 :]
         continuation_indices = [indices[-1] + 1 + _ for _ in range(len(continuation))]
         for i, index in enumerate(indices):
             if command[1].direction == "up":
                 if i == 0:
                     if force_initial_octavation is True:
                         if not isinstance(pitch_list[index], list):
-                            pitch_list[index] = abjad.NamedInterval("+P8").transpose(pitch_list[index])
+                            pitch_list[index] = abjad.NamedInterval("+P8").transpose(
+                                pitch_list[index]
+                            )
                         else:
                             temp = []
                             for p_ in pitch_list[index]:
@@ -1990,24 +2027,34 @@ def do_contouring(pitch_list, command):
                             pitch_list[index] = temp
                     else:
                         try:
-                            assert -1 < index-1
+                            assert -1 < index - 1
                             if not isinstance(pitch_list[index], list):
-                                while pitch_list[index] < get_centroid(pitch_list[index-1]):
-                                    pitch_list[index] = abjad.NamedInterval("+P8").transpose(pitch_list[index])
+                                while pitch_list[index] < get_centroid(
+                                    pitch_list[index - 1]
+                                ):
+                                    pitch_list[index] = abjad.NamedInterval(
+                                        "+P8"
+                                    ).transpose(pitch_list[index])
                             else:
                                 centroid = get_centroid(pitch_list[index])
-                                while centroid < get_centroid(pitch_list[index-1]):
+                                while centroid < get_centroid(pitch_list[index - 1]):
                                     temp = []
-                                    centroid = abjad.NamedInterval("+P8").transpose(centroid)
+                                    centroid = abjad.NamedInterval("+P8").transpose(
+                                        centroid
+                                    )
                                     for p_ in pitch_list[index]:
-                                        temp.append(abjad.NamedInterval("+P8").transpose(p_))
+                                        temp.append(
+                                            abjad.NamedInterval("+P8").transpose(p_)
+                                        )
                                     pitch_list[index] = temp
                         except:
                             pass
                 else:
                     if not isinstance(pitch_list[index], list):
                         while pitch_list[index] < get_centroid(pitch_list[index - 1]):
-                            pitch_list[index] = abjad.NamedInterval("+P8").transpose(pitch_list[index])
+                            pitch_list[index] = abjad.NamedInterval("+P8").transpose(
+                                pitch_list[index]
+                            )
                     else:
                         centroid = get_centroid(pitch_list[index])
                         while centroid < get_centroid(pitch_list[index - 1]):
@@ -2021,7 +2068,9 @@ def do_contouring(pitch_list, command):
                 if i == 0:
                     if force_initial_octavation is True:
                         if not isinstance(pitch_list[index], list):
-                            pitch_list[index] = abjad.NamedInterval("-P8").transpose(pitch_list[index])
+                            pitch_list[index] = abjad.NamedInterval("-P8").transpose(
+                                pitch_list[index]
+                            )
                         else:
                             temp = []
                             for p_ in pitch_list[index]:
@@ -2029,27 +2078,38 @@ def do_contouring(pitch_list, command):
                             pitch_list[index] = temp
                     else:
                         try:
-                            assert -1 < index-1
+                            assert -1 < index - 1
                             if not isinstance(pitch_list[index], list):
-                                while get_centroid(pitch_list[index-1]) < pitch_list[index]:
-                                    pitch_list[index] = abjad.NamedInterval("-P8").transpose(pitch_list[index])
+                                while (
+                                    get_centroid(pitch_list[index - 1])
+                                    < pitch_list[index]
+                                ):
+                                    pitch_list[index] = abjad.NamedInterval(
+                                        "-P8"
+                                    ).transpose(pitch_list[index])
                             else:
                                 centroid = get_centroid(pitch_list[index])
-                                while get_centroid(pitch_list[index-1]) < centroid:
+                                while get_centroid(pitch_list[index - 1]) < centroid:
                                     temp = []
-                                    centroid = abjad.NamedInterval("-P8").transpose(centroid)
+                                    centroid = abjad.NamedInterval("-P8").transpose(
+                                        centroid
+                                    )
                                     for p_ in pitch_list[index]:
-                                        temp.append(abjad.NamedInterval("-P8").transpose(p_))
+                                        temp.append(
+                                            abjad.NamedInterval("-P8").transpose(p_)
+                                        )
                                     pitch_list[index] = temp
                         except:
                             pass
                 else:
                     if not isinstance(pitch_list[index], list):
                         while get_centroid(pitch_list[index - 1]) < pitch_list[index]:
-                            pitch_list[index] = abjad.NamedInterval("-P8").transpose(pitch_list[index])
+                            pitch_list[index] = abjad.NamedInterval("-P8").transpose(
+                                pitch_list[index]
+                            )
                     else:
                         centroid = get_centroid(pitch_list[index])
-                        while get_centroid(pitch_list[index-1]) < centroid:
+                        while get_centroid(pitch_list[index - 1]) < centroid:
                             temp = []
                             centroid = abjad.NamedInterval("-P8").transpose(centroid)
                             for p_ in pitch_list[index]:
@@ -2059,11 +2119,15 @@ def do_contouring(pitch_list, command):
                 pitch_list[index] = pitch_list[index]
             else:
                 raise Exception("Must be up, down, or neutral.")
-        gotten_register = get_register(get_centroid(pitch_list[indices[-1]]), command[1].following_treatment_range)
+        gotten_register = get_register(
+            get_centroid(pitch_list[indices[-1]]), command[1].following_treatment_range
+        )
         if command[1].following_treatment_reference == "previous alteration":
             for index in continuation_indices:
                 if not isinstance(pitch_list[index], list):
-                    pitch_list[index] = transpose_from_range(pitch_list[index], gotten_register)
+                    pitch_list[index] = transpose_from_range(
+                        pitch_list[index], gotten_register
+                    )
                 else:
                     temp = []
                     for p_ in pitch_list[index]:
@@ -2072,13 +2136,18 @@ def do_contouring(pitch_list, command):
         elif command[1].following_treatment_reference == "previous pitch":
             for index in continuation_indices:
                 if not isinstance(pitch_list[index], list):
-                    pitch_list[index] = transpose_from_range(pitch_list[index], gotten_register)
+                    pitch_list[index] = transpose_from_range(
+                        pitch_list[index], gotten_register
+                    )
                 else:
                     temp = []
                     for p_ in pitch_list[index]:
                         temp.append(transpose_from_range(pitch_, gotten_register))
                     pitch_list[index] = temp
-                gotten_register = get_register(get_centroid(pitch_list[index]), command[1].following_treatment_range)
+                gotten_register = get_register(
+                    get_centroid(pitch_list[index]),
+                    command[1].following_treatment_range,
+                )
         else:
             raise Exception("Must be previous alteration or previous pitch.")
 
@@ -2087,7 +2156,10 @@ def do_contouring(pitch_list, command):
 
     return pitch_list
 
-def contour(ties, *commands, starting_range): # starting range should only be one octave!
+
+def contour(
+    ties, *commands, starting_range
+):  # starting range should only be one octave!
     ties = abjad.select.logical_ties(ties, pitched=True)
     gotten_pitches = [list(abjad.get.pitches(tie)) for tie in ties]
     pitches = []

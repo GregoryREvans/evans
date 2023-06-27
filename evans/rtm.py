@@ -746,9 +746,13 @@ class RhythmTreeQuantizer:
         self._recursive_operation(layers)
 
 
-def helianthated_rtm(divisions, beats, divisions_rotations=(-1, 1), beats_rotations=(-1, 1)):
+def helianthated_rtm(
+    divisions, beats, divisions_rotations=(-1, 1), beats_rotations=(-1, 1)
+):
     s = Sequence(divisions).helianthate(divisions_rotations[0], divisions_rotations[1])
-    s_ = Sequence(flatten(Sequence(beats).helianthate(beats_rotations[0], beats_rotations[1])))
+    s_ = Sequence(
+        flatten(Sequence(beats).helianthate(beats_rotations[0], beats_rotations[1]))
+    )
 
     c_s_ = CyclicList(s_, forget=False)
     beats = c_s_(r=len(s))
@@ -1174,7 +1178,9 @@ class RTMTree:
                 counter += 1
                 contents.append(copied_node)
             else:
-                raise Exception(f"Bad Input Value: {_}. Must be RTMTree, RTMNode, or integer. Got type {type(_)}.")
+                raise Exception(
+                    f"Bad Input Value: {_}. Must be RTMTree, RTMNode, or integer. Got type {type(_)}."
+                )
         assert all([isinstance(_, (RTMTree, RTMNode)) for _ in contents])
         self.items = contents
         self.size = size
@@ -1291,24 +1297,42 @@ class RTMTree:
         out = temp.rotate_nodes_by_level(size_rotation + node_rotation, level)
         return out
 
-    def remap_sizes(self, map=[2, 1, 0], allowable_levels=[1, 2, 3], allowable_classes=None):
-        def return_denested_items_by_index(nested_structure, map, counter, allowable_levels, allowable_classes):
+    def remap_sizes(
+        self, map=[2, 1, 0], allowable_levels=[1, 2, 3], allowable_classes=None
+    ):
+        def return_denested_items_by_index(
+            nested_structure, map, counter, allowable_levels, allowable_classes
+        ):
             if allowable_classes is None:
                 allowable_classes = [RTMTree, RTMNode]
             instances = []
             for item in nested_structure:
-                print(f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}")
+                print(
+                    f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
+                )
                 if item.depth in allowable_levels and type(item) in allowable_classes:
                     counter += 1
                 if counter in map:
                     instances.append(item)
                 if isinstance(item, RTMTree):
-                    sub_instances = return_denested_items_by_index(item, map, counter, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+                    sub_instances = return_denested_items_by_index(
+                        item,
+                        map,
+                        counter,
+                        allowable_levels=allowable_levels,
+                        allowable_classes=allowable_classes,
+                    )
                     instances.extend(sub_instances)
             return instances
 
         copy_of_self = RTMTree(self.items)
-        instances = return_denested_items_by_index(copy_of_self.items, map, counter=-1, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+        instances = return_denested_items_by_index(
+            copy_of_self.items,
+            map,
+            counter=-1,
+            allowable_levels=allowable_levels,
+            allowable_classes=allowable_classes,
+        )
         sizes = [_.size for _ in instances]
         indices = [_ for _ in map]
         indices.sort()
@@ -1317,21 +1341,38 @@ class RTMTree:
         return copy_of_self
 
     # rotating instances of objects requires a pop and replace function yet to be decided
-    def rotate_sizes_through_level(self, i, allowable_levels=[1, 2, 3], allowable_classes=None):
-        def return_denested_items_by_index(nested_structure, counter, allowable_levels, allowable_classes):
+    def rotate_sizes_through_level(
+        self, i, allowable_levels=[1, 2, 3], allowable_classes=None
+    ):
+        def return_denested_items_by_index(
+            nested_structure, counter, allowable_levels, allowable_classes
+        ):
             if allowable_classes is None:
                 allowable_classes = [RTMTree, RTMNode]
             instances = []
             for item in nested_structure:
-                print(f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}")
+                print(
+                    f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
+                )
                 if item.depth in allowable_levels and type(item) in allowable_classes:
                     instances.append(item)
                 if isinstance(item, RTMTree):
-                    sub_instances = return_denested_items_by_index(item, counter, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+                    sub_instances = return_denested_items_by_index(
+                        item,
+                        counter,
+                        allowable_levels=allowable_levels,
+                        allowable_classes=allowable_classes,
+                    )
                     instances.extend(sub_instances)
             return instances
+
         copy_of_self = RTMTree(self.items)
-        instances = return_denested_items_by_index(copy_of_self.items, counter=-1, allowable_levels=allowable_levels, allowable_classes=allowable_classes)
+        instances = return_denested_items_by_index(
+            copy_of_self.items,
+            counter=-1,
+            allowable_levels=allowable_levels,
+            allowable_classes=allowable_classes,
+        )
         sizes = [_.size for _ in instances]
         indices = [_ for _ in range(len(instances))]
         map = abjad.sequence.rotate(indices, i)
@@ -1348,6 +1389,7 @@ class RTMTree:
                 list_format = _.list_format()
                 out.append(list_format)
         return [self.size, out]
+
     ### Private Methods ###
 
     def _get_items_by_depth(self, argument, depth, flatten=False):
@@ -1357,7 +1399,9 @@ class RTMTree:
                 relevant_items.append(item)
             elif item.depth < depth:
                 if isinstance(item, RTMTree):
-                    deeper_items = self._get_items_by_depth(item, depth, flatten=flatten)
+                    deeper_items = self._get_items_by_depth(
+                        item, depth, flatten=flatten
+                    )
                     if flatten is True:
                         relevant_items.extend(deeper_items)
                     else:
@@ -1377,7 +1421,7 @@ class RTMTree:
         for item in argument:
             item.depth = level_number
             if isinstance(argument, RTMTree):
-                self._assign_depths(argument, level_number+1)
+                self._assign_depths(argument, level_number + 1)
 
     def _tree_to_nested_list(self):
         out = []
@@ -1407,7 +1451,9 @@ class RTMTree:
             pass
 
     def _inform_residents_of_neighbors(self, tree_instance, paused_at_index=None):
-        assert isinstance(tree_instance, RTMTree), f"Must be of type evans.RTMNode or evans.RTMTree. Got {type(tree_instance)}."
+        assert isinstance(
+            tree_instance, RTMTree
+        ), f"Must be of type evans.RTMNode or evans.RTMTree. Got {type(tree_instance)}."
         final_index = len(tree_instance) - 1
 
         for i, resident in enumerate(tree_instance):
@@ -1420,27 +1466,46 @@ class RTMTree:
                 resident.left_neighbor = tree_instance[final_index]
                 resident.right_neighbor = tree_instance[i + 1]
                 if tree_instance.parent is None:
-                    resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[final_index], abjad.RIGHT)
+                    resident.left_neighbor_node = self._get_border_node_from_tree(
+                        tree_instance[final_index], abjad.RIGHT
+                    )
                 else:
-                    resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance.parent[paused_at_index - 1], abjad.RIGHT)
-                resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[i + 1], abjad.LEFT)
+                    resident.left_neighbor_node = self._get_border_node_from_tree(
+                        tree_instance.parent[paused_at_index - 1], abjad.RIGHT
+                    )
+                resident.right_neighbor_node = self._get_border_node_from_tree(
+                    tree_instance[i + 1], abjad.LEFT
+                )
                 if isinstance(resident, RTMTree):
                     self._inform_residents_of_neighbors(resident, paused_at_index=i)
             elif i == final_index:
                 resident.left_neighbor = tree_instance[i - 1]
                 resident.right_neighbor = tree_instance[0]
-                resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[i - 1], abjad.RIGHT)
+                resident.left_neighbor_node = self._get_border_node_from_tree(
+                    tree_instance[i - 1], abjad.RIGHT
+                )
                 if tree_instance.parent is None:
-                    resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[0], abjad.LEFT)
+                    resident.right_neighbor_node = self._get_border_node_from_tree(
+                        tree_instance[0], abjad.LEFT
+                    )
                 else:
-                    resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance.parent[(paused_at_index + 1) % len(tree_instance.parent)], abjad.LEFT)
+                    resident.right_neighbor_node = self._get_border_node_from_tree(
+                        tree_instance.parent[
+                            (paused_at_index + 1) % len(tree_instance.parent)
+                        ],
+                        abjad.LEFT,
+                    )
                 if isinstance(resident, RTMTree):
                     self._inform_residents_of_neighbors(resident, paused_at_index=i)
             else:
                 resident.left_neighbor = tree_instance[i - 1]
                 resident.right_neighbor = tree_instance[i + 1]
-                resident.left_neighbor_node = self._get_border_node_from_tree(tree_instance[i - 1], abjad.RIGHT)
-                resident.right_neighbor_node = self._get_border_node_from_tree(tree_instance[i + 1], abjad.LEFT)
+                resident.left_neighbor_node = self._get_border_node_from_tree(
+                    tree_instance[i - 1], abjad.RIGHT
+                )
+                resident.right_neighbor_node = self._get_border_node_from_tree(
+                    tree_instance[i + 1], abjad.LEFT
+                )
                 if isinstance(resident, RTMTree):
                     self._inform_residents_of_neighbors(resident, paused_at_index=i)
 
@@ -1460,6 +1525,9 @@ class RTMTree:
                 raise Exception(f"Must be abjad.LEFT or abjad.RIGHT. Got {side}.")
             return item
         else:
-            raise Exception(f"Must be evans.RTMTree or evans.RTMNode. Got {type(tree_instance)}.")
+            raise Exception(
+                f"Must be evans.RTMTree or evans.RTMNode. Got {type(tree_instance)}."
+            )
 
-#obgc?
+
+# obgc?

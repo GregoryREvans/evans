@@ -8,7 +8,6 @@ from inspect import currentframe as _frame
 
 import abjad
 from abjadext import rmakers
-
 from baca import select as _select
 from baca import tags as _tags
 from baca.enums import enums as _enums
@@ -82,8 +81,8 @@ class VoiceNumber:
         self.n = n
         self.leak = leak
 
-    # n: int | None = None
-    # leak: bool = dataclasses.field(default=False, compare=False)
+        # n: int | None = None
+        # leak: bool = dataclasses.field(default=False, compare=False)
 
         self.check_effective_context: typing.ClassVar[bool] = True
         self.context: typing.ClassVar[str] = "Voice"
@@ -118,6 +117,7 @@ class VoiceNumber:
             assert self.n is None
             string = r"\oneVoice"
         return string
+
 
 _collection_classes = (
     abjad.PitchClassSegment,
@@ -949,7 +949,7 @@ def make_rhythm(
     for i, component_list in enumerate(component_lists):
         original_item = index_to_original_item[i]
         if original_item is not None:
-            rmakers.unbeam(component_list)#, smart=True)
+            rmakers.unbeam(component_list)  # , smart=True)
             abjad.mutate.replace(component_list, original_item)
         if i in index_to_obgc_anchor_voice:
             obgc_anchor_voice = index_to_obgc_anchor_voice[i]
