@@ -55,3 +55,7 @@ all-color-music = #(
 safe-blue = #(rgb-color 49/110 63/110 77/110)
 safe-green = #(rgb-color 49/110 77/110 63/110)
 safe-red = #(rgb-color 77/110 49/110 63/110)
+safe-orange = #(rgb-color 110/110 80/110 47/110)
+safe-pink = #(rgb-color 110/110 80/110 86/110)
+safe-salmon = #(rgb-color 110/110 50/110 63/110)
+safe-yellow = #(rgb-color 100/110 100/110 66/110)

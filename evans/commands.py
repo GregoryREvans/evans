@@ -1213,8 +1213,21 @@ def _do_indexed_imbrication(
                     abjad.detach(abjad.RepeatTie, next_leaf)
             if hocket:
                 for leaf in original_logical_tie:
+                    indicators = abjad.get.indicators(leaf)
+                    for indicator in indicators:
+                        abjad.detach(indicator, leaf)
                     duration = leaf.written_duration
-                    skip = abjad.Skip(duration)
+                    skip = abjad.Rest(duration)
+                    literal = abjad.LilyPondLiteral(
+                        [
+                            r"\once \override Voice.Stem.stemlet-length = #0",
+                            r"\once \hide Voice.Rest",
+                        ],
+                        site="before",
+                    )
+                    abjad.attach(literal, skip)
+                    for indicator in indicators:
+                        abjad.attach(indicator, skip)
                     abjad.mutate.replace(leaf, [skip])
         else:
             for leaf in logical_tie:
@@ -1247,6 +1260,8 @@ def imbricate(
     cyclic_period=None,
     hocket=False,
     truncate_ties=False,
+    direct_attachments=False,
+    note_head=None,
 ):
     def _find_parent(selections):
         first_leaf = abjad.select.leaf(selections, 0)
@@ -1254,6 +1269,9 @@ def imbricate(
         parent_voice = abjad.select.components(parentage, abjad.Voice)
         return f"{parent_voice[0].name} temp"
 
+    attachment_direction = None
+    if direct_attachments is True:
+        attachment_direction = direction
     container = abjad.Container(simultaneous=True)
     original_voice = abjad.Voice(name=_find_parent(selections))
     intermittent_voice = abjad.Voice(name=name)
@@ -1287,15 +1305,21 @@ def imbricate(
     imbrication = imbrications["v1"][0]
     contents = abjad.mutate.eject_contents(imbrication)
     intermittent_voice.extend(contents)
+    if note_head is not None:
+        for tie in abjad.select.logical_ties(intermittent_voice, pitched=True):
+            start_literal = abjad.LilyPondLiteral(note_head, site="before")
+            stop_literal = abjad.LilyPondLiteral(r"\revert-noteheads", site="after")
+            abjad.attach(start_literal, tie[0])
+            abjad.attach(stop_literal, tie[-1])
 
     groups = rmakers.nongrace_leaves_in_each_tuplet(intermittent_voice)
     rmakers.beam_groups(groups, beam_rests=True)
     if articulation is not None:
         for head in baca.select.pheads(intermittent_voice):
             if isinstance(articulation, str):
-                abjad.attach(abjad.Articulation(articulation), head)
+                abjad.attach(abjad.Articulation(articulation), head, direction=attachment_direction)
             else:
-                abjad.attach(articulation, head)
+                abjad.attach(articulation, head, direction=attachment_direction)
     baca.extend_beam(abjad.select.leaf(intermittent_voice, -1))
     abjad.override(intermittent_voice).TupletBracket.stencil = False
     abjad.override(intermittent_voice).TupletNumber.stencil = False
@@ -1774,13 +1798,14 @@ def long_beam(
 def subdivided_ties(
     *args,
     source_maker=rmakers.note,
+    search_tree=None,
     treat_tuplets=False,
 ):
     args_count = 0
     for arg in args:
         args_count += 1
 
-    def returned_function(divisions, state=None, previous_state=None):
+    def returned_function(divisions, state=None, previous_state=None, search_tree=search_tree):
         source_leaves = source_maker(divisions)
         source_container = abjad.Container(source_leaves)
         if 0 < args_count:
@@ -1803,7 +1828,7 @@ def subdivided_ties(
                     schema_list.append(schema)
             new_args = args_ + schema_list
             nested_music = make_subdivided_music(
-                *new_args, ties=source_container
+                *new_args, ties=source_container, search_tree=search_tree
             )  # ties?
             for leaf in abjad.select.leaves(nested_music):
                 signature_indicator = abjad.get.indicator(leaf, abjad.TimeSignature)
@@ -1825,7 +1850,7 @@ def subdivided_ties(
             music = abjad.mutate.eject_contents(container)
         else:
             music = abjad.mutate.eject_contents(source_container)
-
+        # print(music, "\r")
         return music
 
     return returned_function
@@ -1886,7 +1911,7 @@ def cross_staff_copy(
     abjad.mutate.replace(target, out)
 
 
-def unsicthbare_farben(
+def unsichtbare_farben(
     subdivisions_range=(1, 7),
     proportions_range=(1, 12),
     reproportioning_range=(1, 4),
@@ -2027,3 +2052,65 @@ def unsicthbare_farben(
         return music
 
     return returned_function
+
+
+def zero_padding_glissando(selections):
+    for run in abjad.select.runs(selections):
+        leaves = abjad.select.leaves(run)
+        for leaf in leaves[1:-1]:
+            if abjad.get.has_indicator(leaf, abjad.Tie):
+                abjad.detach(abjad.Tie(), leaf)
+    abjad.glissando(selections[:], zero_padding=True, allow_repeats=True)
+    for run in abjad.select.runs(selections):
+        leaves = abjad.select.leaves(run)
+        for leaf in leaves[1:-1]:
+            if isinstance(leaf, abjad.Note):
+                abjad.tweak(leaf.note_head, r"\tweak Accidental.stencil ##f")
+                abjad.tweak(leaf.note_head, r"\tweak transparent ##t")
+                abjad.tweak(leaf.note_head, r"\tweak X-extent #'(0 . 0)")
+            elif isinstance(leaf, abjad.Chord):
+                for head in leaf.note_heads:
+                    abjad.override(leaf).Accidental.stencil = "##f"
+                    abjad.override(leaf).NoteHead.transparent = "##t"
+                    abjad.tweak(head, r"\tweak X-extent #'(0 . 0)")
+                    abjad.override(leaf).NoteHead.X_extent = "#'(0 . 0)"
+
+
+def upward_gliss(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    groups = []
+    sub_group = []
+    for tie in ties:
+        if len(sub_group) < 1:
+            sub_group.append(tie)
+        else:
+            if tie[0].written_pitch < sub_group[-1][0].written_pitch:
+                groups.append(sub_group)
+                sub_group = [tie]
+            else:
+                sub_group.append(tie)
+    if 1 < len(sub_group):
+        groups.append(sub_group)
+    for group in groups:
+        leaves = abjad.select.leaves(group)
+        zero_padding_glissando(leaves)
+
+
+def downward_gliss(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    groups = []
+    sub_group = []
+    for tie in ties:
+        if len(sub_group) < 1:
+            sub_group.append(tie)
+        else:
+            if sub_group[-1][0].written_pitch < tie[0].written_pitch:
+                groups.append(sub_group)
+                sub_group = [tie]
+            else:
+                sub_group.append(tie)
+    if 1 < len(sub_group):
+        groups.append(sub_group)
+    for group in groups:
+        leaves = abjad.select.leaves(group)
+        zero_padding_glissando(leaves)

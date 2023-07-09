@@ -146,7 +146,7 @@ class QSchemaTimeSignature:
         )
 
 
-def miliseconds_to_music(*args, miliseconds, fuse_silences=True):
+def miliseconds_to_music(*args, miliseconds, fuse_silences=True, search_tree=None):
 
     schemas = [arg.constructed_dict for arg in args]
 
@@ -154,30 +154,37 @@ def miliseconds_to_music(*args, miliseconds, fuse_silences=True):
         miliseconds, fuse_silences=fuse_silences
     )
 
-    search_tree = nauert.UnweightedSearchTree(  # default
-        definition={
-            2: {
-                2: {2: {2: None}, 3: None},
-                3: None,
-                5: None,
-                7: None,
-            },
-            3: {
-                2: {2: None},
-                3: None,
-                5: None,
-            },
-            5: {
-                2: None,
-                3: None,
-            },
-            7: {2: None},
-            11: None,
-            13: None,
-        }
-    )
+    if search_tree is None:
+        print("NO SEARCH TREE")
+        search_tree = nauert.UnweightedSearchTree(  # default
+            definition={
+                2: {
+                    2: {2: {2: None}, 3: None},
+                    3: None,
+                    5: None,
+                    7: None,
+                },
+                3: {
+                    2: {2: None},
+                    3: None,
+                    5: None,
+                },
+                5: {
+                    2: None,
+                    3: None,
+                },
+                7: {2: None},
+                11: None,
+                13: None,
+            }
+        )
+    else:
+        print("GIVEN A SEARCH TREE")
+        search_tree = nauert.UnweightedSearchTree(
+            definition=search_tree
+        )
 
-    # search_tree = nauert.UnweightedSearchTree( # allow wrapping function to have tree input?
+    # search_tree = nauert.UnweightedSearchTree( # too complex
     #     definition={
     #         2: {
     #             2: {
@@ -261,10 +268,11 @@ def miliseconds_to_music(*args, miliseconds, fuse_silences=True):
         grace_handler=nauert.DiscardingGraceHandler(),
         attach_tempos=False,
     )
+    # print(result, "\n")
     return result
 
 
-def make_subdivided_music(*args, ties):
+def make_subdivided_music(*args, ties, search_tree=None):
     schemas = []
     ties = abjad.select.logical_ties(ties)
     milisecond_durations = ties_to_milisecond_durations(ties)
@@ -275,8 +283,10 @@ def make_subdivided_music(*args, ties):
         else:
             milisecond_durations = arg(milisecond_durations)
 
-    result = miliseconds_to_music(*schemas, miliseconds=milisecond_durations)
+    result = miliseconds_to_music(*schemas, miliseconds=milisecond_durations, search_tree=search_tree)
+    # print(result, "\n")
     returned_result = abjad.mutate.eject_contents(result)
+    # print(returned_result, "\n")
     return returned_result
 
 
@@ -563,7 +573,7 @@ def unity_capsule_rhythms(
                 abjad.attach(start_literal, rest_group[0])
                 abjad.attach(stop_literal, rest_group[-1])
             duplicate_long_beam(
-                final_staff, stemlet_length=1.66, beam_rests=True, beam_lone_notes=False
+                final_staff, beam_rests=True, beam_lone_notes=False
             )
             temp_staff_group.append(final_staff)
             score = abjad.Score([temp_staff_group])
@@ -598,7 +608,7 @@ def unity_capsule_rhythms(
                               		\override PaperColumn.used = ##t % just trying this out
                               		\override SpacingSpanner.spacing-increment = 1.25
                               		\override SpacingSpanner.uniform-stretching = ##t % trevor
-                              		\override Stem.stemlet-length = #1.15
+                              		\override Stem.stemlet-length = #1.66
                               		\override Tie.height-limit = 6 % experimental
                               		\override Tie.thickness = 1.5 % experimental
                               		\override TupletBracket.breakable = ##t
@@ -675,7 +685,7 @@ def unity_capsule_rhythms(
 
 def duplicate_long_beam(
     selections,
-    stemlet_length=1.6,
+    stemlet_length=None,
     beam_rests=True,
     beam_lone_notes=False,
     direction=abjad.UP,

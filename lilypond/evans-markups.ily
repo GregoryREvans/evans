@@ -130,6 +130,22 @@ boxed-markup = #(
     #}
     )
 
+boxed-markup-down = #(
+    define-music-function
+    (string font-size)
+    (string? number?)
+    #{
+    - \tweak font-size #font-size
+    _ \markup
+    \override #'(style . "box")
+    \override #'(box-padding . 0.5)
+    \whiteout
+    \box
+    \italic
+    #string
+    #}
+    )
+
 %%% ekmelos markups %%%
 
 normal-pressure = \markup {
@@ -296,3 +312,14 @@ tongue-t = \markup \rotate #0 \override #'(font-size . -3) \override #'(font-fam
 tongue-t-inverted = \markup \rotate #-180 \override #'(font-size . -3) \override #'(font-family . sans) "T"
 
 tongue-t-circled = \markup \override #'(thickness . 2.5) \circle \rotate #0 \override #'(font-size . -3) \override #'(font-family . sans) "T"
+
+air-tone-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe114
+}
+half-air-tone-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe115
+}

@@ -2158,7 +2158,7 @@ def do_contouring(pitch_list, command):
 
 
 def contour(
-    ties, *commands, starting_range
+    ties, *commands, starting_range=abjad.PitchRange("[c', c'')")
 ):  # starting range should only be one octave!
     ties = abjad.select.logical_ties(ties, pitched=True)
     gotten_pitches = [list(abjad.get.pitches(tie)) for tie in ties]

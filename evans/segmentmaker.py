@@ -1539,7 +1539,7 @@ def make_score_template(instruments, groups):
     return score
 
 
-def beautify_tuplets(target):
+def beautify_tuplets(target): # should be recursive? Operating on inner before outer?
     for tuplet in abjad.select.tuplets(target):
         tuplet.denominator = 2
         if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:
@@ -1549,8 +1549,8 @@ def beautify_tuplets(target):
             if tuplet.augmentation() is True:
                 tuplet.toggle_prolation()
         tuplet.normalize_multiplier()
-        if tuplet.trivializable() is True:
-            tuplet.trivialize()
+        # if tuplet.trivializable() is True: # trivialize inner tuplets first? ## changed for Infiorescenze
+        #     tuplet.trivialize()
         if tuplet.trivial() is True:
             tuplet.hide = True
         rests = abjad.select.rests(tuplet)

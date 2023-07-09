@@ -186,7 +186,7 @@ def make_multi_trill(
         closing_literal = abjad.LilyPondLiteral(
             [
                 "{",
-                rf"   {heads(r=1)[0]} \parentheAll \suggest-pitch-middle {trill_pitches[0]}32 \startTrillSpan",
+                rf"   {heads(r=1)[0]} \suggest-pitch-middle \parentheAll {trill_pitches[0]}32 \startTrillSpan",
                 # used to end with \revert-noteheads
                 "}",
             ],

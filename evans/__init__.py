@@ -44,9 +44,12 @@ from .commands import (
     text_spanner,
     trill,
     tuplet,
-    unsicthbare_farben,
+    unsichtbare_farben,
     vibrato_spanner,
     wrap_in_repeats,
+    zero_padding_glissando,
+    upward_gliss,
+    downward_gliss,
 )
 from .consort import (
     LogicalTieCollection,
@@ -187,6 +190,9 @@ from .sequence import (
     intersect_time_signature_lists,
     julia_set,
     make_time_signatures_from_ts_list,
+    fuse_signatures_below_threshold,
+    cyclically_subtract_fraction,
+    integer_sequence_to_boolean_vector,
 )
 from .spanners import (
     BendBefore,
@@ -247,8 +253,10 @@ __all__ = [
     "MusicCommand",
     "NoteheadBracketMaker",
     "NoteheadHandler",
+    "fuse_signatures_below_threshold",
     "OnBeatGraceHandler",
     "Page",
+    "cyclically_subtract_fraction",
     "PitchClassSegment",
     "PitchClassSet",
     "PitchHandler",
@@ -402,7 +410,11 @@ __all__ = [
     "tune_to_ratio",
     "tuplet",
     "unity_capsule_rhythms",
-    "unsicthbare_farben",
+    "unsichtbare_farben",
     "vibrato_spanner",
     "wrap_in_repeats",
+    "integer_sequence_to_boolean_vector",
+    "zero_padding_glissando",
+    "upward_gliss",
+    "downward_gliss",
 ]

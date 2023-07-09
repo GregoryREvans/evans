@@ -20,6 +20,22 @@ from scipy.integrate import odeint
 from . import consort
 
 
+def integer_sequence_to_boolean_vector(integers, sides=[abjad.RIGHT]):
+    cyc_side = CyclicList(sides, forget=False)
+    out = []
+    for i in integers:
+        side = cyc_side(r=1)[0]
+        falses = [False for _ in range(i - 1)]
+        if side == abjad.RIGHT:
+            sub_vector = falses + [True]
+        elif side == abjad.LEFT:
+            sub_vector = [True] + falses
+        else:
+            raise Exception(f"BAD DIRECTION. Must be abjad.LEFT or abjad.RIGHT. Got {side}")
+        out.extend(sub_vector)
+    return out
+
+
 class CyclicList:
     r"""
     Cyclic List
@@ -5516,18 +5532,24 @@ class CompoundMelody:
         return self._partitioned_background
 
 
-def combine_ts_lists(tsl_1, tsl_2):
-    combination = tsl_1 + tsl_2
-    combination.sort()
-    offsets = []
-    for span in combination:
-        offsets.extend(span.offsets)
-    offsets = list(set(offsets))
+def combine_ts_lists(spans, start_offsets_only=True):
+    if start_offsets_only is True:
+        start_offsets = [span.start_offset for span in spans]
+        start_offsets.append(spans.stop_offset)
+        start_offsets = list(set(start_offsets))
+        start_offsets.sort()
+        new_spans = []
+        for start, stop in abjad.sequence.nwise(start_offsets, 2):
+            new_spans.append(abjad.Timespan(start, stop))
+        spans = new_spans
+    offset_counter = abjad.OffsetCounter(spans)
+    offsets = list(set(item[0] for item in offset_counter.items.items()))
     offsets.sort()
-    out = abjad.TimespanList()
-    for pair in consort.iterate_nwise(offsets, 2):
-        out.append(abjad.Timespan(pair[0], pair[1]))
-    return out
+    reduced_spans = []
+    for start, stop in abjad.sequence.nwise(offsets, 2):
+        reduced_spans.append(abjad.Timespan(start, stop))
+    final_tsl = abjad.TimespanList(reduced_spans)
+    return final_tsl
 
 
 def make_time_signatures_from_ts_list(tsl):
@@ -5546,12 +5568,50 @@ def time_signature_list_to_timespan_list(tsl):
     for pair in consort.iterate_nwise(cum_sums, 2):
         span = abjad.Timespan(pair[0], pair[1])
         spans.append(span)
+
     return spans
 
 
-def intersect_time_signature_lists(*args, translation=(1, 4)):
+def intersect_time_signature_lists(*args, translation=(1, 4)): ### fix this. look at unity capsule process
     tsls = [time_signature_list_to_timespan_list(arg) for arg in args]
     tsls[1].translate(translation)
-    combined = combine_ts_lists(tsls[0], tsls[1])
+    combined = combine_ts_lists(abjad.TimespanList(tsls[0] + tsls[1]))
     out = make_time_signatures_from_ts_list(combined)
+    return out
+
+
+def fuse_signatures_below_threshold(signatures, threshhold=(1, 8), direction=abjad.LEFT):
+    threshhold = abjad.NonreducedFraction(threshhold)
+    fracs = []
+    delayed = None
+    for signature in signatures:
+        frac = abjad.NonreducedFraction(signature)
+        if delayed is not None:
+            frac = frac + delayed
+            delayed = None
+        if threshhold < frac:
+            fracs.append(frac)
+        else:
+            if direction == abjad.LEFT:
+                fracs[-1] = fracs[-1] + frac
+            elif direction == abjad.RIGHT:
+                delayed = frac
+            else:
+                raise Exception(f"Value of direction must be abjad.LEFT or abjad.RIGHT. Got {direction}")
+    fused_signatures = [abjad.TimeSignature(_) for _ in fracs]
+    return fused_signatures
+
+
+def cyclically_subtract_fraction(series, durations=[(1, 12), (1, 24), (1, 20)], target_indices=[2, 4, 8, 12, 15, 21], period=22):
+    series = [abjad.NonreducedFraction(_) for _ in series]
+    cyclic_durs = CyclicList([abjad.NonreducedFraction(_) for _ in durations], forget=False)
+    out = []
+    for i, value in enumerate(series):
+        if i % period in target_indices:
+            subtracted_duration = cyclic_durs(r=1)[0]
+            new_value = abjad.NonreducedFraction(value) - subtracted_duration
+            out.append(new_value)
+        else:
+            out.append(value)
+    assert len(out) == len(series), f"len(out): {len(out)} != len(series): {len(series)}"
     return out

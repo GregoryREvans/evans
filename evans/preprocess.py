@@ -6,6 +6,7 @@ def preprocess_divisions(
     divisions,
     sum=False,
     quarters=False,
+    eighths=False,
     fuse_counts=None,
     cyclic_fuse=True,
     flatten_before_fuse=True,
@@ -17,6 +18,8 @@ def preprocess_divisions(
         divisions = [abjad.sequence.sum(divisions)]
     if quarters is True:
         divisions = [baca.sequence.quarters([_]) for _ in divisions]
+    if eighths is True:
+        divisions = [baca.sequence.split_divisions([_], [(1, 8)], cyclic=True) for _ in divisions]
     if fuse_counts is not None:
         if flatten_before_fuse is True:
             divisions = abjad.sequence.flatten(divisions, depth=-1)
@@ -49,6 +52,7 @@ def preprocess_divisions(
 def make_preprocessor(
     sum=False,
     quarters=False,
+    eighths=False,
     fuse_counts=None,
     cyclic_fuse=True,
     split_at_measure_boundaries=False,
@@ -60,6 +64,7 @@ def make_preprocessor(
             fuse_counts=fuse_counts,
             cyclic_fuse=cyclic_fuse,
             quarters=quarters,
+            eighths=eighths,
             split_at_measure_boundaries=split_at_measure_boundaries,
         )
         return divisions_
