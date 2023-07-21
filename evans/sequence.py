@@ -1534,6 +1534,22 @@ class Sequence(collections.abc.Sequence):
                     yield type(self)(item_buffer)
                     item_buffer.pop(0)
 
+    def order_pitch_sequence_by_tonerow(self, tonerow, return_pitch_classes=True, prefer_lowest_pitch=True):
+        sequence = [abjad.NumberedPitchClass(_) for _ in self]
+        pc_tonerow = [abjad.NumberedPitchClass(_) for _ in tonerow]
+        out = []
+        for pitch_class in pc_tonerow:
+            if pitch_class in sequence:
+                if return_pitch_classes is True:
+                    out.append(pitch_class.number)
+                else:
+                    found_matches = [_ for _ in self if abjad.NumberedPitchClass(_) == pitch_class]
+                    if prefer_lowest_pitch is True:
+                        out.append(abjad.NumberedPitch(found_matches[0]).number)
+                    else:
+                        out.append(abjad.NumberedPitch(found_matches[-1]).number)
+        return type(self)(out)
+
     def partition_by_counts(
         self,
         counts,
@@ -4981,6 +4997,36 @@ class Sequence(collections.abc.Sequence):
             x = (n + 1) * (3 * n**2 + 3 * n + 1)
             seq.append(x)
         return type(self)(seq)
+
+    def random_funnel(self, destination, random_ranges, random_seed=1):
+        def are_sequences_matched(sequence, target):
+            boolean_sequence = []
+            for i, val in enumerate(sequence):
+                if val == target[i]:
+                    boolean_sequence.append(True)
+                else:
+                    boolean_sequence.append(False)
+            return all(boolean_sequence)
+
+        arrived_at_destination = False
+        compiled_ranges = []
+        for range_ in random_ranges:
+            sub_list = [_ for _ in range(range_[0], range_[1])]
+            compiled_ranges.append(sub_list)
+        out = [list(self.items)]
+        current_funnel = list(self.items)
+        while not are_sequences_matched(out[-1], destination):
+            temp_funnel = []
+            for i, val in enumerate(current_funnel):
+                if val == destination[i]:
+                    temp_funnel.append(val)
+                else:
+                    choice_options = compiled_ranges[i]
+                    random_choice = random.choice(choice_options)
+                    temp_funnel.append(random_choice)
+            out.append(temp_funnel)
+            current_funnel = temp_funnel
+        return type(self)(out)
 
     def random_walk(self, length, step_list, random_seed=1):
         """

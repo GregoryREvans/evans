@@ -1763,6 +1763,7 @@ def long_beam(
                 stemlet_length=stemlet_length,
                 beam_lone_notes=beam_lone_notes,
                 beam_rests=beam_rests,
+                direction=direction,
             )
         if 1 < len(groups):
             total = len(groups) - 1

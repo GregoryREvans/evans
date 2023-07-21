@@ -980,6 +980,35 @@ stop-graphic-scp = #(
 interrupt = \once \override Staff.NoteHead.details.interrupt = ##t
 
 
+%%% explicit interruption %%%
+
+#(define (Explicit_interrupt_heads_engraver context)
+  (let ((explicit-interrupted (make-hash-table)))
+    (make-engraver
+     (acknowledgers
+      ((note-column-interface engraver grob source-engraver)
+       (when
+           (assoc-get 'explicit-interruptible (ly:grob-property grob 'details '()))
+         (for-each
+          (match-lambda
+           ((mom . elt)
+            (when (and
+                       (assoc-get 'explicit-interrupt (ly:grob-property elt 'details '()))
+                       (not (hashq-ref explicit-interrupted elt))
+                       )
+              (hashq-set! explicit-interrupted elt #t)
+              (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
+                (ly:spanner-set-bound! follower LEFT elt)
+                (ly:spanner-set-bound! follower RIGHT grob)
+                (ly:grob-set-property! follower 'color (assoc-get 'interrupt-color (ly:grob-property elt 'details '())))
+                (ly:grob-set-property! follower 'stencil interrupting-bracket)
+                ))
+           ))
+          (ly:context-property context 'busyGrobs))))))))
+
+start-explicit-interrupt = \once \override Staff.NoteHead.details.explicit-interrupt = ##t
+stop-explicit-interrupt = \once \override Staff.NoteColumn.details.explicit-interruptible = ##t
+
 
 %%% hocket lines %%%
 % don't forget
@@ -1041,6 +1070,76 @@ hocket = \once \override Staff.NoteHead.details.hocket = ##t
 
 start-follow = \once \override Staff.NoteHead.details.follow = ##t
 stop-follow = \once \override Staff.NoteColumn.details.followable = ##t
+
+
+%%% Mahnkopf stream switches
+#(define (make-switch-butt-line-stencil width start-x start-y end-x end-y)
+   (let ((path `(moveto ,start-x ,start-y lineto ,end-x ,end-y)))
+     (make-path-stencil path width 1 1 #t #:line-cap-style 'butt)))
+
+#(define (switching-bracket grob)
+   (let* ((left (ly:spanner-bound grob LEFT))
+          (right (ly:spanner-bound grob RIGHT))
+          (x-proportion (assoc-get 'used-proportion (ly:grob-property grob 'details '())))
+          (sys (ly:grob-system grob))
+          (start-x (interval-end (ly:grob-extent left sys X)))
+          (start-y (interval-center (ly:grob-extent left sys Y)))
+          (right-stem (ly:grob-object right 'stem))
+          (right-stem-dir (ly:grob-property right-stem 'direction))
+          (right-head (reduce (lambda (head prev)
+                                (if ((if (eqv? UP right-stem-dir) not identity)
+                                     (ly:grob-vertical<? head prev))
+                                    head
+                                    prev))
+                              'dummy
+                              (ly:grob-array->list (ly:grob-object right 'note-heads))))
+          (end-x (interval-index (interval-widen (ly:grob-extent right-head sys X) -0.07)
+                                 (- right-stem-dir)))
+          (x-distance-total (- end-x start-x))
+          (x-distance-proportion (* x-distance-total x-proportion))
+          (new-calculated-end-x (+ start-x x-distance-proportion))
+          (end-y (interval-center (ly:grob-extent right-head sys Y))))
+     (ly:stencil-translate
+      (ly:stencil-add
+       (make-switch-butt-line-stencil 0.5 (- start-x 0.2) start-y (+ new-calculated-end-x 0.05) start-y)
+       (make-switch-butt-line-stencil 0.1 new-calculated-end-x start-y new-calculated-end-x end-y)
+       (make-switch-butt-line-stencil 0.5 (- new-calculated-end-x 0.05) end-y end-x end-y)
+       )
+      (cons (- (ly:grob-relative-coordinate grob sys X))
+            (- (ly:grob-relative-coordinate grob sys Y))))))
+
+#(define (Switch_heads_engraver context)
+   (let ((switched (make-hash-table)))
+     (make-engraver
+      (acknowledgers
+       ((note-column-interface engraver grob source-engraver)
+        (when (assoc-get 'switchable (ly:grob-property grob 'details '()))
+          (for-each
+           (match-lambda
+            ((mom . elt)
+             (when (and (grob::has-interface elt 'note-head-interface)
+                        (assoc-get 'switch (ly:grob-property elt 'details '()))
+                        (not (hashq-ref switched elt))
+                        )
+               (hashq-set! switched elt #t)
+               (let ((follower (ly:engraver-make-grob engraver 'VoiceFollower '())))
+                 (ly:spanner-set-bound! follower LEFT elt)
+                 (ly:spanner-set-bound! follower RIGHT grob)
+                 (ly:grob-set-property! follower 'color (assoc-get 'switch-color (ly:grob-property elt 'details '())))
+                 (ly:grob-set-property! follower 'stencil switching-bracket)
+                 ))))
+           (ly:context-property context 'busyGrobs))))))))
+
+start-switch = #(
+    define-music-function
+    (proportion)
+    (number?)
+    #{
+    \override StaffGroup.VoiceFollower.details.used-proportion = #proportion
+    \once \override Staff.NoteHead.details.switch = ##t
+    #}
+    )
+stop-switch = \once \override Staff.NoteColumn.details.switchable = ##t
 
 
 %%% duplicate symbol spanners %%%

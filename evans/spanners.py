@@ -155,7 +155,7 @@ def make_fancy_gliss(*args, right_padding=0.5, match=True):
 
 
 def make_multi_trill(
-    note, *trill_pitches, notehead_styles=[None], after_spacing="1/16", extra_padding=0
+    note, *trill_pitches, notehead_styles=[None], after_spacing="1/16", extra_padding=0, with_notes=False
 ):
     """
     sample pitches:
@@ -194,7 +194,10 @@ def make_multi_trill(
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopTrillSpan", site="after")
-        final_tie_leaf = tie[-1]
+        if with_notes is False:
+            final_tie_leaf = tie[-1]
+        elif with_notes is True:
+            final_tie_leaf = note
         next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
     if t_length == 2:
@@ -210,7 +213,10 @@ def make_multi_trill(
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopDoubleTrill", site="after")
-        final_tie_leaf = tie[-1]
+        if with_notes is False:
+            final_tie_leaf = tie[-1]
+        elif with_notes is True:
+            final_tie_leaf = note
         next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
     if t_length == 3:
@@ -227,7 +233,10 @@ def make_multi_trill(
         )
         abjad.attach(closing_literal, note)
         stop_trill = abjad.LilyPondLiteral(r"\stopTripleTrill", site="after")
-        final_tie_leaf = tie[-1]
+        if with_notes is False:
+            final_tie_leaf = tie[-1]
+        elif with_notes is True:
+            final_tie_leaf = note
         next = abjad.get.leaf(final_tie_leaf, 1)
         abjad.attach(stop_trill, next)
 

@@ -1530,4 +1530,8 @@ class RTMTree:
             )
 
 
-# obgc?
+# # obgc?
+# def obgc(target, grace_voice_name="RhythmMaker.Music"):
+#     rmakers.on_beat_grace_container(
+#         target, grace_voice_name, groups, [2, 4], grace_leaf_duration=(1, 28)
+#     )
