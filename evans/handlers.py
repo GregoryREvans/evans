@@ -94,6 +94,7 @@ class ArticulationHandler(Handler):
         forget=True,
         count=-1,
         vector_count=-1,
+        direction=None,
         name="Articulation Handler",
     ):
         self.articulation_list = articulation_list
@@ -101,6 +102,7 @@ class ArticulationHandler(Handler):
         self.forget = forget
         self._count = count
         self._vector_count = vector_count
+        self.direction = direction
         self.articulation_boolean_vector = sequence.CyclicList(
             articulation_boolean_vector, self.vector_forget, self._vector_count
         )
@@ -124,11 +126,11 @@ class ArticulationHandler(Handler):
                             if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
                                 continue
                             else:
-                                abjad.attach(abjad.StemTremolo(32), leaf)
+                                abjad.attach(abjad.StemTremolo(32), leaf, direction=self.direction)
                     elif articulation == "default":
                         continue
                     else:
-                        abjad.attach(abjad.Articulation(articulation), tie[0])
+                        abjad.attach(abjad.Articulation(articulation), tie[0], direction=self.direction)
             else:
                 continue
 

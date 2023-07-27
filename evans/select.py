@@ -2,7 +2,7 @@ import abjad
 
 
 def select_measures(
-    index_list, leaf=None, leaves=None, logical_ties=None, note=None, notes=None
+    index_list, leaf=None, leaves=None, logical_ties=None, note=None, notes=None, grace=None,
 ):
     if leaf is not None:
 
@@ -10,7 +10,7 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.leaf(sel_3, leaf)
+            sel_4 = abjad.select.leaf(sel_3, leaf, grace=grace)
             return sel_4
 
         return selector
@@ -20,7 +20,7 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.leaves(sel_3)
+            sel_4 = abjad.select.leaves(sel_3, grace=grace)
             sel_5 = abjad.select.get(sel_4, leaves)
             return sel_5
 
@@ -31,7 +31,7 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.leaves(sel_3)
+            sel_4 = abjad.select.leaves(sel_3, grace=grace)
             return sel_4
 
         return selector
@@ -41,7 +41,7 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.logical_ties(sel_3)
+            sel_4 = abjad.select.logical_ties(sel_3, grace=grace)
             return sel_4
 
         return selector
@@ -51,7 +51,7 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.note(sel_3, note)
+            sel_4 = abjad.select.note(sel_3, note, grace=grace)
             return sel_4
 
         return selector
@@ -61,14 +61,14 @@ def select_measures(
             sel_1 = abjad.select.leaves(selections)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
-            sel_4 = abjad.select.notes(sel_3)
+            sel_4 = abjad.select.notes(sel_3, grace=grace)
             return sel_4
 
         return selector
     else:
 
         def selector(selections):
-            sel_1 = abjad.select.leaves(selections)
+            sel_1 = abjad.select.leaves(selections, grace=grace)
             sel_2 = abjad.select.group_by_measure(sel_1)
             sel_3 = abjad.select.get(sel_2, index_list)
             return sel_3

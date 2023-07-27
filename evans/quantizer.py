@@ -41,6 +41,7 @@ def do_subdivide_durations(durations, cuts=[2], indices=[0], period=1, cyclic=Tr
 
     for i, duration in enumerate(durations):
         if duration < 0:
+            # print("SKIPPING A NEGATIVE")
             continue
         if cyclic is False:
             period = indices[-1] + 1
@@ -51,6 +52,7 @@ def do_subdivide_durations(durations, cuts=[2], indices=[0], period=1, cyclic=Tr
         if counter in indices:
             relevant_number = cyclic_subdivisions(r=1)[0]
             parts = split_duration(duration, relevant_number)
+            # print(f"DURATION: {duration}, PARTS: {relevant_number}, FINAL: {parts}\n")
             durations[i] = parts
         counter += 1
 
@@ -91,14 +93,28 @@ def do_fuse_durations(
         for partition in partitions:
             boolean_value = cyclic_vector(r=1)[0]
             if boolean_value is True:
-                out.append(sum(partition))
+                temp_rest_partitioned_groups = []
+                rest_partitioned_groups = abjad.sequence.group_by(partition, predicate=lambda duration_integer: 0 < duration_integer)
+                for rest_partitioned_group in rest_partitioned_groups:
+                    if 0 < rest_partitioned_group[0]:
+                        temp_rest_partitioned_groups.append(sum(rest_partitioned_group))
+                    else:
+                        temp_rest_partitioned_groups.extend(rest_partitioned_group)
+                out.extend(temp_rest_partitioned_groups)
             else:
                 out.append(partition)
     else:
         for i, pair in enumerate(zip(boolean_vector, partitions)):
             boolean_value, partition = pair
             if boolean_value is True:
-                out.append(sum(partition))
+                temp_rest_partitioned_groups = []
+                rest_partitioned_groups = abjad.sequence.group_by(partition, predicate=lambda duration_integer: 0 < duration_integer)
+                for rest_partitioned_group in rest_partitioned_groups:
+                    if 0 < rest_partitioned_group[0]:
+                        temp_rest_partitioned_groups.append(sum(rest_partitioned_group))
+                    else:
+                        temp_rest_partitioned_groups.extend(rest_partitioned_group)
+                out.extend(temp_rest_partitioned_groups)
             else:
                 out.append(partition)
         if i < (len(partitions) - 1):
