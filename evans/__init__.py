@@ -50,6 +50,7 @@ from .commands import (
     zero_padding_glissando,
     upward_gliss,
     downward_gliss,
+    boolean_vector_to_indices,
 )
 from .consort import (
     LogicalTieCollection,
@@ -102,6 +103,7 @@ from .pitch import (
     Lapidary,
     annotate_concurrent_ratios,
     annotate_hertz,
+    carceri_pitches,
     clean_cent_markup,
     combination_tones,
     contour,
@@ -307,9 +309,11 @@ __all__ = [
     "beam_meter",
     "beautify_tuplets",
     "before_grace_container",
+    "boolean_vector_to_indices",
     "calculate_metric_modulation",
     "calculate_tempo_modulated_duration",
     "call",
+    "carceri_pitches",
     "clean_cent_markup",
     "collect_offsets",
     "combination_tones",

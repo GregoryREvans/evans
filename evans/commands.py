@@ -1945,9 +1945,9 @@ def unsichtbare_farben(
             proportion_pairs = [(_, proportions[0]) for _ in proportions]
     else:
         proportion_pairs = []
-        combinations = combinations_with_replacement(proportions, 2)
+        combinations = itertools.combinations_with_replacement(proportions, 2)
         for combination in combinations:
-            if proportions_range < combination[0] and combination[0] == combination[1]:
+            if proportions_range[1] < combination[0] and combination[0] == combination[1]:
                 continue
             else:
                 proportion_pairs.append(combination)
@@ -1971,7 +1971,7 @@ def unsichtbare_farben(
                 subdivided_pairs.append(temp_tree)
                 subdivided_pairs.append(reversed_tree)
     else:
-        combinations = combinations_with_replacement(subdivisions, 2)
+        combinations = itertools.combinations_with_replacement(subdivisions, 2)
         for pair in proportion_pairs:
             for combination in combinations:
                 proportion = random.choice(re_proportions)
@@ -2115,3 +2115,11 @@ def downward_gliss(selections):
     for group in groups:
         leaves = abjad.select.leaves(group)
         zero_padding_glissando(leaves)
+
+
+def boolean_vector_to_indices(vector=[True, False]):
+    out = []
+    for i, boolean_value in enumerate(vector):
+        if boolean_value is True:
+            out.append(i)
+    return out

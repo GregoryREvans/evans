@@ -241,8 +241,8 @@ irregularStemOn = {
               Y
               (- (ly:grob-property grob 'direction))
               (grob-interpret-markup grob
-                                     (markup #:center-align #:hspace 0.01 #:fontsize -6.5 #:ekmelos-char #xe22c))
-              -2.5))))
+                                     (markup #:center-align #:hspace 0.01 #:fontsize -4.5 #:ekmelos-char #xe22c))
+              -3.25))))
 }
 
 %%% z stem %%%
@@ -1589,3 +1589,24 @@ addNote =
                 \raise #(* dir 0.7) \with-outline "" #note-markup #})))
      #tuplet-music
    #})
+
+
+%%% parenthesized hairpin
+
+hairpinBetweenText =
+#(define-music-function (leftText rightText) (markup? markup?)
+   #{
+     \once \override Hairpin.stencil =
+     #(lambda (grob)
+        (ly:stencil-combine-at-edge
+         (ly:stencil-combine-at-edge
+          (ly:stencil-aligned-to (grob-interpret-markup grob leftText) Y CENTER)
+          X RIGHT
+          (ly:stencil-aligned-to (ly:hairpin::print grob) Y CENTER)
+          0)
+         X RIGHT
+         (ly:stencil-aligned-to (grob-interpret-markup grob rightText) Y CENTER)
+         0.6))
+   #})
+
+parenthesizedHairpin = \hairpinBetweenText \markup {"(" \hspace #0.5 } \markup {\hspace #0.5 ")"}

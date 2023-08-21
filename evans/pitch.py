@@ -2181,3 +2181,28 @@ def contour(
                 leaf.written_pitch = pitch
             elif isinstance(leaf, abjad.Chord):
                 leaf.written_pitches = pitch
+
+
+def carceri_pitches(
+    melodic_series=[11, 10, 4, 6, 5, 7, 1, 3, 2, 0, 9, 8],
+    *,
+    source_chord=["b", "ds'", "fs'", "bf'", "ef''", "a''", "c'''", "g'''"],
+    reordering_series=["af'", "g'", "cs'", "ef'", "d'", "e'", "bf'", "c'", "b'", "a'", "fs'", "f'"],
+    reverse_reordering_stack=True,
+):
+    s = Sequence(
+        [abjad.NumberedPitch(abjad.NamedPitch(_)).number for _ in source_chord]
+    )
+    if reordering_series is not None:
+        order = s.order_pitch_sequence_by_tonerow(
+            [abjad.NumberedPitch(abjad.NamedPitch(_)).number for _ in reordering_series]
+        )
+    if reverse_reordering_stack:
+        order = order.reverse()
+    vertical_stack = order.stack_pitches()
+    melody = vertical_stack.order_pitch_sequence_by_tonerow(
+        melodic_series,
+        return_pitch_classes=False,
+        prefer_lowest_pitch=True,
+    )
+    return [_ for _ in melody]

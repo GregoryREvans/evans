@@ -4999,6 +4999,7 @@ class Sequence(collections.abc.Sequence):
         return type(self)(seq)
 
     def random_funnel(self, destination, random_ranges, random_seed=1):
+        random.seed(random_seed)
         def are_sequences_matched(sequence, target):
             boolean_sequence = []
             for i, val in enumerate(sequence):
@@ -5285,6 +5286,27 @@ class Sequence(collections.abc.Sequence):
                     _ += 12
                 returned_list.append(_)
             seq = type(self)(returned_list)
+        return seq
+
+    def stutter(self, counts=[2], indices=[0], period=1, cyclic=True):
+        out = []
+        cyc_counts = CyclicList(counts, forget=False)
+        for i, item in enumerate(self.items):
+            if cyclic is True:
+                if i % period in indices:
+                    count = cyc_counts(r=1)[0]
+                    for _ in range(count):
+                        out.append(item)
+                else:
+                    out.append(item)
+            else:
+                if i in indices:
+                    count = cyc_counts(r=1)[0]
+                    for _ in range(count):
+                        out.append(item)
+                else:
+                    out.append(item)
+        seq = type(self)(out)
         return seq
 
     def difference(self):

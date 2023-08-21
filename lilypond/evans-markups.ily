@@ -323,3 +323,5 @@ half-air-tone-markup = \markup {
     \override #'(font-name . "ekmelos")
     \char ##xe115
 }
+
+key-click-plus-markup = \markup "+"
