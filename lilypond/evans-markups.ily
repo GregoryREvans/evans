@@ -67,6 +67,70 @@ evans-clockwise-arc = \markup {
         "
 }
 
+%%% BOWSTROKE MARKUP %%%
+
+baca-full-downbow-markup =
+    \markup
+    \combine
+    \musicglyph #"scripts.downbow"
+    \path #0.15
+    #'(
+        (moveto 0.7375 0.05)
+        (rlineto 1 0)
+        (closepath)
+        )
+
+baca-full-upbow-markup =
+    \markup
+    \combine
+    \musicglyph #"scripts.upbow"
+    \path #0.15
+    #'(
+        (moveto 0.62 2.005)
+        (rlineto 1 0)
+        (closepath)
+        )
+
+baca-stop-on-string-markup =
+    \markup
+    \path #0.15
+    #'(
+        (moveto 0 0)
+        (rlineto 1 0)
+        (closepath)
+        (rmoveto 1 0.3)
+        (rlineto 0 -0.6)
+        (closepath)
+        )
+
+baca-stop-on-string-full-downbow-markup =
+    \markup
+    \combine
+    \musicglyph #"scripts.downbow"
+    \path #0.15
+    #'(
+        (moveto 0.7375 0.05)
+        (rlineto 1 0)
+        (closepath)
+        (rmoveto 1 0.3)
+        (rlineto 0 -0.6)
+        (closepath)
+        )
+
+baca-stop-on-string-full-upbow-markup =
+    \markup
+    \combine
+    \musicglyph #"scripts.upbow"
+    \path #0.15
+    #'(
+        (moveto 0.62 2.005)
+        (rlineto 1 0)
+        (closepath)
+        (rmoveto 1 0.3)
+        (rlineto 0 -0.6)
+        (closepath)
+        )
+
 %{ \concat {
 \translate #'(0.2 . 0.75)
 \scale #'(0.4 . 0.4) \concat {\translate #'(0 . 0) 45 \translate #'(0 . 1) \teeny o}

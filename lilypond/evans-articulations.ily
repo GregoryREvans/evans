@@ -146,6 +146,88 @@ tongue =
 
   key-click-plus = #(make-articulation 'keyclickplus)
 
+  #(append! default-script-alist
+   (list
+    `("bacafulldownbow"
+       . (
+           (stencil . ,ly:text-interface::print)
+           (text . ,baca-full-downbow-markup)
+           (avoid-slur . around)
+           (direction . ,UP)
+           (padding . 0.20)
+           (script-priority . 150)
+           (skyline-horizontal-padding . 0.20)
+           (toward-stem-shift . 0.5)
+           ))))
+
+baca-full-downbow = #(make-articulation 'bacafulldownbow)
+
+#(append! default-script-alist
+   (list
+    `("bacastoponstringfulldownbow"
+       . (
+           (stencil . ,ly:text-interface::print)
+           (text . ,baca-stop-on-string-full-downbow-markup)
+           (avoid-slur . around)
+           (direction . ,UP)
+           (padding . 0.20)
+           (script-priority . 150)
+           (skyline-horizontal-padding . 0.20)
+           (toward-stem-shift . 0.6)
+           ))))
+
+baca-stop-on-string-full-downbow = #(
+    make-articulation 'bacastoponstringfulldownbow)
+
+#(append! default-script-alist
+   (list
+    `("bacafullupbow"
+       . (
+           (stencil . ,ly:text-interface::print)
+           (text . ,baca-full-upbow-markup)
+           (avoid-slur . around)
+           (direction . ,UP)
+           (padding . 0.20)
+           (script-priority . 150)
+           (skyline-horizontal-padding . 0.20)
+           (toward-stem-shift . 0.5)
+           ))))
+
+baca-full-upbow = #(make-articulation 'bacafullupbow)
+
+#(append! default-script-alist
+   (list
+    `("bacastoponstringfullupbow"
+       . (
+           (stencil . ,ly:text-interface::print)
+           (text . ,baca-stop-on-string-full-upbow-markup)
+           (avoid-slur . around)
+           (direction . ,UP)
+           (padding . 0.20)
+           (script-priority . 150)
+           (skyline-horizontal-padding . 0.20)
+           (toward-stem-shift . 0.6)
+           ))))
+
+baca-stop-on-string-full-upbow = #(
+    make-articulation 'bacastoponstringfullupbow)
+
+#(append! default-script-alist
+   (list
+    `("bacastoponstring"
+       . (
+           (stencil . ,ly:text-interface::print)
+           (text . ,baca-stop-on-string-markup)
+           (avoid-slur . around)
+           (padding . 0.20)
+           (script-priority . 150)
+           (side-relative-direction . ,DOWN)
+           (skyline-horizontal-padding . 0.20)
+           (toward-stem-shift . 0.4)
+           ))))
+
+baca-stop-on-string = #(make-articulation 'bacastoponstring)
+
   down-bow-towards-body = #(make-articulation 'downbowtowardsbody)
   up-bow-towards-body = #(make-articulation 'upbowtowardsbody)
   down-bow-away-from-body = #(make-articulation 'downbowawayfrombody)

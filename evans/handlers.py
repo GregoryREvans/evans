@@ -3147,7 +3147,10 @@ class PitchHandler(Handler):
         as_ratios=False,
         chord_boolean_vector=[0],
         chord_groups=None,
-        forget=True,
+        clef=None,
+        staff_positions=False,
+        transpose=None,
+        forget=False, # was True think about refactoring scores
         to_ties=False,
         pitch_count=-1,
         state=None,
@@ -3162,6 +3165,28 @@ class PitchHandler(Handler):
         self.as_ratios = as_ratios
         self.chord_boolean_vector = chord_boolean_vector
         self.chord_groups = chord_groups
+        self.clef = clef
+        self.staff_positions = staff_positions
+        if self.staff_positions is True:
+            if self.clef is None:
+                self.clef = abjad.Clef("percussion")
+            else:
+                self.clef = abjad.Clef(self.clef)
+            temp = []
+            for x in self.pitch_list:
+                if isinstance(x, list):
+                    sub_temp = [abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(y))) for y in x]
+                    temp.append(sub_temp)
+                else:
+                    temp.append(abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(x))))
+            self.pitch_list = temp
+        self.transpose = transpose
+        if self.transpose is not None:
+            if isinstance(self.transpose, abjad.NamedInterval):
+                interval = abjad.NumberedInterval(self.transpose)
+                self.pitch_list = [interval.transpose(abjad.NumberedPitch(_)).number for _ in self.pitch_list]
+            else:
+                self.pitch_list = [self.transpose + _ for _ in self.pitch_list]
         self.forget = forget
         self.to_ties = to_ties
         self.name = name

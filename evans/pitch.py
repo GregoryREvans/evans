@@ -12,7 +12,7 @@ import baca
 import quicktions
 from abjadext import microtones
 
-from .sequence import RatioSegment, Sequence
+from .sequence import RatioClassSet, RatioSegment, Sequence
 from .verticalmoment import iterate_vertical_moments_by_logical_tie
 
 
@@ -2206,3 +2206,183 @@ def carceri_pitches(
         prefer_lowest_pitch=True,
     )
     return [_ for _ in melody]
+
+
+class TonnetzChord:
+    def __init__(self, bottom=0, middle=4, top=7, klang=abjad.UP, exponential=False):
+        if exponential is False:
+            self.bottom = abjad.NumberedPitchClass(bottom).number
+            self.middle = abjad.NumberedPitchClass(middle).number
+            self.top = abjad.NumberedPitchClass(top).number
+        else:
+            self.bottom = RatioClassSet([quicktions.Fraction(bottom)])[0] # constrain to range!
+            self.middle = RatioClassSet([quicktions.Fraction(middle)])[0]
+            self.top = RatioClassSet([quicktions.Fraction(top)])[0]
+        if exponential is False:
+            self.intervals = [self.middle - self.bottom, self.top - self.middle]
+            self.compound_interval = sum(self.intervals)
+        else:
+            self.intervals = [self.middle / self.bottom, self.top / self.middle]
+            self.compound_interval = self.intervals[0] * self.intervals[1]
+        try:
+            assert klang is abjad.UP or klang is abjad.DOWN
+            self.klang = klang
+        except:
+            raise Exception(f"the value of klang must be abjad.UP or abjad.DOWN not {klang}")
+        self.exponential = exponential
+
+
+    def __call__(self, operations=["p", "l", "r"], as_lists=True):
+        out = [self]
+        for operation in operations:
+            if operation == "h":
+                out.append(out[-1].hexpole())
+            elif operation == "l":
+                out.append(out[-1].leittonwechsel())
+            elif operation == "n":
+                out.append(out[-1].nebenverwandt())
+            elif operation == "p":
+                out.append(out[-1].parallel())
+            elif operation == "r":
+                out.append(out[-1].relative())
+            elif operation == "s":
+                out.append(out[-1].slide())
+            else:
+                raise Exception(f"Operations must be h, l, n, p, r, or s not {operation}.")
+        if as_lists is True:
+            out = [_.to_list() for _ in out]
+        return out
+
+
+    def hexpole(self):
+        step_1 = self.leittonwechsel()
+        step_2 = step_1.parallel()
+        step_3 = step_2.leittonwechsel()
+        return step_3
+
+
+    def leittonwechsel(self):
+        if self.klang is abjad.UP:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.middle,
+                    middle=self.top,
+                    top=self.bottom + self.intervals[0] + self.compound_interval,
+                    klang=abjad.DOWN,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.middle,
+                    middle=self.top,
+                    top=self.bottom * self.intervals[0] * self.compound_interval,
+                    klang=abjad.DOWN,
+                    exponential=True,
+                )
+        else:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.top - self.compound_interval - self.intervals[1],
+                    middle=self.bottom,
+                    top=self.middle,
+                    klang=abjad.UP,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.top / self.compound_interval / self.intervals[1],
+                    middle=self.bottom,
+                    top=self.middle,
+                    klang=abjad.UP,
+                    exponential=True,
+                )
+        return new_chord
+
+
+    def nebenverwandt(self):
+        step_1 = self.relative()
+        step_2 = step_1.leittonwechsel()
+        step_3 = step_2.parallel()
+        return step_3
+
+
+    def parallel(self):
+        if self.klang is abjad.UP:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.bottom,
+                    middle=self.middle + self.intervals[1] - self.intervals[0],
+                    top=self.top,
+                    klang=abjad.DOWN,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.bottom,
+                    middle=self.middle * self.intervals[1] / self.intervals[0],
+                    top=self.top,
+                    klang=abjad.DOWN,
+                    exponential=True,
+                )
+        else:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.bottom,
+                    middle=self.middle - self.intervals[0] + self.intervals[1],
+                    top=self.top,
+                    klang=abjad.UP,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.bottom,
+                    middle=self.middle / self.intervals[0] * self.intervals[1],
+                    top=self.top,
+                    klang=abjad.UP,
+                    exponential=True,
+                )
+        return new_chord
+
+
+    def relative(self):
+        if self.klang is abjad.UP:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.top - self.compound_interval - self.intervals[1],
+                    middle=self.bottom,
+                    top=self.middle,
+                    klang=abjad.DOWN,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.top / self.compound_interval / self.intervals[1],
+                    middle=self.bottom,
+                    top=self.middle,
+                    klang=abjad.DOWN,
+                    exponential=True,
+                )
+        else:
+            if self.exponential is False:
+                new_chord = TonnetzChord(
+                    bottom=self.middle,
+                    middle=self.top,
+                    top=self.bottom + self.compound_interval + self.intervals[0],
+                    klang=abjad.UP,
+                )
+            else:
+                new_chord = TonnetzChord(
+                    bottom=self.middle,
+                    middle=self.top,
+                    top=self.bottom * self.compound_interval * self.intervals[0],
+                    klang=abjad.UP,
+                    exponential=True,
+                )
+        return new_chord
+
+
+    def slide(self):
+        step_1 = self.leittonwechsel()
+        step_2 = step_1.parallel()
+        step_3 = step_2.relative()
+        return step_3
+
+
+    def to_list(self):
+        out = [self.bottom, self.middle, self.top]
+        return out

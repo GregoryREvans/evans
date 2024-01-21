@@ -1,6 +1,7 @@
 """
 Sequence classes and functions.
 """
+import black
 import collections
 import copy
 import decimal
@@ -155,6 +156,138 @@ class MarkovChain:
         return future_states
 
 
+class KlumpenhouwerNetwork:
+
+    def __init__(self, items):
+        self.items = items
+
+    def __getitem__(self, index):
+        return self.items[index]
+
+    def __setitem__(self, index, data):
+        self.items[index] = data
+
+    def __iter__(self):
+        for item in self.items:
+            yield item
+
+    def __len__(self):
+        return len(self.items)
+
+    def __repr__(self):
+        string = str(self)
+        string = black.format_str(string, mode=black.mode.Mode())
+        return string
+
+    def __str__(self):
+        output = "("
+        for i, item in enumerate(self.items):
+            output += f"{item}"
+            if i != len(self.items) - 1:
+                output += ", "
+        output += ")"
+        return output
+
+    def __add__(self, argument):
+        if isinstance(argument, PitchClassSet) or isinstance(argument, PitchClassSegment) or isinstance(argument, PitchSet) or isinstance(argument, PitchSegment):
+            items = self.items + argument.pitches
+        elif isinstance(argument, RatioClassSet) or isinstance(argument, RatioClassSegment) or isinstance(argument, RatioSet) or isinstance(argument, RatioSegment):
+            items = self.items + argument.ratios
+        else:
+            items = self.items + argument.items
+        return type(self)(items)
+
+    def __contains__(self, argument):
+        return argument in self.items
+
+    @staticmethod
+    def _binary_value(i):
+        value = 0
+        for bit in i:
+            value += 2**bit
+        return value
+
+    def alpha(self, category):
+        numbers = [_.alpha(category) for _ in self]
+        return type(self)(numbers)
+
+    def constrain_to_octave(self):
+        constrained = [_.constrain_to_octave() for _ in self]
+        return type(self)(constrained)
+
+    def complement(self, argument):
+        complements = []
+        for arg in argument:
+            if arg not in self.items:
+                complements.append(arg)
+        return type(self)(complements)
+
+    def hexpole(self):
+        out = [_.hexpole() for _ in self]
+        return type(self)(out)
+
+    def invert(self, axis=1):
+        inverse = [_.invert(axis) for _ in self]
+        return type(self)(inverse)
+
+    def leittonwechsel(self):
+        out = [_.leittonwechsel() for _ in self]
+        return type(self)(out)
+
+    def multiply(self, n):
+        multiplied_pitch_classes = [_.multiply(n) for _ in self]
+        return type(self)(multiplied_pitch_classes)
+
+    def nebenverwandt(self):
+        out = [_.nebenverwandt() for _ in self]
+        return type(self)(out)
+
+    def parallel(self):
+        out = [_.parallel() for _ in self]
+        return type(self)(out)
+
+    def prime_form(self):
+        out = [_.prime_form() for _ in self]
+        return type(self)(out)
+
+    def relative(self):
+        out = [_.relative() for _ in self]
+        return type(self)(out)
+
+    def retrograde(self):
+        rev = [_.retrograde() for _ in self]
+        return type(self)(rev)
+
+    def rotate(self, n):
+        copied_list = [_.rotate(n) for _ in self]
+        return type(self)(copied_list)
+
+    def slide(self):
+        out = [_.slide() for _ in self]
+        return type(self)(out)
+
+    def sorted(self, recurse=False):
+        try:
+            sorted_self = [_.sorted(recurse=recurse) for _ in self]
+        except:
+            sorted_self = [_.sorted() for _ in self]
+        return type(self)(sorted_self)
+
+    def to_sequence(self):
+        out = []
+        for _ in self:
+            if type(_) == type(self):
+                out.append(Sequence([x.to_sequence() for x in _]))
+            else:
+                out.append(_.to_sequence())
+        seq = Sequence(out)
+        return seq
+
+    def transpose(self, n):
+        transposed = [_.transpose(n) for _ in self]
+        return type(self)(transposed)
+
+
 class PitchClassSet(microtones.PitchClassSet):
     def alpha(self, category):
         """
@@ -216,6 +349,33 @@ class PitchClassSet(microtones.PitchClassSet):
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitch_classes])
         return seq
+
+    def hexpole(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        return out
+
+    def leittonwechsel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(11)
+        return transposed
+
+    def nebenverwandt(self):
+        out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def parallel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(7)
+        return transposed
+
+    def relative(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(4)
+        return transposed
+
+    def slide(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
+        return out
 
 
 class PitchSet(microtones.PitchSet):
@@ -280,6 +440,33 @@ class PitchSet(microtones.PitchSet):
         seq = Sequence([_ for _ in self.pitches])
         return seq
 
+    def hexpole(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        return out
+
+    def leittonwechsel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(11)
+        return transposed
+
+    def nebenverwandt(self):
+        out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def parallel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(7)
+        return transposed
+
+    def relative(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(4)
+        return transposed
+
+    def slide(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
+        return out
+
 
 class PitchClassSegment(microtones.PitchClassSegment):
     def alpha(self, category):
@@ -342,6 +529,33 @@ class PitchClassSegment(microtones.PitchClassSegment):
     def to_sequence(self):
         seq = Sequence([_ for _ in self.pitch_classes])
         return seq
+
+    def hexpole(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        return out
+
+    def leittonwechsel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(11)
+        return transposed
+
+    def nebenverwandt(self):
+        out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def parallel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(7)
+        return transposed
+
+    def relative(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(4)
+        return transposed
+
+    def slide(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
+        return out
 
 
 class PitchSegment(microtones.PitchSegment):
@@ -406,11 +620,67 @@ class PitchSegment(microtones.PitchSegment):
         seq = Sequence([_ for _ in self.pitches])
         return seq
 
+    def hexpole(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        return out
+
+    def leittonwechsel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(11)
+        return transposed
+
+    def nebenverwandt(self):
+        out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def parallel(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(7)
+        return transposed
+
+    def relative(self):
+        inverse = self.invert(0)
+        transposed = inverse.transpose(4)
+        return transposed
+
+    def slide(self):
+        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
+        return out
+
 
 class RatioClassSet(microtones.RatioClassSet):
     def to_sequence(self):
         seq = Sequence([_ for _ in self.ratio_classes])
         return seq
+
+    # EXPERIMENTAL
+
+    def hexpole(self):
+        out = self.invert("1/1").multiply("15/8").invert("1/1").multiply("3/2").invert("1/1").multiply("15/8")
+        return out
+
+    def leittonwechsel(self):
+        inverse = self.invert("1/1")
+        transposed = inverse.multiply("15/8")
+        return transposed
+
+    def nebenverwandt(self):
+        out = self.invert("1/1").multiply("5/4").invert("1/1").multiply("15/8").invert("1/1").multiply("3/2")
+        return out
+
+    def parallel(self):
+        inverse = self.invert("1/1")
+        transposed = inverse.multiply("3/2")
+        return transposed
+
+    def relative(self):
+        inverse = self.invert("1/1")
+        transposed = inverse.multiply("5/4")
+        return transposed
+
+    def slide(self):
+        out = self.invert("1/1").multiply("15/8").invert("1/1").multiply("3/2").invert("1/1").multiply("5/4")
+        return out
 
 
 class RatioSet(microtones.RatioSet):
@@ -2710,6 +2980,22 @@ class Sequence(collections.abc.Sequence):
                 items.append(item)
         return type(self)(items)
 
+    def remove_duplications(self):
+        """
+        Removes repeats from ``sequence``.
+
+        ..  container:: example
+
+            >>> items = [31, 31, 35, 35, 31, 31, 31, 31, 35]
+            >>> sequence = evans.Sequence(items)
+            >>> sequence.remove_duplications()
+            Sequence([31, 35])
+
+        """
+        seen = set()
+        seen_add = seen.add
+        return type(self)([x for x in self.items if not (x in seen or seen_add(x))])
+
     def remove_repeats(self) -> "Sequence":
         """
         Removes repeats from ``sequence``.
@@ -3749,6 +4035,57 @@ class Sequence(collections.abc.Sequence):
         else:
             numbers = [_ for _ in self]
         return type(self)(numbers)
+
+    def cartesian_product(self, product_sequence):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_addition(2)
+            Sequence([Fraction(5, 4), Fraction(3, 2), Fraction(7, 4)])
+
+        """
+        if isinstance(product_sequence[0], list):
+            product_generator = itertools.product(self.items, *product_sequence)
+        else:
+            product_generator = itertools.product(self.items, product_sequence)
+        out = [_ for _ in product_generator]
+        return type(self)(out)
+
+    def cartesian_product_products(self, product_sequence):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_addition(2)
+            Sequence([Fraction(5, 4), Fraction(3, 2), Fraction(7, 4)])
+
+        """
+        products = self.cartesian_product(product_sequence)
+        out = [Sequence(_).product()[0] for _ in products]
+        return type(self)(out)
+
+    def cartesian_product_sums(self, product_sequence):
+        """
+
+        .. container:: example
+
+            >>> import quicktions
+            >>> l = [2, 3, 4]
+            >>> l = [quicktions.Fraction(_) for _ in l]
+            >>> evans.Sequence(l).combination_addition(2)
+            Sequence([Fraction(5, 4), Fraction(3, 2), Fraction(7, 4)])
+
+        """
+        products = self.cartesian_product(product_sequence)
+        out = [sum(_) for _ in products]
+        return type(self)(out)
 
     def combination_addition(self, size=2):
         """

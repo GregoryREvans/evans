@@ -7,6 +7,7 @@ import evans
 ###
 ###
 ###
+maker = abjad.makers.make_leaves
 
 tempo_pair = ((1, 4), 10)
 metronome_mark = abjad.MetronomeMark(tempo_pair[0], tempo_pair[1])
@@ -308,7 +309,7 @@ file = abjad.LilyPondFile(
 
 evans.make_sc_file(
     score=score,
-    tempo=tempo_pair,
+    tempo=metronome_mark,
     current_directory=pathlib.Path(__file__).parent,
 )
 
