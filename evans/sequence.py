@@ -287,6 +287,10 @@ class KlumpenhouwerNetwork:
         transposed = [_.transpose(n) for _ in self]
         return type(self)(transposed)
 
+    def wedge(self, origin, destination, step_size):
+        transposed = [_.wedge(origin, destination, step_size) for _ in self]
+        return type(self)(transposed)
+
 
 class PitchClassSet(microtones.PitchClassSet):
     def alpha(self, category):
@@ -376,6 +380,23 @@ class PitchClassSet(microtones.PitchClassSet):
     def slide(self):
         out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
         return out
+
+    def wedge(self, origin, destination, step_size):
+        def is_left_of_desintation(arg):
+            return (destination - arg) % 12 < (destination - origin) % 12
+        out = []
+        for _ in self:
+            if _ == origin or _ == destination: # correct
+                out.append(_)
+            elif is_left_of_desintation(_): # ?
+                temp = _ + step_size
+                out.append(temp)
+            elif not is_left_of_desintation(_): # ?
+                temp = _ - step_size
+                out.append(temp)
+            else:
+                raise Exception(f"Improper value: {_}")
+        return type(self)(out)
 
 
 class PitchSet(microtones.PitchSet):
@@ -467,6 +488,23 @@ class PitchSet(microtones.PitchSet):
         out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
         return out
 
+    def wedge(self, origin, destination, step_size):
+        def is_left_of_desintation(arg):
+            return (destination - arg) % 12 < (destination - origin) % 12
+        out = []
+        for _ in self:
+            if _ == origin or _ == destination: # correct
+                out.append(_)
+            elif is_left_of_desintation(_): # ?
+                temp = _ + step_size
+                out.append(temp)
+            elif not is_left_of_desintation(_): # ?
+                temp = _ - step_size
+                out.append(temp)
+            else:
+                raise Exception(f"Improper value: {_}")
+        return type(self)(out)
+
 
 class PitchClassSegment(microtones.PitchClassSegment):
     def alpha(self, category):
@@ -556,6 +594,23 @@ class PitchClassSegment(microtones.PitchClassSegment):
     def slide(self):
         out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
         return out
+
+    def wedge(self, origin, destination, step_size):
+        def is_left_of_desintation(arg):
+            return (destination - arg) % 12 < (destination - origin) % 12
+        out = []
+        for _ in self:
+            if _ == origin or _ == destination: # correct
+                out.append(_)
+            elif is_left_of_desintation(_): # ?
+                temp = _ + step_size
+                out.append(temp)
+            elif not is_left_of_desintation(_): # ?
+                temp = _ - step_size
+                out.append(temp)
+            else:
+                raise Exception(f"Improper value: {_}")
+        return type(self)(out)
 
 
 class PitchSegment(microtones.PitchSegment):
@@ -647,6 +702,23 @@ class PitchSegment(microtones.PitchSegment):
         out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(4)
         return out
 
+    def wedge(self, origin, destination, step_size):
+        def is_left_of_desintation(arg):
+            return (destination - arg) % 12 < (destination - origin) % 12
+        out = []
+        for _ in self:
+            if _ == origin or _ == destination: # correct
+                out.append(_)
+            elif is_left_of_desintation(_): # ?
+                temp = _ + step_size
+                out.append(temp)
+            elif not is_left_of_desintation(_): # ?
+                temp = _ - step_size
+                out.append(temp)
+            else:
+                raise Exception(f"Improper value: {_}")
+        return type(self)(out)
+
 
 class RatioClassSet(microtones.RatioClassSet):
     def to_sequence(self):
@@ -682,11 +754,17 @@ class RatioClassSet(microtones.RatioClassSet):
         out = self.invert("1/1").multiply("15/8").invert("1/1").multiply("3/2").invert("1/1").multiply("5/4")
         return out
 
+    def wedge(self, origin, destination, step_size):
+        raise Exception(f"Wedge Operation Not Yet Implemented for {type(self)}")
+
 
 class RatioSet(microtones.RatioSet):
     def to_sequence(self):
         seq = Sequence([_ for _ in self.ratios])
         return seq
+
+    def wedge(self, origin, destination, step_size):
+        raise Exception(f"Wedge Operation Not Yet Implemented for {type(self)}")
 
 
 class RatioClassSegment(microtones.RatioClassSegment):
@@ -694,11 +772,17 @@ class RatioClassSegment(microtones.RatioClassSegment):
         seq = Sequence([_ for _ in self.ratio_classes])
         return seq
 
+    def wedge(self, origin, destination, step_size):
+        raise Exception(f"Wedge Operation Not Yet Implemented for {type(self)}")
+
 
 class RatioSegment(microtones.RatioSegment):
     def to_sequence(self):
         seq = Sequence([_ for _ in self.ratios])
         return seq
+
+    def wedge(self, origin, destination, step_size):
+        raise Exception(f"Wedge Operation Not Yet Implemented for {type(self)}")
 
 
 class Ratio(abjad.Ratio):
