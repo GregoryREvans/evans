@@ -157,6 +157,7 @@ class SegmentMaker:
         tempo=None,
         time_signatures=None,
         transpose_from_sounding_pitch=None,
+        transpose_first=None,
         transparent_fermatas=True,
         tuplet_bracket_noteheads=True,
         with_layout=False,
@@ -188,6 +189,7 @@ class SegmentMaker:
         self.tempo = tempo
         self.time_signatures = time_signatures
         self.transpose_from_sounding_pitch = transpose_from_sounding_pitch
+        self.transpose_first = transpose_first
         self.transparent_fermatas = transparent_fermatas
         self.tuplet_bracket_noteheads = tuplet_bracket_noteheads
         self.with_layout = with_layout
@@ -293,9 +295,10 @@ class SegmentMaker:
                         first_leaf,
                         tag=abjad.Tag("applying staff names and clefs"),
                     )
-            abjad.attach(
-                inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
-            )
+            if self.transpose_first is not True:
+                abjad.attach(
+                    inst, first_leaf, tag=abjad.Tag("applying staff names and clefs")
+                )
             rhythm_commands_booleans = []
             for c in self.commands:
                 if isinstance(c, RhythmCommand):
@@ -327,8 +330,9 @@ class SegmentMaker:
                 #             tag=abjad.Tag("PITCH"),
                 #             deactivate=False,
                 #         )
-            if self.transpose_from_sounding_pitch is True:
-                abjad.iterpitches.transpose_from_sounding_pitch(voice)
+            if self.transpose_first is not True:
+                if self.transpose_from_sounding_pitch is True:
+                    abjad.iterpitches.transpose_from_sounding_pitch(voice)
             if handler is not None:
                 handler(voice)
 
@@ -642,7 +646,7 @@ class SegmentMaker:
             abjad.mutate.wrap(group, container)
 
     def _fill_score_with_rests(self):
-        for voice in abjad.select.components(self.score_template, abjad.Voice):
+        for voice, instrument in zip(abjad.select.components(self.score_template, abjad.Voice), self.instruments):
             durations = [
                 abjad.Duration(time_signature)
                 for time_signature in self.time_signatures[:-1]
@@ -650,6 +654,9 @@ class SegmentMaker:
             none_list = [None]
             full_voice_rests = abjad.makers.make_leaves(none_list, durations)
             voice.extend(full_voice_rests)
+            if self.transpose_first is True:
+                first_leaf = abjad.select.leaf(voice, 0)
+                abjad.attach(instrument, first_leaf)
 
         if self.fermata_measures is not None:
             for voice in abjad.select.components(self.score_template, abjad.Voice):
@@ -765,6 +772,8 @@ class SegmentMaker:
                         self.score_template
                     )  # EXPERIMENTAL
 
+                # abjad.iterpitches.transpose_from_sounding_pitch(voice)
+
                 for _callable in music_command.callables[1:]:
                     leaves = abjad.select.leaves(relevant_voice)
                     measures = abjad.select.group_by_measure(leaves)
@@ -783,6 +792,14 @@ class SegmentMaker:
                             relevant_measures, pitched=True
                         ):
                             abjad.annotate(leaf, "pitched", True)
+                        if self.transpose_first is True:
+                            leaves = abjad.select.leaves(relevant_voice)
+                            measures = abjad.select.group_by_measure(leaves)
+                            relevant_measures = abjad.select.get(
+                                measures, relevant_measure_indices
+                            )
+                            relevant_leaves = abjad.select.leaves(relevant_measures)
+                            abjad.iterpitches.transpose_from_sounding_pitch(relevant_leaves)
 
                 for _attachment in music_command.attachments:
                     leaves = abjad.select.leaves(relevant_voice)
