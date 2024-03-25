@@ -1,8 +1,9 @@
 ### FROM https://github.com/sraaphorst/dispersive-flies-optimization
 # A S(t, k, v) Steiner system is a set of k-sets from a v-set such that every t-set appears in exactly one k-set. A simple example is S(2, 3, 7), the Steiner triple system of order 7, also denoted STS(7). Let {0, ..., 6} be the v-set.
 import sys
-from math import factorial
 from itertools import combinations
+from math import factorial
+
 import numpy as np
 
 
@@ -64,21 +65,23 @@ class DispersiveFlies:
         def __init__(self):
             self._rounds = 0
 
-    def __init__(self,
-                 dimensions,
-                 fitness,
-                 block_size=None,
-                 stop_value=None,
-                 disturbance_threshold=0.025,
-                 dim_min=None,
-                 dim_max=None,
-                 discrete=True,
-                 metric=manhattan_metric,
-                 adjustment=discrete_clamper,
-                 flies=50,
-                 max_ticks=10,
-                 end_round=None,
-                 debug=False):
+    def __init__(
+        self,
+        dimensions,
+        fitness,
+        block_size=None,
+        stop_value=None,
+        disturbance_threshold=0.025,
+        dim_min=None,
+        dim_max=None,
+        discrete=True,
+        metric=manhattan_metric,
+        adjustment=discrete_clamper,
+        flies=50,
+        max_ticks=10,
+        end_round=None,
+        debug=False,
+    ):
         self._dimensions = dimensions
         self._fitness = fitness
         self._block_size = self._dimensions if block_size is None else block_size
@@ -99,16 +102,27 @@ class DispersiveFlies:
         self._debug = debug
 
     def _produce_random_dimension(self, d):
-        value = np.random.random() * (self._dim_max[d] - self._dim_min[d]) + self._dim_min[d]
+        value = (
+            np.random.random() * (self._dim_max[d] - self._dim_min[d])
+            + self._dim_min[d]
+        )
         return int(value) if self._discrete else value
 
     def _produce_random_fly(self):
         # Constrain the number of non-zero entries to the stop value.
         # fly = np.random.rand(self._dimensions) * (self._dim_max - self._dim_min) + self._dim_min
         positions = np.random.random_integers(0, self._dimensions, self._block_size)
-        fly = np.array([(np.random.random() * (self._dim_max[i] - self._dim_min[i]) + self._dim_min[i]
-                         if i in positions else 0)
-                        for i in range(self._dimensions)])
+        fly = np.array(
+            [
+                (
+                    np.random.random() * (self._dim_max[i] - self._dim_min[i])
+                    + self._dim_min[i]
+                    if i in positions
+                    else 0
+                )
+                for i in range(self._dimensions)
+            ]
+        )
         return fly.astype(int) if self._discrete else fly
 
     def run(self):
@@ -117,7 +131,10 @@ class DispersiveFlies:
         for t in range(self._max_ticks):
             print(t)
             best_fly = self.run_round()
-            if self._stop_value and self._fitness(self._flypos[best_fly]) == self._stop_value:
+            if (
+                self._stop_value
+                and self._fitness(self._flypos[best_fly]) == self._stop_value
+            ):
                 s.ticks = t
                 return s, True, self._flypos[best_fly]
 
@@ -131,7 +148,9 @@ class DispersiveFlies:
     def run_round(self):
         if self._flypos is None:
             # Create the flies randomly.
-            self._flypos = np.array([self._produce_random_fly() for _ in range(self._flies)])
+            self._flypos = np.array(
+                [self._produce_random_fly() for _ in range(self._flies)]
+            )
 
         # Shuffle the flies to randomize tie-breaking.
         np.random.shuffle(self._flypos)
@@ -150,15 +169,22 @@ class DispersiveFlies:
         for f in range(self._flies):
             # First, find the nearest neighbour fly. Skip over this fly, obviously, and adjust appropriately
             # if the nearest neighbour is after this fly.
-            nbr = np.argmin([self._metric(self._flypos[f], fp) for n, fp in enumerate(self._flypos) if n != f])
+            nbr = np.argmin(
+                [
+                    self._metric(self._flypos[f], fp)
+                    for n, fp in enumerate(self._flypos)
+                    if n != f
+                ]
+            )
             if nbr >= f:
                 nbr += 1
 
             for d in range(self._dimensions):
                 # Calculation is as follows:
                 # Nearest nbr + U(0,1) * (best fly - this fly)
-                new_fly = self._flypos[nbr] +\
-                          np.random.rand(self._dimensions) * (self._flypos[best_fly] - self._flypos[f])
+                new_fly = self._flypos[nbr] + np.random.rand(self._dimensions) * (
+                    self._flypos[best_fly] - self._flypos[f]
+                )
 
                 # For each coordinate, we check if we replace it randomly.
                 # We use a list comprehension instead of np.vectorize due to problems with vectorize.
@@ -166,11 +192,17 @@ class DispersiveFlies:
                 # random_matrix = np.random.rand(self._dimensions)
                 # random_fly = self._produce_random_fly()
                 # new_fly_adj = np.where(random_matrix < self._disturbance_threshold, random_fly, new_fly)
-                new_fly_adj = np.array([self._produce_random_dimension(d)
-                                        if np.random.random() < self._disturbance_threshold
-                                        else value
-                                        for d, value in enumerate(new_fly)])
-                new_flies[f] = self._adjustment(self._dim_min, self._dim_max, new_fly_adj)
+                new_fly_adj = np.array(
+                    [
+                        self._produce_random_dimension(d)
+                        if np.random.random() < self._disturbance_threshold
+                        else value
+                        for d, value in enumerate(new_fly)
+                    ]
+                )
+                new_flies[f] = self._adjustment(
+                    self._dim_min, self._dim_max, new_fly_adj
+                )
 
         self._flypos = new_flies
 
@@ -210,12 +242,19 @@ def steiner(t, k, v):
 
     # Since flies will be incidence vectors of t-sets, we want a map of k-sets to t-sets they cover.
     # The stopping point will be when score is the number of tsets.
-    kset_dict = {num: [tset_lookup[tset] for tset in combinations(kset, t)] for num, kset in ksets}
+    kset_dict = {
+        num: [tset_lookup[tset] for tset in combinations(kset, t)]
+        for num, kset in ksets
+    }
 
     def fitness(vector):
         # Figure out what we have covered.
-        coverage = [tsetnum for ksetnum, kincidence in enumerate(vector)
-                    for tsetnum in kset_dict[ksetnum] if kincidence == 1]
+        coverage = [
+            tsetnum
+            for ksetnum, kincidence in enumerate(vector)
+            for tsetnum in kset_dict[ksetnum]
+            if kincidence == 1
+        ]
 
         # If we have covered any t-set multiple times, the score drops to 0 as it is an infeasible solution.
         # Otherwise, it is the number of covered t-sets.
@@ -228,21 +267,24 @@ def steiner(t, k, v):
 
     # Instantiate the problem.
     dimensions = len(ksets)
-    block_size = (factorial(v) // factorial(t) // factorial(v - t)) //\
-                 (factorial(k) // factorial(t) // factorial(k - t))
+    block_size = (factorial(v) // factorial(t) // factorial(v - t)) // (
+        factorial(k) // factorial(t) // factorial(k - t)
+    )
     solution_size = len(tset_lookup)
     print("Solution size is {}".format(solution_size))
-    problem = DispersiveFlies(dimensions, fitness, block_size, solution_size, flies=100, debug=True)
+    problem = DispersiveFlies(
+        dimensions, fitness, block_size, solution_size, flies=100, debug=True
+    )
 
     stats, finished, solution = problem.run()
     return stats, fitness(solution) == solution_size, solution
-
 
 
 # if len(sys.argv) != 4:
 #     print("Usage: {} t k v".format(sys.argv[0]))
 #     sys.exit(1)
 # t, k, v = map(int, sys.argv[1:])
+
 
 def do_steiner(t, k, v):
 
@@ -255,10 +297,15 @@ def do_steiner(t, k, v):
             print(b)
         # sys.exit(0)
     else:
-        print("Could not finish. Best solution has size {}:".format(len([i for i in solution if i])))
+        print(
+            "Could not finish. Best solution has size {}:".format(
+                len([i for i in solution if i])
+            )
+        )
         for b in readable_solution:
             print(b)
         # sys.exit(2)
+
 
 # t, k, v
 # t = subsets of this size are contained in exactly 1 returned group

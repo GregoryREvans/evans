@@ -1,16 +1,25 @@
 def guerrero_props(p, t, s):
     return round((p * t) / s)
 
+
 minutes = 20
 phi = 1.6
 section_size = 8
-props = [1, ((section_size * 2) / phi), section_size, section_size, (((section_size * 2) / phi) / phi)]
+props = [
+    1,
+    ((section_size * 2) / phi),
+    section_size,
+    section_size,
+    (((section_size * 2) / phi) / phi),
+]
 prop_sum = sum(props)
 total_duration = minutes * 60
 
 for prop in props:
     section_duration = guerrero_props(prop, total_duration, prop_sum)
-    print(f"Prop: {prop}\n SECONDS: {section_duration}\n MINUTES: {section_duration / 60}\n MM of 4/4 at 60: {section_duration / 4}\n\n")
+    print(
+        f"Prop: {prop}\n SECONDS: {section_duration}\n MINUTES: {section_duration / 60}\n MM of 4/4 at 60: {section_duration / 4}\n\n"
+    )
 
 
 # Prop: 1

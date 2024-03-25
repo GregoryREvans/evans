@@ -1418,6 +1418,14 @@ class BacaLoop:
         return self.pitches.__iter__()
 
 
+class PitchCommand:
+    def __init__(self, command_function):
+        self.command_function = command_function
+
+    def __call__(self, argument):
+        self.command_function(argument)
+
+
 def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,
@@ -1431,7 +1439,7 @@ def loop(
         new_pitches = [loop[i] for i in range(sel_len)]
         baca.pitches(new_sel, pitches=new_pitches, allow_obgc_mutation=True)
 
-    return returned_function
+    return PitchCommand(returned_function)
 
 
 class ArtificialHarmonic(abjad.Chord):
@@ -2131,7 +2139,7 @@ def do_contouring(pitch_list, command):
                 else:
                     temp = []
                     for p_ in pitch_list[index]:
-                        temp.append(transpose_from_range(pitch_, gotten_register))
+                        temp.append(transpose_from_range(p_, gotten_register))
                     pitch_list[index] = temp
         elif command[1].following_treatment_reference == "previous pitch":
             for index in continuation_indices:
@@ -2187,7 +2195,20 @@ def carceri_pitches(
     melodic_series=[11, 10, 4, 6, 5, 7, 1, 3, 2, 0, 9, 8],
     *,
     source_chord=["b", "ds'", "fs'", "bf'", "ef''", "a''", "c'''", "g'''"],
-    reordering_series=["af'", "g'", "cs'", "ef'", "d'", "e'", "bf'", "c'", "b'", "a'", "fs'", "f'"],
+    reordering_series=[
+        "af'",
+        "g'",
+        "cs'",
+        "ef'",
+        "d'",
+        "e'",
+        "bf'",
+        "c'",
+        "b'",
+        "a'",
+        "fs'",
+        "f'",
+    ],
     reverse_reordering_stack=True,
 ):
     s = Sequence(
@@ -2215,7 +2236,9 @@ class TonnetzChord:
             self.middle = abjad.NumberedPitchClass(middle).number
             self.top = abjad.NumberedPitchClass(top).number
         else:
-            self.bottom = RatioClassSet([quicktions.Fraction(bottom)])[0] # constrain to range!
+            self.bottom = RatioClassSet([quicktions.Fraction(bottom)])[
+                0
+            ]  # constrain to range!
             self.middle = RatioClassSet([quicktions.Fraction(middle)])[0]
             self.top = RatioClassSet([quicktions.Fraction(top)])[0]
         if exponential is False:
@@ -2228,38 +2251,50 @@ class TonnetzChord:
             assert klang is abjad.UP or klang is abjad.DOWN
             self.klang = klang
         except:
-            raise Exception(f"the value of klang must be abjad.UP or abjad.DOWN not {klang}")
+            raise Exception(
+                f"the value of klang must be abjad.UP or abjad.DOWN not {klang}"
+            )
         self.exponential = exponential
-
 
     def __call__(self, operations=["p", "l", "r"], as_lists=True):
         out = [self]
         for operation in operations:
-            if operation == "h":
-                out.append(out[-1].hexpole())
-            elif operation == "l":
-                out.append(out[-1].leittonwechsel())
-            elif operation == "n":
-                out.append(out[-1].nebenverwandt())
-            elif operation == "p":
-                out.append(out[-1].parallel())
-            elif operation == "r":
-                out.append(out[-1].relative())
-            elif operation == "s":
-                out.append(out[-1].slide())
+            if len(operation) == 1:
+                if operation == "h":
+                    out.append(out[-1].hexpole())
+                elif operation == "l":
+                    out.append(out[-1].leittonwechsel())
+                elif operation == "n":
+                    out.append(out[-1].nebenverwandt())
+                elif operation == "o":
+                    out.append(out[-1].octpole())
+                elif operation == "p":
+                    out.append(out[-1].parallel())
+                elif operation == "r":
+                    out.append(out[-1].relative())
+                elif operation == "s":
+                    out.append(out[-1].slide())
+                else:
+                    raise Exception(
+                        f"Operations must be h, l, n, o, p, r, or s not {operation}."
+                    )
             else:
-                raise Exception(f"Operations must be h, l, n, p, r, or s not {operation}.")
+                print(out[-1])
+                temp_list = out[-1]([_ for _ in operation], as_lists=False)
+                print(temp_list)
+                final_result = temp_list[-1]
+                print(final_result)
+                out.append(final_result)
+                print("done")
         if as_lists is True:
             out = [_.to_list() for _ in out]
         return out
-
 
     def hexpole(self):
         step_1 = self.leittonwechsel()
         step_2 = step_1.parallel()
         step_3 = step_2.leittonwechsel()
         return step_3
-
 
     def leittonwechsel(self):
         if self.klang is abjad.UP:
@@ -2296,13 +2331,18 @@ class TonnetzChord:
                 )
         return new_chord
 
-
     def nebenverwandt(self):
         step_1 = self.relative()
         step_2 = step_1.leittonwechsel()
         step_3 = step_2.parallel()
         return step_3
 
+    def octpole(self):
+        step_1 = self.parallel()
+        step_2 = step_1.relative()
+        step_3 = step_2.parallel()
+        step_4 = step_3.relative()
+        return step_4
 
     def parallel(self):
         if self.klang is abjad.UP:
@@ -2339,7 +2379,6 @@ class TonnetzChord:
                 )
         return new_chord
 
-
     def relative(self):
         if self.klang is abjad.UP:
             if self.exponential is False:
@@ -2375,13 +2414,11 @@ class TonnetzChord:
                 )
         return new_chord
 
-
     def slide(self):
         step_1 = self.leittonwechsel()
         step_2 = step_1.parallel()
         step_3 = step_2.relative()
         return step_3
-
 
     def to_list(self):
         out = [self.bottom, self.middle, self.top]

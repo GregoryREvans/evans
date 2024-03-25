@@ -26,7 +26,7 @@ s = evans.RatioSegment(["1/1", "7/8", "9/8", "11/8", "13/8", "3/2"])
 
 out_ = evans.tonnetz(
     s,
-    "major", # only 7, 3, 11, and 13
+    "major",  # only 7, 3, 11, and 13
     [
         "p",
         "l7",
@@ -54,7 +54,6 @@ out_ = evans.tonnetz(
         "r11",
         "p",
         "l7",
-
         # "p",
         # "r11",
         # "l11",
@@ -87,9 +86,7 @@ for fundamental, voice in zip(fundamentals, voicewise_ratios):
     )
     handlers_3.append(
         evans.PitchHandler(
-            [ratio for ratio in voicewise_ratios[voice]],
-            forget=False,
-            as_ratios=True
+            [ratio for ratio in voicewise_ratios[voice]], forget=False, as_ratios=True
         )
     )
     voice_length = len(voicewise_ratios[voice])
@@ -153,7 +150,7 @@ for voice in abjad.select.components(score, abjad.Voice):
 #         abjad.Meter.rewrite_meter(shard, abjad.Meter((4, 4)))
 #     abjad.label.with_start_offsets(voice, clock_time=True)
 
-for voice in abjad.select.components(score, abjad.Voice): # for proportional notation
+for voice in abjad.select.components(score, abjad.Voice):  # for proportional notation
     abjad.label.with_start_offsets(voice, clock_time=True)
     for leaf in abjad.select.leaves(voice):
         abjad.attach(abjad.BendAfter(0), leaf)

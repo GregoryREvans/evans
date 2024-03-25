@@ -1,6 +1,8 @@
 import random
+
 import abjad
 import evans
+
 
 def generate_basic_sequence(number_of_sets=5, size_of_sets=3, sizes=[1, 2, 3], seed=1):
     random.seed(seed)
@@ -13,6 +15,7 @@ def generate_basic_sequence(number_of_sets=5, size_of_sets=3, sizes=[1, 2, 3], s
     out = out[1:]
     return out
 
+
 def generate_basic_transpositions(length, intervals=["+P1", "+P8", "-P8"], seed=1):
     random.seed(seed)
     out = []
@@ -20,6 +23,7 @@ def generate_basic_transpositions(length, intervals=["+P1", "+P8", "-P8"], seed=
         chosen_value = random.choice(intervals)
         out.append(chosen_value)
     return out
+
 
 def generate_basic_contour(starting_pitch=12, interval_sequence=None, seed=1):
     random.seed(seed)
@@ -30,6 +34,7 @@ def generate_basic_contour(starting_pitch=12, interval_sequence=None, seed=1):
             interval = 0 - interval
         out.append(out[-1] + interval)
     return out
+
 
 def generate_octavated_sequence(
     number_of_sets=5,
@@ -43,19 +48,26 @@ def generate_octavated_sequence(
 ):
     octavated_pitches = []
 
-    interval_sequence = generate_basic_sequence(number_of_sets, size_of_sets, sizes, interval_seed)
+    interval_sequence = generate_basic_sequence(
+        number_of_sets, size_of_sets, sizes, interval_seed
+    )
 
-    pitch_sequence = generate_basic_contour(starting_pitch, interval_sequence, contour_seed)
+    pitch_sequence = generate_basic_contour(
+        starting_pitch, interval_sequence, contour_seed
+    )
 
     classed_s = [abjad.NumberedPitch(_) for _ in pitch_sequence]
 
-    transpositions = generate_basic_transpositions(len(classed_s), intervals, octave_seed)
+    transpositions = generate_basic_transpositions(
+        len(classed_s), intervals, octave_seed
+    )
 
     for pitch, transposition in zip(classed_s, transpositions):
         new_pitch = abjad.NamedInterval(transposition).transpose(pitch)
         octavated_pitches.append(new_pitch)
 
     return octavated_pitches
+
 
 pitches = generate_octavated_sequence(
     number_of_sets=5,

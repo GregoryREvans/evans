@@ -9,10 +9,12 @@ import pathlib
 import abjad
 import black
 import quicktions
+from abjadext.rmakers import unbeam
 
 from . import consort
 from .commands import HandlerCommand, MusicCommand, RhythmCommand
 from .handlers import PitchHandler
+from .pitch import PitchCommand
 from .sequence import Sequence, flatten
 
 
@@ -476,6 +478,26 @@ class SegmentMaker:
                         include_rests=SegmentMaker.beaming,
                         # include_rests=False,
                     )
+        for tuplet in abjad.select.tuplets(target):
+            unbeam(tuplet)
+            leaves = abjad.select.leaves(tuplet)
+            size_groups = abjad.select.group_by(
+                leaves, lambda _: _.written_duration < abjad.Duration((1, 4))
+            )
+            sized = [
+                _ for _ in size_groups if _[0].written_duration < abjad.Duration((1, 4))
+            ]
+            flat_sizes = abjad.sequence.flatten(sized, depth=-1)
+            groups = abjad.select.group_by_contiguity(flat_sizes)
+            for group in groups:
+                if 1 < len(group):
+                    abjad.beam(
+                        group,
+                        beam_rests=SegmentMaker.beaming,
+                        stemlet_length=0.75,
+                        beam_lone_notes=False,
+                        selector=lambda _: abjad.select.leaves(_, grace=False),
+                    )
         for trem in abjad.select.components(target, abjad.TremoloContainer):
             if abjad.StartBeam() in abjad.get.indicators(trem[0]):
                 abjad.detach(abjad.StartBeam(), trem[0])
@@ -646,7 +668,9 @@ class SegmentMaker:
             abjad.mutate.wrap(group, container)
 
     def _fill_score_with_rests(self):
-        for voice, instrument in zip(abjad.select.components(self.score_template, abjad.Voice), self.instruments):
+        for voice, instrument in zip(
+            abjad.select.components(self.score_template, abjad.Voice), self.instruments
+        ):
             durations = [
                 abjad.Duration(time_signature)
                 for time_signature in self.time_signatures[:-1]
@@ -782,7 +806,7 @@ class SegmentMaker:
                     )
                     application_site = _callable.selector(relevant_measures)
                     _callable.callable(application_site)
-                    if isinstance(_callable.callable, PitchHandler):
+                    if isinstance(_callable.callable, (PitchHandler, PitchCommand)):
                         leaves = abjad.select.leaves(relevant_voice)
                         measures = abjad.select.group_by_measure(leaves)
                         relevant_measures = abjad.select.get(
@@ -799,7 +823,9 @@ class SegmentMaker:
                                 measures, relevant_measure_indices
                             )
                             relevant_leaves = abjad.select.leaves(relevant_measures)
-                            abjad.iterpitches.transpose_from_sounding_pitch(relevant_leaves)
+                            abjad.iterpitches.transpose_from_sounding_pitch(
+                                relevant_leaves
+                            )
 
                 for _attachment in music_command.attachments:
                     leaves = abjad.select.leaves(relevant_voice)
@@ -1556,7 +1582,7 @@ def make_score_template(instruments, groups):
     return score
 
 
-def beautify_tuplets(target): # should be recursive? Operating on inner before outer?
+def beautify_tuplets(target):  # should be recursive? Operating on inner before outer?
     for tuplet in abjad.select.tuplets(target):
         tuplet.denominator = 2
         if tuplet.multiplier.pair[1] % tuplet.multiplier.pair[0] > 1:

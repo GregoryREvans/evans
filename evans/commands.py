@@ -1317,7 +1317,11 @@ def imbricate(
     if articulation is not None:
         for head in baca.select.pheads(intermittent_voice):
             if isinstance(articulation, str):
-                abjad.attach(abjad.Articulation(articulation), head, direction=attachment_direction)
+                abjad.attach(
+                    abjad.Articulation(articulation),
+                    head,
+                    direction=attachment_direction,
+                )
             else:
                 abjad.attach(articulation, head, direction=attachment_direction)
     baca.extend_beam(abjad.select.leaf(intermittent_voice, -1))
@@ -1806,7 +1810,9 @@ def subdivided_ties(
     for arg in args:
         args_count += 1
 
-    def returned_function(divisions, state=None, previous_state=None, search_tree=search_tree):
+    def returned_function(
+        divisions, state=None, previous_state=None, search_tree=search_tree
+    ):
         source_leaves = source_maker(divisions)
         source_container = abjad.Container(source_leaves)
         if 0 < args_count:
@@ -1947,7 +1953,10 @@ def unsichtbare_farben(
         proportion_pairs = []
         combinations = itertools.combinations_with_replacement(proportions, 2)
         for combination in combinations:
-            if proportions_range[1] < combination[0] and combination[0] == combination[1]:
+            if (
+                proportions_range[1] < combination[0]
+                and combination[0] == combination[1]
+            ):
                 continue
             else:
                 proportion_pairs.append(combination)
@@ -2123,3 +2132,134 @@ def boolean_vector_to_indices(vector=[True, False]):
         if boolean_value is True:
             out.append(i)
     return out
+
+
+def ficta_accidentals(force_accidentals=True):  # from trinton
+    def returned_function(score, force_accidentals=force_accidentals):
+        pties = abjad.select.logical_ties(score, pitched=True)
+
+        ficta_ties = []
+        chords = []
+        post_graces = []
+
+        for tie in pties:
+            previous_leaf = abjad.select.with_previous_leaf(tie)[0]
+            tie_duration = abjad.get.duration(tie)
+            previous_duration = abjad.get.duration(previous_leaf)
+            if isinstance(tie[0], abjad.Chord):
+                chords.append(tie)
+            if previous_duration < abjad.Duration(1, 16):
+                if isinstance(tie[0], abjad.Chord):
+                    pass
+                else:
+                    ficta_ties.append(tie)
+            previous_parentage = abjad.get.parentage(previous_leaf).parent
+            if (
+                isinstance(previous_parentage, abjad.BeforeGraceContainer)
+                or isinstance(previous_parentage, abjad.OnBeatGraceContainer)
+                or isinstance(previous_parentage, abjad.AfterGraceContainer)
+            ):
+                tie_parentage = abjad.get.parentage(tie[0]).parent
+                if (
+                    isinstance(tie_parentage, abjad.BeforeGraceContainer)
+                    or isinstance(tie_parentage, abjad.OnBeatGraceContainer)
+                    or isinstance(tie_parentage, abjad.AfterGraceContainer)
+                ):
+                    pass
+                else:
+                    post_graces.append(tie)
+
+        for tie in post_graces:
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\revert Staff.Accidental.X-extent", site="before"
+                ),
+                tie[0],
+            )
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\override Staff.Accidental.X-extent = ##f", site="absolute_after"
+                ),
+                tie[-1],
+            )
+
+        for chord in chords:
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\revert Staff.Accidental.X-extent", site="before"
+                ),
+                chord[0],
+            )
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\override Staff.Accidental.X-extent = ##f", site="absolute_after"
+                ),
+                chord[-1],
+            )
+
+            if force_accidentals is True:
+                for head in chord[0].note_heads:
+                    head.is_forced = True
+
+        ficta_ties = abjad.select.group_by_contiguity(ficta_ties)
+
+        for group in ficta_ties:
+            first_tie = group[0]
+            last_tie = group[-1]
+
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\override Staff.Accidental.stencil = ##f", site="before"
+                ),
+                first_tie[0],
+            )
+
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    r"\revert Staff.Accidental.stencil", site="absolute_after"
+                ),
+                last_tie[-1],
+            )
+
+            for tie in group:
+                previous_leaf = abjad.select.with_previous_leaf(tie)[0]
+                if isinstance(previous_leaf, abjad.Rest):
+                    previous_leaf_pitch = abjad.NamedPitch("c,,,,,,,,,,,,,,,,")
+                else:
+                    previous_leaf_pitch = previous_leaf.written_pitch
+                first_leaf = tie[0]
+                first_leaf_pitch = first_leaf.written_pitch
+                accidental = first_leaf_pitch.accidental
+                accidental_name = accidental.name
+                clef = abjad.get.effective(first_leaf, abjad.Clef)
+
+                # if clef.name == "percussion" or first_leaf_pitch == previous_leaf_pitch:
+                if (
+                    clef.name == "percussion"
+                    or first_leaf_pitch.name == previous_leaf_pitch.name
+                ):
+                    pass
+
+                else:
+                    abjad.attach(
+                        abjad.Articulation(f"{accidental_name}-articulation"),
+                        first_leaf,
+                    )
+
+    return returned_function
+
+
+def label_logical_ties(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    for i, tie in enumerate(ties):
+        abjad.attach(abjad.Markup(rf"\markup {i}"), tie[0], direction=abjad.UP)
+
+
+def treat_tuplets(container):
+    command_target = abjad.select.tuplets(container)
+    rmakers.trivialize(command_target)
+    command_target = abjad.select.tuplets(container)
+    rmakers.rewrite_rest_filled(command_target)
+    command_target = abjad.select.tuplets(container)
+    rmakers.rewrite_sustained(command_target)
+    rmakers.extract_trivial(container)

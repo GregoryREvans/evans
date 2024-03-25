@@ -155,7 +155,12 @@ def make_fancy_gliss(*args, right_padding=0.5, match=True):
 
 
 def make_multi_trill(
-    note, *trill_pitches, notehead_styles=[None], after_spacing="1/16", extra_padding=0, with_notes=False
+    note,
+    *trill_pitches,
+    notehead_styles=[None],
+    after_spacing="1/16",
+    extra_padding=0,
+    with_notes=False,
 ):
     """
     sample pitches:

@@ -19,7 +19,9 @@ def preprocess_divisions(
     if quarters is True:
         divisions = [baca.sequence.quarters([_]) for _ in divisions]
     if eighths is True:
-        divisions = [baca.sequence.split_divisions([_], [(1, 8)], cyclic=True) for _ in divisions]
+        divisions = [
+            baca.sequence.split_divisions([_], [(1, 8)], cyclic=True) for _ in divisions
+        ]
     if fuse_counts is not None:
         if flatten_before_fuse is True:
             divisions = abjad.sequence.flatten(divisions, depth=-1)

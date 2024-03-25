@@ -94,7 +94,9 @@ def do_fuse_durations(
             boolean_value = cyclic_vector(r=1)[0]
             if boolean_value is True:
                 temp_rest_partitioned_groups = []
-                rest_partitioned_groups = abjad.sequence.group_by(partition, predicate=lambda duration_integer: 0 < duration_integer)
+                rest_partitioned_groups = abjad.sequence.group_by(
+                    partition, predicate=lambda duration_integer: 0 < duration_integer
+                )
                 for rest_partitioned_group in rest_partitioned_groups:
                     if 0 < rest_partitioned_group[0]:
                         temp_rest_partitioned_groups.append(sum(rest_partitioned_group))
@@ -108,7 +110,9 @@ def do_fuse_durations(
             boolean_value, partition = pair
             if boolean_value is True:
                 temp_rest_partitioned_groups = []
-                rest_partitioned_groups = abjad.sequence.group_by(partition, predicate=lambda duration_integer: 0 < duration_integer)
+                rest_partitioned_groups = abjad.sequence.group_by(
+                    partition, predicate=lambda duration_integer: 0 < duration_integer
+                )
                 for rest_partitioned_group in rest_partitioned_groups:
                     if 0 < rest_partitioned_group[0]:
                         temp_rest_partitioned_groups.append(sum(rest_partitioned_group))
@@ -196,9 +200,7 @@ def miliseconds_to_music(*args, miliseconds, fuse_silences=True, search_tree=Non
         )
     else:
         print("GIVEN A SEARCH TREE")
-        search_tree = nauert.UnweightedSearchTree(
-            definition=search_tree
-        )
+        search_tree = nauert.UnweightedSearchTree(definition=search_tree)
 
     # search_tree = nauert.UnweightedSearchTree( # too complex
     #     definition={
@@ -299,7 +301,9 @@ def make_subdivided_music(*args, ties, search_tree=None):
         else:
             milisecond_durations = arg(milisecond_durations)
 
-    result = miliseconds_to_music(*schemas, miliseconds=milisecond_durations, search_tree=search_tree)
+    result = miliseconds_to_music(
+        *schemas, miliseconds=milisecond_durations, search_tree=search_tree
+    )
     # print(result, "\n")
     returned_result = abjad.mutate.eject_contents(result)
     # print(returned_result, "\n")
@@ -588,9 +592,7 @@ def unity_capsule_rhythms(
                 )
                 abjad.attach(start_literal, rest_group[0])
                 abjad.attach(stop_literal, rest_group[-1])
-            duplicate_long_beam(
-                final_staff, beam_rests=True, beam_lone_notes=False
-            )
+            duplicate_long_beam(final_staff, beam_rests=True, beam_lone_notes=False)
             temp_staff_group.append(final_staff)
             score = abjad.Score([temp_staff_group])
             file = abjad.LilyPondFile(

@@ -1,11 +1,20 @@
 import abjad
+
 from .pitch import return_vertical_moment_ties
 
 
 def select_measures(
-    index_list=None, leaf=None, leaves=None, logical_ties=None, note=None, notes=None, grace=None, voice_name_measure_pairs=None,
+    index_list=None,
+    leaf=None,
+    leaves=None,
+    logical_ties=None,
+    note=None,
+    notes=None,
+    grace=None,
+    voice_name_measure_pairs=None,
 ):
     if voice_name_measure_pairs is not None:
+
         def selector(score):
             contents = []
             for voice_name, measure_indices in voice_name_measure_pairs:
@@ -28,6 +37,7 @@ def select_measures(
 
             moment_ties = [_ for _ in return_vertical_moment_ties(contents)]
             return moment_ties
+
         return selector
 
     if leaf is not None:

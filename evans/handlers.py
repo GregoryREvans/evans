@@ -126,11 +126,19 @@ class ArticulationHandler(Handler):
                             if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
                                 continue
                             else:
-                                abjad.attach(abjad.StemTremolo(32), leaf, direction=self.direction)
+                                abjad.attach(
+                                    abjad.StemTremolo(32),
+                                    leaf,
+                                    direction=self.direction,
+                                )
                     elif articulation == "default":
                         continue
                     else:
-                        abjad.attach(abjad.Articulation(articulation), tie[0], direction=self.direction)
+                        abjad.attach(
+                            abjad.Articulation(articulation),
+                            tie[0],
+                            direction=self.direction,
+                        )
             else:
                 continue
 
@@ -3150,7 +3158,7 @@ class PitchHandler(Handler):
         clef=None,
         staff_positions=False,
         transpose=None,
-        forget=False, # was True think about refactoring scores
+        forget=False,  # was True think about refactoring scores
         to_ties=False,
         pitch_count=-1,
         state=None,
@@ -3175,16 +3183,24 @@ class PitchHandler(Handler):
             temp = []
             for x in self.pitch_list:
                 if isinstance(x, list):
-                    sub_temp = [abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(y))) for y in x]
+                    sub_temp = [
+                        abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(y)))
+                        for y in x
+                    ]
                     temp.append(sub_temp)
                 else:
-                    temp.append(abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(x))))
+                    temp.append(
+                        abjad.lilypond(self.clef.to_pitch(abjad.StaffPosition(x)))
+                    )
             self.pitch_list = temp
         self.transpose = transpose
         if self.transpose is not None:
             if isinstance(self.transpose, abjad.NamedInterval):
                 interval = abjad.NumberedInterval(self.transpose)
-                self.pitch_list = [interval.transpose(abjad.NumberedPitch(_)).number for _ in self.pitch_list]
+                self.pitch_list = [
+                    interval.transpose(abjad.NumberedPitch(_)).number
+                    for _ in self.pitch_list
+                ]
             else:
                 self.pitch_list = [self.transpose + _ for _ in self.pitch_list]
         self.forget = forget

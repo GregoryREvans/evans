@@ -1,6 +1,7 @@
+from fractions import Fraction
+
 import abjad
 import evans
-from fractions import Fraction
 
 # tonnetz = evans.TonnetzChord(0, 4, 7, klang=abjad.UP)
 # tonnetz_sequence = tonnetz(["p", "l", "r", "p", "l", "r"])
@@ -8,9 +9,14 @@ from fractions import Fraction
 # staff = abjad.Staff([abjad.Chord(_, (1, 1)) for _ in compound_chords])
 # abjad.show(staff)
 
-tonnetz = evans.TonnetzChord(Fraction(1, 1), Fraction(5, 4), Fraction(3, 2), klang=abjad.UP, exponential=True)
+tonnetz = evans.TonnetzChord(
+    Fraction(1, 1), Fraction(5, 4), Fraction(3, 2), klang=abjad.UP, exponential=True
+)
 tonnetz_sequence = tonnetz(["p", "l", "r", "p", "l", "r"])
-compound_chords = [list(set(evans.flatten(_))) for _ in evans.consort.iterate_nwise(tonnetz_sequence, 2)]
+compound_chords = [
+    list(set(evans.flatten(_)))
+    for _ in evans.consort.iterate_nwise(tonnetz_sequence, 2)
+]
 handler = evans.PitchHandler(compound_chords, as_ratios=True)
 staff = abjad.Staff([abjad.Note(0, (1, 1)) for _ in tonnetz_sequence])
 handler(staff)

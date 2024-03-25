@@ -1,7 +1,6 @@
 """
 Sequence classes and functions.
 """
-import black
 import collections
 import copy
 import decimal
@@ -12,6 +11,7 @@ import sys
 import typing
 
 import abjad
+import black
 import numpy
 import quicktions
 import scipy
@@ -32,7 +32,9 @@ def integer_sequence_to_boolean_vector(integers, sides=[abjad.RIGHT]):
         elif side == abjad.LEFT:
             sub_vector = [True] + falses
         else:
-            raise Exception(f"BAD DIRECTION. Must be abjad.LEFT or abjad.RIGHT. Got {side}")
+            raise Exception(
+                f"BAD DIRECTION. Must be abjad.LEFT or abjad.RIGHT. Got {side}"
+            )
         out.extend(sub_vector)
     return out
 
@@ -157,7 +159,6 @@ class MarkovChain:
 
 
 class KlumpenhouwerNetwork:
-
     def __init__(self, items):
         self.items = items
 
@@ -189,9 +190,19 @@ class KlumpenhouwerNetwork:
         return output
 
     def __add__(self, argument):
-        if isinstance(argument, PitchClassSet) or isinstance(argument, PitchClassSegment) or isinstance(argument, PitchSet) or isinstance(argument, PitchSegment):
+        if (
+            isinstance(argument, PitchClassSet)
+            or isinstance(argument, PitchClassSegment)
+            or isinstance(argument, PitchSet)
+            or isinstance(argument, PitchSegment)
+        ):
             items = self.items + argument.pitches
-        elif isinstance(argument, RatioClassSet) or isinstance(argument, RatioClassSegment) or isinstance(argument, RatioSet) or isinstance(argument, RatioSegment):
+        elif (
+            isinstance(argument, RatioClassSet)
+            or isinstance(argument, RatioClassSegment)
+            or isinstance(argument, RatioSet)
+            or isinstance(argument, RatioSegment)
+        ):
             items = self.items + argument.ratios
         else:
             items = self.items + argument.items
@@ -242,6 +253,10 @@ class KlumpenhouwerNetwork:
         out = [_.nebenverwandt() for _ in self]
         return type(self)(out)
 
+    def octpole(self):
+        out = [_.octpole() for _ in self]
+        return type(self)(out)
+
     def parallel(self):
         out = [_.parallel() for _ in self]
         return type(self)(out)
@@ -290,6 +305,35 @@ class KlumpenhouwerNetwork:
     def wedge(self, origin, destination, step_size):
         transposed = [_.wedge(origin, destination, step_size) for _ in self]
         return type(self)(transposed)
+
+
+# # TODO: find a system to accumulate sequences derived from transforms of one of the following classes
+# something like
+# def accumulate_transforms(source=None, operations=None):
+#     out = [source]
+#     for operation in operations:
+#         if len(operations) == 1:
+#             # do one and append it
+#             if operation == "h":
+#                 out.append(out[1].hexpole())
+#             elif operation == "l":
+#                 out.append(out[1].leittonwechsel())
+#             elif operation == "n":
+#                 out.append(out[1].nebenverwandt())
+#             elif operation == "o":
+#                 out.append(out[1].octpole())
+#             elif operation == "p":
+#                 out.append(out[1].parallel())
+#             elif operation == "r":
+#                 out.append(out[1].relative())
+#             elif operation == "s":
+#                 out.append(out[1].slide())
+#                 # add rp, pr, sl, ls, transpose by n, mod by n, alpha by n, permute by n, rotate by n, modalverwandt, dominant
+#             else:
+#                 raise Exception("OPERATIONS MUST BE THESE ONLY: XYZ...")
+#         else:
+#             temp = accumulate_transforms(out[-1], [_ for _ in operation])
+#             out.append(temp[-1])
 
 
 class PitchClassSet(microtones.PitchClassSet):
@@ -355,7 +399,9 @@ class PitchClassSet(microtones.PitchClassSet):
         return seq
 
     def hexpole(self):
-        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        out = (
+            self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        )
         return out
 
     def leittonwechsel(self):
@@ -363,8 +409,25 @@ class PitchClassSet(microtones.PitchClassSet):
         transposed = inverse.transpose(11)
         return transposed
 
+    def mod(self, i=12):
+        reduced = [_ % i for _ in self]
+        return type(self)(reduced)
+
     def nebenverwandt(self):
         out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def octpole(self):
+        out = (
+            self.invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+            .invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+        )
         return out
 
     def parallel(self):
@@ -384,14 +447,15 @@ class PitchClassSet(microtones.PitchClassSet):
     def wedge(self, origin, destination, step_size):
         def is_left_of_desintation(arg):
             return (destination - arg) % 12 < (destination - origin) % 12
+
         out = []
         for _ in self:
-            if _ == origin or _ == destination: # correct
+            if _ == origin or _ == destination:  # correct
                 out.append(_)
-            elif is_left_of_desintation(_): # ?
+            elif is_left_of_desintation(_):  # ?
                 temp = _ + step_size
                 out.append(temp)
-            elif not is_left_of_desintation(_): # ?
+            elif not is_left_of_desintation(_):  # ?
                 temp = _ - step_size
                 out.append(temp)
             else:
@@ -462,7 +526,9 @@ class PitchSet(microtones.PitchSet):
         return seq
 
     def hexpole(self):
-        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        out = (
+            self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        )
         return out
 
     def leittonwechsel(self):
@@ -470,8 +536,25 @@ class PitchSet(microtones.PitchSet):
         transposed = inverse.transpose(11)
         return transposed
 
+    def mod(self, i=12):
+        reduced = [_ % i for _ in self]
+        return type(self)(reduced)
+
     def nebenverwandt(self):
         out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def octpole(self):
+        out = (
+            self.invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+            .invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+        )
         return out
 
     def parallel(self):
@@ -491,14 +574,15 @@ class PitchSet(microtones.PitchSet):
     def wedge(self, origin, destination, step_size):
         def is_left_of_desintation(arg):
             return (destination - arg) % 12 < (destination - origin) % 12
+
         out = []
         for _ in self:
-            if _ == origin or _ == destination: # correct
+            if _ == origin or _ == destination:  # correct
                 out.append(_)
-            elif is_left_of_desintation(_): # ?
+            elif is_left_of_desintation(_):  # ?
                 temp = _ + step_size
                 out.append(temp)
-            elif not is_left_of_desintation(_): # ?
+            elif not is_left_of_desintation(_):  # ?
                 temp = _ - step_size
                 out.append(temp)
             else:
@@ -569,7 +653,9 @@ class PitchClassSegment(microtones.PitchClassSegment):
         return seq
 
     def hexpole(self):
-        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        out = (
+            self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        )
         return out
 
     def leittonwechsel(self):
@@ -577,8 +663,25 @@ class PitchClassSegment(microtones.PitchClassSegment):
         transposed = inverse.transpose(11)
         return transposed
 
+    def mod(self, i=12):
+        reduced = [_ % i for _ in self]
+        return type(self)(reduced)
+
     def nebenverwandt(self):
         out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def octpole(self):
+        out = (
+            self.invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+            .invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+        )
         return out
 
     def parallel(self):
@@ -598,14 +701,15 @@ class PitchClassSegment(microtones.PitchClassSegment):
     def wedge(self, origin, destination, step_size):
         def is_left_of_desintation(arg):
             return (destination - arg) % 12 < (destination - origin) % 12
+
         out = []
         for _ in self:
-            if _ == origin or _ == destination: # correct
+            if _ == origin or _ == destination:  # correct
                 out.append(_)
-            elif is_left_of_desintation(_): # ?
+            elif is_left_of_desintation(_):  # ?
                 temp = _ + step_size
                 out.append(temp)
-            elif not is_left_of_desintation(_): # ?
+            elif not is_left_of_desintation(_):  # ?
                 temp = _ - step_size
                 out.append(temp)
             else:
@@ -676,7 +780,9 @@ class PitchSegment(microtones.PitchSegment):
         return seq
 
     def hexpole(self):
-        out = self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        out = (
+            self.invert(0).transpose(11).invert(0).transpose(7).invert(0).transpose(11)
+        )
         return out
 
     def leittonwechsel(self):
@@ -684,8 +790,25 @@ class PitchSegment(microtones.PitchSegment):
         transposed = inverse.transpose(11)
         return transposed
 
+    def mod(self, i=12):
+        reduced = [_ % i for _ in self]
+        return type(self)(reduced)
+
     def nebenverwandt(self):
         out = self.invert(0).transpose(4).invert(0).transpose(11).invert(0).transpose(7)
+        return out
+
+    def octpole(self):
+        out = (
+            self.invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+            .invert(0)
+            .transpose(7)
+            .invert(0)
+            .transpose(4)
+        )
         return out
 
     def parallel(self):
@@ -705,14 +828,15 @@ class PitchSegment(microtones.PitchSegment):
     def wedge(self, origin, destination, step_size):
         def is_left_of_desintation(arg):
             return (destination - arg) % 12 < (destination - origin) % 12
+
         out = []
         for _ in self:
-            if _ == origin or _ == destination: # correct
+            if _ == origin or _ == destination:  # correct
                 out.append(_)
-            elif is_left_of_desintation(_): # ?
+            elif is_left_of_desintation(_):  # ?
                 temp = _ + step_size
                 out.append(temp)
-            elif not is_left_of_desintation(_): # ?
+            elif not is_left_of_desintation(_):  # ?
                 temp = _ - step_size
                 out.append(temp)
             else:
@@ -728,7 +852,14 @@ class RatioClassSet(microtones.RatioClassSet):
     # EXPERIMENTAL
 
     def hexpole(self):
-        out = self.invert("1/1").multiply("15/8").invert("1/1").multiply("3/2").invert("1/1").multiply("15/8")
+        out = (
+            self.invert("1/1")
+            .multiply("15/8")
+            .invert("1/1")
+            .multiply("3/2")
+            .invert("1/1")
+            .multiply("15/8")
+        )
         return out
 
     def leittonwechsel(self):
@@ -737,7 +868,14 @@ class RatioClassSet(microtones.RatioClassSet):
         return transposed
 
     def nebenverwandt(self):
-        out = self.invert("1/1").multiply("5/4").invert("1/1").multiply("15/8").invert("1/1").multiply("3/2")
+        out = (
+            self.invert("1/1")
+            .multiply("5/4")
+            .invert("1/1")
+            .multiply("15/8")
+            .invert("1/1")
+            .multiply("3/2")
+        )
         return out
 
     def parallel(self):
@@ -751,7 +889,14 @@ class RatioClassSet(microtones.RatioClassSet):
         return transposed
 
     def slide(self):
-        out = self.invert("1/1").multiply("15/8").invert("1/1").multiply("3/2").invert("1/1").multiply("5/4")
+        out = (
+            self.invert("1/1")
+            .multiply("15/8")
+            .invert("1/1")
+            .multiply("3/2")
+            .invert("1/1")
+            .multiply("5/4")
+        )
         return out
 
     def wedge(self, origin, destination, step_size):
@@ -1888,7 +2033,9 @@ class Sequence(collections.abc.Sequence):
                     yield type(self)(item_buffer)
                     item_buffer.pop(0)
 
-    def order_pitch_sequence_by_tonerow(self, tonerow, return_pitch_classes=True, prefer_lowest_pitch=True):
+    def order_pitch_sequence_by_tonerow(
+        self, tonerow, return_pitch_classes=True, prefer_lowest_pitch=True
+    ):
         sequence = [abjad.NumberedPitchClass(_) for _ in self]
         pc_tonerow = [abjad.NumberedPitchClass(_) for _ in tonerow]
         out = []
@@ -1897,7 +2044,9 @@ class Sequence(collections.abc.Sequence):
                 if return_pitch_classes is True:
                     out.append(pitch_class.number)
                 else:
-                    found_matches = [_ for _ in self if abjad.NumberedPitchClass(_) == pitch_class]
+                    found_matches = [
+                        _ for _ in self if abjad.NumberedPitchClass(_) == pitch_class
+                    ]
                     if prefer_lowest_pitch is True:
                         out.append(abjad.NumberedPitch(found_matches[0]).number)
                     else:
@@ -5421,6 +5570,7 @@ class Sequence(collections.abc.Sequence):
 
     def random_funnel(self, destination, random_ranges, random_seed=1):
         random.seed(random_seed)
+
         def are_sequences_matched(sequence, target):
             boolean_sequence = []
             for i, val in enumerate(sequence):
@@ -5623,6 +5773,7 @@ class Sequence(collections.abc.Sequence):
 
         """
         lst = list(self.items)
+        n = n % len(lst)
         return type(self)(lst[n:] + lst[:n])
 
     @classmethod
@@ -6061,7 +6212,9 @@ def time_signature_list_to_timespan_list(tsl):
     return spans
 
 
-def intersect_time_signature_lists(*args, translation=(1, 4)): ### fix this. look at unity capsule process
+def intersect_time_signature_lists(
+    *args, translation=(1, 4)
+):  ### fix this. look at unity capsule process
     tsls = [time_signature_list_to_timespan_list(arg) for arg in args]
     tsls[1].translate(translation)
     combined = combine_ts_lists(abjad.TimespanList(tsls[0] + tsls[1]))
@@ -6069,7 +6222,9 @@ def intersect_time_signature_lists(*args, translation=(1, 4)): ### fix this. loo
     return out
 
 
-def fuse_signatures_below_threshold(signatures, threshhold=(1, 8), direction=abjad.LEFT):
+def fuse_signatures_below_threshold(
+    signatures, threshhold=(1, 8), direction=abjad.LEFT
+):
     threshhold = abjad.NonreducedFraction(threshhold)
     fracs = []
     delayed = None
@@ -6086,14 +6241,23 @@ def fuse_signatures_below_threshold(signatures, threshhold=(1, 8), direction=abj
             elif direction == abjad.RIGHT:
                 delayed = frac
             else:
-                raise Exception(f"Value of direction must be abjad.LEFT or abjad.RIGHT. Got {direction}")
+                raise Exception(
+                    f"Value of direction must be abjad.LEFT or abjad.RIGHT. Got {direction}"
+                )
     fused_signatures = [abjad.TimeSignature(_) for _ in fracs]
     return fused_signatures
 
 
-def cyclically_subtract_fraction(series, durations=[(1, 12), (1, 24), (1, 20)], target_indices=[2, 4, 8, 12, 15, 21], period=22):
+def cyclically_subtract_fraction(
+    series,
+    durations=[(1, 12), (1, 24), (1, 20)],
+    target_indices=[2, 4, 8, 12, 15, 21],
+    period=22,
+):
     series = [abjad.NonreducedFraction(_) for _ in series]
-    cyclic_durs = CyclicList([abjad.NonreducedFraction(_) for _ in durations], forget=False)
+    cyclic_durs = CyclicList(
+        [abjad.NonreducedFraction(_) for _ in durations], forget=False
+    )
     out = []
     for i, value in enumerate(series):
         if i % period in target_indices:
@@ -6102,5 +6266,7 @@ def cyclically_subtract_fraction(series, durations=[(1, 12), (1, 24), (1, 20)], 
             out.append(new_value)
         else:
             out.append(value)
-    assert len(out) == len(series), f"len(out): {len(out)} != len(series): {len(series)}"
+    assert len(out) == len(
+        series
+    ), f"len(out): {len(out)} != len(series): {len(series)}"
     return out

@@ -13,7 +13,9 @@ tempo_pair = ((1, 4), 10)
 metronome_mark = abjad.MetronomeMark(tempo_pair[0], tempo_pair[1])
 
 source = ["1/1", "5/4", "11/8", "7/4", "3/2"]
-triads = evans.tonnetz(source, "major", ["p", "l", "r", "r", "r7", "l7", "p", "l11", "r11", "p"])
+triads = evans.tonnetz(
+    source, "major", ["p", "l", "r", "r", "r7", "l7", "p", "l11", "r11", "p"]
+)
 # raise Exception(type(triads[0][0]))
 # for triad in triads:
 #     print(triad)
@@ -45,7 +47,7 @@ file = abjad.LilyPondFile(
         r'\include "/Users/gregoryevans/abjad-ext-microtones/abjadext/microtones/lilypond/ekmelos-ji-accidental-markups.ily"',
         # r'\include "/Users/gregoryevans/scores/polillas/polillas/build/score_stylesheet.ily"',
         '#(set-default-paper-size "letterportrait")',
-        '#(set-global-staff-size 16)',
+        "#(set-global-staff-size 16)",
         layout,
         block,
     ]

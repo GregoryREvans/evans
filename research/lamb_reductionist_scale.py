@@ -31,12 +31,56 @@ clef = evans.ClefHandler(
 clef(staff)
 force_accidental(staff)
 score = abjad.Score([staff])
+for note, partial in zip(abjad.select.notes(score), partials):
+    markup = abjad.Markup(rf"\markup {partial}")
+    bundle = abjad.bundle(
+        markup,
+        r"- \tweak color #red",
+    )
+    abjad.attach(bundle, note, direction=abjad.DOWN)
 moment = "#(ly:make-moment 1 25)"
 abjad.setting(score).proportional_notation_duration = moment
+paper = abjad.Block(
+    "paper",
+    items=[
+        r"""
+    system-system-spacing = #'(
+        (basic-distance . 0)
+        (minimum-distance . 20) % space after each system
+        (padding . 0)
+        (stretchability . 0)
+    )
+    """
+    ],
+)
+block = abjad.Block(
+    "layout",
+    items=[
+        r"""
+    indent = #0
+    \context {
+        \Score
+        \remove Bar_number_engraver
+        \override Stem.stencil = ##f
+        autoBeaming = ##f
+    }
+    \context {
+        \Staff
+        \override TimeSignature.stencil = ##f
+    }
+    """,
+    ],
+)
 file = abjad.LilyPondFile(
     items=[
+        r'\version "2.23.81"',
+        r'\language "english"',
         r'\include "/Users/gregoryevans/abjad/abjad/scm/abjad.ily"',
+        """#(set-default-paper-size "letterlandscape")""",
+        """#(set-global-staff-size 13)""",
         r'\include "/Users/gregoryevans/abjad-ext-microtones/abjadext/microtones/lilypond/ekmelos-ji-accidental-markups.ily"',
+        block,
+        paper,
         score,
     ],
 )

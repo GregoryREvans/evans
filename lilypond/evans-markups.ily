@@ -389,3 +389,33 @@ half-air-tone-markup = \markup {
 }
 
 key-click-plus-markup = \markup "+"
+
+trem-one-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe220
+}
+
+trem-two-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe221
+}
+
+trem-three-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe222
+}
+
+trem-four-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe223
+}
+
+trem-five-markup = \markup {
+    \fontsize #6.5
+    \override #'(font-name . "ekmelos")
+    \char ##xe224
+}
