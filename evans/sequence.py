@@ -17,6 +17,7 @@ import quicktions
 import scipy
 from abjadext import microtones
 from scipy.integrate import odeint
+from scipy.ndimage import convolve
 
 from . import consort
 
@@ -1434,6 +1435,20 @@ class Sequence(collections.abc.Sequence):
         return self._items
 
     ### PUBLIC METHODS ###
+
+    def get_intervals(self, direction="literal"): # no ratios yet
+        if direction == "literal":
+            intervals = [_[1] - _[0] for _ in self.nwise(2)]
+        elif direction == "up":
+            stacked_row = self.stack_pitches(direction="up")
+            intervals = [_[1] - _[0] for _ in stacked_row.nwise(2)]
+        elif direction == "down":
+            stacked_row = self.stack_pitches(direction="down")
+            intervals = [_[1] - _[0] for _ in stacked_row.nwise(2)] # interval classes?
+        else:
+            raise Exception(f"direction must be literal, up, or down! not {direction}")
+        return type(self)(intervals)
+
 
     def helianthate(sequence, n=0, m=0):
         start = list(sequence[:])
@@ -4409,6 +4424,18 @@ class Sequence(collections.abc.Sequence):
             out = set(out)
         return type(self)(out)
 
+    def convolve_1D(self, kernel=[0.25, 0.5, 0.25], mode="valid"):
+        # modes can be full, valid, or same
+        convolution = numpy.convolve(self.items, kernel, mode=mode)
+        out = [_ for _ in convolution]
+        return type(self)(out)
+
+    def convolve_2D(self, kernel=[[0.0625, 0.125, 0.0625], [0.125, 0.25, 0.125], [0.0625, 0.125, 0.0625]], mode="nearest"):
+        # modes can be reflect, constant, nearest, mirror, or wrap
+        convolution = convolve(self.items, kernel, mode=mode)
+        out = [[y for y in x] for x in convolution]
+        return type(self)(out)
+
     @classmethod
     def chen(class_, a, b, c, first_state, time_values, iters):
         """
@@ -5404,6 +5431,32 @@ class Sequence(collections.abc.Sequence):
             "knot 38": [(0, 1), (2, 3), (4, 9), (5, 7), (6, 11), (8, 10)],
             "knot 39": [(0, 1), (2, 3), (4, 11), (5, 7), (6, 9), (8, 10)],
             # TODO: add more knots from all-interval sets in book
+            # xenakis nomos alpha cube
+            "cube 1a": [(1, 2, 3, 4), (5, 6, 7, 8)], # limit 1-8
+            "cube 1b": [(2, 1, 4, 3), (6, 5, 8, 7)],
+            "cube 2a": [(1, 4, 8, 5), (2, 3, 7, 6)],
+            "cube 2b": [(4, 1, 5, 8), (3, 2, 6, 7)],
+            "cube 3a": [(2, 5, 4), (3, 6, 8)],
+            "cube 3b": [(5, 2, 4), (6, 3, 8)],
+            "cube 4a": [(1, 6, 8), (2, 7, 4)],
+            "cube 4b": [(6, 1, 8), (7, 2, 4)],
+            "cube 5a": [(1, 6, 3), (4, 5, 7)],
+            "cube 5b": [(6, 1, 3), (5, 4, 7)],
+            "cube 6a": [(1, 8, 3), (2, 5, 7)],
+            "cube 6b": [(8, 1, 3), (5, 2, 7)],
+            # extension of cube octahedral group to vertices of octahedron
+            "octahedron 1a": [(3, 2, 5, 4)], # limit 1-6
+            "octahedron 1b": [(2, 3, 4, 5)],
+            "octahedron 2a": [(1, 5, 6, 3)],
+            "octahedron 2b": [(5, 1, 3, 6)],
+            "octahedron 3a": [(1, 5, 2), (3, 4, 6)],
+            "octahedron 3b": [(5, 1, 2), (4, 3, 6)],
+            "octahedron 4a": [(1, 4, 3), (2, 5, 6)],
+            "octahedron 4b": [(4, 1, 3), (5, 2, 6)],
+            "octahedron 5a": [(1, 5, 4), (2, 6, 3)],
+            "octahedron 5b": [(5, 1, 4), (6, 2, 3)],
+            "octahedron 6a": [(1, 2, 3), (4, 5, 6)],
+            "octahedron 6b": [(2, 1, 3), (5, 4, 6)],
         }
 
         if isinstance(cycles, str):
@@ -5835,7 +5888,7 @@ class Sequence(collections.abc.Sequence):
         seq = type(self)(returned_list)
         return seq
 
-    def stack_pitches(self, as_ratios=False):
+    def stack_pitches(self, as_ratios=False, direction="up"):
         """
 
         .. container:: example
@@ -5848,14 +5901,22 @@ class Sequence(collections.abc.Sequence):
         returned_list = [self.items[0]]
         if as_ratios:
             for _ in self.items[1:]:
-                while _ < returned_list[-1]:
-                    _ *= 2
+                if direction == "up":
+                    while _ < returned_list[-1]:
+                        _ *= 2
+                else:
+                    while returned_list[-1] < _:
+                        _ /= 2
                 returned_list.append(_)
             seq = type(self)(returned_list)
         else:
             for _ in self.items[1:]:
-                while _ < returned_list[-1]:
-                    _ += 12
+                if direction == "up":
+                    while _ < returned_list[-1]:
+                        _ += 12
+                else:
+                    while returned_list[-1] < _:
+                        _ -= 12
                 returned_list.append(_)
             seq = type(self)(returned_list)
         return seq
@@ -5913,8 +5974,11 @@ class Sequence(collections.abc.Sequence):
         values = list(self.items)
         returned_list = []
         for _ in values:
-            val = _ + n
-            returned_list.append(val)
+            if _ is not None:
+                val = _ + n
+                returned_list.append(val)
+            else:
+                returned_list.append(_)
         return type(self)(returned_list)
 
     def warp(self, min, max, random_seed, by_integers=False):
@@ -5961,8 +6025,8 @@ class Sequence(collections.abc.Sequence):
         second_half = type(self)(self[center:])
         if reversed:
             second_half = second_half.reverse()
-        out = [_ for _ in zip(first_half, second_half)]
-        return type(self)(out).flatten()
+        out = [_ for _ in itertools.zip_longest(first_half, second_half)]
+        return type(self)(out).flatten().remove_none()
 
 
 def cyc(lst):

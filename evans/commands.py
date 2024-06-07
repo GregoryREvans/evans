@@ -867,9 +867,10 @@ def make_rtm(
     preprocessor=None,
     rewrite=None,
     treat_tuplets=True,
+    intercept_irregular_meters=False,
 ):
 
-    maker = RhythmHandler(RTMMaker(rtm), forget=False)
+    maker = RhythmHandler(RTMMaker(rtm, intercept_irregular_meters=intercept_irregular_meters), forget=False)
 
     def returned_function(divisions, state=None, previous_state=None):
         time_signatures = [_ for _ in divisions]
@@ -2263,3 +2264,26 @@ def treat_tuplets(container):
     command_target = abjad.select.tuplets(container)
     rmakers.rewrite_sustained(command_target)
     rmakers.extract_trivial(container)
+
+
+def treat_tuplets(selections, index):
+    command_target = abjad.select.tuplets(selections)
+    command_target = command_target[index]
+    # print(command_target)
+    rmakers.trivialize(command_target)
+    command_target = abjad.select.tuplets(selections)
+    command_target = command_target[index]
+    rmakers.rewrite_rest_filled(command_target)
+    command_target = abjad.select.tuplets(selections)
+    command_target = command_target[index]
+    rmakers.rewrite_sustained(command_target)
+    command_target = abjad.select.tuplets(selections)
+    command_target = command_target[index]
+    rmakers.extract_trivial(command_target)
+
+
+def toggle_tuplets(selections, index):
+    command_target = abjad.select.tuplets(selections)
+    command_target = command_target[index]
+    # print(command_target)
+    command_target.toggle_prolation()

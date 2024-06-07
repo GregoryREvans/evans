@@ -54,6 +54,8 @@ from .commands import (
     vibrato_spanner,
     wrap_in_repeats,
     zero_padding_glissando,
+    treat_tuplets,
+    toggle_tuplets,
 )
 from .consort import (
     LogicalTieCollection,
@@ -433,4 +435,6 @@ __all__ = [
     "vibrato_spanner",
     "wrap_in_repeats",
     "zero_padding_glissando",
+    "treat_tuplets",
+    "toggle_tuplets",
 ]

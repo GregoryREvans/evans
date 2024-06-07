@@ -1,5 +1,7 @@
 import abjad
 import baca
+from fractions import Fraction
+from .sequence import CyclicList
 
 
 def preprocess_divisions(
@@ -11,6 +13,7 @@ def preprocess_divisions(
     cyclic_fuse=True,
     flatten_before_fuse=True,
     split_at_measure_boundaries=False,
+    split_divisions_by_proportions=None,
 ):
     old_divisions = divisions
     divisions = [abjad.Duration(_.pair) for _ in divisions]
@@ -22,6 +25,18 @@ def preprocess_divisions(
         divisions = [
             baca.sequence.split_divisions([_], [(1, 8)], cyclic=True) for _ in divisions
         ]
+    if split_divisions_by_proportions is not None:
+        cyc_partitions = CyclicList(split_divisions_by_proportions, forget=False)
+        pulled_partitions = cyc_partitions(r=len(divisions))
+        temp = []
+        for division, partition in zip(divisions, pulled_partitions):
+            full_partition = 0
+            for integer in partition:
+                full_partition += integer
+            partition_fractions = [Fraction(_, full_partition) for _ in partition]
+            for fraction in partition_fractions:
+                temp.append(division * fraction)
+        divisions = temp
     if fuse_counts is not None:
         if flatten_before_fuse is True:
             divisions = abjad.sequence.flatten(divisions, depth=-1)
@@ -58,6 +73,7 @@ def make_preprocessor(
     fuse_counts=None,
     cyclic_fuse=True,
     split_at_measure_boundaries=False,
+    split_divisions_by_proportions=None,
 ):
     def returned_function(divisions):
         divisions_ = preprocess_divisions(
@@ -68,6 +84,7 @@ def make_preprocessor(
             quarters=quarters,
             eighths=eighths,
             split_at_measure_boundaries=split_at_measure_boundaries,
+            split_divisions_by_proportions=split_divisions_by_proportions,
         )
         return divisions_
 

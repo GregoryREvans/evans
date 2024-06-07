@@ -9,7 +9,7 @@ import pathlib
 import abjad
 import black
 import quicktions
-from abjadext.rmakers import unbeam
+from abjadext.rmakers import unbeam, note, force_rest
 
 from . import consort
 from .commands import HandlerCommand, MusicCommand, RhythmCommand
@@ -139,6 +139,7 @@ class SegmentMaker:
         barline="||",
         beam_pattern="runs",
         beam_rests=False,
+        beautify_tuplets=True,
         clef_handlers=None,
         colophon=None,
         color_out_of_range=True,
@@ -171,6 +172,7 @@ class SegmentMaker:
         self.barline = barline
         self.beam_pattern = beam_pattern
         SegmentMaker.beaming = beam_rests
+        self.beautify_tuplets = beautify_tuplets
         self.clef_handlers = clef_handlers
         self.colophon = colophon
         self.color_out_of_range = color_out_of_range
@@ -675,8 +677,13 @@ class SegmentMaker:
                 abjad.Duration(time_signature)
                 for time_signature in self.time_signatures[:-1]
             ]
-            none_list = [None]
-            full_voice_rests = abjad.makers.make_leaves(none_list, durations)
+            assert len(durations) == len(self.time_signatures[:-1])
+            # none_list = [None]
+            # full_voice_rests = abjad.makers.make_leaves(none_list, durations)
+            # # REVISION FOR TUPOS: should fix error with contiguous irrational meters
+            temp = abjad.Staff(note(durations))
+            force_rest(temp)
+            full_voice_rests = abjad.mutate.eject_contents(temp)
             voice.extend(full_voice_rests)
             if self.transpose_first is True:
                 first_leaf = abjad.select.leaf(voice, 0)
@@ -700,7 +707,8 @@ class SegmentMaker:
                 self.time_signatures[fermata_index] = abjad.TimeSignature((1, 4))
 
         for voice in abjad.select.components(self.score_template, abjad.Voice):
-            beautify_tuplets(voice)
+            if self.beautify_tuplets is True:
+                beautify_tuplets(voice)
 
     def _interpret_music_commands(self, music_commands):
         for music_command in music_commands:
@@ -766,7 +774,8 @@ class SegmentMaker:
                     group_parents_booleans = [
                         isinstance(_, abjad.Tuplet) for _ in group_parents
                     ]
-                    beautify_tuplets(temp_container)
+                    if self.beautify_tuplets is True:
+                        beautify_tuplets(temp_container)
                     if not any(group_parents_booleans):
                         old_starting_leaf = measure_group[0]
                         old_starting_indicators = abjad.get.indicators(

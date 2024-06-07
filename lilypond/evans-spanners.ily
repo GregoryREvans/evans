@@ -1699,3 +1699,307 @@ startBowSpan =
        \startGraphicBowPressure #})
 
 stopBowSpan = \stopGraphicBowPressure
+%{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bow_pressure_engraver
+
+#(define-event-class 'bow-pressure-event 'span-event)
+
+#(define custom-music-descriptions `(
+  (BowPressureEvent .
+   ((description . "Start/change/stop a bow pressure span.")
+    (types . (post-event span-event event bow-pressure-event))
+  ))
+))
+
+#(begin
+  ;; NOTE: Code sourced from define-music-types.scm
+  (set!
+    custom-music-descriptions
+    (map (lambda (x)
+           (set-object-property! (car x)
+                                 'music-description
+                                 (cdr (assq 'description (cdr x))))
+           (let ((lst (cdr x)))
+             (set! lst (assoc-set! lst 'name (car x)))
+             (set! lst (assq-remove! lst 'description))
+             (hashq-set! music-name-to-property-table (car x) lst)
+             (cons (car x) lst)))
+      custom-music-descriptions))
+
+  (set! music-descriptions
+    (sort (append music-descriptions custom-music-descriptions) alist<?))
+)
+
+startBowPressure =
+#(define-event-function (pressure) (number?)
+  (make-music 'BowPressureEvent
+              'pressure pressure
+              'span-direction START))
+
+#(define CHANGE 0)
+
+changeBowPressure =
+#(define-event-function (pressure) (number?)
+  (make-music 'BowPressureEvent
+              'pressure pressure
+              'span-direction CHANGE))
+
+stopBowPressure =
+#(define-event-function (pressure) (number?)
+  (make-music 'BowPressureEvent
+              'pressure pressure
+              'span-direction STOP))
+
+Bow_pressure_engraver =
+#(lambda (context)
+  ;; Implementation Notes:
+  ;; - We reuse TextSpanner rather than define a custom grob.
+  ;; - Custom data is stored within the "details" property.
+  (let ((events '()) (spanner #f) (finished #f))
+
+    (define (set-event-once! event)
+      (let ((span-dir (ly:event-property event 'span-direction 0)))
+        (if (ly:assoc-get span-dir events #f)
+          (ly:event-warning event "Duplicate spanner event found.")
+          (set! events (assoc-set! events span-dir event)))))
+
+    (define (record-pressure column pressure)
+      (let* ((details (ly:grob-property spanner 'details '()))
+             (pressures (ly:assoc-get 'pressures details '())))
+        (set! pressures
+          (append
+            pressures
+            (list (cons column pressure))))
+        (set! details
+          (assoc-set! details 'pressures pressures))
+        (ly:grob-set-property! spanner 'details details)))
+
+    (define (spanner-has-broken-neighbor? spanner dir)
+      (let* ((broken-into (ly:spanner-broken-into
+                            (ly:grob-original spanner)))
+             (index
+              (list-index
+                (lambda (other) (eq? other spanner))
+                broken-into))
+             (count (length broken-into)))
+        (and index (if (< dir 0) (< 0 index) (< index (1- count))))))
+
+    (define (get-bow-span-shape grob)
+      (let* ((details (ly:grob-property grob 'details '()))
+             (pressures (ly:assoc-get 'pressures details '()))
+             (max-pressure (apply max (map cdr pressures)))
+
+             (left-bound-info (ly:grob-property grob 'left-bound-info))
+             (right-bound-info (ly:grob-property grob 'right-bound-info))
+             (left-neighbor? (spanner-has-broken-neighbor? grob LEFT))
+             (right-neighbor? (spanner-has-broken-neighbor? grob RIGHT))
+
+             (left-bound (ly:spanner-bound grob LEFT))
+             (right-bound (ly:spanner-bound grob RIGHT))
+             (common-X (ly:grob-common-refpoint left-bound right-bound X))
+             (origin-X (ly:grob-relative-coordinate grob common-X X))
+
+             (left-moment (grob::when left-bound))
+             (right-moment (grob::when right-bound))
+             (before? (lambda (elem)
+                (ly:moment<? (grob::when (car elem)) left-moment)))
+             (after? (lambda (elem)
+                (ly:moment<? right-moment (grob::when (car elem)))))
+             (within? (lambda (elem)
+                (and (not (before? elem)) (not (after? elem)))))
+
+             (before-bounds (take-while before? pressures))
+             (not-before-bounds (drop-while before? pressures))
+             (within-bounds (take-while within? not-before-bounds))
+             (after-bounds (drop-while within? not-before-bounds))
+
+             (mid (lambda (a b) (/ (+ a b) 2)))
+             (ext (lambda (g i) (interval-index
+                (if (ly:grob? (ly:grob-common-refpoint g common-X X))
+                  (ly:grob-robust-relative-extent g common-X X)
+                  '(0 . 0)) i)))
+
+             (padding 0.2)
+             (result-shape
+              (map
+                (lambda (elem)
+                  (cons (ext (car elem) CENTER)
+                        (cdr elem)))
+                within-bounds)))
+
+        (if (= 1 (length result-shape))
+          (begin
+            (if (not (null? before-bounds))
+              (set! result-shape
+                (append
+                  (list
+                    (cons (ext left-bound RIGHT)
+                          (mid (cdr (last before-bounds))
+                               (cdr (first within-bounds)))))
+                  result-shape)))
+            (if (not (null? after-bounds))
+              (set! result-shape
+                (append
+                  result-shape
+                  (list
+                    (cons (ext right-bound LEFT)
+                          (cdr (first after-bounds)))))))))
+
+        (if left-neighbor?
+          (set! result-shape
+            (append
+              (list
+                (cons (ext left-bound RIGHT)
+                  (mid (cdr (last before-bounds))
+                       (cdr (first result-shape)))))
+              result-shape))
+          (set! result-shape
+            (append
+              (list
+                (cons (+ (car (first result-shape)) padding)
+                      (cdr (first result-shape))))
+              (drop result-shape 1))))
+
+        (if right-neighbor?
+          (set! result-shape
+            (append
+              (drop-right result-shape 1)
+              (list
+                (cons (ext right-bound LEFT)
+                  (mid (cdr (last result-shape))
+                       (cdr (last (drop-right result-shape 1))))))))
+          (set! result-shape
+            (append
+              (drop-right result-shape 1)
+              (list
+                (cons (- (car (last result-shape)) padding)
+                      (cdr (last result-shape)))))))
+
+        (set! result-shape
+          (map
+            (lambda (elem)
+              (cons (- (car elem) origin-X)
+                    (- max-pressure (cdr elem))))
+            result-shape))
+
+        (set! result-shape
+          (append
+            (list (cons (car (first result-shape)) max-pressure))
+            result-shape
+            (list (cons (car (last result-shape)) max-pressure))))
+
+        result-shape))
+
+    (define (bow-pressure-print grob)
+      (grob-interpret-markup grob
+        #{ \markup \polygon #(get-bow-span-shape grob) #}))
+
+    ;; NOTE: Code/logic mostly borrowed from text-spanner-engraver.cc
+    (make-engraver
+      ((process-music engraver)
+        (let ((start (ly:assoc-get START events #f))
+              (change (ly:assoc-get CHANGE events #f))
+              (stop (ly:assoc-get STOP events #f)))
+          (if stop
+            (if (ly:spanner? spanner)
+              (begin
+                (record-pressure
+                  (ly:context-property context 'currentMusicalColumn)
+                  (ly:event-property stop 'pressure 0))
+                (set! finished spanner)
+                (ly:engraver-announce-end-grob
+                  engraver spanner stop)
+                (set! spanner #f))
+              (ly:event-warning stop "Cannot find start of spanner.")))
+          (if start
+            (if (ly:spanner? spanner)
+              (ly:event-warning start "Already have a spanner started.")
+              (begin
+                (set! spanner
+                  (ly:engraver-make-spanner
+                    engraver 'TextSpanner start))
+                (ly:grob-set-property! spanner 'direction UP)
+                (ly:side-position-interface::set-axis! spanner Y)
+                (ly:grob-set-property! spanner 'stencil bow-pressure-print)
+                (record-pressure
+                  (ly:context-property context 'currentMusicalColumn)
+                  (ly:event-property start 'pressure 0)))))
+          (if change
+            (if (ly:spanner? spanner)
+              (begin
+                (record-pressure
+                  (ly:context-property context 'currentMusicalColumn)
+                  (ly:event-property change 'pressure 0)))
+              (ly:event-warning change "Cannot find start of spanner.")))
+        )
+      )
+      ((stop-translation-timestep engraver)
+        (if (ly:spanner? spanner)
+          (or (ly:grob? (ly:spanner-bound spanner LEFT))
+              (ly:spanner-set-bound! spanner LEFT
+                (ly:context-property context 'currentMusicalColumn))))
+        (if (ly:spanner? finished)
+          (begin
+            (or (ly:grob? (ly:spanner-bound finished RIGHT))
+                (ly:spanner-set-bound! finished RIGHT
+                  (ly:context-property context 'currentMusicalColumn)))
+            (set! finished #f)))
+        (set! events '()))
+      ((finalize engraver)
+        (if (ly:spanner? finished)
+          (begin
+            (or (ly:grob? (ly:spanner-bound finished RIGHT))
+                (ly:spanner-set-bound! finished RIGHT
+                  (ly:context-property context 'currentMusicalColumn)))
+            (set! finished #f)))
+        (if (ly:spanner? spanner)
+          (begin
+            (ly:grob-warning spanner #f "Unterminated spanner.")
+            (ly:grob-suicide! spanner)
+            (set! spanner #f)))
+      )
+      (acknowledgers
+        ((note-column-interface engraver grob source)
+          (if (ly:spanner? spanner)
+            (begin
+              (ly:pointer-group-interface::add-grob spanner 'note-columns grob)
+              (or (ly:grob? (ly:spanner-bound spanner LEFT))
+                  (ly:spanner-set-bound! spanner LEFT grob))))
+          (if (ly:spanner? finished)
+            (begin
+              (ly:pointer-group-interface::add-grob finished 'note-columns grob)
+              (or (ly:grob? (ly:spanner-bound finished RIGHT))
+                  (ly:spanner-set-bound! finished RIGHT grob))))
+        )
+      )
+      (listeners
+        ((bow-pressure-event engraver event)
+          (set-event-once! event))
+      )
+    )
+  )
+) %}
+
+%{ \paper { indent = 0 ragged-right = ##t }
+\layout { \context { \Voice \consists \Bow_pressure_engraver } }
+
+
+\markup \column { \bold "Without line breaks..." \vspace #0.5 }
+{
+  | b'4 \startBowPressure 1 8 8 \changeBowPressure 2 2
+  | 4 \changeBowPressure 0 4 2 \changeBowPressure 1
+  | 2. \changeBowPressure 1 4 \stopBowPressure 0
+    \tweak color #red \startBowPressure 1
+  | 8 8 4 \stopBowPressure 2 r2 \fine
+}
+
+\markup \column { \vspace #1 \bold "With line breaks..." \vspace #0.5 }
+\markup \line { \score-lines { {
+  | b'4 \tweak color #blue \startBowPressure 1
+    8 8 \changeBowPressure 2 2 \break
+  | 4 \changeBowPressure 0 4 2 \changeBowPressure 1 \break
+  | 2. \changeBowPressure 1 4 \stopBowPressure 0
+    \startBowPressure 1 \break
+  | 8 8 4 \stopBowPressure 2 r2 \fine
+} } } %}
