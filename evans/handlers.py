@@ -92,6 +92,7 @@ class ArticulationHandler(Handler):
         articulation_boolean_vector=(1,),
         vector_forget=False,
         forget=True,
+        apply_next_articulation=False,
         count=-1,
         vector_count=-1,
         direction=None,
@@ -100,6 +101,7 @@ class ArticulationHandler(Handler):
         self.articulation_list = articulation_list
         self.vector_forget = vector_forget
         self.forget = forget
+        self.apply_next_articulation = apply_next_articulation
         self._count = count
         self._vector_count = vector_count
         self.direction = direction
@@ -116,31 +118,57 @@ class ArticulationHandler(Handler):
 
     def add_articulations(self, selections):
         ties = abjad.select.logical_ties(selections, pitched=True)
-        articulations = self._cyc_articulations(r=len(ties))
         vector = self.articulation_boolean_vector(r=len(ties))
-        for tie, articulation, bool in zip(ties, articulations, vector):
-            if bool == 1:
-                if self.articulation_list is not None:
-                    if articulation == "tremolo":
-                        for leaf in tie:
-                            if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
-                                continue
-                            else:
-                                abjad.attach(
-                                    abjad.StemTremolo(32),
-                                    leaf,
-                                    direction=self.direction,
-                                )
-                    elif articulation == "default":
-                        continue
-                    else:
-                        abjad.attach(
-                            abjad.Articulation(articulation),
-                            tie[0],
-                            direction=self.direction,
-                        )
-            else:
-                continue
+        if self.apply_next_articulation is False:
+            articulations = self._cyc_articulations(r=len(ties))
+            for tie, articulation, bool in zip(ties, articulations, vector):
+                if bool == 1:
+                    if self.articulation_list is not None:
+                        if articulation == "tremolo":
+                            for leaf in tie:
+                                if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
+                                    continue
+                                else:
+                                    abjad.attach(
+                                        abjad.StemTremolo(32),
+                                        leaf,
+                                        direction=self.direction,
+                                    )
+                        elif articulation == "default":
+                            continue
+                        else:
+                            abjad.attach(
+                                abjad.Articulation(articulation),
+                                tie[0],
+                                direction=self.direction,
+                            )
+                else:
+                    continue
+        else:
+            for tie, bool in zip(ties, vector):
+                if bool == 1:
+                    articulation = self._cyc_articulations(r=1)[0]
+                    if self.articulation_list is not None:
+                        if articulation == "tremolo":
+                            for leaf in tie:
+                                if abjad.get.duration(leaf) <= abjad.Duration(1, 32):
+                                    continue
+                                else:
+                                    abjad.attach(
+                                        abjad.StemTremolo(32),
+                                        leaf,
+                                        direction=self.direction,
+                                    )
+                        elif articulation == "default":
+                            continue
+                        else:
+                            abjad.attach(
+                                abjad.Articulation(articulation),
+                                tie[0],
+                                direction=self.direction,
+                            )
+                else:
+                    continue
 
     def name(self):
         return self.name

@@ -22,6 +22,10 @@ from scipy.ndimage import convolve
 from . import consort
 
 
+def is_coprime(a, b):
+    return math.gcd(a, b) == 1
+
+
 def integer_sequence_to_boolean_vector(integers, sides=[abjad.RIGHT]):
     cyc_side = CyclicList(sides, forget=False)
     out = []
@@ -1436,7 +1440,7 @@ class Sequence(collections.abc.Sequence):
 
     ### PUBLIC METHODS ###
 
-    def get_intervals(self, direction="literal"): # no ratios yet
+    def get_intervals(self, direction="literal"):  # no ratios yet
         if direction == "literal":
             intervals = [_[1] - _[0] for _ in self.nwise(2)]
         elif direction == "up":
@@ -1444,11 +1448,10 @@ class Sequence(collections.abc.Sequence):
             intervals = [_[1] - _[0] for _ in stacked_row.nwise(2)]
         elif direction == "down":
             stacked_row = self.stack_pitches(direction="down")
-            intervals = [_[1] - _[0] for _ in stacked_row.nwise(2)] # interval classes?
+            intervals = [_[1] - _[0] for _ in stacked_row.nwise(2)]  # interval classes?
         else:
             raise Exception(f"direction must be literal, up, or down! not {direction}")
         return type(self)(intervals)
-
 
     def helianthate(sequence, n=0, m=0):
         start = list(sequence[:])
@@ -4430,7 +4433,11 @@ class Sequence(collections.abc.Sequence):
         out = [_ for _ in convolution]
         return type(self)(out)
 
-    def convolve_2D(self, kernel=[[0.0625, 0.125, 0.0625], [0.125, 0.25, 0.125], [0.0625, 0.125, 0.0625]], mode="nearest"):
+    def convolve_2D(
+        self,
+        kernel=[[0.0625, 0.125, 0.0625], [0.125, 0.25, 0.125], [0.0625, 0.125, 0.0625]],
+        mode="nearest",
+    ):
         # modes can be reflect, constant, nearest, mirror, or wrap
         convolution = convolve(self.items, kernel, mode=mode)
         out = [[y for y in x] for x in convolution]
@@ -4574,6 +4581,28 @@ class Sequence(collections.abc.Sequence):
         for _ in self.items[1:]:
             x /= _
         return type(self)([x])
+
+    def durations_from_vector(self):
+        vector = [_ for _ in self]
+        first_onset = 0
+        for val in vector:
+            if val != 1:
+                first_onset += 1
+            else:
+                break
+        rotated_vector = abjad.sequence.rotate(vector, 0 - first_onset)
+        counter = 1
+        durations = []
+        for i, pair in enumerate(abjad.sequence.nwise(rotated_vector, 2)):
+            if 0 < i:
+                if pair[0] == 1:
+                    durations.append(counter)
+                    counter = 1
+                elif pair[0] == 0:
+                    counter += 1
+        counter += 1
+        durations.append(counter)
+        return type(self)(durations)
 
     @classmethod
     def e_bonacci_cycle(class_, n, iters, first, second, modulus, wrap_to_zero=False):
@@ -5092,7 +5121,10 @@ class Sequence(collections.abc.Sequence):
         items_list = list(self.items)
         returned_list = []
         for index in index_list:
-            val = items_list[index]
+            if hasattr(index, "__iter__"):
+                val = list(type(self)(items_list).map_indices(index).items)
+            else:
+                val = items_list[index]
             returned_list.append(val)
         return type(self)(returned_list)
 
@@ -5377,7 +5409,7 @@ class Sequence(collections.abc.Sequence):
                     list_.append([x] + p)
             return type(self)(list_)
 
-    def permutational_parsimony(self, cycles, debug=False):
+    def permutational_parsimony(self, cycles, debug=False, accumulate=False):
 
         # def make_h_cycle(i):
         #     out = []
@@ -5432,20 +5464,53 @@ class Sequence(collections.abc.Sequence):
             "knot 39": [(0, 1), (2, 3), (4, 11), (5, 7), (6, 9), (8, 10)],
             # TODO: add more knots from all-interval sets in book
             # xenakis nomos alpha cube
-            "cube 1a": [(1, 2, 3, 4), (5, 6, 7, 8)], # limit 1-8
-            "cube 1b": [(2, 1, 4, 3), (6, 5, 8, 7)],
-            "cube 2a": [(1, 4, 8, 5), (2, 3, 7, 6)],
-            "cube 2b": [(4, 1, 5, 8), (3, 2, 6, 7)],
-            "cube 3a": [(2, 5, 4), (3, 6, 8)],
-            "cube 3b": [(5, 2, 4), (6, 3, 8)],
-            "cube 4a": [(1, 6, 8), (2, 7, 4)],
-            "cube 4b": [(6, 1, 8), (7, 2, 4)],
-            "cube 5a": [(1, 6, 3), (4, 5, 7)],
-            "cube 5b": [(6, 1, 3), (5, 4, 7)],
-            "cube 6a": [(1, 8, 3), (2, 5, 7)],
-            "cube 6b": [(8, 1, 3), (5, 2, 7)],
+            "cube a-90": [(1, 2, 3, 4), (5, 6, 7, 8)],  # limit 1-8
+            "cube a-180": [(1, 3), (2, 4), (5, 7), (6, 8)],
+            "cube a-270": [(2, 1, 4, 3), (6, 5, 8, 7)],
+            "cube b-90": [(1, 4, 8, 5), (2, 3, 7, 6)],
+            "cube b-180": [(1, 8), (4, 5), (2, 7), (3, 6)],
+            "cube b-270": [(4, 1, 5, 8), (3, 2, 6, 7)],
+            "cube c-90": [(1, 5, 6, 2), (4, 8, 7, 3)],
+            "cube c-180": [(1, 6), (5, 2), (4, 7), (8, 3)],
+            "cube c-270": [(5, 1, 2, 6), (8, 4, 3, 7)],
+            "cube 4a": [(2, 5, 4), (3, 6, 8)],
+            "cube 4b": [(5, 2, 4), (6, 3, 8)],
+            "cube 5a": [(1, 6, 8), (2, 7, 4)],
+            "cube 5b": [(6, 1, 8), (7, 2, 4)],
+            "cube 6a": [(1, 6, 3), (4, 5, 7)],
+            "cube 6b": [(6, 1, 3), (5, 4, 7)],
+            "cube 7a": [(1, 8, 3), (2, 5, 7)],
+            "cube 7b": [(8, 1, 3), (5, 2, 7)],
+            "cube 8": [(2, 4), (6, 8)],  # reflection
+            "cube 9": [(1, 3), (5, 7)],  # reflection
+            "cube 10": [(1, 2), (3, 4), (5, 6), (7, 8)],  # reflection
+            "cube 11": [(1, 4), (2, 3), (5, 8), (6, 7)],  # reflection
+            # alternative cube names (without identity): https://www.euclideanspace.com/maths/discrete/groups/categorise/finite/cube/index.htm
+            "cube x": [(1, 4, 8, 5), (2, 3, 7, 6)],
+            "cube y": [(1, 5, 6, 2), (4, 8, 7, 3)],
+            "cube xx": [(8, 1), (7, 2), (6, 3), (5, 4)],
+            "cube xy": [(8, 6, 1), (4, 7, 2)],
+            "cube yx": [(4, 5, 2), (8, 6, 3)],
+            "cube yy": [(6, 1), (5, 2), (8, 3), (7, 4)],
+            "cube xxx": [(5, 8, 4, 1), (6, 7, 3, 2)],
+            "cube xxy": [(7, 1), (3, 2), (6, 4), (8, 5)],
+            "cube xyx": [(5, 1), (8, 2), (7, 3), (6, 4)],
+            "cube xyy": [(7, 1), (8, 2), (4, 3), (6, 5)],
+            "cube yxx": [(4, 1), (8, 2), (5, 3), (7, 6)],
+            "cube yyx": [(2, 1), (5, 3), (6, 4), (8, 7)],
+            "cube yyy": [(2, 6, 5, 1), (7, 8, 4, 3)],
+            "cube xxxy": [(6, 3, 1), (5, 7, 4)],
+            "cube xxyx": [(6, 8, 1), (7, 4, 2)],
+            "cube xxyy": [(3, 1), (4, 2), (7, 5), (8, 6)],
+            "cube xyxx": [(5, 4, 2), (6, 8, 3)],
+            "cube xyyy": [(3, 8, 1), (7, 5, 2)],
+            "cube yxxx": [(8, 3, 1), (5, 7, 2)],
+            "cube yyyx": [(3, 6, 1), (7, 5, 4)],
+            "cube xxxyx": [(2, 3, 4, 1), (6, 7, 8, 5)],
+            "cube xyxxx": [(4, 3, 2, 1), (8, 7, 6, 5)],
+            "cube xyyyx": [(7, 1), (6, 2), (5, 3), (8, 4)],
             # extension of cube octahedral group to vertices of octahedron
-            "octahedron 1a": [(3, 2, 5, 4)], # limit 1-6
+            "octahedron 1a": [(3, 2, 5, 4)],  # limit 1-6
             "octahedron 1b": [(2, 3, 4, 5)],
             "octahedron 2a": [(1, 5, 6, 3)],
             "octahedron 2b": [(5, 1, 3, 6)],
@@ -5458,49 +5523,54 @@ class Sequence(collections.abc.Sequence):
             "octahedron 6a": [(1, 2, 3), (4, 5, 6)],
             "octahedron 6b": [(2, 1, 3), (5, 4, 6)],
         }
+        if accumulate is False:
+            if isinstance(cycles, str):
+                cycles = predefined_cycles[cycles]
 
-        if isinstance(cycles, str):
-            cycles = predefined_cycles[cycles]
-
-        verbose_cycles = []
-        for cycle in cycles:
-            adjacent_pairs = []
-            for i, num in enumerate(cycle):
-                if num != cycle[-1]:
-                    pair = (num, cycle[i + 1])
-                else:
-                    pair = (num, cycle[0])
-                adjacent_pairs.append(pair)
+            verbose_cycles = []
+            for cycle in cycles:
+                adjacent_pairs = []
+                for i, num in enumerate(cycle):
+                    if num != cycle[-1]:
+                        pair = (num, cycle[i + 1])
+                    else:
+                        pair = (num, cycle[0])
+                    adjacent_pairs.append(pair)
+                if debug is True:
+                    print(f"adjacent pairs: {adjacent_pairs}")
+                verbose_cycles.append(adjacent_pairs)
             if debug is True:
-                print(f"adjacent pairs: {adjacent_pairs}")
-            verbose_cycles.append(adjacent_pairs)
-        if debug is True:
-            print(f"verbose cycles: {verbose_cycles}")
+                print(f"verbose cycles: {verbose_cycles}")
 
-        new_items = []
+            new_items = []
 
-        for item in self.items:
-            treated = False
-            reduced_item = item % 12
-            if debug is True:
-                print(f"reduced item: {reduced_item}")
-            for verbose_cycle in verbose_cycles:
-                for pair in verbose_cycle:
-                    if reduced_item == pair[0]:
-                        if debug is True:
-                            print(f"chosen cycle: {verbose_cycle}")
-                            print(f"chosen pair: {pair}")
-                        distance = pair[1] - pair[0]
-                        if debug is True:
-                            print(f"distance: {distance}")
-                        new_value = item + distance
-                        if debug is True:
-                            print(f"new value: {new_value}\n")
-                        new_items.append(new_value)
-                        treated = True
-            if treated is False:
-                new_items.append(item)
-        return type(self)(new_items)
+            for item in self.items:
+                treated = False
+                reduced_item = item % 12
+                if debug is True:
+                    print(f"reduced item: {reduced_item}")
+                for verbose_cycle in verbose_cycles:
+                    for pair in verbose_cycle:
+                        if reduced_item == pair[0]:
+                            if debug is True:
+                                print(f"chosen cycle: {verbose_cycle}")
+                                print(f"chosen pair: {pair}")
+                            distance = pair[1] - pair[0]
+                            if debug is True:
+                                print(f"distance: {distance}")
+                            new_value = item + distance
+                            if debug is True:
+                                print(f"new value: {new_value}\n")
+                            new_items.append(new_value)
+                            treated = True
+                if treated is False:
+                    new_items.append(item)
+            return type(self)(new_items)
+        else:
+            out = [self.items]
+            for cycle in cycles:
+                out.append(type(self)(out[-1]).permutational_parsimony(cycle).items)
+            return type(self)(out)
 
     def pitch_warp(self, warp_values=(0.5, -0.5), *, boolean_vector=(1)):
         """
@@ -5620,6 +5690,17 @@ class Sequence(collections.abc.Sequence):
             x = (n + 1) * (3 * n**2 + 3 * n + 1)
             seq.append(x)
         return type(self)(seq)
+
+    def random_sequence(self, total_length=1, random_seed=1, weights=None):
+        out = []
+        choices = list(self.items)
+        random.seed(random_seed)
+        if weights is None:
+            for _ in range(total_length):
+                out.append(random.choice(choices))
+        else:
+            out = random.choices(choices, weights=weights, k=total_length)
+        return type(self)(out)
 
     def random_funnel(self, destination, random_ranges, random_seed=1):
         random.seed(random_seed)
@@ -6292,16 +6373,17 @@ def fuse_signatures_below_threshold(
     threshhold = abjad.NonreducedFraction(threshhold)
     fracs = []
     delayed = None
-    for signature in signatures:
+    fracs.append(abjad.NonreducedFraction(signatures[0]))
+    for signature in signatures[1:]:
         frac = abjad.NonreducedFraction(signature)
         if delayed is not None:
             frac = frac + delayed
             delayed = None
-        if threshhold < frac:
+        if threshhold <= frac:
             fracs.append(frac)
         else:
             if direction == abjad.LEFT:
-                fracs[-1] = fracs[-1] + frac
+                fracs[-1] += frac
             elif direction == abjad.RIGHT:
                 delayed = frac
             else:

@@ -870,7 +870,10 @@ def make_rtm(
     intercept_irregular_meters=False,
 ):
 
-    maker = RhythmHandler(RTMMaker(rtm, intercept_irregular_meters=intercept_irregular_meters), forget=False)
+    maker = RhythmHandler(
+        RTMMaker(rtm, intercept_irregular_meters=intercept_irregular_meters),
+        forget=False,
+    )
 
     def returned_function(divisions, state=None, previous_state=None):
         time_signatures = [_ for _ in divisions]
@@ -2087,7 +2090,7 @@ def zero_padding_glissando(selections):
                     abjad.override(leaf).NoteHead.X_extent = "#'(0 . 0)"
 
 
-def upward_gliss(selections):
+def upward_gliss(selections, zero_padding=True):
     ties = abjad.select.logical_ties(selections, pitched=True)
     groups = []
     sub_group = []
@@ -2104,10 +2107,13 @@ def upward_gliss(selections):
         groups.append(sub_group)
     for group in groups:
         leaves = abjad.select.leaves(group)
-        zero_padding_glissando(leaves)
+        if zero_padding is True:
+            zero_padding_glissando(leaves)
+        else:
+            abjad.glissando(leaves, hide_middle_note_heads=True)
 
 
-def downward_gliss(selections):
+def downward_gliss(selections, zero_padding=True):
     ties = abjad.select.logical_ties(selections, pitched=True)
     groups = []
     sub_group = []
@@ -2124,7 +2130,27 @@ def downward_gliss(selections):
         groups.append(sub_group)
     for group in groups:
         leaves = abjad.select.leaves(group)
-        zero_padding_glissando(leaves)
+        if zero_padding is True:
+            zero_padding_glissando(leaves)
+        else:
+            abjad.glissando(leaves, hide_middle_note_heads=True)
+
+
+def swipe_stems(selections):
+    literals = evans.CyclicList(
+        [
+            r"\swipeUpStemOn",
+            r"\swipeDownStemOn",
+        ],
+        forget=False,
+    )
+    for leaf in abjad.select.leaves(selections, pitched=True):
+        direction = literals(r=1)[0]
+        literal = abjad.LilyPondLiteral(direction, site="before")
+        abjad.attach(literal, leaf)
+
+    last_leaf = abjad.select.leaf(selections, -1, pitched=True)
+    abjad.attach(abjad.LilyPondLiteral(r"\stemOff", site="after"), last_leaf)
 
 
 def boolean_vector_to_indices(vector=[True, False]):
@@ -2287,3 +2313,91 @@ def toggle_tuplets(selections, index):
     command_target = command_target[index]
     # print(command_target)
     command_target.toggle_prolation()
+
+
+def make_artificial_harmonic_chords(selections, intervals=None):
+    def sounding_pitch(higher, lower):
+        r"Returns the sounding pitch of the harmonic as an |abjad.Pitch|."
+        interval = abs(higher - lower).semitones
+        sounding_pitch_dict = {
+            1: 48,
+            2: 36,
+            3: 31,
+            4: 28,
+            5: 24,
+            7: 19,
+            9: 28,
+            12: 12,
+            16: 28,
+            19: 19,
+            24: 24,
+            28: 28,
+        }
+        try:
+            sounding_pitch = (
+                abjad.NumberedPitch(lower).number + sounding_pitch_dict[interval]
+            )
+        except:
+            sounding_pitch = None
+        # except KeyError as err:
+        #     raise ValueError(
+        #         "cannot calculate sounding pitch for given interval"
+        #     ) from err
+        return sounding_pitch
+
+    cyc_intervals = CyclicList(intervals, forget=False)
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    for tie in ties:
+        if isinstance(tie[0], abjad.Note):
+            if intervals is None:
+                continue
+            else:
+                durations = [leaf.written_duration for leaf in tie]
+                pitch = tie[0].written_pitch
+                interval = abjad.NumberedInterval(cyc_intervals(r=1)[0])
+                touch = interval.transpose(pitch)
+                new_leaves = [
+                    abjad.Chord([pitch, touch], duration) for duration in durations[1:]
+                ]
+                sound = sounding_pitch(touch, pitch)
+                if sound is not None:
+                    new_leaves = [
+                        abjad.Chord([pitch, touch, sound], durations[0])
+                    ] + new_leaves
+                else:
+                    new_leaves = [
+                        abjad.Chord([pitch, touch], durations[0])
+                    ] + new_leaves
+                if 1 < len(new_leaves):
+                    abjad.tie(new_leaves)
+                new_tie = abjad.LogicalTie(new_leaves)
+                abjad.annotate(new_tie[0], "artificial", True)
+                abjad.mutate.replace(tie, new_tie)
+        elif isinstance(tie[0], abjad.Chord):
+            assert len(tie[0].written_pitches) < 3
+            pitches = list(tie[0].written_pitches)
+            if len(pitches) == 1:
+                continue
+            else:
+                sound = sounding_pitch(pitches[1], pitches[0])
+                if sound is not None:
+                    new_head = abjad.NoteHead(sound)
+                    tie[0].note_heads.append(new_head)
+                    abjad.annotate(tie[0], "artificial", True)
+        else:
+            raise Exception(
+                f"Object must be of type abjad.Note or abjad.Chord NOT {type(tie[0])}"
+            )
+
+
+def decorate_artificial_harmonic_chords(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    for tie in ties:
+        if abjad.get.annotation(tie[0], "artificial") is not None:
+            for leaf in tie:
+                abjad.tweak(leaf.note_heads[1], r"\tweak style #'harmonic")
+            top = tie[0].note_heads[2]
+            top.is_parenthesized = True
+            abjad.tweak(top, r"\tweak font-size #-4")
+            abjad.tweak(top, r"\tweak Accidental.font-size #-4")
+            abjad.tweak(top, r"\tweak Dots.font-size #-4")

@@ -1,7 +1,9 @@
+from fractions import Fraction
+
 import abjad
 import baca
-from fractions import Fraction
-from .sequence import CyclicList
+
+from .sequence import CyclicList, fuse_signatures_below_threshold
 
 
 def preprocess_divisions(
@@ -275,3 +277,55 @@ def fuse_quarters_preprocessor_2_20(divisions):
         divisions, (2, 20), cyclic=True, overhang=True
     )
     return [sum(_) for _ in divisions]
+
+
+def time_signatures_to_quarters(sigs, threshhold=(2, 4)):
+    out = []
+    size = sum([abjad.Duration(sig) for sig in sigs])
+    quarters = make_preprocessor(quarters=True)([size])
+    out.append(quarters[0])
+    for quarter in quarters[1:]:
+        if out[-1] < abjad.Duration(4, 4):
+            out[-1] += quarter
+        else:
+            out.append(quarter)
+    signatures = [abjad.TimeSignature(_) for _ in out]
+    signatures_ = fuse_signatures_below_threshold(
+        signatures, threshhold=threshhold, direction=abjad.LEFT
+    )
+    return signatures_
+
+
+def reduce_measure_ranges_to_common_time(signatures, ranges, threshhold=(2, 4)):
+    returned_signatures = []
+    out = []
+    if 1 < len(ranges):
+        nwise_ranges = abjad.sequence.nwise(ranges, 2)
+        constructed_ranges = []
+        for range_ in nwise_ranges:
+            constructed_ranges.append(range_[0])
+            constructed_ranges.append((range_[0][-1], range_[1][0]))
+            constructed_ranges.append(range_[1])
+        constructed_ranges = list(set(constructed_ranges))
+    else:
+        constructed_ranges = [_ for _ in ranges]
+    if ranges[-1][-1] <= len(signatures) - 1:
+        constructed_ranges.append((ranges[-1][-1], len(signatures)))
+    constructed_ranges.sort(key=lambda _: _[0])
+    for range__ in constructed_ranges:
+        if range__ in ranges:
+            commons = time_signatures_to_quarters(
+                signatures[range__[0] : range__[1]], threshhold=threshhold
+            )
+            returned_signatures.extend(commons)
+        else:
+            group = signatures[range__[0] : range__[1]]
+            returned_signatures.extend(group)
+    for i, meter in enumerate(returned_signatures):
+        non_reduced_fraction = abjad.NonreducedFraction(meter.pair).with_denominator(4)
+        new_sig = abjad.TimeSignature(non_reduced_fraction)
+        returned_signatures[i] = new_sig
+    assert sum([abjad.Duration(_) for _ in returned_signatures]) == sum(
+        [abjad.Duration(_) for _ in signatures]
+    )
+    return returned_signatures

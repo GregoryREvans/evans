@@ -9,7 +9,6 @@ from abjadext import rmakers
 
 from .sequence import CyclicList, Sequence, flatten
 
-
 # from abjadext import rmakers
 
 
@@ -599,13 +598,16 @@ def funnel_inner_tree_to_x(rtm_string, x=1):
         funnel_list.append(opening + _ + closing)
     return funnel_list
 
+
 ### HELPER FUNCTION
 def is_power_of_two(n):
     def get_log_2(x):
         answer = math.log10(x) / math.log10(2)
         return answer
+
     boolean_answer = math.ceil(get_log_2(n)) == math.floor(get_log_2(n))
     return boolean_answer
+
 
 def treat_tuplets(arg):
     tuplets = abjad.select.tuplets(arg)
@@ -623,10 +625,17 @@ def treat_tuplets(arg):
                 # print("RE-TOGGLING")
                 # print(f"{difference_1} | {difference_2}")
                 tuplet.toggle_prolation()
-            reduced_fraction = Fraction(tuplet.multiplier.pair[0], tuplet.multiplier.pair[1])
-            tuplet.multiplier = (reduced_fraction.numerator, reduced_fraction.denominator)
+            reduced_fraction = Fraction(
+                tuplet.multiplier.pair[0], tuplet.multiplier.pair[1]
+            )
+            tuplet.multiplier = (
+                reduced_fraction.numerator,
+                reduced_fraction.denominator,
+            )
             # print(tuplet)
             # print("")
+
+
 ###
 
 # WAS: class RTMMaker(rmakers.RhythmMaker):
@@ -675,7 +684,9 @@ class RTMMaker:
 
     """
 
-    def __init__(self, rtm, tie_across_divisions=False, intercept_irregular_meters=False):
+    def __init__(
+        self, rtm, tie_across_divisions=False, intercept_irregular_meters=False
+    ):
         self.rtm = abjad.CyclicTuple(rtm)
         self.tie_across_divisions = tie_across_divisions
         self.intercept_irregular_meters = intercept_irregular_meters
@@ -707,41 +718,50 @@ class RTMMaker:
     def _rhythm_cell(duration, rtm, intercept_irregular_meters=False):
         rtm_parser = abjad.rhythmtrees.RhythmTreeParser()
         if intercept_irregular_meters is True:
-            if not is_power_of_two(Fraction(duration.numerator, duration.denominator).denominator):
+            if not is_power_of_two(
+                Fraction(duration.numerator, duration.denominator).denominator
+            ):
                 if rtm != "(1 (1))":
-                    outer_shell = rtm_parser("(1(1))")[0](
-                        duration
-                    )
+                    outer_shell = rtm_parser("(1(1))")[0](duration)
                     treat_tuplets(outer_shell)
-                    inner_duration = sum([leaf.written_duration for leaf in abjad.select.leaves(outer_shell)])
-                    inner = rtm_parser(rtm)[0](
-                        inner_duration
+                    inner_duration = sum(
+                        [
+                            leaf.written_duration
+                            for leaf in abjad.select.leaves(outer_shell)
+                        ]
                     )
+                    inner = rtm_parser(rtm)[0](inner_duration)
                     treat_tuplets(inner)
                     copied_items = []
                     for inner_thing in inner:
-                        if isinstance(inner_thing, abjad.Tuplet) and inner_thing.multiplier == abjad.NonreducedFraction(1, 1):
+                        if isinstance(
+                            inner_thing, abjad.Tuplet
+                        ) and inner_thing.multiplier == abjad.NonreducedFraction(1, 1):
                             for inner_inner_thing in inner_thing:
-                                copied_items.append(abjad.mutate.copy(inner_inner_thing))
+                                copied_items.append(
+                                    abjad.mutate.copy(inner_inner_thing)
+                                )
                         else:
                             copied_items.append(abjad.mutate.copy(inner_thing))
-                    constructed_tuplet = abjad.Tuplet(outer_shell[0][0].multiplier, copied_items)
+                    constructed_tuplet = abjad.Tuplet(
+                        outer_shell[0][0].multiplier, copied_items
+                    )
                     return [constructed_tuplet]
                 else:
-                    selection = rtm_parser(rtm)[0](
-                        duration
-                    )
+                    selection = rtm_parser(rtm)[0](duration)
                     treat_tuplets(selection)
                     if selection[0].multiplier == abjad.NonreducedFraction(1, 1):
-                        selection = [abjad.mutate.copy(component) for component in selection[0]]
+                        selection = [
+                            abjad.mutate.copy(component) for component in selection[0]
+                        ]
                     return selection
             else:
-                selection = rtm_parser(rtm)[0](
-                    duration
-                )
+                selection = rtm_parser(rtm)[0](duration)
                 treat_tuplets(selection)
                 if selection[0].multiplier == abjad.NonreducedFraction(1, 1):
-                    selection = [abjad.mutate.copy(component) for component in selection[0]]
+                    selection = [
+                        abjad.mutate.copy(component) for component in selection[0]
+                    ]
                 return selection
         else:
             selection = rtm_parser(rtm)[0](
@@ -754,7 +774,11 @@ class RTMMaker:
 
         selections = []
         for rtm_string, division in zip(rtm, divisions):
-            selection = self._rhythm_cell(division, rtm_string, intercept_irregular_meters=self.intercept_irregular_meters)
+            selection = self._rhythm_cell(
+                division,
+                rtm_string,
+                intercept_irregular_meters=self.intercept_irregular_meters,
+            )
             selections.append(selection)
         for selection_ in selections[:-1]:
             if self.tie_across_divisions is True:
@@ -1154,7 +1178,7 @@ class AfterGraceContainer(abjad.AfterGraceContainer):
             abjad.annotate(new_components[0], "hidden grace", True)
             for new_component in new_components[1:]:
                 new_head = new_component.note_head
-                new_head.is_forced=True
+                new_head.is_forced = True
 
         self._main_leaf = None
         if hide_accidentals is True:

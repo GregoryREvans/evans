@@ -2423,3 +2423,15 @@ class TonnetzChord:
     def to_list(self):
         out = [self.bottom, self.middle, self.top]
         return out
+
+
+def sonority_from_sieve(
+    starting_pitch, basic_interval, sieve, total_length, coerce_to_pitch_objects=False
+):
+    pitches = [abjad.NumberedPitch(starting_pitch)]
+    for _ in range(total_length - 1):
+        pitches.append(pitches[-1] + basic_interval)
+    sieved_pitches = abjad.select.get(pitches, sieve)
+    if coerce_to_pitch_objects is False:
+        sieved_pitches = [_.number for _ in sieved_pitches]
+    return sieved_pitches

@@ -9,7 +9,7 @@ import pathlib
 import abjad
 import black
 import quicktions
-from abjadext.rmakers import unbeam, note, force_rest
+from abjadext.rmakers import force_rest, note, unbeam
 
 from . import consort
 from .commands import HandlerCommand, MusicCommand, RhythmCommand
@@ -336,7 +336,44 @@ class SegmentMaker:
                 #         )
             if self.transpose_first is not True:
                 if self.transpose_from_sounding_pitch is True:
+                    # gather tweaks
+                    tweaks = []
+                    components = abjad.select.components(voice)
+                    for _component in components:
+                        if isinstance(_component, abjad.Chord):
+                            temp = []
+                            for note_head in _component.note_heads:
+                                temp.append(note_head.tweaks)
+                                if note_head.is_parenthesized is True:
+                                    temp[-1] = [_ for _ in temp[-1]] + [
+                                        r"\parenthesize"
+                                    ]
+                            tweaks.append(temp)
+                        elif isinstance(_component, abjad.Note):
+                            tweaks.append(_component.note_head.tweaks)
+                        else:
+                            try:
+                                tweaks.append(_component.tweaks)
+                            except:
+                                tweaks.append([])
                     abjad.iterpitches.transpose_from_sounding_pitch(voice)
+                    # reattach tweaks
+                    components = components = abjad.select.components(voice)
+                    for _component, tweak in zip(components, tweaks):
+                        if isinstance(_component, abjad.Chord):
+                            for head, _tweak in zip(_component.note_heads, tweak):
+                                if r"\parenthesize" in _tweak:
+                                    _tweak = _tweak[:-1]
+                                    head.tweaks = _tweak
+                                    head.is_parenthesized = True
+                                else:
+                                    head.tweaks = _tweak
+                        elif isinstance(_component, abjad.Note):
+                            _component.note_head.tweaks = tweak
+                        else:
+                            if 0 < len(tweak):
+                                _component.tweaks = tweak
+
             if handler is not None:
                 handler(voice)
 
