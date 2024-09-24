@@ -215,3 +215,39 @@ def select_ties_below_written_pitch(argument, reference_pitch, *, flattened=Fals
                 out.append(temp_group)
                 temp_group = []
     return out
+
+
+def select_upward_tie_groups(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    groups = []
+    sub_group = []
+    for tie in ties:
+        if len(sub_group) < 1:
+            sub_group.append(tie)
+        else:
+            if tie[0].written_pitch < sub_group[-1][0].written_pitch:
+                groups.append(sub_group)
+                sub_group = [tie]
+            else:
+                sub_group.append(tie)
+    if 1 < len(sub_group):
+        groups.append(sub_group)
+    return groups
+
+
+def select_downward_tie_groups(selections):
+    ties = abjad.select.logical_ties(selections, pitched=True)
+    groups = []
+    sub_group = []
+    for tie in ties:
+        if len(sub_group) < 1:
+            sub_group.append(tie)
+        else:
+            if sub_group[-1][0].written_pitch < tie[0].written_pitch:
+                groups.append(sub_group)
+                sub_group = [tie]
+            else:
+                sub_group.append(tie)
+    if 1 < len(sub_group):
+        groups.append(sub_group)
+    return groups

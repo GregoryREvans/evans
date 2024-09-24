@@ -2401,3 +2401,24 @@ def decorate_artificial_harmonic_chords(selections):
             abjad.tweak(top, r"\tweak font-size #-4")
             abjad.tweak(top, r"\tweak Accidental.font-size #-4")
             abjad.tweak(top, r"\tweak Dots.font-size #-4")
+
+
+def add_bowings(full_bow=False, stop_on_string=False):
+    def returned_function(selections):
+        if full_bow is True:
+            cyc_bowings = CyclicList(
+                ["baca-full-downbow", "baca-full-upbow"], forget=False
+            )
+        elif stop_on_string is True:
+            cyc_bowings = CyclicList(
+                ["baca-stop-on-string-full-downbow", "baca-stop-on-string-full-upbow"],
+                forget=False,
+            )
+        else:
+            cyc_bowings = CyclicList(["downbow", "upbow"], forget=False)
+        ties = abjad.select.logical_ties(selections, pitched=True)
+        first_heads = [_[0] for _ in ties]
+        for head in first_heads:
+            abjad.attach(abjad.Articulation(cyc_bowings(r=1)[0]), head)
+
+    return returned_function

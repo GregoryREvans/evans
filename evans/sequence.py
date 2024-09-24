@@ -5772,6 +5772,16 @@ class Sequence(collections.abc.Sequence):
         return type(self)(final_list)
 
     @classmethod
+    def range(class_, start, stop, step):
+        def drange(x, y, jump):
+            while x < y:
+                yield float(x)
+                x += decimal.Decimal(jump)
+
+        returned_list = list(drange(start, stop, decimal.Decimal(f"{step}")))
+        return class_(returned_list)
+
+    @classmethod
     def ratio(class_, ratio, reciprocals=False):
         """
 

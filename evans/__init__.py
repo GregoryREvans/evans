@@ -14,6 +14,7 @@ from .commands import (
     RhythmCommand,
     Skeleton,
     accelerando,
+    add_bowings,
     attach,
     auto_staff_change,
     bcp,
@@ -176,6 +177,7 @@ from .select import (
     select_alternate_divisions_final_leaves,
     select_alternate_leaves,
     select_divisions_final_leaves,
+    select_downward_tie_groups,
     select_measures,
     select_outer_ties,
     select_periodic_ties,
@@ -184,6 +186,7 @@ from .select import (
     select_ties_below_written_pitch,
     select_ties_final_leaves,
     select_untupleted_leaves,
+    select_upward_tie_groups,
 )
 from .sequence import (
     CompoundMelody,
@@ -452,4 +455,7 @@ __all__ = [
     "vibrato_spanner",
     "wrap_in_repeats",
     "zero_padding_glissando",
+    "select_downward_tie_groups",
+    "select_upward_tie_groups",
+    "add_bowings",
 ]
