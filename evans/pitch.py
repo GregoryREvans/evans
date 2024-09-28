@@ -1398,9 +1398,10 @@ def tune_to_ratio(
 
 
 class BacaLoop:
-    def __init__(self, pitches, intervals):
+    def __init__(self, pitches, intervals, map_to=None):
         self.pitches = pitches
         self.intervals = intervals
+        self.map_to = map_to
 
     def __getitem__(self, i):
         intervals = abjad.CyclicTuple(self.intervals)
@@ -1411,7 +1412,14 @@ class BacaLoop:
         else:
             transposition = sum(intervals[:iteration])
         number = pitches[i]
-        pitch = abjad.NamedPitch(number + transposition)
+        if self.map_to is not None:
+            if 0 < number:
+                number_ = (number + transposition) % len(self.map_to)
+            else:
+                number_ = number + transposition
+            pitch = abjad.NamedPitch(self.map_to[number_])
+        else:
+            pitch = abjad.NamedPitch(number + transposition)
         return pitch
 
     def __iter__(self):
@@ -1429,9 +1437,10 @@ class PitchCommand:
 def loop(
     items: baca.typing.Sequence,
     intervals: baca.typing.Sequence,
+    map_to=None,
     selector=lambda _: baca.select.plts(_, exclude=baca.enums.HIDDEN),
 ):
-    loop = BacaLoop(items, intervals)
+    loop = BacaLoop(items, intervals, map_to)
 
     def returned_function(selections):
         new_sel = selector(selections)

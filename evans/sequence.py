@@ -4567,6 +4567,25 @@ class Sequence(collections.abc.Sequence):
             returned_sequence = flatten(returned_sequence)
         return type(self)(returned_sequence)
 
+    def derive_intervals(self, intervals, cyclic=True, match_longest=False):
+        out = []
+        if match_longest is True:
+            if len(self.items) < len(intervals):
+                cyc_items = CyclicList(self.items, forget=False)
+                items = cyc_items(r=len(intervals))
+            else:
+                items = self.items
+        if cyclic is True:
+            cyc_intervals = CyclicList(intervals, forget=False)
+            intervals = cyc_intervals(r=len(items))
+        for base, interval in zip(items, intervals):
+            if interval is not None:
+                temp = [base, base + interval]
+                out.append(temp)
+            else:
+                out.append(base)
+        return type(self)(out)
+
     def dividend(self):
         """
 

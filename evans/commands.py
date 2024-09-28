@@ -550,6 +550,7 @@ def stack(
 def accelerando(
     *interpolations,
     previous_state=None,
+    pre_commands=None,
     spelling=rmakers.Spelling(
         forbidden_note_duration=None,
         forbidden_rest_duration=None,
@@ -579,6 +580,9 @@ def accelerando(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -601,6 +605,7 @@ def even_division(
     denominator="from_counts",
     *,
     extra_counts=(0,),
+    pre_commands=None,
     previous_state=None,
     preprocessor=None,
     rewrite=None,
@@ -633,6 +638,9 @@ def even_division(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -659,6 +667,7 @@ def even_division(
 def note(
     *,
     preprocessor=None,
+    pre_commands=None,
     rewrite=None,
     treat_tuplets=True,
     tag=abjad.Tag(string=""),
@@ -675,6 +684,9 @@ def note(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -707,6 +719,7 @@ def talea(
     preamble=(),
     previous_state=None,
     read_talea_once_only=False,
+    pre_commands=None,
     preprocessor=None,
     rewrite=None,
     treat_tuplets=True,
@@ -742,6 +755,9 @@ def talea(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -770,6 +786,7 @@ def tuplet(
     *,
     denominator=None,
     preprocessor=None,
+    pre_commands=None,
     rewrite=None,
     treat_tuplets=True,
     spelling=rmakers.Spelling(
@@ -801,6 +818,9 @@ def tuplet(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -824,7 +844,9 @@ def tuplet(
     return returned_function
 
 
-def make_tied_notes(preprocessor=None, rewrite=False, treat_tuplets=True):
+def make_tied_notes(
+    preprocessor=None, rewrite=False, treat_tuplets=True, pre_commands=None
+):
     def handler_function(
         durations, state=None, previous_state=None
     ):  # seems to work accurately
@@ -838,6 +860,9 @@ def make_tied_notes(preprocessor=None, rewrite=False, treat_tuplets=True):
             container.extend(component)
         tie_target = select_all_but_final_leaf(container)
         rmakers.tie(tie_target)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
@@ -865,6 +890,7 @@ def make_rtm(
     rtm,
     *,
     preprocessor=None,
+    pre_commands=None,
     rewrite=None,
     treat_tuplets=True,
     intercept_irregular_meters=False,
@@ -887,6 +913,9 @@ def make_rtm(
                 container.extend(component)
             else:
                 container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
         if treat_tuplets is True:
             command_target = abjad.select.tuplets(container)
             rmakers.trivialize(command_target)
