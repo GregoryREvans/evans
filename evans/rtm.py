@@ -3,6 +3,7 @@ Rhythm tree functions.
 """
 import math
 from fractions import Fraction
+from random import randint, seed
 
 import abjad
 from abjadext import rmakers
@@ -10,6 +11,18 @@ from abjadext import rmakers
 from .sequence import CyclicList, Sequence, flatten
 
 # from abjadext import rmakers
+
+### helper ###
+class InfiniteYeild:
+    def __init__(self, i=0):
+        self.i = i
+
+    def __call__(self):
+        self.i += 1
+        return self.i - 1
+
+
+###
 
 
 def flatten_tree_level(rtm, recurse=False):
@@ -1315,6 +1328,18 @@ class RTMTree:
             return type(self)(result)
         return result
 
+    def __setitem__(self, index, data):
+        if isinstance(data, list):
+            data = type(self)(data[1], size=data[0])
+        elif isinstance(data, int):
+            data = RTMNode(data)
+        elif isinstance(data, (RTMNode, type(self))):
+            copied_node = self._recursively_copy(data)
+            copied_node.parent = self.items[index].parent
+            copied_node.position = self.items[index].position
+            data = copied_node
+        self.items[index] = data
+
     def __hash__(self):
         return hash(self.__class__.__name__ + str(self))
 
@@ -1338,11 +1363,163 @@ class RTMTree:
 
     ### User Methods ###
 
-    def add_node_to_index(self, index, node=1):
-        pass
+    def append(self, argument):
+        copied_self = self._recursively_copy(self)
+        if isinstance(argument, int):
+            temp = [item for item in copied_self] + [RTMNode(argument)]
+        elif isinstance(argument, RTMNode):
+            temp = [item for item in copied_self] + [argument]
+        elif isinstance(argument, list):
+            temp = [item for item in copied_self] + [
+                RTMTree(argument[1], size=argument[0])
+            ]
+        elif isinstance(argument, type(self)):
+            temp = [item for item in copied_self] + [argument]
+        else:
+            raise Exception(
+                f"Wrong input type! Got {argument} Needed int, list, RTMTree, or RTMNode"
+            )
+        self.items = temp
 
-    def replace_node_at_index(self, index, replacement):
-        pass
+    def insert_at_index(self, index=0, level=1, insertion=None):
+        target_counter = -1
+        copied_self = self._recursively_copy(self)
+        target_level = self._get_items_by_depth(argument=copied_self, depth=level)
+        if len(target_level) <= index:
+            target_level[-1].parent.append(insertion)
+            return copied_self
+        else:
+            for item in target_level:
+                target_counter += 1
+                if target_counter != index:
+                    continue
+                else:
+                    local_position = item.position
+                    local_parent = item.parent
+                    parent_items = local_parent.items
+                    parent_size = local_parent.size
+                    construction = (
+                        parent_items[0:local_position]
+                        + [insertion]
+                        + parent_items[local_position:]
+                    )
+                    local_parent_construction = type(self)(
+                        construction, size=parent_size
+                    )
+                    if level == 1:
+                        local_parent = local_parent_construction
+                    else:
+                        domino_counter = level - 1
+                        while (
+                            0 < domino_counter
+                        ):  # this doesn't work for inserting at top level which needs to work for POP
+                            upper_parent = local_parent.parent
+                            upper_parent[
+                                local_parent.position
+                            ] = local_parent_construction
+                            local_parent = upper_parent
+                            domino_counter -= 1
+            return local_parent
+
+    def pop_at_index(self, index, level=1, with_children=True):
+        copied_self = self._recursively_copy(self)
+        target = self._get_items_by_depth(argument=copied_self, depth=level)[index]
+        if with_children is False:
+            if isinstance(target, RTMNode):
+                parent = target.parent
+                parent.items = [_ for _ in parent if _ != target]
+            elif isinstance(target, type(self)):
+                parent = target.parent
+                temp = [_ if _ != target else _.items for _ in parent]
+                for i, _ in enumerate(temp):
+                    if isinstance(_, list):
+                        break
+                parent.items = temp[0:i] + temp[i] + temp[i + 1 :]
+            return copied_self
+        else:
+            parent = target.parent
+            parent.items = [_ for _ in parent if _ != target]
+            return copied_self
+
+    # maybe think about adding a random walk funnel that nudges values in a stepwise way rather
+    # than in a totally random way. Just linearly going to the value isn't good enough
+    def random_funnel(
+        self,
+        indices=[0],
+        allowable_levels=[1],
+        ranges=[(0, 9)],
+        targets=[4],
+        allowable_classes=None,
+        random_seed=0,
+    ):
+        out = []
+        seed(random_seed)
+        funnel = []
+
+        def return_denested_items_by_index(
+            nested_structure, indices, counter, allowable_levels, allowable_classes
+        ):
+            if allowable_classes is None:
+                allowable_classes = [RTMTree, RTMNode]
+            instances = []
+            for item in nested_structure:
+                if item.depth in allowable_levels and type(item) in allowable_classes:
+                    counter += 1
+                if counter in indices:
+                    instances.append(item)
+                if isinstance(item, RTMTree):
+                    sub_instances = return_denested_items_by_index(
+                        item,
+                        indices,
+                        counter,
+                        allowable_levels=allowable_levels,
+                        allowable_classes=allowable_classes,
+                    )
+                    instances.extend(sub_instances)
+            return instances
+
+        copy_of_self = RTMTree(self.items)
+        instances = return_denested_items_by_index(
+            copy_of_self.items,
+            indices,
+            counter=-1,
+            allowable_levels=allowable_levels,
+            allowable_classes=allowable_classes,
+        )
+        out.append(copy_of_self)
+        source = [instance.size for instance in instances]
+        funnel.append(source)
+        while funnel[-1] != targets:
+            temp_funnel = []
+            for instance, pair, target in zip(out[-1], ranges, targets):
+                if instance != target:
+                    temp_funnel.append(randint(pair[0], pair[1]))
+                else:
+                    temp_funnel.append(instance)
+            funnel.append(temp_funnel)
+
+        for random_funnel in funnel[1:]:
+            new_copy_of_self = RTMTree(self.items)
+            new_instances = return_denested_items_by_index(
+                new_copy_of_self.items,
+                indices,
+                counter=-1,
+                allowable_levels=allowable_levels,
+                allowable_classes=allowable_classes,
+            )
+            for instance, value in zip(new_instances, random_funnel):
+                instance.size = value
+            out.append(new_copy_of_self)
+        return out
+
+    def replace_at_index(self, index, level=1, replacement=None):
+        target_counter = -1
+        copied_self = self._recursively_copy(self)
+        target_level = self._get_items_by_depth(argument=copied_self, depth=level)
+        target_instance = target_level[index]
+        target_parent = target_instance.parent
+        target_parent[target_instance.position] = replacement
+        return copied_self
 
     def rotate_nodes_by_level(self, i, level=1):
         temp = []
@@ -1397,7 +1574,11 @@ class RTMTree:
         return out
 
     def remap_sizes(
-        self, map=[2, 1, 0], allowable_levels=[1, 2, 3], allowable_classes=None
+        self,
+        map=[2, 1, 0],
+        allowable_levels=[1, 2, 3],
+        allowable_classes=None,
+        debug=False,
     ):
         def return_denested_items_by_index(
             nested_structure, map, counter, allowable_levels, allowable_classes
@@ -1406,9 +1587,10 @@ class RTMTree:
                 allowable_classes = [RTMTree, RTMNode]
             instances = []
             for item in nested_structure:
-                print(
-                    f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
-                )
+                if debug is True:
+                    print(
+                        f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
+                    )
                 if item.depth in allowable_levels and type(item) in allowable_classes:
                     counter += 1
                 if counter in map:
@@ -1441,7 +1623,7 @@ class RTMTree:
 
     # rotating instances of objects requires a pop and replace function yet to be decided
     def rotate_sizes_through_level(
-        self, i, allowable_levels=[1, 2, 3], allowable_classes=None
+        self, i, allowable_levels=[1, 2, 3], allowable_classes=None, debug=False
     ):
         def return_denested_items_by_index(
             nested_structure, counter, allowable_levels, allowable_classes
@@ -1450,9 +1632,10 @@ class RTMTree:
                 allowable_classes = [RTMTree, RTMNode]
             instances = []
             for item in nested_structure:
-                print(
-                    f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
-                )
+                if debug is True:
+                    print(
+                        f"{item.depth in allowable_levels} and {type(item) in allowable_classes} = {item.depth in allowable_levels and type(item) in allowable_classes}"
+                    )
                 if item.depth in allowable_levels and type(item) in allowable_classes:
                     instances.append(item)
                 if isinstance(item, RTMTree):

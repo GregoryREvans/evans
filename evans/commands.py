@@ -710,6 +710,35 @@ def note(
     return returned_function
 
 
+def multiplied_duration(
+    written_duration=(1, 16),
+    *,
+    preprocessor=None,
+    pre_commands=None,
+    tag=abjad.Tag(string=""),
+):
+    def returned_function(divisions, state=None, previous_state=None):
+        time_signatures = [_ for _ in divisions]
+        if preprocessor is not None:
+            durations = [abjad.Duration(_.pair) for _ in divisions]
+            divisions = preprocessor(durations)
+        nested_music = rmakers.multiplied_duration(divisions, duration=written_duration)
+        container = abjad.Container()
+        for component in nested_music:
+            if isinstance(component, list):
+                container.extend(component)
+            else:
+                container.append(component)
+        if pre_commands is not None:
+            for pre_command in pre_commands:
+                pre_command(container)
+        music = abjad.mutate.eject_contents(container)
+
+        return music
+
+    return returned_function
+
+
 def talea(
     counts,
     denominator,
@@ -2451,3 +2480,153 @@ def add_bowings(full_bow=False, stop_on_string=False):
             abjad.attach(abjad.Articulation(cyc_bowings(r=1)[0]), head)
 
     return returned_function
+
+
+cutaway_commands = [
+    abjad.LilyPondLiteral(r"\stopStaff", site="before"),
+    abjad.LilyPondLiteral(
+        r"\override Staff.StaffSymbol.transparent = ##f", site="before"
+    ),
+    abjad.LilyPondLiteral(r"\override Staff.Rest.transparent = ##f", site="before"),
+    abjad.LilyPondLiteral(r"\override Staff.Dots.transparent = ##f", site="before"),
+    abjad.LilyPondLiteral(r"\startStaff", site="before"),
+    Attachment(
+        abjad.LilyPondLiteral(r"\stopStaff", site="after"),
+        selector=lambda _: abjad.select.leaf(_, -1),
+    ),
+    Attachment(
+        abjad.LilyPondLiteral(
+            r"\override Staff.StaffSymbol.transparent = ##t", site="after"
+        ),
+        selector=lambda _: abjad.select.leaf(_, -1),
+    ),
+    Attachment(
+        abjad.LilyPondLiteral(r"\override Staff.Rest.transparent = ##t", site="after"),
+        selector=lambda _: abjad.select.leaf(_, -1),
+    ),
+    Attachment(
+        abjad.LilyPondLiteral(r"\override Staff.Dots.transparent = ##t", site="after"),
+        selector=lambda _: abjad.select.leaf(_, -1),
+    ),
+    Attachment(
+        abjad.LilyPondLiteral(r"\startStaff", site="after"),
+        selector=lambda _: abjad.select.leaf(_, -1),
+    ),
+]
+
+
+def bracket_time_duration(selections):
+    leaves = abjad.select.leaves(selections)
+    counts = [_ for _ in range(len(leaves))]
+    effective_tempi = [abjad.get.effective(_, abjad.MetronomeMark) for _ in leaves]
+
+    def get_effective(list, i):
+        if list[i] is not None:
+            return list[i]
+        else:
+            return get_effective(list, i - 1)
+
+    def result(component, list, i):
+        return (
+            component._get_duration()
+            / get_effective(list, i).reference_duration
+            / get_effective(list, i).units_per_minute
+            * 60
+        )
+
+    calculated_durations = [
+        result(leaf, effective_tempi, i) for leaf, i in zip(leaves, counts)
+    ]
+    total_duration = float(sum(calculated_durations))
+    # raise Exception(total_duration)
+    def format_seconds(seconds):
+        minutes = int(seconds // 60)
+        seconds = int(seconds % 60)
+        return f"{minutes}'{seconds:02}''"
+
+    formatted_time_string = format_seconds(total_duration)
+    abjad.attach(
+        abjad.LilyPondLiteral(
+            rf'\timeBracket "{formatted_time_string}" {{ ', site="before"
+        ),
+        leaves[0],
+    )
+    abjad.attach(
+        abjad.LilyPondLiteral("}", site="after"),
+        leaves[-1],
+    )
+
+
+def staff_changes(reservoir, sequence):
+
+    derived_sequence = CyclicList([reservoir[_] for _ in sequence], forget=False)
+
+    def returned_function(selections):
+        ties = abjad.select.logical_ties(selections)
+        for tie in ties:
+            location = derived_sequence(r=1)[0]
+            literal = abjad.LilyPondLiteral(
+                rf'\once \change Staff = "{location}"', site="before"
+            )
+            abjad.attach(literal, tie[0])
+
+    return returned_function
+
+
+def gliss_only(selections, hide_stems=False, hide_flags=False):
+    for run in abjad.select.runs(selections):
+        leaves = abjad.select.leaves(run)
+        for leaf in leaves:
+            if abjad.get.has_indicator(leaf, abjad.Tie):
+                abjad.detach(abjad.Tie(), leaf)
+    abjad.glissando(selections[:], zero_padding=True, allow_repeats=True)
+    for run in abjad.select.runs(selections):
+        leaves = abjad.select.leaves(run)
+        for leaf in leaves:
+            if isinstance(leaf, abjad.Note):
+                abjad.tweak(leaf.note_head, r"\tweak Accidental.stencil ##f")
+                abjad.tweak(leaf.note_head, r"\tweak transparent ##t")
+                abjad.tweak(leaf.note_head, r"\tweak X-extent #'(0 . 0)")
+            elif isinstance(leaf, abjad.Chord):
+                for head in leaf.note_heads:
+                    abjad.override(leaf).Accidental.stencil = "##f"
+                    abjad.override(leaf).NoteHead.transparent = "##t"
+                    abjad.tweak(head, r"\tweak X-extent #'(0 . 0)")
+                    abjad.override(leaf).NoteHead.X_extent = "#'(0 . 0)"
+        if hide_stems is True:
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    [
+                        r"\override Staff.Stem.stencil = ##f",
+                    ],
+                    site="before",
+                ),
+                run[0],
+            )
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    [
+                        r"\override Staff.Stem.stencil = ##t",
+                    ],
+                    site="after",
+                ),
+                run[-1],
+            )
+        if hide_flags is True:
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    [r"\override  Staff.Flag.stencil = ##f"], site="before"
+                ),
+                run[0],
+            )
+            abjad.attach(
+                abjad.LilyPondLiteral(
+                    [r"\override  Staff.Flag.stencil = ##t"], site="after"
+                ),
+                run[-1],
+            )
+
+
+def change_duration_log(selections, value=2, pitched=True):
+    for leaf in abjad.select.leaves(selections, pitched=pitched):
+        abjad.override(leaf).note_head.duration_log = value

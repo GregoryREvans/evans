@@ -152,6 +152,7 @@ class SegmentMaker:
         names=None,
         name_staves=True,
         mm_rests=True,
+        name_columns=False,
         page_break_counts=None,
         rehearsal_mark=None,
         score_includes=None,
@@ -182,6 +183,7 @@ class SegmentMaker:
         self.fermata = fermata
         self.fermata_measures = fermata_measures
         self.instruments = instruments
+        self.name_columns = name_columns
         self.names = names
         self.name_staves = name_staves
         self.mm_rests = mm_rests
@@ -218,9 +220,15 @@ class SegmentMaker:
         if self.abbreviations is not None:
             abbreviations = []
             abb = self.abbreviations
-            mark_abbreviations = [
-                abjad.Markup(rf"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
-            ]
+            if self.name_columns is False:
+                mark_abbreviations = [
+                    abjad.Markup(rf"\markup {{ \hcenter-in #12 {_} }}") for _ in abb
+                ]
+            else:
+                mark_abbreviations = [
+                    abjad.Markup(rf"\markup \center-column {{ \hcenter-in #12 {_} }}")
+                    for _ in abb
+                ]
             for x in mark_abbreviations:
                 abbreviations.append(abjad.ShortInstrumentName(markup=x))
         else:
@@ -228,9 +236,15 @@ class SegmentMaker:
         if self.names is not None:
             names = []
             nm = self.names
-            mark_names = [
-                abjad.Markup(rf"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
-            ]
+            if self.name_columns is False:
+                mark_names = [
+                    abjad.Markup(rf"\markup {{ \hcenter-in #14 {_} }}") for _ in nm
+                ]
+            else:
+                mark_names = [
+                    abjad.Markup(rf"\markup \center-column {{ \hcenter-in #12 {_} }}")
+                    for _ in nm
+                ]
             for x in mark_names:
                 names.append(abjad.InstrumentName(markup=x))
         else:

@@ -20,4 +20,26 @@ demotree_list = demotree.tspanlist()
 #     abjad.Duration((1, 8)),
 #     anchor=abjad.Left,
 # )
-abjad.show(demotree_list, scale=0.7)
+# illustration = abjad.illustrate(demotree_list)
+# file = abjad.LilyPondFile(
+#     items=[
+#         """#(set-default-paper-size "11x17landscape")""",
+#         illustration,
+#     ],
+# )
+# # print(illiustration)
+# abjad.show(file, scale=3)
+
+total_time = 0
+total = 30
+time = 30 * 60
+for child in demotree.get_level(2):
+    # print(f"{child.get_timespan().duration}\n")
+    duration = child.get_timespan().duration
+    derived_clock_time = (duration * time) / total
+    total_time += derived_clock_time
+    print(float(derived_clock_time))
+    print("")
+
+# print("")
+# print(total_time / 60)

@@ -210,6 +210,22 @@ boxed-markup-down = #(
     #}
     )
 
+boxed-markup-upright = #(
+    define-music-function
+    (string font-size)
+    (string? number?)
+    #{
+    - \tweak font-size #font-size
+    ^ \markup
+    \override #'(style . "box")
+    \override #'(box-padding . 0.5)
+    \whiteout
+    \box
+    \upright
+    #string
+    #}
+    )
+
 %%% ekmelos markups %%%
 
 normal-pressure = \markup {

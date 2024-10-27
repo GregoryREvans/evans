@@ -1396,6 +1396,24 @@ repeatBracket = #(define-music-function
       #}
      )
 
+ timeBracket = #(define-music-function
+      (N note)
+      (string? ly:music?)
+       #{
+         \override MeasureCounter.stencil =
+         #(lambda (grob) (test-stencil grob #{ #N #} ))
+         \override Score.TimeSignature.stencil = ##f
+         \override Score.BarLine.stencil = ##f
+         \override Score.SpanBar.stencil = ##f
+         \startMeasureCount
+         $note
+         \stopMeasureCount
+         \override Score.TimeSignature.stencil = ##t
+         \override Score.BarLine.stencil = ##t
+          \override Score.SpanBar.stencil = ##t
+       #}
+      )
+
 
 %%% click track %%%
 

@@ -414,8 +414,11 @@ class PitchClassSet(microtones.PitchClassSet):
         transposed = inverse.transpose(11)
         return transposed
 
-    def mod(self, i=12):
-        reduced = [_ % i for _ in self]
+    def mod(self, i=12, preserve_negatives=False):
+        if preserve_negatives is False:
+            reduced = [_ % i for _ in self]
+        else:
+            reduced = [0 - (_ % i) if _ < 0 else _ % i for _ in self]
         return type(self)(reduced)
 
     def nebenverwandt(self):
@@ -541,8 +544,11 @@ class PitchSet(microtones.PitchSet):
         transposed = inverse.transpose(11)
         return transposed
 
-    def mod(self, i=12):
-        reduced = [_ % i for _ in self]
+    def mod(self, i=12, preserve_negatives=False):
+        if preserve_negatives is False:
+            reduced = [_ % i for _ in self]
+        else:
+            reduced = [0 - (_ % i) if _ < 0 else _ % i for _ in self]
         return type(self)(reduced)
 
     def nebenverwandt(self):
@@ -668,8 +674,11 @@ class PitchClassSegment(microtones.PitchClassSegment):
         transposed = inverse.transpose(11)
         return transposed
 
-    def mod(self, i=12):
-        reduced = [_ % i for _ in self]
+    def mod(self, i=12, preserve_negatives=False):
+        if preserve_negatives is False:
+            reduced = [_ % i for _ in self]
+        else:
+            reduced = [0 - (_ % i) if _ < 0 else _ % i for _ in self]
         return type(self)(reduced)
 
     def nebenverwandt(self):
@@ -795,8 +804,11 @@ class PitchSegment(microtones.PitchSegment):
         transposed = inverse.transpose(11)
         return transposed
 
-    def mod(self, i=12):
-        reduced = [_ % i for _ in self]
+    def mod(self, i=12, preserve_negatives=False):
+        if preserve_negatives is False:
+            reduced = [_ % i for _ in self]
+        else:
+            reduced = [0 - (_ % i) if _ < 0 else _ % i for _ in self]
         return type(self)(reduced)
 
     def nebenverwandt(self):
@@ -5237,7 +5249,7 @@ class Sequence(collections.abc.Sequence):
         else:
             return type(self)(lst + lst[::-1])
 
-    def mod(self, modulus, indices=False):
+    def mod(self, modulus, indices=False, preserve_negatives=False):
         """
 
         .. container:: example
@@ -5251,7 +5263,10 @@ class Sequence(collections.abc.Sequence):
             Sequence([0, 1, 2, 3])
 
         """
-        new_seq = [(_ % modulus) for _ in self.items]
+        if preserve_negatives is False:
+            new_seq = [_ % modulus for _ in self]
+        else:
+            new_seq = [0 - (_ % modulus) if _ < 0 else _ % modulus for _ in self]
         for i, _ in enumerate(new_seq):
             if indices is False:
                 if _ == 0:
@@ -6031,6 +6046,48 @@ class Sequence(collections.abc.Sequence):
             seq = type(self)(returned_list)
         return seq
 
+    def string_to_morse_durations(self):
+        text = self.text_to_morse()
+        out = []
+        cleaned_out = []
+        for char in text:
+            if char == ".":
+                out.append(1)
+            elif char == "-":
+                out.append(3)
+            elif char == "˽":
+                out.append(-3)
+            elif char == " ":
+                out.append(-7)
+            else:
+                raise Exception(f"WRONG CHAR TYPE: {char}")
+        for i, duration in enumerate(out):
+            if i + 1 < len(out):
+                if duration == -3 and out[i + 1] == -7:
+                    continue
+                else:
+                    cleaned_out.append(duration)
+        return type(self)(cleaned_out)
+
+    def string_to_morse_tuplets(self):
+        text = self.text_to_morse()
+        out = []
+        temp = []
+        for char in text:
+            if char == ".":
+                temp.append(1)
+            elif char == "-":
+                temp.append(2)
+            elif char == "˽":
+                temp_tuple = tuple(temp)
+                out.append(temp_tuple)
+                temp = []
+            elif char == " ":
+                out.append((-1,))
+            else:
+                raise Exception(f"WRONG CHAR TYPE: {char}")
+        return type(self)(out)
+
     def stutter(self, counts=[2], indices=[0], period=1, cyclic=True):
         out = []
         cyc_counts = CyclicList(counts, forget=False)
@@ -6051,6 +6108,60 @@ class Sequence(collections.abc.Sequence):
                     out.append(item)
         seq = type(self)(out)
         return seq
+
+    def text_to_morse(self):
+        text = "".join(self)
+
+        morse_dict = {
+            "a": ".-",
+            "b": "-...",
+            "c": "-.-.",
+            "d": "-..",
+            "e": ".",
+            "f": "..-.",
+            "g": "--.",
+            "h": "....",
+            "i": "..",
+            "j": ".---",
+            "k": "-.-",
+            "l": ".-..",
+            "m": "--",
+            "n": "-.",
+            "o": "---",
+            "p": ".--.",
+            "q": "--.-",
+            "r": ".-.",
+            "s": "...",
+            "t": "-",
+            "u": "..-",
+            "v": "...-",
+            "w": ".--",
+            "x": "-..-",
+            "y": "-.--",
+            "z": "--..",
+            "á": ".--.-",
+            "ä": ".-.-",
+            "à": ".--.-",
+            "é": "..-..",
+            "è": ".-..-",
+            "ñ": "--.--",
+            "ö": "---.",
+            "ó": "---.",
+            "ü": "..---",
+            " ": " ",  # Word separation
+        }
+
+        morse_code = ""
+        for char in text.lower():
+            if char in morse_dict:
+                if char != " ":
+                    morse_code += morse_dict[char] + "˽"
+                else:
+                    morse_code += morse_dict[char]
+            else:
+                continue
+
+        return morse_code
 
     def difference(self):
         """
